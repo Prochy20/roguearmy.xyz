@@ -1,4 +1,5 @@
 export { GlitchText } from "./GlitchText"
+export { HeroGlitch } from "./HeroGlitch"
 export { ChromaticText } from "./ChromaticText"
 export { ScanlineOverlay } from "./ScanlineOverlay"
 export { TypeWriter } from "./TypeWriter"

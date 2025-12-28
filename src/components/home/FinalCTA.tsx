@@ -2,8 +2,7 @@
 
 import { motion } from "motion/react"
 import { GlitchText, SectionBleed } from "@/components/effects"
-import { GlowButton, ScrollReveal } from "@/components/shared"
-import { MessageCircle } from "lucide-react"
+import { GlowButton, ScrollReveal, DiscordIcon } from "@/components/shared"
 
 const DISCORD_INVITE = "https://dc.roguearmy.xyz"
 
@@ -93,7 +92,7 @@ export function FinalCTA() {
               pulse
               className="text-xl md:text-2xl px-12 py-8 gap-4"
             >
-              <MessageCircle className="w-7 h-7" />
+              <DiscordIcon className="w-7 h-7" />
               Join the Discord
             </GlowButton>
           </a>

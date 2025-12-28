@@ -2,9 +2,9 @@
 
 import { motion } from "motion/react"
 import Image from "next/image"
-import { GlitchText, ChromaticText, TypeWriter } from "@/components/effects"
-import { GlowButton } from "@/components/shared"
-import { ChevronDown, MessageCircle } from "lucide-react"
+import { HeroGlitch, TypeWriter } from "@/components/effects"
+import { GlowButton, DiscordIcon } from "@/components/shared"
+import { ChevronDown } from "lucide-react"
 
 const DISCORD_INVITE = "https://dc.roguearmy.xyz"
 
@@ -81,13 +81,25 @@ export function Hero() {
         className="text-center mb-6"
       >
         <h1 className="font-display text-[12vw] md:text-[10vw] lg:text-[8vw] leading-[0.85] uppercase tracking-tight">
-          <GlitchText trigger="hover" duration={0.5}>
+          <HeroGlitch
+            minInterval={4}
+            maxInterval={10}
+            intensity={8}
+            dataCorruption
+            scanlines
+          >
             <span className="text-white">ROGUE</span>
-          </GlitchText>
+          </HeroGlitch>
           <br />
-          <ChromaticText animated>
+          <HeroGlitch
+            minInterval={5}
+            maxInterval={12}
+            intensity={6}
+            dataCorruption={false}
+            colors={["#00ff41", "#00ffff"]}
+          >
             <span className="text-rga-green text-glow-green">ARMY</span>
-          </ChromaticText>
+          </HeroGlitch>
         </h1>
       </motion.div>
 
@@ -120,7 +132,7 @@ export function Hero() {
             pulse
             className="text-lg px-8 py-6 gap-3"
           >
-            <MessageCircle className="w-5 h-5" />
+            <DiscordIcon className="w-5 h-5" />
             Join the Discord
           </GlowButton>
         </a>

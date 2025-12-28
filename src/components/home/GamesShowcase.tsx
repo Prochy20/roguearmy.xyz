@@ -13,9 +13,9 @@ const GAMES = [
     featured: true,
   },
   {
-    name: "BATTLEFIELD",
-    subtitle: "Coming 2025",
-    description: "Squad up for BF6. Tactical gameplay, coordinated chaos.",
+    name: "BATTLEFIELD 6",
+    subtitle: "Boots on Ground",
+    description: "128-player warfare is back. Squad up for tactical chaos and epic moments.",
     color: "blue",
     featured: false,
   },
@@ -152,6 +152,22 @@ export function GamesShowcase() {
           </motion.div>
         ))}
       </div>
+
+      {/* And more indicator */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5, delay: 0.4 }}
+        className="text-center mt-8 px-6"
+      >
+        <p className="text-text-muted font-mono text-sm uppercase tracking-widest">
+          <span className="text-rga-green">+</span> and many more
+        </p>
+        <p className="text-text-muted/60 text-xs mt-1">
+          We play whatever our community is hyped about
+        </p>
+      </motion.div>
 
       {/* Signal decay: VHS tracking into StatsTicker - DRAMATIC */}
       <SectionBleed

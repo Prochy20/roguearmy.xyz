@@ -102,7 +102,7 @@ export function CommunityValues() {
             </ScrollRevealContainer>
           </div>
 
-          {/* Right: Ashley image */}
+          {/* Right: Banner image */}
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -113,31 +113,31 @@ export function CommunityValues() {
             {/* RGB ghost effect */}
             <div className="absolute inset-0 translate-x-2 opacity-50">
               <Image
-                src="/images/ashley-hero.jpg"
+                src="/images/banner.jpg"
                 alt=""
                 fill
-                className="object-cover rounded-lg"
+                className="object-cover object-center rounded-lg"
                 style={{ filter: "hue-rotate(180deg)" }}
                 aria-hidden="true"
               />
             </div>
             <div className="absolute inset-0 -translate-x-2 opacity-50">
               <Image
-                src="/images/ashley-hero.jpg"
+                src="/images/banner.jpg"
                 alt=""
                 fill
-                className="object-cover rounded-lg"
+                className="object-cover object-center rounded-lg"
                 style={{ filter: "hue-rotate(-60deg)" }}
                 aria-hidden="true"
               />
             </div>
             {/* Main image */}
-            <div className="relative aspect-[3/4] rounded-lg overflow-hidden border border-border">
+            <div className="relative aspect-square rounded-lg overflow-hidden border border-border">
               <Image
-                src="/images/ashley-hero.jpg"
-                alt="Ashley - Rogue Army Mascot"
+                src="/images/banner.jpg"
+                alt="Rogue Army - Skull Logo"
                 fill
-                className="object-cover"
+                className="object-cover object-center"
               />
               {/* Overlay gradient */}
               <div className="absolute inset-0 bg-gradient-to-t from-void via-transparent to-transparent" />
