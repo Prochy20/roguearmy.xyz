@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "motion/react"
-import { SectionBleed } from "@/components/effects"
+import { SectionGlitch } from "@/components/effects"
 import { ScrollReveal } from "@/components/shared"
 
 const GAMES = [
@@ -65,12 +65,11 @@ const colorClasses: Record<string, { text: string; glow: string; border: string 
 export function GamesShowcase() {
   return (
     <section className="relative py-20 overflow-hidden">
-      {/* Data corruption: Digital noise bleeding from Hero - SUBTLE intro */}
-      <SectionBleed
-        variant="data-corruption"
-        scale="medium"
-        colorFrom="green"
-        colorTo="cyan"
+      {/* Glitch transition from Hero */}
+      <SectionGlitch
+        intensity="medium"
+        colorPrimary="green"
+        colorSecondary="cyan"
       />
 
       {/* Section header */}
@@ -93,7 +92,7 @@ export function GamesShowcase() {
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.6, delay: index * 0.1 }}
             className={`
-              group relative w-full py-8 md:py-12 overflow-hidden cursor-pointer
+              group relative w-full py-8 md:py-12 overflow-hidden
               border-y ${colorClasses[game.color].border}
               hover:bg-bg-elevated transition-all duration-500
               ${game.featured ? "py-12 md:py-20" : ""}
@@ -169,12 +168,11 @@ export function GamesShowcase() {
         </p>
       </motion.div>
 
-      {/* Signal decay: VHS tracking into StatsTicker - DRAMATIC */}
-      <SectionBleed
-        variant="signal-decay"
-        scale="dramatic"
-        colorFrom="cyan"
-        colorTo="green"
+      {/* Glitch transition to StatsTicker */}
+      <SectionGlitch
+        intensity="intense"
+        colorPrimary="cyan"
+        colorSecondary="green"
       />
     </section>
   )

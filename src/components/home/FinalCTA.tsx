@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "motion/react"
-import { GlitchText, SectionBleed } from "@/components/effects"
+import { GlitchText, SectionGlitch } from "@/components/effects"
 import { GlowButton, ScrollReveal, DiscordIcon } from "@/components/shared"
 
 const DISCORD_INVITE = "https://dc.roguearmy.xyz"
@@ -13,12 +13,11 @@ const DISCORD_INVITE = "https://dc.roguearmy.xyz"
 export function FinalCTA() {
   return (
     <section className="relative py-24 md:py-32 overflow-hidden">
-      {/* Void breach: Dark tear effect */}
-      <SectionBleed
-        variant="void-breach"
-        scale="dramatic"
-        colorFrom="cyan"
-        colorTo="green"
+      {/* Glitch transition from AshleyTerminal */}
+      <SectionGlitch
+        intensity="medium"
+        colorPrimary="cyan"
+        colorSecondary="green"
       />
 
       {/* Background effects */}

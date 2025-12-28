@@ -2,7 +2,14 @@ import { withPayload } from '@payloadcms/next/withPayload'
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Your Next.js config here
+  // Required for sharp to work correctly in Vercel serverless functions
+  serverExternalPackages: ['sharp'],
+
+  // Image optimization settings
+  images: {
+    formats: ['image/avif', 'image/webp'],
+  },
+
   webpack: (webpackConfig) => {
     webpackConfig.resolve.extensionAlias = {
       '.cjs': ['.cts', '.cjs'],

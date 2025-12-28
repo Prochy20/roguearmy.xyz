@@ -2,7 +2,7 @@
 
 import Image from "next/image"
 import { motion } from "motion/react"
-import { ChromaticText, SectionBleed } from "@/components/effects"
+import { ChromaticText, SectionGlitch } from "@/components/effects"
 import { ScrollReveal, ScrollRevealContainer, ScrollRevealItem } from "@/components/shared"
 import { Shield, Users, Heart } from "lucide-react"
 
@@ -40,12 +40,11 @@ const colorClasses: Record<string, { icon: string; glow: string }> = {
 export function CommunityValues() {
   return (
     <section className="relative py-24 md:py-32 overflow-hidden">
-      {/* Chromatic shatter: RGB split shards */}
-      <SectionBleed
-        variant="chromatic-shatter"
-        scale="dramatic"
-        colorFrom="green"
-        colorTo="magenta"
+      {/* Glitch transition from StatsTicker */}
+      <SectionGlitch
+        intensity="intense"
+        colorPrimary="green"
+        colorSecondary="magenta"
       />
 
       {/* Background gradient */}
@@ -159,12 +158,11 @@ export function CommunityValues() {
         </div>
       </div>
 
-      {/* Void breach: Dark void opening into AshleyTerminal - DRAMATIC */}
-      <SectionBleed
-        variant="void-breach"
-        scale="dramatic"
-        colorFrom="magenta"
-        colorTo="cyan"
+      {/* Glitch transition to AshleyTerminal */}
+      <SectionGlitch
+        intensity="intense"
+        colorPrimary="magenta"
+        colorSecondary="cyan"
       />
     </section>
   )

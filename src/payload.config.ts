@@ -12,12 +12,19 @@ const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
 export default buildConfig({
+  // Server URL - required for production to generate correct URLs
+  serverURL: process.env.NEXT_PUBLIC_SERVER_URL || '',
+
   admin: {
     user: Users.slug,
     importMap: {
       baseDir: path.resolve(dirname),
     },
   },
+
+  // CORS configuration - add your production domains here
+  cors: [process.env.NEXT_PUBLIC_SERVER_URL || ''].filter(Boolean),
+
   collections: [Users, Media],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
