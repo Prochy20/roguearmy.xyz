@@ -1,67 +1,94 @@
-# Payload Blank Template
+# RGA Web
 
-This template comes configured with the bare minimum to get started on anything you need.
+Cyberpunk-themed landing page for the Rogue Army gaming community.
 
-## Quick start
+## Tech Stack
 
-This template can be deployed directly from our Cloud hosting and it will setup MongoDB and cloud S3 object storage for media.
+- **Framework**: Next.js 15 (App Router)
+- **CMS**: Payload CMS 3.x
+- **Database**: MongoDB
+- **Styling**: Tailwind CSS v4 + shadcn/ui
+- **Animation**: Motion (Framer Motion)
 
-## Quick Start - local setup
+## Quick Start
 
-To spin up this template locally, follow these steps:
+```bash
+# Install dependencies
+pnpm install
 
-### Clone
+# Copy environment variables
+cp .env.example .env
 
-After you click the `Deploy` button above, you'll want to have standalone copy of this repo on your machine. If you've already cloned this repo, skip to [Development](#development).
+# Start development server
+pnpm dev
+```
 
-### Development
+Access:
+- Frontend: http://localhost:3000
+- Admin: http://localhost:3000/admin
 
-1. First [clone the repo](#clone) if you have not done so already
-2. `cd my-project && cp .env.example .env` to copy the example environment variables. You'll need to add the `MONGODB_URL` from your Cloud project to your `.env` if you want to use S3 storage and the MongoDB database that was created for you.
+## Documentation
 
-3. `pnpm install && pnpm dev` to install dependencies and start the dev server
-4. open `http://localhost:3000` to open the app in your browser
+Comprehensive documentation is available in the [`docs/`](./docs) folder:
 
-That's it! Changes made in `./src` will be reflected in your app. Follow the on-screen instructions to login and create your first admin user. Then check out [Production](#production) once you're ready to build and serve your app, and [Deployment](#deployment) when you're ready to go live.
+- **[Documentation Index](./docs/README.md)** - Start here
 
-#### Docker (Optional)
+### Architecture
+- [Overview](./docs/architecture/OVERVIEW.md) - Project structure
+- [Routing](./docs/architecture/ROUTING.md) - Route groups, API
+- [Payload CMS](./docs/architecture/PAYLOAD.md) - Collections, patterns
 
-If you prefer to use Docker for local development instead of a local MongoDB instance, the provided docker-compose.yml file can be used.
+### Design System
+- [Colors](./docs/design-system/COLORS.md) - Brand palette
+- [Typography](./docs/design-system/TYPOGRAPHY.md) - Fonts
+- [Animations](./docs/design-system/ANIMATIONS.md) - Keyframes, Motion
+- [Utilities](./docs/design-system/UTILITIES.md) - Custom classes
 
-To do so, follow these steps:
+### Components
+- [Overview](./docs/components/OVERVIEW.md) - Organization
+- [UI](./docs/components/UI.md) - shadcn/ui
+- [Effects](./docs/components/EFFECTS.md) - Glitch, scanlines
+- [Shared](./docs/components/SHARED.md) - Reusable components
+- [Sections](./docs/components/SECTIONS.md) - Homepage sections
 
-- Modify the `MONGODB_URL` in your `.env` file to `mongodb://127.0.0.1/<dbname>`
-- Modify the `docker-compose.yml` file's `MONGODB_URL` to match the above `<dbname>`
-- Run `docker-compose up` to start the database, optionally pass `-d` to run in the background.
+### Guides
+- [Development](./docs/guides/DEVELOPMENT.md) - Setup, workflow
+- [Deployment](./docs/guides/DEPLOYMENT.md) - Vercel deployment
 
-## How it works
+## Commands
 
-The Payload config is tailored specifically to the needs of most websites. It is pre-configured in the following ways:
+```bash
+pnpm dev              # Start dev server
+pnpm build            # Build for production
+pnpm lint             # Run ESLint
+pnpm generate:types   # Generate Payload types
+pnpm test             # Run all tests
+```
 
-### Collections
+## Environment Variables
 
-See the [Collections](https://payloadcms.com/docs/configuration/collections) docs for details on how to extend this functionality.
+```bash
+DATABASE_URL=mongodb://...      # MongoDB connection
+PAYLOAD_SECRET=xxx              # Auth secret (32+ chars)
+NEXT_PUBLIC_SERVER_URL=https://...  # Production URL
+```
 
-- #### Users (Authentication)
+## Project Structure
 
-  Users are auth-enabled collections that have access to the admin panel.
+```
+src/
+├── app/
+│   ├── (frontend)/     # Public routes
+│   └── (payload)/      # Admin + API
+├── collections/        # Payload collections
+├── components/
+│   ├── ui/             # shadcn/ui
+│   ├── shared/         # Reusable
+│   ├── effects/        # Visual effects
+│   └── home/           # Homepage sections
+└── lib/                # Utilities
+```
 
-  For additional help, see the official [Auth Example](https://github.com/payloadcms/payload/tree/main/examples/auth) or the [Authentication](https://payloadcms.com/docs/authentication/overview#authentication-overview) docs.
+## License
 
-- #### Media
-
-  This is the uploads enabled collection. It features pre-configured sizes, focal point and manual resizing to help you manage your pictures.
-
-### Docker
-
-Alternatively, you can use [Docker](https://www.docker.com) to spin up this template locally. To do so, follow these steps:
-
-1. Follow [steps 1 and 2 from above](#development), the docker-compose file will automatically use the `.env` file in your project root
-1. Next run `docker-compose up`
-1. Follow [steps 4 and 5 from above](#development) to login and create your first admin user
-
-That's it! The Docker instance will help you get up and running quickly while also standardizing the development environment across your teams.
-
-## Questions
-
-If you have any issues or questions, reach out to us on [Discord](https://discord.com/invite/payload) or start a [GitHub discussion](https://github.com/payloadcms/payload/discussions).
+MIT
