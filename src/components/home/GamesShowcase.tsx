@@ -84,7 +84,7 @@ export function GamesShowcase({ games }: GamesShowcaseProps) {
           What We Play
         </h2>
         <p className="text-text-secondary max-w-xl mx-auto">
-          From tactical shooters to high seas adventures. Find your squad.
+          From tactical ops to all-out warfare. Find your squad.
         </p>
       </ScrollReveal>
 
