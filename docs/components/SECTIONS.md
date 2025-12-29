@@ -77,7 +77,7 @@ Horizontal strips showcasing games the community plays.
 ```tsx
 <div className="group relative py-8 md:py-12 overflow-hidden">
   <div className="container mx-auto">
-    <span className="text-4xl md:text-6xl lg:text-8xl font-display transform skew-x-[-3deg]">
+    <span className="text-4xl md:text-6xl lg:text-8xl font-display transform -skew-x-3">
       THE DIVISION 2
     </span>
   </div>

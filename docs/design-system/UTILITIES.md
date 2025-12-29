@@ -90,7 +90,7 @@ For animated version, use `animate-rgb-shift` or the `ChromaticText` component.
 ### `.text-gradient-rga`
 ```css
 .text-gradient-rga {
-  @apply bg-gradient-to-r from-rga-green via-rga-cyan to-rga-magenta;
+  @apply bg-linear-to-r from-rga-green via-rga-cyan to-rga-magenta;
   @apply bg-clip-text text-transparent;
 }
 ```
@@ -194,7 +194,7 @@ Global text selection styling:
 
 ### Gradient Button
 ```tsx
-<button className="bg-gradient-to-r from-rga-green to-rga-cyan text-void px-6 py-3 font-bold">
+<button className="bg-linear-to-r from-rga-green to-rga-cyan text-void px-6 py-3 font-bold">
   SUBMIT
 </button>
 ```

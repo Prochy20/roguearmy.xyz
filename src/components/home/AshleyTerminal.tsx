@@ -494,7 +494,7 @@ export function AshleyTerminal() {
               <div className="w-full max-w-7xl mx-auto grid lg:grid-cols-[400px_1fr] gap-8 lg:gap-16 items-center">
                 {/* Ashley Avatar */}
                 <div className="relative mx-auto lg:mx-0 w-full max-w-[400px]">
-                  <div className="absolute -inset-4 bg-gradient-to-br from-rga-cyan/20 via-rga-green/10 to-rga-magenta/20 rounded-2xl blur-2xl" />
+                  <div className="absolute -inset-4 bg-linear-to-br from-rga-cyan/20 via-rga-green/10 to-rga-magenta/20 rounded-2xl blur-2xl" />
 
                   <div className="relative">
                     <div className="relative aspect-square rounded-xl overflow-hidden border border-rga-cyan/30 bg-bg-elevated">
@@ -543,7 +543,7 @@ export function AshleyTerminal() {
                         }}
                       />
 
-                      <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-bg-elevated to-transparent" />
+                      <div className="absolute inset-x-0 bottom-0 h-1/3 bg-linear-to-t from-bg-elevated to-transparent" />
                     </div>
 
                     {/* Name badge */}

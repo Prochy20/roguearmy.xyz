@@ -84,7 +84,7 @@ export function CommunityValues() {
                   <div className="flex gap-5 group">
                     <div
                       className={`
-                        flex-shrink-0 w-14 h-14 rounded-lg bg-bg-elevated border border-border
+                        shrink-0 w-14 h-14 rounded-lg bg-bg-elevated border border-border
                         flex items-center justify-center
                         group-hover:${colorClasses[value.color].glow} transition-shadow duration-300
                       `}
@@ -139,7 +139,7 @@ export function CommunityValues() {
                 className="object-cover object-center"
               />
               {/* Overlay gradient */}
-              <div className="absolute inset-0 bg-gradient-to-t from-void via-transparent to-transparent" />
+              <div className="absolute inset-0 bg-linear-to-t from-void via-transparent to-transparent" />
               {/* Scanline effect */}
               <div
                 className="absolute inset-0 opacity-10"
