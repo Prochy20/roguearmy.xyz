@@ -136,7 +136,7 @@ export function AshleyErrorTerminal({
         </div>
 
         {/* Terminal Body - Command Output */}
-        <div className="px-4 py-4 space-y-1.5 min-h-[140px]">
+        <div className="px-4 py-4 space-y-1.5 min-h-35">
           {terminalLines.map((line, index) => (
             <motion.div
               key={index}
