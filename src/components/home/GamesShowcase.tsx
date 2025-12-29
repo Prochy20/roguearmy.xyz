@@ -3,58 +3,60 @@
 import { motion } from "motion/react"
 import { SectionGlitch } from "@/components/effects"
 import { ScrollReveal } from "@/components/shared"
+import type { Game } from "@/payload-types"
 
-const GAMES = [
-  {
-    name: "THE DIVISION 2",
-    subtitle: "Our Flagship Game",
-    description: "Where it all started. Weekly raids, legendary missions, and builds that melt.",
-    color: "orange",
-    featured: true,
-  },
-  {
-    name: "BATTLEFIELD 6",
-    subtitle: "Boots on Ground",
-    description: "128-player warfare is back. Squad up for tactical chaos and epic moments.",
-    color: "blue",
-    featured: false,
-  },
-  {
-    name: "HELLDIVERS 2",
-    subtitle: "For Democracy",
-    description: "Spreading managed democracy across the galaxy, one bug at a time.",
-    color: "yellow",
-    featured: false,
-  },
-  {
-    name: "SEA OF THIEVES",
-    subtitle: "Pirate Life",
-    description: "Sail the seas with fellow rogues. Treasure hunting and ship battles.",
-    color: "teal",
-    featured: false,
-  },
-]
+interface GamesShowcaseProps {
+  games: Game[]
+}
 
-const colorClasses: Record<string, { text: string; glow: string; border: string }> = {
+const colorClasses: Record<string, { text: string; glow: string; border: string; bg: string }> = {
   orange: {
     text: "text-orange-500",
     glow: "shadow-[0_0_40px_rgba(249,115,22,0.3)]",
     border: "border-orange-500/30",
+    bg: "rgba(249,115,22,0.05)",
   },
   blue: {
     text: "text-blue-400",
     glow: "shadow-[0_0_40px_rgba(96,165,250,0.3)]",
     border: "border-blue-400/30",
+    bg: "rgba(96,165,250,0.05)",
   },
   yellow: {
     text: "text-yellow-400",
     glow: "shadow-[0_0_40px_rgba(250,204,21,0.3)]",
     border: "border-yellow-400/30",
+    bg: "rgba(250,204,21,0.05)",
   },
   teal: {
     text: "text-teal-400",
     glow: "shadow-[0_0_40px_rgba(45,212,191,0.3)]",
     border: "border-teal-400/30",
+    bg: "rgba(45,212,191,0.05)",
+  },
+  green: {
+    text: "text-green-500",
+    glow: "shadow-[0_0_40px_rgba(34,197,94,0.3)]",
+    border: "border-green-500/30",
+    bg: "rgba(34,197,94,0.05)",
+  },
+  purple: {
+    text: "text-purple-400",
+    glow: "shadow-[0_0_40px_rgba(192,132,252,0.3)]",
+    border: "border-purple-400/30",
+    bg: "rgba(192,132,252,0.05)",
+  },
+  red: {
+    text: "text-red-500",
+    glow: "shadow-[0_0_40px_rgba(239,68,68,0.3)]",
+    border: "border-red-500/30",
+    bg: "rgba(239,68,68,0.05)",
+  },
+  pink: {
+    text: "text-pink-400",
+    glow: "shadow-[0_0_40px_rgba(244,114,182,0.3)]",
+    border: "border-pink-400/30",
+    bg: "rgba(244,114,182,0.05)",
   },
 }
 
@@ -62,7 +64,11 @@ const colorClasses: Record<string, { text: string; glow: string; border: string 
  * Games Showcase Section
  * Full-bleed horizontal strips with massive diagonal text
  */
-export function GamesShowcase() {
+export function GamesShowcase({ games }: GamesShowcaseProps) {
+  if (games.length === 0) {
+    return null
+  }
+
   return (
     <section className="relative py-20 overflow-hidden">
       {/* Glitch transition from Hero */}
@@ -84,9 +90,9 @@ export function GamesShowcase() {
 
       {/* Game strips */}
       <div className="space-y-1">
-        {GAMES.map((game, index) => (
+        {games.map((game, index) => (
           <motion.div
-            key={game.name}
+            key={game.id}
             initial={{ opacity: 0, x: index % 2 === 0 ? -100 : 100 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-50px" }}
@@ -105,7 +111,7 @@ export function GamesShowcase() {
                 ${colorClasses[game.color].glow}
               `}
               style={{
-                background: `linear-gradient(90deg, transparent 0%, ${game.color === "orange" ? "rgba(249,115,22,0.05)" : game.color === "blue" ? "rgba(96,165,250,0.05)" : game.color === "yellow" ? "rgba(250,204,21,0.05)" : "rgba(45,212,191,0.05)"} 50%, transparent 100%)`,
+                background: `linear-gradient(90deg, transparent 0%, ${colorClasses[game.color].bg} 50%, transparent 100%)`,
               }}
             />
 
