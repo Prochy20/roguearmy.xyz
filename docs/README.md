@@ -31,6 +31,7 @@ Technical documentation for the Rogue Army gaming community website.
 - [Overview](./components/OVERVIEW.md) - Component organization
 - [UI](./components/UI.md) - shadcn/ui components
 - [Effects](./components/EFFECTS.md) - Glitch, scanlines, visual effects
+- [Error Pages](./components/ERROR-PAGES.md) - Error handling, 404/500 pages
 - [Shared](./components/SHARED.md) - Reusable components
 - [Sections](./components/SECTIONS.md) - Homepage sections
 
@@ -66,10 +67,12 @@ rga-web/
 │   │   ├── (frontend)/     # Public routes
 │   │   └── (payload)/      # Admin panel + API
 │   ├── collections/        # Payload collections
+│   ├── globals/            # Payload globals
 │   ├── components/
 │   │   ├── ui/             # shadcn/ui
 │   │   ├── shared/         # Reusable
 │   │   ├── effects/        # Visual effects
+│   │   ├── error/          # Error pages
 │   │   └── home/           # Homepage sections
 │   └── lib/                # Utilities
 ├── public/

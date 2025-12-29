@@ -11,6 +11,8 @@ import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import sharp from 'sharp'
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
+import { Games } from './collections/Games'
+import { Homepage } from './globals/Homepage'
 
 export default buildConfig({
   serverURL: process.env.NEXT_PUBLIC_SERVER_URL || '',
@@ -18,7 +20,8 @@ export default buildConfig({
     user: Users.slug,  // Auth collection
   },
   cors: [process.env.NEXT_PUBLIC_SERVER_URL || ''].filter(Boolean),
-  collections: [Users, Media],
+  collections: [Users, Media, Games],
+  globals: [Homepage],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
@@ -81,6 +84,93 @@ export const Media: CollectionConfig = {
 - Public read access (no auth required)
 - Required alt text for accessibility
 - Upload-enabled for images/files
+
+### Games
+**File**: `src/collections/Games.ts`
+
+```typescript
+import type { CollectionConfig } from 'payload'
+
+export const Games: CollectionConfig = {
+  slug: 'games',
+  admin: {
+    useAsTitle: 'name',
+    defaultColumns: ['name', 'color', 'featured'],
+  },
+  access: {
+    read: () => true,
+  },
+  fields: [
+    { name: 'name', type: 'text', required: true },
+    { name: 'subtitle', type: 'text' },
+    { name: 'description', type: 'textarea' },
+    {
+      name: 'color',
+      type: 'select',
+      required: true,
+      defaultValue: 'orange',
+      options: [
+        { label: 'Orange', value: 'orange' },
+        { label: 'Blue', value: 'blue' },
+        { label: 'Yellow', value: 'yellow' },
+        { label: 'Teal', value: 'teal' },
+        { label: 'Green', value: 'green' },
+        { label: 'Purple', value: 'purple' },
+        { label: 'Red', value: 'red' },
+        { label: 'Pink', value: 'pink' },
+      ],
+    },
+    {
+      name: 'featured',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: { description: 'Shows "Main Game" badge and larger display' },
+    },
+  ],
+}
+```
+
+- Public read access
+- 8 color options for UI theming
+- `featured` flag for homepage prominence
+
+## Globals
+
+### Homepage
+**File**: `src/globals/Homepage.ts`
+
+```typescript
+import type { GlobalConfig } from 'payload'
+
+export const Homepage: GlobalConfig = {
+  slug: 'homepage',
+  access: {
+    read: () => true,
+  },
+  fields: [
+    {
+      name: 'claim',
+      type: 'text',
+      admin: { description: 'Tagline text displayed under the headline' },
+    },
+    {
+      name: 'games',
+      type: 'relationship',
+      relationTo: 'games',
+      hasMany: true,
+      admin: {
+        isSortable: true,
+        description: 'Drag to reorder games on the homepage',
+      },
+    },
+  ],
+}
+```
+
+- Single global document for homepage configuration
+- `claim` - Tagline text for hero section
+- `games` - Sortable relationship to Games collection
+- Public read access
 
 ## Critical Patterns
 
@@ -252,9 +342,22 @@ export async function GET() {
 }
 ```
 
-## Recommended Directory Structure
+## Directory Structure
 
-When extending the project:
+```
+src/
+├── collections/      # Collection configs
+│   ├── Users.ts
+│   ├── Media.ts
+│   └── Games.ts
+├── globals/          # Global document configs
+│   └── Homepage.ts
+└── payload.config.ts # Main configuration
+```
+
+### Recommended Additions
+
+When extending the project, consider adding:
 
 ```
 src/
@@ -264,8 +367,6 @@ src/
 ├── hooks/            # Collection and field hooks
 │   ├── populateAuthor.ts
 │   └── logActivity.ts
-├── globals/          # Global document configs
-│   └── Settings.ts
 └── components/       # Custom admin components
     └── CustomField.tsx
 ```

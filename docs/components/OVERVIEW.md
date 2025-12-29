@@ -19,6 +19,11 @@ src/components/
 │   ├── ChromaticText.tsx
 │   ├── TypeWriter.tsx
 │   └── index.ts
+├── error/        # Error page components
+│   ├── ErrorPage.tsx
+│   ├── AshleyErrorTerminal.tsx
+│   ├── error-config.ts
+│   └── index.ts
 └── home/         # Homepage section components
     ├── Hero.tsx
     ├── GamesShowcase.tsx
@@ -36,6 +41,7 @@ src/components/
 | `ui/` | Base UI primitives (shadcn/ui) | Client |
 | `shared/` | Reusable across multiple pages | Client |
 | `effects/` | Visual effects and animations | Client |
+| `error/` | Error page components | Client |
 | `home/` | Homepage section compositions | Client |
 
 ## Barrel Exports
@@ -53,6 +59,7 @@ Usage:
 ```typescript
 import { GlowButton, ScrollReveal } from "@/components/shared"
 import { HeroGlitch, TypeWriter } from "@/components/effects"
+import { ErrorPage, AshleyErrorTerminal } from "@/components/error"
 import { Hero, GamesShowcase } from "@/components/home"
 ```
 
