@@ -97,23 +97,21 @@ const jsonLd = {
   ],
 }
 
-export default async function RootLayout(props: { children: React.ReactNode }) {
+export default async function FrontendLayout(props: { children: React.ReactNode }) {
   const { children } = props
 
   return (
-    <html lang="en" className="dark">
-      <body className="min-h-screen bg-void text-foreground font-body antialiased">
-        <Script
-          id="json-ld"
-          type="application/ld+json"
-          strategy="afterInteractive"
-        >
-          {JSON.stringify(jsonLd)}
-        </Script>
-        <ScanlineOverlay intensity="low" />
-        <main>{children}</main>
-        <Analytics />
-      </body>
-    </html>
+    <>
+      <Script
+        id="json-ld"
+        type="application/ld+json"
+        strategy="afterInteractive"
+      >
+        {JSON.stringify(jsonLd)}
+      </Script>
+      <ScanlineOverlay intensity="low" />
+      <main>{children}</main>
+      <Analytics />
+    </>
   )
 }
