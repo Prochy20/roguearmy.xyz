@@ -170,7 +170,7 @@ export function SectionGlitch({
       >
         {/* Central bright line */}
         <div
-          className="absolute top-1/2 left-0 right-0 h-[2px] -translate-y-1/2"
+          className="absolute top-1/2 left-0 right-0 h-0.5 -translate-y-1/2"
           style={{
             background: `linear-gradient(90deg,
               transparent 0%,

@@ -48,7 +48,7 @@ export function ScanlineOverlay({
       {/* Animated sweep line */}
       {animated && (
         <div
-          className="absolute left-0 right-0 h-[2px] bg-rga-green/20 animate-scanline"
+          className="absolute left-0 right-0 h-0.5 bg-rga-green/20 animate-scanline"
           style={{
             boxShadow: "0 0 10px var(--color-rga-green), 0 0 20px var(--color-rga-green)",
           }}

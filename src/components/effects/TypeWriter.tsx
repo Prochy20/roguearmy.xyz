@@ -56,7 +56,7 @@ export function TypeWriter({
       {cursor && (
         <span
           className={cn(
-            "inline-block w-[2px] h-[1em] bg-rga-green ml-0.5 align-middle",
+            "inline-block w-0.5 h-[1em] bg-rga-green ml-0.5 align-middle",
             isComplete ? "animate-blink" : ""
           )}
         />
