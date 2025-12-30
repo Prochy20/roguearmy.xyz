@@ -14,7 +14,7 @@ const DISCORD_INVITE = "https://dc.roguearmy.xyz"
  */
 export function Hero() {
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden px-6">
+    <section className="relative min-h-[100svh] flex flex-col items-center justify-center overflow-hidden px-6">
       {/* Background gradient */}
       <div
         className="absolute inset-0 -z-10"
@@ -143,7 +143,7 @@ export function Hero() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 2 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2"
+        className="absolute bottom-4 sm:bottom-8 left-1/2 -translate-x-1/2"
       >
         <motion.div
           animate={{ y: [0, 8, 0] }}
