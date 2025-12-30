@@ -61,6 +61,50 @@ function ScrollControlledSkill({
   )
 }
 
+/** Compact mobile skills display - inline text with percentages */
+function CompactSkillsDisplay({
+  skillProgresses,
+}: {
+  skillProgresses: MotionValue<number>[]
+}) {
+  const [values, setValues] = useState([0, 0, 0, 0])
+
+  // Subscribe to each skill progress
+  useMotionValueEvent(skillProgresses[0], "change", (v) =>
+    setValues((prev) => [Math.round(v), prev[1], prev[2], prev[3]])
+  )
+  useMotionValueEvent(skillProgresses[1], "change", (v) =>
+    setValues((prev) => [prev[0], Math.round(v), prev[2], prev[3]])
+  )
+  useMotionValueEvent(skillProgresses[2], "change", (v) =>
+    setValues((prev) => [prev[0], prev[1], Math.round(v), prev[3]])
+  )
+  useMotionValueEvent(skillProgresses[3], "change", (v) =>
+    setValues((prev) => [prev[0], prev[1], prev[2], Math.round(v)])
+  )
+
+  const compactSkills = [
+    { label: "Raids", value: values[0], color: "text-rga-green" },
+    { label: "Builds", value: values[1], color: "text-rga-cyan" },
+    { label: "Memes", value: values[2], color: "text-rga-magenta" },
+    { label: "Drama", value: values[3], color: "text-rga-green" },
+  ]
+
+  return (
+    <div className="flex flex-wrap justify-center gap-x-3 gap-y-1 text-sm font-mono">
+      {compactSkills.map((skill, i) => (
+        <span key={skill.label}>
+          <span className="text-text-muted">{skill.label}:</span>{" "}
+          <span className={skill.color}>{skill.value}%</span>
+          {i < compactSkills.length - 1 && (
+            <span className="text-text-muted ml-3">•</span>
+          )}
+        </span>
+      ))}
+    </div>
+  )
+}
+
 const CODE_LINES = [
   'async function breach(target) {',
   '  const wall = await scan(target);',
@@ -596,7 +640,14 @@ export function AshleyTerminal() {
                       <Zap className="w-4 h-4" />
                       <span className="font-mono text-xs uppercase tracking-widest">System Capabilities</span>
                     </div>
-                    <div className="space-y-3 max-w-md mx-auto lg:mx-0">
+
+                    {/* Mobile: Compact inline view (hidden on xs screens < 480px) */}
+                    <div className="hidden min-[480px]:block sm:hidden">
+                      <CompactSkillsDisplay skillProgresses={skillProgresses} />
+                    </div>
+
+                    {/* Desktop: Full progress bars */}
+                    <div className="hidden sm:block space-y-3 max-w-md mx-auto lg:mx-0">
                       {SKILLS.map((skill, index) => (
                         <ScrollControlledSkill
                           key={skill.label}
