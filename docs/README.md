@@ -26,6 +26,7 @@ Technical documentation for the Rogue Army gaming community website.
 - [Typography](./design-system/TYPOGRAPHY.md) - Font families, hierarchy
 - [Animations](./design-system/ANIMATIONS.md) - Keyframes, Motion patterns
 - [Utilities](./design-system/UTILITIES.md) - Custom Tailwind classes
+- [Layout](./design-system/LAYOUT.md) - Breakpoints, spacing, containers
 
 ### Components
 - [Overview](./components/OVERVIEW.md) - Component organization
