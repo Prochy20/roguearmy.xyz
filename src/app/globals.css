@@ -371,6 +371,12 @@
       0 0 40px var(--color-glow-cyan);
   }
 
+  .glow-magenta {
+    box-shadow:
+      0 0 20px var(--color-glow-magenta),
+      0 0 40px var(--color-glow-magenta);
+  }
+
   /* Gradient Text */
   .text-gradient-rga {
     @apply bg-gradient-to-r from-rga-green via-rga-cyan to-rga-magenta bg-clip-text text-transparent;

@@ -66,6 +66,15 @@ Usage:
 }
 ```
 
+### `.glow-magenta`
+```css
+.glow-magenta {
+  box-shadow:
+    0 0 20px var(--color-glow-magenta),
+    0 0 40px var(--color-glow-magenta);
+}
+```
+
 ## Chromatic Aberration
 
 ### `.text-chromatic`
