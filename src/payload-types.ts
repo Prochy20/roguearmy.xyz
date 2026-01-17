@@ -70,6 +70,7 @@ export interface Config {
     users: User;
     media: Media;
     games: Game;
+    members: Member;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -80,6 +81,7 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     games: GamesSelect<false> | GamesSelect<true>;
+    members: MembersSelect<false> | MembersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -183,6 +185,74 @@ export interface Game {
   createdAt: string;
 }
 /**
+ * Discord members who have authenticated via OAuth
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "members".
+ */
+export interface Member {
+  id: string;
+  /**
+   * Discord user ID
+   */
+  discordId: string;
+  /**
+   * Discord username
+   */
+  username: string;
+  /**
+   * Discord display name
+   */
+  globalName?: string | null;
+  /**
+   * Discord avatar hash
+   */
+  avatar?: string | null;
+  /**
+   * Discord email (if provided)
+   */
+  email?: string | null;
+  /**
+   * Guild membership information
+   */
+  guildMember?: {
+    /**
+     * Server nickname
+     */
+    nickname?: string | null;
+    /**
+     * Array of Discord role IDs
+     */
+    roles?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+    /**
+     * When they joined the Discord server
+     */
+    joinedDiscordAt?: string | null;
+  };
+  /**
+   * First login to this site
+   */
+  joinedAt: string;
+  /**
+   * Most recent login
+   */
+  lastLogin: string;
+  /**
+   * Set to Banned to revoke access
+   */
+  status: 'active' | 'banned';
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -217,6 +287,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'games';
         value: string | Game;
+      } | null)
+    | ({
+        relationTo: 'members';
+        value: string | Member;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -310,6 +384,29 @@ export interface GamesSelect<T extends boolean = true> {
   description?: T;
   color?: T;
   featured?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "members_select".
+ */
+export interface MembersSelect<T extends boolean = true> {
+  discordId?: T;
+  username?: T;
+  globalName?: T;
+  avatar?: T;
+  email?: T;
+  guildMember?:
+    | T
+    | {
+        nickname?: T;
+        roles?: T;
+        joinedDiscordAt?: T;
+      };
+  joinedAt?: T;
+  lastLogin?: T;
+  status?: T;
   updatedAt?: T;
   createdAt?: T;
 }
