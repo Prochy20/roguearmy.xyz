@@ -4,6 +4,7 @@ import Script from 'next/script'
 import { Analytics } from '@vercel/analytics/react'
 import '@/app/globals.css'
 import { ScanlineOverlay } from '@/components/effects'
+import { AuthProvider } from '@/components/auth'
 
 const siteUrl = 'https://roguearmy.xyz'
 
@@ -101,7 +102,7 @@ export default async function FrontendLayout(props: { children: React.ReactNode 
   const { children } = props
 
   return (
-    <>
+    <AuthProvider>
       <Script
         id="json-ld"
         type="application/ld+json"
@@ -112,6 +113,6 @@ export default async function FrontendLayout(props: { children: React.ReactNode 
       <ScanlineOverlay intensity="low" />
       <main>{children}</main>
       <Analytics />
-    </>
+    </AuthProvider>
   )
 }
