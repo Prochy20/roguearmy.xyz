@@ -9,6 +9,10 @@ import { Users } from './collections/Users'
 import { Media } from './collections/Media'
 import { Games } from './collections/Games'
 import { Members } from './collections/Members'
+import { Topics } from './collections/Topics'
+import { Tags } from './collections/Tags'
+import { Series } from './collections/Series'
+import { Articles } from './collections/Articles'
 import { Homepage } from './globals/Homepage'
 
 const filename = fileURLToPath(import.meta.url)
@@ -28,7 +32,8 @@ export default buildConfig({
   // CORS configuration - add your production domains here
   cors: [process.env.NEXT_PUBLIC_SERVER_URL || ''].filter(Boolean),
 
-  collections: [Users, Media, Games, Members],
+  // Order determines admin menu group ordering: Content, Taxonomies, Assets, Users
+  collections: [Articles, Series, Games, Topics, Tags, Media, Users, Members],
   globals: [Homepage],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
