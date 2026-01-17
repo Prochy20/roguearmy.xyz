@@ -23,6 +23,12 @@ export interface ArticleImage {
   alt: string
 }
 
+export interface ArticleSeries {
+  name: string // "Getting Started with PoE 2"
+  slug: string // "poe2-getting-started"
+  order: number // 1, 2, 3...
+}
+
 export interface Article {
   id: string
   slug: string
@@ -34,6 +40,7 @@ export interface Article {
   tags: ArticleTag[]
   publishedAt: Date
   readingTime: number
+  series?: ArticleSeries // Optional series info
 }
 
 export interface FilterState {
@@ -116,6 +123,11 @@ The key to this build is maintaining distance. Use your mobility skills to kite 
     ],
     publishedAt: new Date('2026-01-15'),
     readingTime: 8,
+    series: {
+      name: 'PoE 2 Build Mastery',
+      slug: 'poe2-build-mastery',
+      order: 2,
+    },
   },
   {
     id: '2',
@@ -205,6 +217,11 @@ Look for:
     ],
     publishedAt: new Date('2026-01-12'),
     readingTime: 6,
+    series: {
+      name: 'PoE 2 Build Mastery',
+      slug: 'poe2-build-mastery',
+      order: 1,
+    },
   },
   {
     id: '4',
@@ -347,6 +364,11 @@ The best way to learn is from others. Join our Discord!
     ],
     publishedAt: new Date('2026-01-05'),
     readingTime: 5,
+    series: {
+      name: 'PoE 2 Build Mastery',
+      slug: 'poe2-build-mastery',
+      order: 3,
+    },
   },
 ]
 
@@ -452,4 +474,50 @@ export function formatArticleDate(date: Date): string {
  */
 export function getArticleBySlug(slug: string): Article | undefined {
   return MOCK_ARTICLES.find((article) => article.slug === slug)
+}
+
+// ============================================================================
+// SERIES FUNCTIONS
+// ============================================================================
+
+export interface SeriesNavigation {
+  seriesName: string
+  seriesSlug: string
+  currentOrder: number
+  totalParts: number
+  previous: Article | null
+  next: Article | null
+}
+
+/**
+ * Get all articles in a series, sorted by order
+ */
+export function getArticlesBySeries(seriesSlug: string): Article[] {
+  return MOCK_ARTICLES.filter((article) => article.series?.slug === seriesSlug).sort(
+    (a, b) => (a.series?.order ?? 0) - (b.series?.order ?? 0)
+  )
+}
+
+/**
+ * Get series navigation for an article (prev/next articles in series)
+ * Returns null if the article is not part of a series
+ */
+export function getSeriesNavigation(article: Article): SeriesNavigation | null {
+  if (!article.series) return null
+
+  const seriesArticles = getArticlesBySeries(article.series.slug)
+
+  if (seriesArticles.length < 2) return null
+
+  const currentIndex = seriesArticles.findIndex((a) => a.id === article.id)
+  if (currentIndex === -1) return null
+
+  return {
+    seriesName: article.series.name,
+    seriesSlug: article.series.slug,
+    currentOrder: article.series.order,
+    totalParts: seriesArticles.length,
+    previous: currentIndex > 0 ? seriesArticles[currentIndex - 1] : null,
+    next: currentIndex < seriesArticles.length - 1 ? seriesArticles[currentIndex + 1] : null,
+  }
 }
