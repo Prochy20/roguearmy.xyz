@@ -8,6 +8,7 @@ import sharp from 'sharp'
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
 import { Games } from './collections/Games'
+import { Members } from './collections/Members'
 import { Homepage } from './globals/Homepage'
 
 const filename = fileURLToPath(import.meta.url)
@@ -27,7 +28,7 @@ export default buildConfig({
   // CORS configuration - add your production domains here
   cors: [process.env.NEXT_PUBLIC_SERVER_URL || ''].filter(Boolean),
 
-  collections: [Users, Media, Games],
+  collections: [Users, Media, Games, Members],
   globals: [Homepage],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
