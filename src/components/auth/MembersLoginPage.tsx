@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { motion } from 'motion/react'
+import Image from 'next/image'
 import { DiscordIcon } from '@/components/shared/DiscordIcon'
 import { TerminalWindow } from './TerminalWindow'
 import { AsciiArt } from './AsciiArt'
@@ -28,6 +29,19 @@ export function MembersLoginPage() {
           backgroundSize: '40px 40px',
         }}
       />
+
+      {/* Logo watermark - subtle ghostly presence */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <div className="relative w-[600px] h-[600px] opacity-[0.08]">
+          <Image
+            src="/logo.png"
+            alt=""
+            fill
+            className="object-contain drop-shadow-[0_0_100px_rgba(0,255,65,0.3)]"
+            aria-hidden="true"
+          />
+        </div>
+      </div>
 
       {/* Radial vignette */}
       <div
