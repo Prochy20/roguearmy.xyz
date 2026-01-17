@@ -188,7 +188,7 @@ export function MembersLoginPage() {
                   <span className="inline-block w-1.5 h-3 bg-rga-green animate-blink" />
                 </div>
                 <a
-                  href="https://discord.gg/roguearmy"
+                  href="https://dc.roguearmy.xyz"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="font-mono text-xs text-text-muted hover:text-rga-cyan transition-colors group"
