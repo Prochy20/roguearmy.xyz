@@ -5,6 +5,7 @@ export const Games: CollectionConfig = {
   admin: {
     useAsTitle: 'name',
     defaultColumns: ['name', 'color', 'featured'],
+    group: 'Taxonomies',
   },
   access: {
     read: () => true,
