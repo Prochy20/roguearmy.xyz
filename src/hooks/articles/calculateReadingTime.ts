@@ -29,8 +29,21 @@ function extractTextFromLexical(node: unknown): string {
 /**
  * Calculates reading time based on content length.
  * Uses approximately 200 words per minute as reading speed.
+ *
+ * For wiki-linked articles (contentSource === 'wiki'), returns null
+ * as the reading time will be calculated on the frontend from the
+ * fetched wiki content.
  */
 export const calculateReadingTime: CollectionAfterReadHook = async ({ doc }) => {
+  // Skip calculation for wiki-linked articles
+  // Frontend will calculate from fetched wiki content
+  if (doc?.contentSource === 'wiki') {
+    return {
+      ...doc,
+      readingTime: null,
+    }
+  }
+
   if (!doc?.content) {
     return {
       ...doc,

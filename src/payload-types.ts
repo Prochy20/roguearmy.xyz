@@ -138,51 +138,54 @@ export interface UserAuthOperations {
  */
 export interface Article {
   id: string;
-  title: string;
-  /**
-   * Auto-generated from title. Used in URLs.
-   */
   slug: string;
+  publishedAt?: string | null;
+  readingTime?: number | null;
+  title: string;
   /**
    * Short excerpt/description shown in article listings
    */
   perex: string;
-  content: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  };
   heroImage: string | Media;
-  /**
-   * Optional: Link to specific games this article is about
-   */
-  games?: (string | Game)[] | null;
-  /**
-   * Primary content type (Guide, Build, News, etc.)
-   */
-  topic: string | Topic;
-  /**
-   * Optional: Additional tags for discovery
-   */
-  tags?: (string | Tag)[] | null;
-  /**
-   * Automatically set when first published
-   */
-  publishedAt?: string | null;
-  /**
-   * Auto-calculated reading time in minutes (virtual field)
-   */
-  readingTime?: number | null;
+  categorization: {
+    /**
+     * Primary content type (Guide, Build, News, etc.)
+     */
+    topic: string | Topic;
+    /**
+     * Optional: Link to specific games this article is about
+     */
+    games?: (string | Game)[] | null;
+    /**
+     * Optional: Additional tags for discovery
+     */
+    tags?: (string | Tag)[] | null;
+  };
+  articleContent?: {
+    /**
+     * Choose where the article content comes from
+     */
+    contentSource?: ('payload' | 'wiki') | null;
+    content?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    /**
+     * Select a published document from the Outline wiki
+     */
+    outlineDocumentId?: string | null;
+  };
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -208,6 +211,21 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "topics".
+ */
+export interface Topic {
+  id: string;
+  name: string;
+  /**
+   * Auto-generated from name. Used in URLs.
+   */
+  slug: string;
+  color: 'orange' | 'blue' | 'yellow' | 'teal' | 'green' | 'purple' | 'red' | 'pink';
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "games".
  */
 export interface Game {
@@ -220,21 +238,6 @@ export interface Game {
    * Shows "Main Game" badge and larger display
    */
   featured?: boolean | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "topics".
- */
-export interface Topic {
-  id: string;
-  name: string;
-  /**
-   * Auto-generated from name. Used in URLs.
-   */
-  slug: string;
-  color: 'orange' | 'blue' | 'yellow' | 'teal' | 'green' | 'purple' | 'red' | 'pink';
   updatedAt: string;
   createdAt: string;
 }
@@ -469,16 +472,26 @@ export interface PayloadMigration {
  * via the `definition` "articles_select".
  */
 export interface ArticlesSelect<T extends boolean = true> {
-  title?: T;
   slug?: T;
-  perex?: T;
-  content?: T;
-  heroImage?: T;
-  games?: T;
-  topic?: T;
-  tags?: T;
   publishedAt?: T;
   readingTime?: T;
+  title?: T;
+  perex?: T;
+  heroImage?: T;
+  categorization?:
+    | T
+    | {
+        topic?: T;
+        games?: T;
+        tags?: T;
+      };
+  articleContent?:
+    | T
+    | {
+        contentSource?: T;
+        content?: T;
+        outlineDocumentId?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
