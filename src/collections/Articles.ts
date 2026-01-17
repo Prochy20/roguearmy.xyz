@@ -6,7 +6,7 @@ export const Articles: CollectionConfig = {
   slug: 'articles',
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'topic', 'games', '_status', 'publishedAt'],
+    defaultColumns: ['title', 'categorization.topic', 'articleContent.contentSource', 'categorization.games', '_status'],
     group: 'Content',
     listSearchableFields: ['title', 'slug', 'perex'],
   },
@@ -22,11 +22,7 @@ export const Articles: CollectionConfig = {
     afterRead: [calculateReadingTime],
   },
   fields: [
-    {
-      name: 'title',
-      type: 'text',
-      required: true,
-    },
+    // Hidden fields (still functional, just not visible)
     {
       name: 'slug',
       type: 'text',
@@ -34,7 +30,7 @@ export const Articles: CollectionConfig = {
       unique: true,
       index: true,
       admin: {
-        description: 'Auto-generated from title. Used in URLs.',
+        hidden: true,
       },
       hooks: {
         beforeValidate: [
@@ -52,6 +48,27 @@ export const Articles: CollectionConfig = {
       },
     },
     {
+      name: 'publishedAt',
+      type: 'date',
+      admin: {
+        hidden: true,
+      },
+    },
+    {
+      name: 'readingTime',
+      type: 'number',
+      admin: {
+        hidden: true,
+      },
+    },
+
+    // Basic Info
+    {
+      name: 'title',
+      type: 'text',
+      required: true,
+    },
+    {
       name: 'perex',
       type: 'textarea',
       required: true,
@@ -60,60 +77,106 @@ export const Articles: CollectionConfig = {
       },
     },
     {
-      name: 'content',
-      type: 'richText',
-      required: true,
-    },
-    {
       name: 'heroImage',
       type: 'upload',
       relationTo: 'media',
       required: true,
     },
+
+    // Categorization
     {
-      name: 'games',
-      type: 'relationship',
-      relationTo: 'games',
-      hasMany: true,
-      admin: {
-        description: 'Optional: Link to specific games this article is about',
-      },
-    },
-    {
-      name: 'topic',
-      type: 'relationship',
-      relationTo: 'topics',
-      required: true,
-      admin: {
-        description: 'Primary content type (Guide, Build, News, etc.)',
-      },
-    },
-    {
-      name: 'tags',
-      type: 'relationship',
-      relationTo: 'tags',
-      hasMany: true,
-      admin: {
-        description: 'Optional: Additional tags for discovery',
-      },
-    },
-    {
-      name: 'publishedAt',
-      type: 'date',
-      admin: {
-        description: 'Automatically set when first published',
-        date: {
-          pickerAppearance: 'dayAndTime',
+      name: 'categorization',
+      type: 'group',
+      fields: [
+        {
+          name: 'topic',
+          type: 'relationship',
+          relationTo: 'topics',
+          required: true,
+          admin: {
+            description: 'Primary content type (Guide, Build, News, etc.)',
+          },
         },
-      },
+        {
+          name: 'games',
+          type: 'relationship',
+          relationTo: 'games',
+          hasMany: true,
+          admin: {
+            description: 'Optional: Link to specific games this article is about',
+          },
+        },
+        {
+          name: 'tags',
+          type: 'relationship',
+          relationTo: 'tags',
+          hasMany: true,
+          admin: {
+            description: 'Optional: Additional tags for discovery',
+          },
+        },
+      ],
     },
+
+    // Article Content
     {
-      name: 'readingTime',
-      type: 'number',
-      admin: {
-        readOnly: true,
-        description: 'Auto-calculated reading time in minutes (virtual field)',
-      },
+      name: 'articleContent',
+      type: 'group',
+      fields: [
+        {
+          name: 'contentSource',
+          type: 'radio',
+          defaultValue: 'payload',
+          options: [
+            {
+              label: 'Payload Content',
+              value: 'payload',
+            },
+            {
+              label: 'Wiki Link',
+              value: 'wiki',
+            },
+          ],
+          admin: {
+            description: 'Choose where the article content comes from',
+            layout: 'horizontal',
+          },
+        },
+        {
+          name: 'content',
+          type: 'richText',
+          required: true,
+          admin: {
+            condition: (_, siblingData) => siblingData?.contentSource !== 'wiki',
+          },
+          validate: (value, { siblingData }) => {
+            if (siblingData?.contentSource !== 'wiki' && !value) {
+              return 'Content is required for Payload articles'
+            }
+            return true
+          },
+        },
+        {
+          name: 'outlineDocumentId',
+          type: 'text',
+          admin: {
+            condition: (_, siblingData) => siblingData?.contentSource === 'wiki',
+            description: 'Select a published document from the Outline wiki',
+            components: {
+              Field: '@/components/admin/OutlineDocumentSelector',
+            },
+          },
+          validate: (
+            value: string | null | undefined,
+            { siblingData }: { siblingData: Record<string, unknown> },
+          ) => {
+            if (siblingData?.contentSource === 'wiki' && !value) {
+              return 'Wiki document is required for Wiki Link articles'
+            }
+            return true
+          },
+        },
+      ],
     },
   ],
 }

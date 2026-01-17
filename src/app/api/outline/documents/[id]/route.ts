@@ -1,0 +1,69 @@
+import { NextResponse } from 'next/server'
+import { getPayload } from 'payload'
+import config from '@payload-config'
+import { getSessionCookie, verifyMemberToken } from '@/lib/auth'
+import { getDocumentContent } from '@/lib/outline'
+
+interface RouteParams {
+  params: Promise<{ id: string }>
+}
+
+/**
+ * GET /api/outline/documents/[id]
+ * Fetches document content from Outline wiki by ID.
+ * Protected - requires authenticated member.
+ */
+export async function GET(request: Request, { params }: RouteParams) {
+  try {
+    const { id } = await params
+
+    if (!id) {
+      return NextResponse.json({ error: 'Document ID required' }, { status: 400 })
+    }
+
+    // Check member authentication
+    const token = await getSessionCookie()
+
+    if (!token) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const session = await verifyMemberToken(token)
+
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Verify member is still active
+    const payload = await getPayload({ config })
+    const member = await payload.findByID({
+      collection: 'members',
+      id: session.memberId,
+    })
+
+    if (!member || member.status === 'banned') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Fetch document content from Outline
+    const document = await getDocumentContent(id)
+
+    return NextResponse.json({
+      id: document.id,
+      title: document.title,
+      content: document.text,
+      updatedAt: document.updatedAt,
+    }, {
+      headers: {
+        // Cache for 5 minutes, stale-while-revalidate for 1 hour
+        'Cache-Control': 'private, max-age=300, stale-while-revalidate=3600',
+      },
+    })
+  } catch (error) {
+    console.error('Error fetching Outline document:', error)
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : 'Failed to fetch document' },
+      { status: 500 },
+    )
+  }
+}
