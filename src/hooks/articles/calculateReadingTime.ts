@@ -37,21 +37,21 @@ function extractTextFromLexical(node: unknown): string {
 export const calculateReadingTime: CollectionAfterReadHook = async ({ doc }) => {
   // Skip calculation for wiki-linked articles
   // Frontend will calculate from fetched wiki content
-  if (doc?.contentSource === 'wiki') {
+  if (doc?.articleContent?.contentSource === 'wiki') {
     return {
       ...doc,
       readingTime: null,
     }
   }
 
-  if (!doc?.content) {
+  if (!doc?.articleContent?.content) {
     return {
       ...doc,
       readingTime: 1, // Minimum 1 minute
     }
   }
 
-  const text = extractTextFromLexical(doc.content)
+  const text = extractTextFromLexical(doc.articleContent.content)
   const wordCount = text.trim().split(/\s+/).filter(Boolean).length
 
   // Calculate reading time at 200 words per minute, minimum 1 minute
