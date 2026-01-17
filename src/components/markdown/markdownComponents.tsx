@@ -1,5 +1,6 @@
 import type { Components } from 'react-markdown'
 import { CodeBlock } from './CodeBlock'
+import { Callout } from './Callout'
 
 /**
  * Custom React components for markdown elements with cyberpunk theme styling.
@@ -294,4 +295,24 @@ export const markdownComponents: Partial<Components> = {
   del: ({ children }) => (
     <del className="text-rga-gray/60 line-through decoration-rga-gray/40">{children}</del>
   ),
+
+  // Callouts/Admonitions (:::info, :::warning, etc.)
+  aside: ({ children, ...props }) => {
+    const calloutType = (props as { 'data-callout'?: string })['data-callout']
+    const customTitle = (props as { 'data-title'?: string })['data-title']
+
+    if (calloutType) {
+      return (
+        <Callout
+          type={calloutType as 'info' | 'warning' | 'tip' | 'success' | 'danger' | 'error' | 'note'}
+          title={customTitle}
+        >
+          {children}
+        </Callout>
+      )
+    }
+
+    // Fallback for regular aside elements
+    return <aside {...props}>{children}</aside>
+  },
 }
