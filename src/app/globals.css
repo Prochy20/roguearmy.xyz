@@ -87,6 +87,7 @@
   --color-rga-green: #00FF41;
   --color-rga-cyan: #00FFFF;
   --color-rga-magenta: #FF00FF;
+  --color-rga-gray: #888888;
 
   /* ─────────────────────────────────────────────────────────────────────────
      BACKGROUND COLORS
@@ -244,6 +245,18 @@
     }
     100% {
       transform: translateX(-50%);
+    }
+  }
+
+  /* Scan Line (vertical sweep for buttons/elements) */
+  --animate-scan: scan 2s ease-in-out infinite;
+
+  @keyframes scan {
+    0%, 100% {
+      top: 0;
+    }
+    50% {
+      top: 100%;
     }
   }
 }
