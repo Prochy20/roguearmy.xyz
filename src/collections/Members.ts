@@ -2,10 +2,15 @@ import type { CollectionConfig } from 'payload'
 
 export const Members: CollectionConfig = {
   slug: 'members',
+  labels: {
+    singular: 'Community Member',
+    plural: 'Community Members',
+  },
   admin: {
     useAsTitle: 'username',
+    group: 'Users',
     description: 'Discord members who have authenticated via OAuth',
-    defaultColumns: ['username', 'discordId', 'status', 'lastLogin'],
+    defaultColumns: ['avatar', 'username', 'status', 'lastLogin'],
   },
   access: {
     read: () => true,
@@ -33,6 +38,9 @@ export const Members: CollectionConfig = {
       admin: {
         readOnly: true,
         description: 'Discord username',
+        components: {
+          Cell: '@/components/admin/DiscordAvatarCell#UsernameCell',
+        },
       },
     },
     {
@@ -49,6 +57,10 @@ export const Members: CollectionConfig = {
       admin: {
         readOnly: true,
         description: 'Discord avatar hash',
+        components: {
+          Cell: '@/components/admin/DiscordAvatarCell#DiscordAvatarCell',
+          Field: '@/components/admin/DiscordAvatarField#DiscordAvatarField',
+        },
       },
     },
     {
