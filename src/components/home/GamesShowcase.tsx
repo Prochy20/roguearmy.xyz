@@ -129,7 +129,7 @@ export function GamesShowcase({ games }: GamesShowcaseProps) {
                     transform: "skewX(-3deg)",
                   }}
                 >
-                  {game.name}
+                  {game.name.toUpperCase()}
                 </h3>
                 <p className="text-text-muted text-sm md:text-base mt-2 font-mono uppercase tracking-widest">
                   {game.subtitle}
