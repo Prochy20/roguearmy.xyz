@@ -7,14 +7,16 @@ import { cn } from '@/lib/utils'
 import { HeroGlitch } from '@/components/effects'
 import { CyberTag } from '@/components/ui/CyberCorners'
 import {
-  type ArticleCategory,
+  type ArticleTopic,
   type ArticleTag,
+  type ArticleGame,
   type ArticleImage,
+  type TintColor,
   formatArticleDate,
 } from '@/lib/articles'
 
 // Map article tint to CyberTag color
-const tintToColor = (tint: ArticleCategory['tint']) => {
+const tintToColor = (tint: TintColor) => {
   switch (tint) {
     case 'green': return 'green' as const
     case 'cyan': return 'cyan' as const
@@ -28,7 +30,7 @@ const tintToColor = (tint: ArticleCategory['tint']) => {
 interface ArticleHeroProps {
   title: string
   heroImage: ArticleImage
-  category: ArticleCategory
+  topic: ArticleTopic
   tint: {
     border: string
     hoverBorder: string
@@ -39,16 +41,18 @@ interface ArticleHeroProps {
   publishedAt: Date
   readingTime: number
   tags: ArticleTag[]
+  games?: ArticleGame[]
 }
 
 export function ArticleHero({
   title,
   heroImage,
-  category,
+  topic,
   tint,
   publishedAt,
   readingTime,
   tags,
+  games = [],
 }: ArticleHeroProps) {
   return (
     <section className="relative min-h-[85vh] md:min-h-[90vh] flex items-end overflow-hidden">
@@ -91,16 +95,21 @@ export function ArticleHero({
       {/* Content */}
       <div className="relative z-10 w-full px-6 md:px-12 lg:px-20 pb-20 md:pb-32">
         <div className="max-w-5xl">
-          {/* Category badge - animated in */}
+          {/* Topic and Games badges - animated in */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="mb-6"
+            className="mb-6 flex flex-wrap items-center gap-2"
           >
-            <CyberTag color={tintToColor(category.tint)} className={cn('text-sm', tint.text)}>
-              {category.name}
+            <CyberTag color={tintToColor(topic.tint)} className={cn('text-sm', tint.text)}>
+              {topic.name}
             </CyberTag>
+            {games.map((game) => (
+              <CyberTag key={game.id} color="gray" className="text-sm text-rga-gray">
+                {game.name}
+              </CyberTag>
+            ))}
           </motion.div>
 
           {/* Title with HeroGlitch - matching homepage style */}
@@ -134,7 +143,7 @@ export function ArticleHero({
             <div className="flex flex-wrap gap-2">
               {tags.map((tag, index) => (
                 <motion.div
-                  key={tag.slug}
+                  key={tag.id}
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.3, delay: 0.6 + index * 0.1 }}

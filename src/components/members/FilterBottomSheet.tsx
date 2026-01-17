@@ -6,17 +6,16 @@ import { X, Check, RotateCcw } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { GlowButton } from '@/components/shared/GlowButton'
 import {
-  type ArticleCategory,
-  type ArticleTag,
   type FilterState,
-  getCategoryTintClasses,
+  type FilterOptions,
+  type TintColor,
+  getTintClasses,
 } from '@/lib/articles'
 
 interface FilterBottomSheetProps {
   isOpen: boolean
   onClose: () => void
-  categories: ArticleCategory[]
-  tags: ArticleTag[]
+  filterOptions: FilterOptions
   filters: FilterState
   onFilterChange: (filters: FilterState) => void
 }
@@ -24,8 +23,7 @@ interface FilterBottomSheetProps {
 export function FilterBottomSheet({
   isOpen,
   onClose,
-  categories,
-  tags,
+  filterOptions,
   filters,
   onFilterChange,
 }: FilterBottomSheetProps) {
@@ -44,25 +42,32 @@ export function FilterBottomSheet({
     }
   }, [isOpen])
 
-  const handleCategoryToggle = (slug: string) => {
-    const newCategories = filters.categories.includes(slug)
-      ? filters.categories.filter((c) => c !== slug)
-      : [...filters.categories, slug]
-    onFilterChange({ ...filters, categories: newCategories })
+  const handleGameToggle = (id: string) => {
+    const newGames = filters.games.includes(id)
+      ? filters.games.filter((g) => g !== id)
+      : [...filters.games, id]
+    onFilterChange({ ...filters, games: newGames })
   }
 
-  const handleTagToggle = (slug: string) => {
-    const newTags = filters.tags.includes(slug)
-      ? filters.tags.filter((t) => t !== slug)
-      : [...filters.tags, slug]
+  const handleTopicToggle = (id: string) => {
+    const newTopics = filters.topics.includes(id)
+      ? filters.topics.filter((t) => t !== id)
+      : [...filters.topics, id]
+    onFilterChange({ ...filters, topics: newTopics })
+  }
+
+  const handleTagToggle = (id: string) => {
+    const newTags = filters.tags.includes(id)
+      ? filters.tags.filter((t) => t !== id)
+      : [...filters.tags, id]
     onFilterChange({ ...filters, tags: newTags })
   }
 
   const handleReset = () => {
-    onFilterChange({ categories: [], tags: [], search: filters.search })
+    onFilterChange({ games: [], topics: [], tags: [], search: filters.search })
   }
 
-  const activeCount = filters.categories.length + filters.tags.length
+  const activeCount = filters.games.length + filters.topics.length + filters.tags.length
 
   return (
     <AnimatePresence>
@@ -124,48 +129,48 @@ export function FilterBottomSheet({
             {/* Content */}
             <div className="overflow-y-auto max-h-[calc(85vh-140px)] px-4 py-4 space-y-6">
               {/* Games */}
-              <FilterGroup title="Games">
-                {categories
-                  .filter((c) =>
-                    ['path-of-exile', 'path-of-exile-2', 'diablo-4', 'last-epoch'].includes(c.slug)
-                  )
-                  .map((category) => (
+              {filterOptions.games.length > 0 && (
+                <FilterGroup title="Games">
+                  {filterOptions.games.map((game) => (
                     <FilterChip
-                      key={category.slug}
-                      label={category.name}
-                      active={filters.categories.includes(category.slug)}
-                      onClick={() => handleCategoryToggle(category.slug)}
-                      tint={category.tint}
+                      key={game.id}
+                      label={game.name}
+                      active={filters.games.includes(game.id)}
+                      onClick={() => handleGameToggle(game.id)}
+                      tint={game.tint}
                     />
                   ))}
-              </FilterGroup>
+                </FilterGroup>
+              )}
 
               {/* Topics */}
-              <FilterGroup title="Topics">
-                {categories
-                  .filter((c) => ['community', 'general'].includes(c.slug))
-                  .map((category) => (
+              {filterOptions.topics.length > 0 && (
+                <FilterGroup title="Topics">
+                  {filterOptions.topics.map((topic) => (
                     <FilterChip
-                      key={category.slug}
-                      label={category.name}
-                      active={filters.categories.includes(category.slug)}
-                      onClick={() => handleCategoryToggle(category.slug)}
-                      tint={category.tint}
+                      key={topic.id}
+                      label={topic.name}
+                      active={filters.topics.includes(topic.id)}
+                      onClick={() => handleTopicToggle(topic.id)}
+                      tint={topic.tint}
                     />
                   ))}
-              </FilterGroup>
+                </FilterGroup>
+              )}
 
-              {/* Content Type */}
-              <FilterGroup title="Content Type">
-                {tags.map((tag) => (
-                  <FilterChip
-                    key={tag.slug}
-                    label={tag.name}
-                    active={filters.tags.includes(tag.slug)}
-                    onClick={() => handleTagToggle(tag.slug)}
-                  />
-                ))}
-              </FilterGroup>
+              {/* Content Type (Tags) */}
+              {filterOptions.tags.length > 0 && (
+                <FilterGroup title="Content Type">
+                  {filterOptions.tags.map((tag) => (
+                    <FilterChip
+                      key={tag.id}
+                      label={tag.name}
+                      active={filters.tags.includes(tag.id)}
+                      onClick={() => handleTagToggle(tag.id)}
+                    />
+                  ))}
+                </FilterGroup>
+              )}
             </div>
 
             {/* Footer Actions */}
@@ -216,11 +221,11 @@ interface FilterChipProps {
   label: string
   active: boolean
   onClick: () => void
-  tint?: ArticleCategory['tint']
+  tint?: TintColor
 }
 
 function FilterChip({ label, active, onClick, tint }: FilterChipProps) {
-  const tintClasses = tint ? getCategoryTintClasses(tint) : null
+  const tintClasses = tint ? getTintClasses(tint) : null
 
   return (
     <button

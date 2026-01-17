@@ -1,12 +1,11 @@
 import { notFound } from 'next/navigation'
 import { ArrowLeft } from 'lucide-react'
+import { getTintClasses, formatArticleDate } from '@/lib/articles'
 import {
   getArticleBySlug,
-  getCategoryTintClasses,
-  formatArticleDate,
   getSeriesNavigation,
-  MOCK_ARTICLES,
-} from '@/lib/articles'
+  getAllArticleSlugs,
+} from '@/lib/articles.server'
 import { CyberButton } from '@/components/members/CyberButton'
 import { cn } from '@/lib/utils'
 import { ArticleHero } from './ArticleHero'
@@ -21,21 +20,20 @@ interface ArticlePageProps {
 }
 
 export async function generateStaticParams() {
-  return MOCK_ARTICLES.map((article) => ({
-    slug: article.slug,
-  }))
+  const slugs = await getAllArticleSlugs()
+  return slugs.map((slug) => ({ slug }))
 }
 
 export default async function ArticlePage({ params }: ArticlePageProps) {
   const { slug } = await params
-  const article = getArticleBySlug(slug)
+  const article = await getArticleBySlug(slug)
 
   if (!article) {
     notFound()
   }
 
-  const tint = getCategoryTintClasses(article.category.tint)
-  const seriesNavigation = getSeriesNavigation(article)
+  const tint = getTintClasses(article.topic.tint)
+  const seriesNavigation = await getSeriesNavigation(article.id)
 
   return (
     <div className="min-h-screen bg-void relative overflow-hidden">
@@ -61,11 +59,12 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
       <ArticleHero
         title={article.title}
         heroImage={article.heroImage}
-        category={article.category}
+        topic={article.topic}
         tint={tint}
         publishedAt={article.publishedAt}
         readingTime={article.readingTime}
         tags={article.tags}
+        games={article.games}
       />
 
       {/* Content Section */}
@@ -109,7 +108,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 
             {/* Main content */}
             <article className="py-12 lg:py-16">
-              <ArticleContent content={article.content} />
+              <ArticleContent contentSource={article.contentSource} />
 
               {/* Series navigation - only show if article is part of a series */}
               {seriesNavigation && (
@@ -154,12 +153,26 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
                   </div>
                   <div>
                     <span className="text-rga-gray/40 uppercase tracking-wider text-xs">
-                      Category
+                      Topic
                     </span>
                     <p className={cn('mt-1', tint.text)}>
-                      {article.category.name}
+                      {article.topic.name}
                     </p>
                   </div>
+                  {article.games.length > 0 && (
+                    <div>
+                      <span className="text-rga-gray/40 uppercase tracking-wider text-xs">
+                        Games
+                      </span>
+                      <div className="mt-1 space-y-1">
+                        {article.games.map((game) => (
+                          <p key={game.id} className="text-rga-gray">
+                            {game.name}
+                          </p>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Decorative element */}

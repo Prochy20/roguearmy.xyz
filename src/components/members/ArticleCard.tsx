@@ -9,13 +9,13 @@ import { HoverGlitch } from '@/components/effects/HoverGlitch'
 import { CyberCorners, CyberTag } from '@/components/ui/CyberCorners'
 import {
   type Article,
-  type ArticleCategory,
-  getCategoryTintClasses,
+  type TintColor,
+  getTintClasses,
   formatArticleDate,
 } from '@/lib/articles'
 
 // Map article tint to CyberCorners color
-const tintToColor = (tint: ArticleCategory['tint']) => {
+const tintToColor = (tint: TintColor) => {
   switch (tint) {
     case 'green': return 'green' as const
     case 'cyan': return 'cyan' as const
@@ -32,8 +32,8 @@ interface ArticleCardProps {
 }
 
 export function ArticleCard({ article, index = 0 }: ArticleCardProps) {
-  const tint = getCategoryTintClasses(article.category.tint)
-  const cornerColor = tintToColor(article.category.tint)
+  const tint = getTintClasses(article.topic.tint)
+  const cornerColor = tintToColor(article.topic.tint)
 
   return (
     <motion.article
@@ -71,11 +71,17 @@ export function ArticleCard({ article, index = 0 }: ArticleCardProps) {
               {/* Scanline effect on hover */}
               <div className="absolute inset-0 bg-[repeating-linear-gradient(0deg,transparent,transparent_2px,rgba(0,255,65,0.03)_2px,rgba(0,255,65,0.03)_4px)] opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
-              {/* Category Badge */}
-              <div className="absolute bottom-4 left-4">
+              {/* Topic Badge */}
+              <div className="absolute bottom-4 left-4 flex items-center gap-2">
                 <CyberTag color={cornerColor} className={tint.text}>
-                  {article.category.name}
+                  {article.topic.name}
                 </CyberTag>
+                {/* Show first game if available */}
+                {article.games.length > 0 && (
+                  <CyberTag color="gray" className="text-rga-gray/80">
+                    {article.games[0].name}
+                  </CyberTag>
+                )}
               </div>
             </div>
 
@@ -115,7 +121,7 @@ export function ArticleCard({ article, index = 0 }: ArticleCardProps) {
                 {/* Tags */}
                 <div className="flex flex-wrap gap-2">
                   {article.tags.slice(0, 2).map((tag) => (
-                    <CyberTag key={tag.slug} color="gray" className="text-rga-gray/80">
+                    <CyberTag key={tag.id} color="gray" className="text-rga-gray/80">
                       {tag.name}
                     </CyberTag>
                   ))}

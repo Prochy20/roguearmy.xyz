@@ -6,12 +6,7 @@ import { ArticleFeed } from './ArticleFeed'
 import { ArticleFilterSidebar } from './ArticleFilterSidebar'
 import { FilterBottomSheet } from './FilterBottomSheet'
 import { HeroGlitch } from '@/components/effects'
-import {
-  type Article,
-  type FilterState,
-  CATEGORIES,
-  TAGS,
-} from '@/lib/articles'
+import { type Article, type FilterState, type FilterOptions } from '@/lib/articles'
 
 interface MemberInfo {
   discordId: string
@@ -23,14 +18,17 @@ interface MemberInfo {
 interface MembersArticlesPageProps {
   member: MemberInfo
   articles: Article[]
+  filterOptions: FilterOptions
 }
 
 export function MembersArticlesPage({
   member,
   articles,
+  filterOptions,
 }: MembersArticlesPageProps) {
   const [filters, setFilters] = useState<FilterState>({
-    categories: [],
+    games: [],
+    topics: [],
     tags: [],
     search: '',
   })
@@ -41,7 +39,7 @@ export function MembersArticlesPage({
   }
 
   const handleClearFilters = () => {
-    setFilters({ categories: [], tags: [], search: '' })
+    setFilters({ games: [], topics: [], tags: [], search: '' })
   }
 
   return (
@@ -79,8 +77,7 @@ export function MembersArticlesPage({
         <div className="flex gap-8">
           {/* Sidebar - Desktop only */}
           <ArticleFilterSidebar
-            categories={CATEGORIES}
-            tags={TAGS}
+            filterOptions={filterOptions}
             filters={filters}
             onFilterChange={setFilters}
           />
@@ -100,8 +97,7 @@ export function MembersArticlesPage({
       <FilterBottomSheet
         isOpen={isFilterSheetOpen}
         onClose={() => setIsFilterSheetOpen(false)}
-        categories={CATEGORIES}
-        tags={TAGS}
+        filterOptions={filterOptions}
         filters={filters}
         onFilterChange={setFilters}
       />

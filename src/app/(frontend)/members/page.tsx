@@ -4,7 +4,7 @@ import config from '@payload-config'
 import { verifyMemberToken } from '@/lib/auth/jwt'
 import { MEMBER_SESSION_COOKIE } from '@/lib/auth/cookies'
 import { MembersArticlesPage } from '@/components/members'
-import { MOCK_ARTICLES } from '@/lib/articles'
+import { getPublishedArticles, getFilterOptions } from '@/lib/articles.server'
 
 async function getMember() {
   const cookieStore = await cookies()
@@ -29,6 +29,12 @@ export default async function MembersDashboard() {
     return null // Layout handles auth
   }
 
+  // Fetch articles and filter options from Payload
+  const [articles, filterOptions] = await Promise.all([
+    getPublishedArticles(),
+    getFilterOptions(),
+  ])
+
   return (
     <MembersArticlesPage
       member={{
@@ -37,7 +43,8 @@ export default async function MembersDashboard() {
         username: member.username,
         globalName: member.globalName ?? null,
       }}
-      articles={MOCK_ARTICLES}
+      articles={articles}
+      filterOptions={filterOptions}
     />
   )
 }

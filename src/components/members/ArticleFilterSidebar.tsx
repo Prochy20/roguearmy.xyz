@@ -5,44 +5,49 @@ import { motion, AnimatePresence } from 'motion/react'
 import { ChevronDown, X, Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import {
-  type ArticleCategory,
-  type ArticleTag,
   type FilterState,
-  getCategoryTintClasses,
+  type FilterOptions,
+  type TintColor,
+  getTintClasses,
 } from '@/lib/articles'
 
 interface ArticleFilterSidebarProps {
-  categories: ArticleCategory[]
-  tags: ArticleTag[]
+  filterOptions: FilterOptions
   filters: FilterState
   onFilterChange: (filters: FilterState) => void
 }
 
 export function ArticleFilterSidebar({
-  categories,
-  tags,
+  filterOptions,
   filters,
   onFilterChange,
 }: ArticleFilterSidebarProps) {
   const activeFilterCount =
-    filters.categories.length + filters.tags.length + (filters.search ? 1 : 0)
+    filters.games.length + filters.topics.length + filters.tags.length + (filters.search ? 1 : 0)
 
-  const handleCategoryToggle = (slug: string) => {
-    const newCategories = filters.categories.includes(slug)
-      ? filters.categories.filter((c) => c !== slug)
-      : [...filters.categories, slug]
-    onFilterChange({ ...filters, categories: newCategories })
+  const handleGameToggle = (id: string) => {
+    const newGames = filters.games.includes(id)
+      ? filters.games.filter((g) => g !== id)
+      : [...filters.games, id]
+    onFilterChange({ ...filters, games: newGames })
   }
 
-  const handleTagToggle = (slug: string) => {
-    const newTags = filters.tags.includes(slug)
-      ? filters.tags.filter((t) => t !== slug)
-      : [...filters.tags, slug]
+  const handleTopicToggle = (id: string) => {
+    const newTopics = filters.topics.includes(id)
+      ? filters.topics.filter((t) => t !== id)
+      : [...filters.topics, id]
+    onFilterChange({ ...filters, topics: newTopics })
+  }
+
+  const handleTagToggle = (id: string) => {
+    const newTags = filters.tags.includes(id)
+      ? filters.tags.filter((t) => t !== id)
+      : [...filters.tags, id]
     onFilterChange({ ...filters, tags: newTags })
   }
 
   const handleClearAll = () => {
-    onFilterChange({ categories: [], tags: [], search: '' })
+    onFilterChange({ games: [], topics: [], tags: [], search: '' })
   }
 
   return (
@@ -62,57 +67,55 @@ export function ArticleFilterSidebar({
           )}
         </div>
 
-        {/* Games Category Section */}
-        <FilterSection title="Games" defaultOpen>
-          <div className="space-y-2">
-            {categories
-              .filter((c) =>
-                ['path-of-exile', 'path-of-exile-2', 'diablo-4', 'last-epoch'].includes(c.slug)
-              )
-              .map((category) => (
+        {/* Games Section */}
+        {filterOptions.games.length > 0 && (
+          <FilterSection title="Games" defaultOpen>
+            <div className="space-y-2">
+              {filterOptions.games.map((game) => (
                 <FilterCheckbox
-                  key={category.slug}
-                  label={category.name}
-                  checked={filters.categories.includes(category.slug)}
-                  onChange={() => handleCategoryToggle(category.slug)}
-                  tint={category.tint}
+                  key={game.id}
+                  label={game.name}
+                  checked={filters.games.includes(game.id)}
+                  onChange={() => handleGameToggle(game.id)}
+                  tint={game.tint}
                 />
               ))}
-          </div>
-        </FilterSection>
+            </div>
+          </FilterSection>
+        )}
 
-        {/* General Category Section */}
-        <FilterSection title="Topics" defaultOpen>
-          <div className="space-y-2">
-            {categories
-              .filter((c) =>
-                ['community', 'general'].includes(c.slug)
-              )
-              .map((category) => (
+        {/* Topics Section */}
+        {filterOptions.topics.length > 0 && (
+          <FilterSection title="Topics" defaultOpen>
+            <div className="space-y-2">
+              {filterOptions.topics.map((topic) => (
                 <FilterCheckbox
-                  key={category.slug}
-                  label={category.name}
-                  checked={filters.categories.includes(category.slug)}
-                  onChange={() => handleCategoryToggle(category.slug)}
-                  tint={category.tint}
+                  key={topic.id}
+                  label={topic.name}
+                  checked={filters.topics.includes(topic.id)}
+                  onChange={() => handleTopicToggle(topic.id)}
+                  tint={topic.tint}
                 />
               ))}
-          </div>
-        </FilterSection>
+            </div>
+          </FilterSection>
+        )}
 
-        {/* Content Type Tags */}
-        <FilterSection title="Content Type" defaultOpen>
-          <div className="space-y-2">
-            {tags.map((tag) => (
-              <FilterCheckbox
-                key={tag.slug}
-                label={tag.name}
-                checked={filters.tags.includes(tag.slug)}
-                onChange={() => handleTagToggle(tag.slug)}
-              />
-            ))}
-          </div>
-        </FilterSection>
+        {/* Tags Section */}
+        {filterOptions.tags.length > 0 && (
+          <FilterSection title="Content Type" defaultOpen>
+            <div className="space-y-2">
+              {filterOptions.tags.map((tag) => (
+                <FilterCheckbox
+                  key={tag.id}
+                  label={tag.name}
+                  checked={filters.tags.includes(tag.id)}
+                  onChange={() => handleTagToggle(tag.id)}
+                />
+              ))}
+            </div>
+          </FilterSection>
+        )}
       </div>
     </aside>
   )
@@ -171,7 +174,7 @@ interface FilterCheckboxProps {
   label: string
   checked: boolean
   onChange: () => void
-  tint?: ArticleCategory['tint']
+  tint?: TintColor
 }
 
 function FilterCheckbox({
@@ -180,7 +183,7 @@ function FilterCheckbox({
   onChange,
   tint,
 }: FilterCheckboxProps) {
-  const tintClasses = tint ? getCategoryTintClasses(tint) : null
+  const tintClasses = tint ? getTintClasses(tint) : null
 
   return (
     <button
