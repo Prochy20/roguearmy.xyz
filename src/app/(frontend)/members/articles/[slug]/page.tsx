@@ -4,6 +4,7 @@ import {
   getArticleBySlug,
   getCategoryTintClasses,
   formatArticleDate,
+  getSeriesNavigation,
   MOCK_ARTICLES,
 } from '@/lib/articles'
 import { CyberButton } from '@/components/members/CyberButton'
@@ -13,6 +14,7 @@ import { ArticleContent } from './ArticleContent'
 import { BackToTop } from './BackToTop'
 import { ScrollBackButton } from './ScrollBackButton'
 import { ReadingStatus } from './ReadingStatus'
+import { SeriesNavigation } from './SeriesNavigation'
 
 interface ArticlePageProps {
   params: Promise<{ slug: string }>
@@ -33,6 +35,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
   }
 
   const tint = getCategoryTintClasses(article.category.tint)
+  const seriesNavigation = getSeriesNavigation(article)
 
   return (
     <div className="min-h-screen bg-void relative overflow-hidden">
@@ -107,6 +110,11 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             {/* Main content */}
             <article className="py-12 lg:py-16">
               <ArticleContent content={article.content} />
+
+              {/* Series navigation - only show if article is part of a series */}
+              {seriesNavigation && (
+                <SeriesNavigation navigation={seriesNavigation} />
+              )}
 
               {/* Article footer */}
               <footer className="mt-20 pt-8 border-t border-rga-green/10">
