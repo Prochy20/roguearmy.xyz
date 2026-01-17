@@ -2,6 +2,7 @@
 
 import { DiscordLoginButton } from './DiscordLoginButton'
 import { GlitchText } from '@/components/effects/GlitchText'
+import { MembersLoginPage } from './MembersLoginPage'
 
 interface AccessDeniedProps {
   reason?: 'not_authenticated' | 'not_member' | 'banned' | 'error'
@@ -9,10 +10,6 @@ interface AccessDeniedProps {
 }
 
 const messages: Record<string, { title: string; description: string }> = {
-  not_authenticated: {
-    title: 'ACCESS DENIED',
-    description: 'You must be logged in to access this area.',
-  },
   not_member: {
     title: 'MEMBERSHIP REQUIRED',
     description: 'You must be a member of the Rogue Army Discord server to access this area.',
@@ -20,10 +17,6 @@ const messages: Record<string, { title: string; description: string }> = {
   banned: {
     title: 'ACCESS REVOKED',
     description: 'Your access to the members area has been revoked. Contact an admin if you believe this is an error.',
-  },
-  oauth_denied: {
-    title: 'AUTHENTICATION CANCELLED',
-    description: 'You cancelled the Discord authentication. Try again when ready.',
   },
   invalid_request: {
     title: 'INVALID REQUEST',
@@ -45,24 +38,29 @@ const messages: Record<string, { title: string; description: string }> = {
 
 export function AccessDenied({ reason = 'not_authenticated', errorCode }: AccessDeniedProps) {
   const actualReason = errorCode || reason
-  const message = messages[actualReason] || messages.error
 
+  // Show the immersive login page for unauthenticated users or cancelled OAuth
+  if (actualReason === 'not_authenticated' || actualReason === 'oauth_denied') {
+    return <MembersLoginPage />
+  }
+
+  const message = messages[actualReason] || messages.error
   const showLoginButton = actualReason !== 'banned'
 
   return (
     <div className="min-h-screen bg-void flex items-center justify-center p-4">
       <div className="max-w-md w-full text-center">
         <div className="mb-8">
-          <GlitchText className="text-3xl sm:text-4xl font-bold text-rga-red mb-4">
+          <GlitchText className="text-3xl sm:text-4xl font-bold text-red-500 mb-4">
             {message.title}
           </GlitchText>
-          <p className="text-rga-gray text-lg">{message.description}</p>
+          <p className="text-text-secondary text-lg">{message.description}</p>
         </div>
 
         {showLoginButton && (
           <div className="space-y-4">
             <DiscordLoginButton />
-            <p className="text-rga-gray/60 text-sm">
+            <p className="text-text-muted text-sm">
               Not a member yet?{' '}
               <a
                 href="https://discord.gg/roguearmy"
