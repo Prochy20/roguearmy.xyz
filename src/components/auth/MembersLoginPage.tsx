@@ -13,6 +13,7 @@ import { BootSequence } from './BootSequence'
  */
 export function MembersLoginPage() {
   const [bootComplete, setBootComplete] = useState(false)
+  const [showHelp, setShowHelp] = useState(false)
 
   return (
     <div className="min-h-screen bg-void flex items-center justify-center p-4 relative overflow-hidden">
@@ -68,11 +69,49 @@ export function MembersLoginPage() {
             {/* Terminal command block */}
             <div className="border border-rga-green/30 rounded bg-black/50 overflow-hidden">
               {/* Command header */}
-              <div className="px-3 py-2 bg-rga-green/5 border-b border-rga-green/20 flex items-center gap-2">
-                <span className="text-rga-magenta font-mono text-xs">AUTHENTICATION</span>
-                <span className="text-text-muted font-mono text-xs">|</span>
-                <span className="text-yellow-400 font-mono text-xs animate-pulse">REQUIRED</span>
+              <div className="px-3 py-2 bg-rga-green/5 border-b border-rga-green/20 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-rga-magenta font-mono text-xs">AUTHENTICATION</span>
+                  <span className="text-text-muted font-mono text-xs">|</span>
+                  <span className="text-yellow-400 font-mono text-xs animate-pulse">REQUIRED</span>
+                </div>
+                {/* Help toggle */}
+                <button
+                  onClick={() => setShowHelp(!showHelp)}
+                  className="font-mono text-xs text-text-muted hover:text-rga-cyan transition-colors"
+                  aria-label="Toggle help"
+                >
+                  <span className="text-text-muted/50">[</span>
+                  <span className={showHelp ? 'text-rga-cyan' : ''}>?</span>
+                  <span className="text-text-muted/50">]</span>
+                </button>
               </div>
+
+              {/* Help panel - expandable */}
+              <motion.div
+                initial={false}
+                animate={{
+                  height: showHelp ? 'auto' : 0,
+                  opacity: showHelp ? 1 : 0,
+                }}
+                transition={{ duration: 0.2 }}
+                className="overflow-hidden"
+              >
+                <div className="px-4 py-3 bg-rga-cyan/5 border-b border-rga-cyan/20 font-mono text-xs space-y-2">
+                  <div className="flex items-start gap-2">
+                    <span className="text-rga-cyan shrink-0">man</span>
+                    <span className="text-text-muted">auth</span>
+                  </div>
+                  <div className="text-text-secondary space-y-1 pl-4">
+                    <p><span className="text-rga-green">{'>'}</span> This is the <span className="text-white">Rogue Army members area</span> login.</p>
+                    <p><span className="text-rga-green">{'>'}</span> Click the button below to sign in with your <span className="text-rga-cyan">Discord</span> account.</p>
+                    <p><span className="text-rga-green">{'>'}</span> You must be a member of our Discord server to access.</p>
+                  </div>
+                  <div className="text-text-muted/60 pt-1">
+                    <span className="text-rga-cyan/60">tip:</span> click [?] again to close
+                  </div>
+                </div>
+              </motion.div>
 
               {/* Command content */}
               <div className="p-4 space-y-4">
