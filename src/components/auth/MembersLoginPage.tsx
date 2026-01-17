@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion } from 'motion/react'
 import Image from 'next/image'
 import { DiscordIcon } from '@/components/shared/DiscordIcon'
@@ -12,9 +12,57 @@ import { BootSequence } from './BootSequence'
  * Immersive "Terminal Authentication" login page for the members area.
  * Features boot sequence animation, ASCII art, and HeroGlitch effects.
  */
+const AUTO_HELP_DELAY_MS = 10000 // 10 seconds before typing starts
+const HELP_COMMAND = 'help'
+const TYPING_SPEED_MS = 120 // ms between each character
+
 export function MembersLoginPage() {
   const [bootComplete, setBootComplete] = useState(false)
   const [showHelp, setShowHelp] = useState(false)
+  const [typedCommand, setTypedCommand] = useState('')
+  const [isTyping, setIsTyping] = useState(false)
+  const [commandExecuted, setCommandExecuted] = useState(false)
+  const hasInteracted = useRef(false)
+
+  // Auto-type help command if user hasn't interacted after a delay
+  useEffect(() => {
+    if (!bootComplete || hasInteracted.current) return
+
+    const startTimer = setTimeout(() => {
+      if (hasInteracted.current) return
+      setIsTyping(true)
+    }, AUTO_HELP_DELAY_MS)
+
+    return () => clearTimeout(startTimer)
+  }, [bootComplete])
+
+  // Typing animation effect
+  useEffect(() => {
+    if (!isTyping || hasInteracted.current) return
+
+    if (typedCommand.length < HELP_COMMAND.length) {
+      const typeTimer = setTimeout(() => {
+        setTypedCommand(HELP_COMMAND.slice(0, typedCommand.length + 1))
+      }, TYPING_SPEED_MS)
+      return () => clearTimeout(typeTimer)
+    } else {
+      // Command fully typed, execute it
+      const executeTimer = setTimeout(() => {
+        setCommandExecuted(true)
+        setIsTyping(false)
+        setShowHelp(true)
+      }, 300) // Small pause before "executing"
+      return () => clearTimeout(executeTimer)
+    }
+  }, [isTyping, typedCommand])
+
+  const handleHelpToggle = () => {
+    hasInteracted.current = true
+    setIsTyping(false)
+    setTypedCommand('')
+    setCommandExecuted(false)
+    setShowHelp(!showHelp)
+  }
 
   return (
     <div className="min-h-screen bg-void flex items-center justify-center p-4 relative overflow-hidden">
@@ -91,8 +139,8 @@ export function MembersLoginPage() {
                 </div>
                 {/* Help toggle */}
                 <button
-                  onClick={() => setShowHelp(!showHelp)}
-                  className="font-mono text-xs text-text-muted hover:text-rga-cyan transition-colors"
+                  onClick={handleHelpToggle}
+                  className="font-mono text-xs text-text-muted hover:text-rga-cyan transition-colors cursor-pointer"
                   aria-label="Toggle help"
                 >
                   <span className="text-text-muted/50">[</span>
@@ -153,7 +201,7 @@ export function MembersLoginPage() {
                 >
                   <button
                     onClick={() => { window.location.href = '/api/auth/discord' }}
-                    className="group w-full relative overflow-hidden"
+                    className="group w-full relative overflow-hidden cursor-pointer"
                   >
                     {/* Button container */}
                     <div className="relative border border-rga-cyan/50 bg-rga-cyan/5 hover:bg-rga-cyan/10
@@ -196,10 +244,21 @@ export function MembersLoginPage() {
 
               {/* Footer with join link */}
               <div className="px-4 py-3 bg-black/30 border-t border-rga-green/20 flex items-center justify-between">
-                <div className="flex items-center gap-2 font-mono text-xs">
+                <div className="flex items-center gap-1 font-mono text-xs">
                   <span className="text-rga-cyan">$</span>
-                  <span className="text-text-muted">_</span>
-                  <span className="inline-block w-1.5 h-3 bg-rga-green animate-blink" />
+                  {/* Typed command or placeholder */}
+                  {typedCommand ? (
+                    <>
+                      <span className="text-white ml-1">{typedCommand}</span>
+                      {commandExecuted && <span className="text-rga-green ml-1">✓</span>}
+                    </>
+                  ) : (
+                    <span className="text-text-muted ml-1">_</span>
+                  )}
+                  {/* Blinking cursor - only show when not executed */}
+                  {!commandExecuted && (
+                    <span className={`inline-block w-1.5 h-3 bg-rga-green ${isTyping ? 'opacity-100' : 'animate-blink'}`} />
+                  )}
                 </div>
                 <a
                   href="https://dc.roguearmy.xyz"
