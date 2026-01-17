@@ -1,144 +1,117 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { motion } from 'motion/react'
+import { RichText } from '@payloadcms/richtext-lexical/react'
+import { MarkdownRenderer } from '@/components/markdown'
+import type { ArticleContentSource } from '@/lib/articles'
 
 interface ArticleContentProps {
-  content: string
+  contentSource: ArticleContentSource
 }
 
 /**
- * Renders article content with cyberpunk-styled typography.
- * Full-width breathing layout with dramatic headings.
+ * Renders article content from either Payload Lexical richText or Wiki markdown.
  */
-export function ArticleContent({ content }: ArticleContentProps) {
-  const lines = content.trim().split('\n')
-  const elements: React.ReactNode[] = []
-  let listItems: string[] = []
-  let listType: 'ul' | 'ol' | null = null
-
-  const flushList = () => {
-    if (listItems.length > 0 && listType) {
-      const ListTag = listType
-      elements.push(
-        <ListTag
-          key={elements.length}
-          className={
-            listType === 'ul'
-              ? 'space-y-3 text-text-secondary mb-8 pl-0'
-              : 'space-y-3 text-text-secondary mb-8 pl-0'
-          }
-        >
-          {listItems.map((item, i) => (
-            <li
-              key={i}
-              className="flex items-start gap-3 text-base md:text-lg leading-relaxed"
-            >
-              <span className="text-rga-green mt-2 flex-shrink-0">
-                {listType === 'ul' ? (
-                  <span className="block w-1.5 h-1.5 bg-rga-green rounded-full" />
-                ) : (
-                  <span className="font-mono text-sm">{i + 1}.</span>
-                )}
-              </span>
-              <span>{item}</span>
-            </li>
-          ))}
-        </ListTag>
-      )
-      listItems = []
-      listType = null
-    }
+export function ArticleContent({ contentSource }: ArticleContentProps) {
+  if (contentSource.type === 'wiki' && contentSource.outlineDocumentId) {
+    return <WikiContent documentId={contentSource.outlineDocumentId} />
   }
 
-  lines.forEach((line, index) => {
-    const trimmed = line.trim()
-
-    // Empty line
-    if (!trimmed) {
-      flushList()
-      return
-    }
-
-    // H1 - Major section header
-    if (trimmed.startsWith('# ')) {
-      flushList()
-      elements.push(
-        <h1
-          key={index}
-          className="relative font-display text-2xl md:text-3xl lg:text-4xl text-white mt-16 mb-8 first:mt-0"
-        >
-          {/* Accent line */}
-          <span className="absolute -left-6 top-0 bottom-0 w-1 bg-gradient-to-b from-rga-green to-transparent hidden lg:block" />
-          <span className="text-glow-green">{trimmed.slice(2)}</span>
-        </h1>
-      )
-      return
-    }
-
-    // H2 - Section header
-    if (trimmed.startsWith('## ')) {
-      flushList()
-      elements.push(
-        <h2
-          key={index}
-          className="font-display text-xl md:text-2xl text-rga-cyan mt-12 mb-5 flex items-center gap-3"
-        >
-          <span className="w-8 h-px bg-rga-cyan/50" />
-          {trimmed.slice(3)}
-        </h2>
-      )
-      return
-    }
-
-    // H3 - Subsection header
-    if (trimmed.startsWith('### ')) {
-      flushList()
-      elements.push(
-        <h3
-          key={index}
-          className="font-bold text-lg md:text-xl text-white mt-8 mb-4 tracking-wide"
-        >
-          {trimmed.slice(4)}
-        </h3>
-      )
-      return
-    }
-
-    // Unordered list item
-    if (trimmed.startsWith('- ')) {
-      if (listType !== 'ul') {
-        flushList()
-        listType = 'ul'
-      }
-      listItems.push(trimmed.slice(2))
-      return
-    }
-
-    // Ordered list item
-    const orderedMatch = trimmed.match(/^(\d+)\.\s+(.+)$/)
-    if (orderedMatch) {
-      if (listType !== 'ol') {
-        flushList()
-        listType = 'ol'
-      }
-      listItems.push(orderedMatch[2])
-      return
-    }
-
-    // Regular paragraph
-    flushList()
-    elements.push(
-      <p
-        key={index}
-        className="text-text-secondary text-base md:text-lg leading-[1.8] mb-6"
+  // Payload Lexical content
+  if (contentSource.content?.content) {
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6, delay: 0.3 }}
+        className="article-content prose prose-invert prose-lg max-w-none
+          prose-headings:font-display prose-headings:text-white
+          prose-h1:text-2xl prose-h1:md:text-3xl prose-h1:lg:text-4xl prose-h1:mt-16 prose-h1:mb-8 prose-h1:first:mt-0
+          prose-h2:text-xl prose-h2:md:text-2xl prose-h2:text-rga-cyan prose-h2:mt-12 prose-h2:mb-5
+          prose-h3:text-lg prose-h3:md:text-xl prose-h3:mt-8 prose-h3:mb-4
+          prose-p:text-text-secondary prose-p:leading-[1.8] prose-p:mb-6
+          prose-strong:text-white prose-strong:font-semibold
+          prose-code:px-2 prose-code:py-1 prose-code:bg-bg-surface/80 prose-code:text-rga-magenta prose-code:rounded prose-code:border prose-code:border-rga-magenta/20 prose-code:text-sm prose-code:font-mono
+          prose-ul:space-y-3 prose-ul:text-text-secondary prose-ul:mb-8 prose-ul:pl-0
+          prose-ol:space-y-3 prose-ol:text-text-secondary prose-ol:mb-8 prose-ol:pl-0
+          prose-li:text-base prose-li:md:text-lg prose-li:leading-relaxed
+          prose-a:text-rga-cyan prose-a:hover:text-rga-green prose-a:transition-colors
+          prose-blockquote:border-l-rga-green prose-blockquote:bg-bg-surface/50 prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:text-rga-gray prose-blockquote:italic
+          prose-img:rounded-lg prose-img:border prose-img:border-rga-green/20
+        "
       >
-        {parseInlineMarkdown(trimmed)}
-      </p>
+        <RichText data={contentSource.content.content} />
+      </motion.div>
     )
-  })
+  }
 
-  // Flush any remaining list
-  flushList()
+  // Fallback for empty content
+  return (
+    <div className="text-rga-gray text-center py-12">
+      <p>No content available for this article.</p>
+    </div>
+  )
+}
+
+/**
+ * Client component to fetch and render wiki markdown content.
+ */
+function WikiContent({ documentId }: { documentId: string }) {
+  const [content, setContent] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    async function fetchContent() {
+      try {
+        const response = await fetch(`/api/outline/documents/${documentId}`)
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch wiki content')
+        }
+
+        const data = await response.json()
+        setContent(data.content)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Unknown error')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchContent()
+  }, [documentId])
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="h-8 bg-rga-gray/10 rounded w-3/4" />
+        <div className="h-4 bg-rga-gray/10 rounded w-full" />
+        <div className="h-4 bg-rga-gray/10 rounded w-5/6" />
+        <div className="h-4 bg-rga-gray/10 rounded w-4/6" />
+        <div className="h-6 bg-rga-gray/10 rounded w-2/3 mt-8" />
+        <div className="h-4 bg-rga-gray/10 rounded w-full" />
+        <div className="h-4 bg-rga-gray/10 rounded w-5/6" />
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg p-4">
+        <p>Failed to load content: {error}</p>
+      </div>
+    )
+  }
+
+  if (!content) {
+    return (
+      <div className="text-rga-gray text-center py-12">
+        <p>No content available for this article.</p>
+      </div>
+    )
+  }
 
   return (
     <motion.div
@@ -147,57 +120,7 @@ export function ArticleContent({ content }: ArticleContentProps) {
       transition={{ duration: 0.6, delay: 0.3 }}
       className="article-content"
     >
-      {elements}
+      <MarkdownRenderer content={content} />
     </motion.div>
   )
-}
-
-/**
- * Parse inline markdown like **bold** and `code`
- */
-function parseInlineMarkdown(text: string): React.ReactNode {
-  const parts: React.ReactNode[] = []
-  let remaining = text
-  let key = 0
-
-  while (remaining.length > 0) {
-    // Check for bold **text**
-    const boldMatch = remaining.match(/^(.*?)\*\*(.+?)\*\*(.*)$/)
-    if (boldMatch) {
-      if (boldMatch[1]) {
-        parts.push(<span key={key++}>{boldMatch[1]}</span>)
-      }
-      parts.push(
-        <strong key={key++} className="text-white font-semibold">
-          {boldMatch[2]}
-        </strong>
-      )
-      remaining = boldMatch[3]
-      continue
-    }
-
-    // Check for inline code `code`
-    const codeMatch = remaining.match(/^(.*?)`(.+?)`(.*)$/)
-    if (codeMatch) {
-      if (codeMatch[1]) {
-        parts.push(<span key={key++}>{codeMatch[1]}</span>)
-      }
-      parts.push(
-        <code
-          key={key++}
-          className="px-2 py-1 bg-bg-surface/80 text-rga-magenta rounded border border-rga-magenta/20 text-sm font-mono"
-        >
-          {codeMatch[2]}
-        </code>
-      )
-      remaining = codeMatch[3]
-      continue
-    }
-
-    // No more matches, add remaining text
-    parts.push(<span key={key++}>{remaining}</span>)
-    break
-  }
-
-  return parts.length === 1 ? parts[0] : <>{parts}</>
 }
