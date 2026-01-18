@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import DOMPurify from 'isomorphic-dompurify'
 import { MermaidDiagram } from './MermaidDiagram'
 
 interface CodeBlockProps {
@@ -81,7 +80,11 @@ function SyntaxHighlightedCode({ code, language }: { code: string; language: str
 
     async function highlight() {
       try {
-        const { codeToHtml } = await import('shiki')
+        // Dynamic imports to avoid SSR issues with jsdom
+        const [{ codeToHtml }, DOMPurify] = await Promise.all([
+          import('shiki'),
+          import('dompurify').then((mod) => mod.default),
+        ])
 
         const html = await codeToHtml(code, {
           lang: language,

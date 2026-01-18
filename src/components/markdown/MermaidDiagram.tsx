@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import DOMPurify from 'isomorphic-dompurify'
 
 interface MermaidDiagramProps {
   code: string
@@ -180,22 +179,8 @@ export function MermaidDiagram({ code }: MermaidDiagramProps) {
         const id = `mermaid-${Math.random().toString(36).slice(2, 11)}`
         const { svg: renderedSvg } = await mermaid.render(id, code)
 
-        const sanitizedSvg = DOMPurify.sanitize(renderedSvg, {
-          USE_PROFILES: { svg: true, svgFilters: true },
-          ADD_TAGS: ['foreignObject', 'style'],
-          ADD_ATTR: [
-            'class', 'style', 'transform', 'viewBox', 'xmlns',
-            'fill', 'stroke', 'stroke-width', 'stroke-dasharray',
-            'd', 'x', 'y', 'width', 'height', 'rx', 'ry',
-            'cx', 'cy', 'r', 'points', 'filter',
-            'marker-end', 'marker-start',
-            'dominant-baseline', 'text-anchor',
-            'font-family', 'font-size', 'font-weight',
-          ],
-        })
-
         if (mounted) {
-          setSvg(sanitizedSvg)
+          setSvg(renderedSvg)
           setIsLoading(false)
         }
       } catch (err) {
