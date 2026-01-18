@@ -15,12 +15,14 @@ interface ArticleFilterSidebarProps {
   filterOptions: FilterOptions
   filters: FilterState
   onFilterChange: (filters: FilterState) => void
+  onClearAll?: () => void
 }
 
 export function ArticleFilterSidebar({
   filterOptions,
   filters,
   onFilterChange,
+  onClearAll,
 }: ArticleFilterSidebarProps) {
   const activeFilterCount =
     filters.games.length + filters.topics.length + filters.tags.length + (filters.search ? 1 : 0)
@@ -48,6 +50,7 @@ export function ArticleFilterSidebar({
 
   const handleClearAll = () => {
     onFilterChange({ games: [], topics: [], tags: [], search: '' })
+    onClearAll?.()
   }
 
   return (

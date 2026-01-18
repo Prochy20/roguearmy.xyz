@@ -5,11 +5,13 @@ import { motion } from 'motion/react'
 import { ArticleCard } from './ArticleCard'
 import { EmptyState } from './EmptyState'
 import { type Article, type FilterState, filterArticles } from '@/lib/articles'
+import { type ArticleProgress } from '@/lib/progress.server'
 
 interface ArticleFeedProps {
   articles: Article[]
   filters: FilterState
   onClearFilters: () => void
+  progress?: Record<string, ArticleProgress>
 }
 
 const ARTICLES_PER_PAGE = 4
@@ -18,6 +20,7 @@ export function ArticleFeed({
   articles,
   filters,
   onClearFilters,
+  progress,
 }: ArticleFeedProps) {
   const [displayedCount, setDisplayedCount] = useState(ARTICLES_PER_PAGE)
   const [isLoading, setIsLoading] = useState(false)
@@ -80,7 +83,12 @@ export function ArticleFeed({
       {/* Article Grid */}
       <div className="grid gap-6">
         {displayedArticles.map((article, index) => (
-          <ArticleCard key={article.id} article={article} index={index} />
+          <ArticleCard
+            key={article.id}
+            article={article}
+            index={index}
+            progress={progress?.[article.id]}
+          />
         ))}
       </div>
 

@@ -13,6 +13,8 @@ import {
   getTintClasses,
   formatArticleDate,
 } from '@/lib/articles'
+import { type ArticleProgress } from '@/lib/progress.server'
+import { ReadStatusIndicator, getReadStatus } from './ReadStatusIndicator'
 
 // Map article tint to CyberCorners color
 const tintToColor = (tint: TintColor) => {
@@ -29,9 +31,10 @@ const tintToColor = (tint: TintColor) => {
 interface ArticleCardProps {
   article: Article
   index?: number
+  progress?: ArticleProgress | null
 }
 
-export function ArticleCard({ article, index = 0 }: ArticleCardProps) {
+export function ArticleCard({ article, index = 0, progress }: ArticleCardProps) {
   const tint = getTintClasses(article.topic.tint)
   const cornerColor = tintToColor(article.topic.tint)
 
@@ -102,35 +105,47 @@ export function ArticleCard({ article, index = 0 }: ArticleCardProps) {
               </p>
 
               {/* Metadata Row */}
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-rga-gray/60">
-                {/* Date */}
-                <div className="flex items-center gap-1">
-                  <Calendar className="w-3.5 h-3.5" />
-                  <span>{formatArticleDate(article.publishedAt)}</span>
+              <div className="flex items-center gap-x-4 gap-y-2 text-xs text-rga-gray/60">
+                {/* Left side: Date, Reading Time, Tags */}
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-2 flex-1">
+                  {/* Date */}
+                  <div className="flex items-center gap-1">
+                    <Calendar className="w-3.5 h-3.5" />
+                    <span>{formatArticleDate(article.publishedAt)}</span>
+                  </div>
+
+                  {/* Reading Time */}
+                  <div className="flex items-center gap-1">
+                    <Clock className="w-3.5 h-3.5" />
+                    <span>{article.readingTime} min read</span>
+                  </div>
+
+                  {/* Separator */}
+                  <span className="hidden sm:inline text-rga-gray/30">|</span>
+
+                  {/* Tags */}
+                  <div className="flex flex-wrap gap-2">
+                    {article.tags.slice(0, 2).map((tag) => (
+                      <CyberTag key={tag.id} color="gray" className="text-rga-gray/80">
+                        {tag.name}
+                      </CyberTag>
+                    ))}
+                    {article.tags.length > 2 && (
+                      <span className="text-rga-gray/40">
+                        +{article.tags.length - 2}
+                      </span>
+                    )}
+                  </div>
                 </div>
 
-                {/* Reading Time */}
-                <div className="flex items-center gap-1">
-                  <Clock className="w-3.5 h-3.5" />
-                  <span>{article.readingTime} min read</span>
-                </div>
-
-                {/* Separator */}
-                <span className="hidden sm:inline text-rga-gray/30">|</span>
-
-                {/* Tags */}
-                <div className="flex flex-wrap gap-2">
-                  {article.tags.slice(0, 2).map((tag) => (
-                    <CyberTag key={tag.id} color="gray" className="text-rga-gray/80">
-                      {tag.name}
-                    </CyberTag>
-                  ))}
-                  {article.tags.length > 2 && (
-                    <span className="text-rga-gray/40">
-                      +{article.tags.length - 2}
-                    </span>
-                  )}
-                </div>
+                {/* Read Status Indicator - right side (only when authenticated) */}
+                {progress !== undefined && (
+                  <ReadStatusIndicator
+                    status={getReadStatus(progress?.progress, progress?.completed)}
+                    progress={progress?.progress}
+                    size="md"
+                  />
+                )}
               </div>
             </div>
           </div>

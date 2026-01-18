@@ -1,76 +1,91 @@
 'use client'
 
-import { useState } from 'react'
-import { MembersHeader } from './MembersHeader'
+import { useState, useEffect } from 'react'
+import { useSearchParams, useRouter } from 'next/navigation'
+import { SlidersHorizontal } from 'lucide-react'
 import { ArticleFeed } from './ArticleFeed'
 import { ArticleFilterSidebar } from './ArticleFilterSidebar'
 import { FilterBottomSheet } from './FilterBottomSheet'
 import { HeroGlitch } from '@/components/effects'
 import { type Article, type FilterState, type FilterOptions } from '@/lib/articles'
-
-interface MemberInfo {
-  discordId: string
-  avatar: string | null
-  username: string
-  globalName: string | null
-}
+import { type ArticleProgress } from '@/lib/progress.server'
 
 interface MembersArticlesPageProps {
-  member: MemberInfo
   articles: Article[]
   filterOptions: FilterOptions
+  progress?: Record<string, ArticleProgress>
 }
 
 export function MembersArticlesPage({
-  member,
   articles,
   filterOptions,
+  progress,
 }: MembersArticlesPageProps) {
+  const searchParams = useSearchParams()
+  const router = useRouter()
+
+  // Read search from URL, keep other filters local
+  const urlSearch = searchParams.get('search') || ''
+
   const [filters, setFilters] = useState<FilterState>({
     games: [],
     topics: [],
     tags: [],
-    search: '',
+    search: urlSearch,
   })
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false)
 
-  const handleSearchChange = (search: string) => {
-    setFilters((prev) => ({ ...prev, search }))
+  // Sync search filter with URL changes
+  useEffect(() => {
+    setFilters((prev) => ({ ...prev, search: urlSearch }))
+  }, [urlSearch])
+
+  const clearUrlSearch = () => {
+    const params = new URLSearchParams(searchParams.toString())
+    params.delete('search')
+    const newUrl = params.toString() ? `/members?${params.toString()}` : '/members'
+    router.replace(newUrl, { scroll: false })
   }
 
   const handleClearFilters = () => {
     setFilters({ games: [], topics: [], tags: [], search: '' })
+    clearUrlSearch()
   }
 
   return (
     <div className="min-h-screen bg-void">
-      {/* Header */}
-      <MembersHeader
-        member={member}
-        searchValue={filters.search}
-        onSearchChange={handleSearchChange}
-        onMobileFilterOpen={() => setIsFilterSheetOpen(true)}
-      />
-
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
-        {/* Page Title */}
+        {/* Page Title with mobile filter button */}
         <div className="mb-8">
-          <h1 className="font-display text-3xl sm:text-4xl md:text-5xl text-white mb-3">
-            <HeroGlitch
-              minInterval={4}
-              maxInterval={10}
-              intensity={8}
-              dataCorruption
-              scanlines
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h1 className="font-display text-3xl sm:text-4xl md:text-5xl text-white mb-3">
+                <HeroGlitch
+                  minInterval={4}
+                  maxInterval={10}
+                  intensity={8}
+                  dataCorruption
+                  scanlines
+                >
+                  MEMBER ARTICLES
+                </HeroGlitch>
+              </h1>
+              <p className="text-rga-gray max-w-2xl">
+                Exclusive guides, builds, and community updates. Stay ahead with the
+                latest strategies and news from the Rogue Army.
+              </p>
+            </div>
+
+            {/* Mobile filter button - moved from nav */}
+            <button
+              onClick={() => setIsFilterSheetOpen(true)}
+              className="lg:hidden flex items-center gap-2 px-3 py-2 border border-rga-green/30 rounded-lg text-rga-gray text-sm hover:border-rga-green/50 hover:text-rga-green transition-colors shrink-0"
             >
-              MEMBER ARTICLES
-            </HeroGlitch>
-          </h1>
-          <p className="text-rga-gray max-w-2xl">
-            Exclusive guides, builds, and community updates. Stay ahead with the
-            latest strategies and news from the Rogue Army.
-          </p>
+              <SlidersHorizontal className="w-4 h-4" />
+              <span className="hidden sm:inline">Filters</span>
+            </button>
+          </div>
         </div>
 
         {/* Content Layout */}
@@ -80,6 +95,7 @@ export function MembersArticlesPage({
             filterOptions={filterOptions}
             filters={filters}
             onFilterChange={setFilters}
+            onClearAll={clearUrlSearch}
           />
 
           {/* Article Feed */}
@@ -88,6 +104,7 @@ export function MembersArticlesPage({
               articles={articles}
               filters={filters}
               onClearFilters={handleClearFilters}
+              progress={progress}
             />
           </div>
         </div>
