@@ -192,6 +192,7 @@ export async function getSeriesNavigation(articleId: string): Promise<SeriesNavi
     seriesSlug: series.slug,
     currentOrder: currentIndex + 1,
     totalParts: seriesArticles.length,
+    articleIds: seriesArticles.map((a) => a.id),
     previous: previousArticle
       ? transformPayloadArticle(previousArticle, {
           name: series.name,

@@ -3,10 +3,12 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'motion/react'
-import { ChevronLeft, ChevronRight, Clock } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Clock, ArrowRight, CheckCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { CyberCorners, CyberTag } from '@/components/ui/CyberCorners'
 import { type Article, type SeriesNavigation as SeriesNavType } from '@/lib/articles'
+import { type ArticleProgress } from '@/lib/progress.server'
+import { ReadStatusIndicator, getReadStatus } from '@/components/members/ReadStatusIndicator'
 
 // ============================================================================
 // SERIES NAV CARD - Mini article card for prev/next navigation
@@ -15,9 +17,10 @@ import { type Article, type SeriesNavigation as SeriesNavType } from '@/lib/arti
 interface SeriesNavCardProps {
   article: Article
   direction: 'previous' | 'next'
+  progress?: ArticleProgress
 }
 
-function SeriesNavCard({ article, direction }: SeriesNavCardProps) {
+function SeriesNavCard({ article, direction, progress }: SeriesNavCardProps) {
   const isPrevious = direction === 'previous'
   const color = isPrevious ? 'cyan' : 'magenta'
   const Icon = isPrevious ? ChevronLeft : ChevronRight
@@ -105,12 +108,21 @@ function SeriesNavCard({ article, direction }: SeriesNavCardProps) {
               </h4>
               <div
                 className={cn(
-                  'flex items-center gap-1 mt-2 text-xs text-rga-gray/60',
+                  'flex items-center gap-2 mt-2 text-xs text-rga-gray/60',
                   isPrevious ? 'justify-start' : 'justify-end'
                 )}
               >
-                <Clock className="w-3 h-3" />
-                <span>{article.readingTime} min</span>
+                <div className="flex items-center gap-1">
+                  <Clock className="w-3 h-3" />
+                  <span>{article.readingTime} min</span>
+                </div>
+                {progress !== undefined && (
+                  <ReadStatusIndicator
+                    status={getReadStatus(progress?.progress, progress?.completed)}
+                    progress={progress?.progress}
+                    size="sm"
+                  />
+                )}
               </div>
             </div>
           </div>
@@ -127,12 +139,21 @@ function SeriesNavCard({ article, direction }: SeriesNavCardProps) {
 // SERIES NAVIGATION - Main container with header, cards, and progress
 // ============================================================================
 
+/** Serialized progress object (Map converted to plain object for server->client) */
+type SeriesProgressRecord = Record<string, ArticleProgress>
+
 interface SeriesNavigationProps {
   navigation: SeriesNavType
+  seriesProgress?: SeriesProgressRecord
 }
 
-export function SeriesNavigation({ navigation }: SeriesNavigationProps) {
-  const { seriesName, currentOrder, totalParts, previous, next } = navigation
+export function SeriesNavigation({ navigation, seriesProgress }: SeriesNavigationProps) {
+  const { seriesName, seriesSlug, currentOrder, totalParts, articleIds, previous, next } = navigation
+
+  // Calculate completion stats
+  const completedCount = seriesProgress
+    ? articleIds.filter((id) => seriesProgress[id]?.completed).length
+    : 0
 
   return (
     <motion.section
@@ -151,53 +172,105 @@ export function SeriesNavigation({ navigation }: SeriesNavigationProps) {
             <p className="text-xs uppercase tracking-wider text-rga-gray/50 mb-0.5">
               Part of a series
             </p>
-            <h3 className="text-base font-medium text-white">{seriesName}</h3>
+            <Link
+              href={`/members/series/${seriesSlug}`}
+              className="group flex items-center gap-1.5 text-base font-medium text-white hover:text-rga-cyan transition-colors"
+            >
+              {seriesName}
+              <ArrowRight className="w-4 h-4 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-rga-cyan" />
+            </Link>
           </div>
         </div>
 
-        {/* Part indicator badge */}
-        <CyberTag color="green" className="text-rga-green">
-          Part {currentOrder} of {totalParts}
-        </CyberTag>
+        {/* Status badges */}
+        <div className="flex items-center gap-2">
+          <CyberTag color="green" className="text-rga-green">
+            Part {currentOrder} of {totalParts}
+          </CyberTag>
+          {seriesProgress && (
+            <CyberTag
+              color={completedCount === totalParts ? 'green' : 'cyan'}
+              className={completedCount === totalParts ? 'text-rga-green' : 'text-rga-cyan'}
+            >
+              <CheckCircle className="w-3 h-3 mr-1" />
+              {completedCount} of {totalParts}
+            </CyberTag>
+          )}
+        </div>
       </div>
 
       {/* Navigation cards grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Previous card - only show if exists */}
         {previous ? (
-          <SeriesNavCard article={previous} direction="previous" />
+          <SeriesNavCard
+            article={previous}
+            direction="previous"
+            progress={seriesProgress?.[previous.id]}
+          />
         ) : (
           <div /> // Empty placeholder to maintain grid
         )}
 
         {/* Next card - only show if exists */}
         {next ? (
-          <SeriesNavCard article={next} direction="next" />
+          <SeriesNavCard
+            article={next}
+            direction="next"
+            progress={seriesProgress?.[next.id]}
+          />
         ) : (
           <div /> // Empty placeholder to maintain grid
         )}
       </div>
 
-      {/* Progress bar */}
+      {/* Progress bar - shows reading status for each article */}
       <div className="mt-6 flex items-center gap-2">
-        {Array.from({ length: totalParts }).map((_, index) => {
+        {articleIds.map((articleId, index) => {
           const partNumber = index + 1
           const isCurrent = partNumber === currentOrder
-          const isPast = partNumber < currentOrder
+          const progress = seriesProgress?.[articleId]
+          const isCompleted = progress?.completed ?? false
+          const isInProgress = progress && !progress.completed && progress.progress > 0
 
           return (
             <div
-              key={partNumber}
+              key={articleId}
               className={cn(
-                'h-1 flex-1 rounded-full transition-all duration-300',
-                isCurrent && 'bg-rga-green',
-                isPast && 'bg-rga-cyan/50',
-                !isCurrent && !isPast && 'bg-rga-gray/20'
+                'h-1.5 flex-1 rounded-full transition-all duration-300 relative',
+                // Reading status colors (when progress available)
+                seriesProgress && isCompleted && 'bg-rga-green',
+                seriesProgress && isInProgress && 'bg-rga-cyan/70',
+                seriesProgress && !isCompleted && !isInProgress && 'bg-rga-gray/20',
+                // Fallback position-based colors (when no progress)
+                !seriesProgress && isCurrent && 'bg-rga-green',
+                !seriesProgress && !isCurrent && partNumber < currentOrder && 'bg-rga-cyan/50',
+                !seriesProgress && !isCurrent && partNumber > currentOrder && 'bg-rga-gray/20',
+                // Current article highlight
+                isCurrent && 'ring-2 ring-white/30 ring-offset-1 ring-offset-void'
               )}
             />
           )
         })}
       </div>
+
+      {/* Progress bar legend */}
+      {seriesProgress && (
+        <div className="mt-3 flex items-center justify-center gap-4 text-xs text-rga-gray/50">
+          <div className="flex items-center gap-1.5">
+            <div className="w-2.5 h-2.5 rounded-full bg-rga-green" />
+            <span>Completed</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <div className="w-2.5 h-2.5 rounded-full bg-rga-cyan/70" />
+            <span>In progress</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <div className="w-2.5 h-2.5 rounded-full bg-rga-gray/20" />
+            <span>Unread</span>
+          </div>
+        </div>
+      )}
     </motion.section>
   )
 }

@@ -92,6 +92,7 @@ export interface SeriesNavigation {
   seriesSlug: string
   currentOrder: number
   totalParts: number
+  articleIds: string[] // All article IDs in series order (for progress fetching)
   previous: Article | null
   next: Article | null
 }
