@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation'
+import { cookies } from 'next/headers'
 import { ArrowLeft } from 'lucide-react'
 import { getTintClasses, formatArticleDate } from '@/lib/articles'
 import {
@@ -6,6 +7,9 @@ import {
   getSeriesNavigation,
   getAllArticleSlugs,
 } from '@/lib/articles.server'
+import { verifyMemberToken } from '@/lib/auth/jwt'
+import { MEMBER_SESSION_COOKIE } from '@/lib/auth/cookies'
+import { getMemberProgressMap } from '@/lib/progress.server'
 import { extractHeadingsFromLexical } from '@/lib/toc'
 import { CyberButton } from '@/components/members/CyberButton'
 import { ReadProgressTracker } from '@/components/members/ReadProgressTracker'
@@ -18,6 +22,16 @@ import { SeriesNavigation } from './SeriesNavigation'
 
 interface ArticlePageProps {
   params: Promise<{ slug: string }>
+}
+
+async function getMemberId() {
+  const cookieStore = await cookies()
+  const token = cookieStore.get(MEMBER_SESSION_COOKIE)?.value
+
+  if (!token) return null
+
+  const session = await verifyMemberToken(token)
+  return session?.memberId || null
 }
 
 export async function generateStaticParams() {
@@ -35,6 +49,18 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 
   const tint = getTintClasses(article.topic.tint)
   const seriesNavigation = await getSeriesNavigation(article.id)
+
+  // Get member's reading progress for series articles
+  const memberId = await getMemberId()
+  const seriesProgressMap =
+    seriesNavigation && memberId
+      ? await getMemberProgressMap(memberId, seriesNavigation.articleIds)
+      : undefined
+
+  // Convert Map to serializable object for client component
+  const seriesProgress = seriesProgressMap
+    ? Object.fromEntries(seriesProgressMap)
+    : undefined
 
   // Extract headings for TOC (server-side for Payload content)
   const initialHeadings =
@@ -102,7 +128,10 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             >
               {/* Series navigation - only show if article is part of a series */}
               {seriesNavigation && (
-                <SeriesNavigation navigation={seriesNavigation} />
+                <SeriesNavigation
+                  navigation={seriesNavigation}
+                  seriesProgress={seriesProgress}
+                />
               )}
 
               {/* Article footer */}
