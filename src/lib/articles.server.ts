@@ -118,15 +118,16 @@ export async function getArticleBySlug(slug: string): Promise<Article | null> {
 }
 
 /**
- * Get filter options (games, topics, tags) from Payload
+ * Get filter options (games, topics, content types, series) from Payload
  */
 export async function getFilterOptions(): Promise<FilterOptions> {
   const payload = await getPayload({ config })
 
-  const [gamesResult, topicsResult, tagsResult] = await Promise.all([
+  const [gamesResult, topicsResult, contentTypesResult, seriesResult] = await Promise.all([
     payload.find({ collection: 'games', limit: 50, sort: 'name' }),
     payload.find({ collection: 'topics', limit: 50, sort: 'name' }),
-    payload.find({ collection: 'tags', limit: 50, sort: 'name' }),
+    payload.find({ collection: 'content-types', limit: 50, sort: 'name' }),
+    payload.find({ collection: 'series', limit: 100, sort: 'name', depth: 0 }),
   ])
 
   return {
@@ -141,10 +142,16 @@ export async function getFilterOptions(): Promise<FilterOptions> {
       name: topic.name,
       tint: mapPayloadColorToTint(topic.color),
     })),
-    tags: tagsResult.docs.map((tag) => ({
-      id: tag.id,
-      slug: tag.slug,
-      name: tag.name,
+    contentTypes: contentTypesResult.docs.map((contentType) => ({
+      id: contentType.id,
+      slug: contentType.slug,
+      name: contentType.name,
+    })),
+    series: seriesResult.docs.map((s) => ({
+      id: s.id,
+      slug: s.slug,
+      name: s.name,
+      articleCount: (s.articles || []).length,
     })),
   }
 }

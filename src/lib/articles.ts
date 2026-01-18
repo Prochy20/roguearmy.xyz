@@ -9,7 +9,7 @@ import type {
   Article as PayloadArticle,
   Topic as PayloadTopic,
   Game as PayloadGame,
-  Tag as PayloadTag,
+  ContentType as PayloadContentType,
   Media as PayloadMedia,
 } from '@/payload-types'
 
@@ -19,6 +19,27 @@ import type {
 
 /** Tint colors used for styling across the frontend */
 export type TintColor = 'orange' | 'red' | 'cyan' | 'green' | 'magenta' | 'blue' | 'yellow' | 'teal' | 'purple' | 'pink'
+
+/** Read status filter options */
+export type ReadStatusFilter = 'unread' | 'in_progress' | 'completed' | null
+
+/** Reading time filter options */
+export type ReadingTimeFilter = 'quick' | 'medium' | 'long'
+
+/** Reading time range definitions */
+export const READING_TIME_RANGES = {
+  quick: { min: 0, max: 3, label: 'Quick Read', description: '< 3 min' },
+  medium: { min: 3, max: 10, label: 'Medium', description: '3-10 min' },
+  long: { min: 10, max: Infinity, label: 'Long Read', description: '> 10 min' },
+} as const
+
+/** Series option for filter dropdown */
+export interface SeriesOption {
+  id: string
+  slug: string
+  name: string
+  articleCount: number
+}
 
 export interface ArticleTopic {
   id: string
@@ -33,7 +54,7 @@ export interface ArticleGame {
   tint: TintColor
 }
 
-export interface ArticleTag {
+export interface ArticleContentType {
   id: string
   slug: string
   name: string
@@ -67,7 +88,7 @@ export interface Article {
   heroImage: ArticleImage
   topic: ArticleTopic
   games: ArticleGame[]
-  tags: ArticleTag[]
+  contentType: ArticleContentType
   publishedAt: Date
   readingTime: number
   series?: ArticleSeries
@@ -75,16 +96,20 @@ export interface Article {
 }
 
 export interface FilterState {
+  readStatus: ReadStatusFilter
+  readingTime: ReadingTimeFilter[]
+  series: string | null
   games: string[]
   topics: string[]
-  tags: string[]
+  contentTypes: string[]
   search: string
 }
 
 export interface FilterOptions {
   games: ArticleGame[]
   topics: ArticleTopic[]
-  tags: ArticleTag[]
+  contentTypes: ArticleContentType[]
+  series: SeriesOption[]
 }
 
 export interface SeriesNavigation {
@@ -130,6 +155,7 @@ export function getTintClasses(tint: TintColor) {
       hoverBorder: 'hover:border-orange-500/60',
       bg: 'bg-orange-500/10',
       text: 'text-orange-400',
+      textMuted: 'text-orange-400/40',
       glow: 'hover:shadow-[0_0_20px_rgba(249,115,22,0.3)]',
     },
     red: {
@@ -137,6 +163,7 @@ export function getTintClasses(tint: TintColor) {
       hoverBorder: 'hover:border-red-500/60',
       bg: 'bg-red-500/10',
       text: 'text-red-400',
+      textMuted: 'text-red-400/40',
       glow: 'hover:shadow-[0_0_20px_rgba(239,68,68,0.3)]',
     },
     cyan: {
@@ -144,6 +171,7 @@ export function getTintClasses(tint: TintColor) {
       hoverBorder: 'hover:border-rga-cyan/60',
       bg: 'bg-rga-cyan/10',
       text: 'text-rga-cyan',
+      textMuted: 'text-rga-cyan/40',
       glow: 'hover:shadow-[0_0_20px_rgba(0,255,255,0.3)]',
     },
     green: {
@@ -151,6 +179,7 @@ export function getTintClasses(tint: TintColor) {
       hoverBorder: 'hover:border-rga-green/60',
       bg: 'bg-rga-green/10',
       text: 'text-rga-green',
+      textMuted: 'text-rga-green/40',
       glow: 'hover:shadow-[0_0_20px_rgba(0,255,65,0.3)]',
     },
     magenta: {
@@ -158,6 +187,7 @@ export function getTintClasses(tint: TintColor) {
       hoverBorder: 'hover:border-rga-magenta/60',
       bg: 'bg-rga-magenta/10',
       text: 'text-rga-magenta',
+      textMuted: 'text-rga-magenta/40',
       glow: 'hover:shadow-[0_0_20px_rgba(255,0,255,0.3)]',
     },
     blue: {
@@ -165,6 +195,7 @@ export function getTintClasses(tint: TintColor) {
       hoverBorder: 'hover:border-blue-500/60',
       bg: 'bg-blue-500/10',
       text: 'text-blue-400',
+      textMuted: 'text-blue-400/40',
       glow: 'hover:shadow-[0_0_20px_rgba(59,130,246,0.3)]',
     },
     yellow: {
@@ -172,6 +203,7 @@ export function getTintClasses(tint: TintColor) {
       hoverBorder: 'hover:border-yellow-500/60',
       bg: 'bg-yellow-500/10',
       text: 'text-yellow-400',
+      textMuted: 'text-yellow-400/40',
       glow: 'hover:shadow-[0_0_20px_rgba(234,179,8,0.3)]',
     },
     teal: {
@@ -179,6 +211,7 @@ export function getTintClasses(tint: TintColor) {
       hoverBorder: 'hover:border-teal-500/60',
       bg: 'bg-teal-500/10',
       text: 'text-teal-400',
+      textMuted: 'text-teal-400/40',
       glow: 'hover:shadow-[0_0_20px_rgba(20,184,166,0.3)]',
     },
     purple: {
@@ -186,6 +219,7 @@ export function getTintClasses(tint: TintColor) {
       hoverBorder: 'hover:border-purple-500/60',
       bg: 'bg-purple-500/10',
       text: 'text-purple-400',
+      textMuted: 'text-purple-400/40',
       glow: 'hover:shadow-[0_0_20px_rgba(168,85,247,0.3)]',
     },
     pink: {
@@ -193,6 +227,7 @@ export function getTintClasses(tint: TintColor) {
       hoverBorder: 'hover:border-pink-500/60',
       bg: 'bg-pink-500/10',
       text: 'text-pink-400',
+      textMuted: 'text-pink-400/40',
       glow: 'hover:shadow-[0_0_20px_rgba(236,72,153,0.3)]',
     },
   }
@@ -226,14 +261,13 @@ export function transformPayloadArticle(
       tint: mapPayloadColorToTint(game.color),
     }))
 
-  // Get tags array
-  const tags = (payloadArticle.categorization.tags || [])
-    .filter((t): t is PayloadTag => typeof t !== 'string' && t !== null)
-    .map((tag) => ({
-      id: tag.id,
-      slug: tag.slug,
-      name: tag.name,
-    }))
+  // Get contentType - handle both populated and ID-only cases
+  const contentTypeData = payloadArticle.categorization.contentType as PayloadContentType | null
+  const contentType: ArticleContentType = {
+    id: contentTypeData?.id || '',
+    slug: contentTypeData?.slug || '',
+    name: contentTypeData?.name || 'Article',
+  }
 
   // Get hero image
   const heroMedia = payloadArticle.heroImage as PayloadMedia | null
@@ -262,7 +296,7 @@ export function transformPayloadArticle(
       tint: topicTint,
     },
     games,
-    tags,
+    contentType,
     publishedAt: payloadArticle.publishedAt
       ? new Date(payloadArticle.publishedAt)
       : new Date(payloadArticle.createdAt),
@@ -276,15 +310,53 @@ export function transformPayloadArticle(
 // UTILITY FUNCTIONS
 // ============================================================================
 
+/** Progress data structure (mirrors progress.server.ts for client use) */
+export interface ArticleProgressData {
+  articleId: string
+  progress: number
+  completed: boolean
+}
+
 /**
- * Filter articles by games, topics, tags, and search
+ * Determine read status from progress data
+ */
+export function getReadStatus(progress?: ArticleProgressData): ReadStatusFilter {
+  if (!progress || progress.progress === 0) return 'unread'
+  if (progress.completed || progress.progress >= 85) return 'completed'
+  return 'in_progress'
+}
+
+/**
+ * Filter articles by all filter criteria
  */
 export function filterArticles(
   articles: Article[],
-  filters: FilterState
+  filters: FilterState,
+  progressMap?: Record<string, ArticleProgressData>
 ): Article[] {
   return articles.filter((article) => {
-    // Game filter
+    // 1. Read Status filter (uses progressMap)
+    if (filters.readStatus && progressMap) {
+      const progress = progressMap[article.id]
+      const status = getReadStatus(progress)
+      if (status !== filters.readStatus) return false
+    }
+
+    // 2. Reading Time filter
+    if (filters.readingTime.length > 0) {
+      const matches = filters.readingTime.some((range) => {
+        const { min, max } = READING_TIME_RANGES[range]
+        return article.readingTime >= min && article.readingTime < max
+      })
+      if (!matches) return false
+    }
+
+    // 3. Series filter
+    if (filters.series) {
+      if (!article.series || article.series.slug !== filters.series) return false
+    }
+
+    // 4. Game filter
     if (filters.games.length > 0) {
       const articleGameIds = article.games.map((g) => g.id)
       if (!filters.games.some((gameId) => articleGameIds.includes(gameId))) {
@@ -292,22 +364,21 @@ export function filterArticles(
       }
     }
 
-    // Topic filter
+    // 5. Topic filter
     if (filters.topics.length > 0) {
       if (!filters.topics.includes(article.topic.id)) {
         return false
       }
     }
 
-    // Tag filter
-    if (filters.tags.length > 0) {
-      const articleTagIds = article.tags.map((t) => t.id)
-      if (!filters.tags.some((tagId) => articleTagIds.includes(tagId))) {
+    // 6. Content type filter
+    if (filters.contentTypes.length > 0) {
+      if (!filters.contentTypes.includes(article.contentType.id)) {
         return false
       }
     }
 
-    // Search filter
+    // 7. Search filter
     if (filters.search) {
       const searchLower = filters.search.toLowerCase()
       const matchesTitle = article.title.toLowerCase().includes(searchLower)
