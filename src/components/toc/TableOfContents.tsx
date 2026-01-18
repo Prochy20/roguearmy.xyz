@@ -49,23 +49,28 @@ function Corner({ position }: { position: 'tl' | 'tr' | 'bl' | 'br' }) {
 
 /**
  * Desktop fixed table of contents with integrated back button.
- * Uses fixed positioning, visible only when article is in viewport.
- * Appears when scrolling into article, disappears when scrolling back to hero.
+ * Uses fixed positioning, tethered to article start position.
+ * TOC follows article top as it scrolls up, but parks at viewport center.
+ * When scrolling back up, TOC follows the content back down.
  * Matches the corner bracket + floating label style of tables and callouts.
  * Auto-scrolls to keep active heading visible.
  */
 export function TableOfContents({ headings, className, articleRef }: TableOfContentsProps) {
   const { activeId, scrollToHeading } = useTOC({ headings })
-  const [isVisible, setIsVisible] = useState(false)
+  const [tocState, setTocState] = useState<{ visible: boolean; top: number }>({
+    visible: false,
+    top: 50, // percentage
+  })
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const itemRefs = useRef<Map<string, HTMLButtonElement>>(new Map())
 
-  // Show TOC only when article is in viewport (not during hero)
+  // TOC positioning: tethered to article start, but stops at center of viewport
   useEffect(() => {
-    const checkVisibility = () => {
+    const updatePosition = () => {
       if (!articleRef?.current) {
-        // Fallback: show after scrolling past 80% of viewport height
-        setIsVisible(window.scrollY > window.innerHeight * 0.8)
+        // Fallback: simple visibility after scrolling
+        const visible = window.scrollY > window.innerHeight * 0.8
+        setTocState({ visible, top: 50 })
         return
       }
 
@@ -73,22 +78,44 @@ export function TableOfContents({ headings, className, articleRef }: TableOfCont
       const rect = article.getBoundingClientRect()
       const viewportHeight = window.innerHeight
 
-      // Show TOC when:
-      // - Article top has scrolled above the viewport center (we're "in" the article)
-      // - Article bottom is still below viewport top (article is still visible)
-      const articleTopAboveCenter = rect.top < viewportHeight * 0.5
-      const articleStillVisible = rect.bottom > 0
+      // Hide if article is completely out of view
+      if (rect.bottom <= 0) {
+        setTocState((prev) => ({ ...prev, visible: false }))
+        return
+      }
 
-      setIsVisible(articleTopAboveCenter && articleStillVisible)
+      // The article element IS the content area (hero is separate)
+      // Add small offset for article padding (py-12 lg:py-16 = ~48-64px)
+      const contentTop = rect.top + 64
+
+      // The "parked" position - TOC top sits near top of viewport with some margin
+      const parkedTop = viewportHeight * 0.15
+
+      // TOC follows content position, but can't go above parked position
+      const tocTop = Math.max(contentTop, parkedTop)
+
+      // Only show TOC when its position is actually on screen
+      if (tocTop >= viewportHeight) {
+        setTocState((prev) => ({ ...prev, visible: false }))
+        return
+      }
+
+      // Convert to viewport percentage for consistent positioning
+      const tocTopPercent = (tocTop / viewportHeight) * 100
+
+      setTocState({
+        visible: true,
+        top: tocTopPercent,
+      })
     }
 
-    checkVisibility()
-    window.addEventListener('scroll', checkVisibility, { passive: true })
-    window.addEventListener('resize', checkVisibility, { passive: true })
+    updatePosition()
+    window.addEventListener('scroll', updatePosition, { passive: true })
+    window.addEventListener('resize', updatePosition, { passive: true })
 
     return () => {
-      window.removeEventListener('scroll', checkVisibility)
-      window.removeEventListener('resize', checkVisibility)
+      window.removeEventListener('scroll', updatePosition)
+      window.removeEventListener('resize', updatePosition)
     }
   }, [articleRef])
 
@@ -134,18 +161,21 @@ export function TableOfContents({ headings, className, articleRef }: TableOfCont
     }
   }
 
-  if (!isVisible) return null
-
   return (
     <nav
       className={cn(
-        // Fixed positioning, centered in left column
-        'fixed top-1/2 -translate-y-1/2 z-50 w-[200px] hidden lg:block',
+        // Fixed positioning in left column, top-aligned
+        'fixed z-50 w-[200px] hidden lg:block',
         className
       )}
       style={{
         // Center horizontally in left column
         left: 'max(16px, calc((100vw - 720px) / 4 - 100px))',
+        // Dynamic vertical position - follows article, parks at center
+        top: `${tocState.top}%`,
+        // Hide without unmounting to avoid blink
+        opacity: tocState.visible ? 1 : 0,
+        pointerEvents: tocState.visible ? 'auto' : 'none',
       }}
       aria-label="Table of contents"
     >
