@@ -72,7 +72,7 @@ export function MembersHeader({
     <header className="sticky top-0 z-50 border-b border-rga-green/20 bg-void/90 backdrop-blur-md">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between gap-4">
-          {/* Left: Logo/Back + Mobile Filter */}
+          {/* Left: Logo/Back + Navigation + Mobile Filter */}
           <div className="flex items-center gap-3">
             <Link
               href="/"
@@ -80,6 +80,22 @@ export function MembersHeader({
             >
               RGA
             </Link>
+
+            {/* Main Navigation */}
+            <nav className="hidden sm:flex items-center gap-1 ml-4">
+              <Link
+                href="/members"
+                className="px-3 py-1.5 text-sm text-rga-gray hover:text-white transition-colors"
+              >
+                Articles
+              </Link>
+              <Link
+                href="/members/series"
+                className="px-3 py-1.5 text-sm text-rga-gray hover:text-white transition-colors"
+              >
+                Series
+              </Link>
+            </nav>
 
             {/* Mobile filter button */}
             <button
@@ -182,6 +198,21 @@ export function MembersHeader({
                     </p>
                   </div>
                   <nav className="py-1">
+                    {/* Mobile-only navigation links */}
+                    <div className="sm:hidden border-b border-rga-green/10 pb-1 mb-1">
+                      <Link
+                        href="/members"
+                        className="block px-4 py-2 text-sm text-rga-gray hover:text-white hover:bg-bg-surface transition-colors"
+                      >
+                        Articles
+                      </Link>
+                      <Link
+                        href="/members/series"
+                        className="block px-4 py-2 text-sm text-rga-gray hover:text-white hover:bg-bg-surface transition-colors"
+                      >
+                        Series
+                      </Link>
+                    </div>
                     <Link
                       href="/members/profile"
                       className="block px-4 py-2 text-sm text-rga-gray hover:text-white hover:bg-bg-surface transition-colors"
