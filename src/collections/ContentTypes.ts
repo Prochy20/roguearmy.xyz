@@ -1,7 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
-export const Tags: CollectionConfig = {
-  slug: 'tags',
+export const ContentTypes: CollectionConfig = {
+  slug: 'content-types',
   admin: {
     useAsTitle: 'name',
     group: 'Taxonomies',

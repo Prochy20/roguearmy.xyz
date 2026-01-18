@@ -11,7 +11,7 @@ import { Media } from './collections/Media'
 import { Games } from './collections/Games'
 import { Members } from './collections/Members'
 import { Topics } from './collections/Topics'
-import { Tags } from './collections/Tags'
+import { ContentTypes } from './collections/ContentTypes'
 import { Series } from './collections/Series'
 import { Articles } from './collections/Articles'
 import { ReadProgress } from './collections/ReadProgress'
@@ -35,7 +35,7 @@ export default buildConfig({
   cors: [process.env.NEXT_PUBLIC_SERVER_URL || ''].filter(Boolean),
 
   // Order determines admin menu group ordering: Content, Taxonomies, Assets, Users
-  collections: [Articles, Series, Games, Topics, Tags, Media, Users, Members, ReadProgress],
+  collections: [Articles, Series, Games, Topics, ContentTypes, Media, Users, Members, ReadProgress],
   globals: [Homepage],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',

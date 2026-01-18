@@ -107,12 +107,13 @@ export const Articles: CollectionConfig = {
           },
         },
         {
-          name: 'tags',
+          name: 'contentType',
           type: 'relationship',
-          relationTo: 'tags',
-          hasMany: true,
+          relationTo: 'content-types',
+          hasMany: false,
+          required: true,
           admin: {
-            description: 'Optional: Additional tags for discovery',
+            description: 'Content format: Article, Video, Podcast, etc.',
           },
         },
       ],

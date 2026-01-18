@@ -71,7 +71,7 @@ export interface Config {
     series: Series;
     games: Game;
     topics: Topic;
-    tags: Tag;
+    'content-types': ContentType;
     media: Media;
     users: User;
     members: Member;
@@ -87,7 +87,7 @@ export interface Config {
     series: SeriesSelect<false> | SeriesSelect<true>;
     games: GamesSelect<false> | GamesSelect<true>;
     topics: TopicsSelect<false> | TopicsSelect<true>;
-    tags: TagsSelect<false> | TagsSelect<true>;
+    'content-types': ContentTypesSelect<false> | ContentTypesSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     members: MembersSelect<false> | MembersSelect<true>;
@@ -159,9 +159,9 @@ export interface Article {
      */
     games?: (string | Game)[] | null;
     /**
-     * Optional: Additional tags for discovery
+     * Content format: Article, Video, Podcast, etc.
      */
-    tags?: (string | Tag)[] | null;
+    contentType: string | ContentType;
   };
   articleContent?: {
     /**
@@ -245,9 +245,9 @@ export interface Game {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "tags".
+ * via the `definition` "content-types".
  */
-export interface Tag {
+export interface ContentType {
   id: string;
   name: string;
   /**
@@ -449,8 +449,8 @@ export interface PayloadLockedDocument {
         value: string | Topic;
       } | null)
     | ({
-        relationTo: 'tags';
-        value: string | Tag;
+        relationTo: 'content-types';
+        value: string | ContentType;
       } | null)
     | ({
         relationTo: 'media';
@@ -526,7 +526,7 @@ export interface ArticlesSelect<T extends boolean = true> {
     | {
         topic?: T;
         games?: T;
-        tags?: T;
+        contentType?: T;
       };
   articleContent?:
     | T
@@ -578,9 +578,9 @@ export interface TopicsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "tags_select".
+ * via the `definition` "content-types_select".
  */
-export interface TagsSelect<T extends boolean = true> {
+export interface ContentTypesSelect<T extends boolean = true> {
   name?: T;
   slug?: T;
   updatedAt?: T;
