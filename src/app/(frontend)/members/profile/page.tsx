@@ -1,10 +1,9 @@
 import { cookies } from 'next/headers'
-import Link from 'next/link'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { verifyMemberToken } from '@/lib/auth/jwt'
 import { MEMBER_SESSION_COOKIE } from '@/lib/auth/cookies'
-import { UserAvatar, LogoutButton } from '@/components/auth'
+import { UserAvatar } from '@/components/auth'
 import { GlitchText } from '@/components/effects/GlitchText'
 
 async function getMember() {
@@ -38,18 +37,6 @@ export default async function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-void">
-      {/* Header */}
-      <header className="border-b border-rga-green/20 bg-void/80 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link href="/members" className="text-rga-green hover:text-rga-green/80">
-              &larr; Back
-            </Link>
-          </div>
-          <LogoutButton />
-        </div>
-      </header>
-
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto">

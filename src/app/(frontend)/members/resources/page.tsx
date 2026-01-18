@@ -1,22 +1,8 @@
-import Link from 'next/link'
-import { LogoutButton } from '@/components/auth'
 import { GlitchText } from '@/components/effects/GlitchText'
 
 export default function ResourcesPage() {
   return (
     <div className="min-h-screen bg-void">
-      {/* Header */}
-      <header className="border-b border-rga-green/20 bg-void/80 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link href="/members" className="text-rga-green hover:text-rga-green/80">
-              &larr; Back
-            </Link>
-          </div>
-          <LogoutButton />
-        </div>
-      </header>
-
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
