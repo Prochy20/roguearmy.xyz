@@ -106,8 +106,13 @@ export function ArticleCard({ article, index = 0, progress }: ArticleCardProps) 
 
               {/* Metadata Row */}
               <div className="flex items-center gap-x-4 gap-y-2 text-xs text-rga-gray/60">
-                {/* Left side: Date, Reading Time, Tags */}
-                <div className="flex flex-wrap items-center gap-x-4 gap-y-2 flex-1">
+                {/* Left side: Content Type, Date, Reading Time */}
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-2 flex-1">
+                  {/* Content Type - subtle pill */}
+                  <span className="px-2 py-0.5 rounded bg-white/5 text-rga-gray/50 uppercase tracking-wider text-[10px]">
+                    {article.contentType.name}
+                  </span>
+
                   {/* Date */}
                   <div className="flex items-center gap-1">
                     <Calendar className="w-3.5 h-3.5" />
@@ -118,23 +123,6 @@ export function ArticleCard({ article, index = 0, progress }: ArticleCardProps) 
                   <div className="flex items-center gap-1">
                     <Clock className="w-3.5 h-3.5" />
                     <span>{article.readingTime} min read</span>
-                  </div>
-
-                  {/* Separator */}
-                  <span className="hidden sm:inline text-rga-gray/30">|</span>
-
-                  {/* Tags */}
-                  <div className="flex flex-wrap gap-2">
-                    {article.tags.slice(0, 2).map((tag) => (
-                      <CyberTag key={tag.id} color="gray" className="text-rga-gray/80">
-                        {tag.name}
-                      </CyberTag>
-                    ))}
-                    {article.tags.length > 2 && (
-                      <span className="text-rga-gray/40">
-                        +{article.tags.length - 2}
-                      </span>
-                    )}
                   </div>
                 </div>
 
