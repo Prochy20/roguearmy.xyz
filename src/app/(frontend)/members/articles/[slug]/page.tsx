@@ -6,12 +6,13 @@ import {
   getSeriesNavigation,
   getAllArticleSlugs,
 } from '@/lib/articles.server'
+import { extractHeadingsFromLexical } from '@/lib/toc'
 import { CyberButton } from '@/components/members/CyberButton'
+import { ReadProgressTracker } from '@/components/members/ReadProgressTracker'
 import { cn } from '@/lib/utils'
 import { ArticleHero } from './ArticleHero'
-import { ArticleContent } from './ArticleContent'
+import { ArticleWithTOC } from './ArticleWithTOC'
 import { BackToTop } from './BackToTop'
-import { ScrollBackButton } from './ScrollBackButton'
 import { ReadingStatus } from './ReadingStatus'
 import { SeriesNavigation } from './SeriesNavigation'
 
@@ -35,10 +36,19 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
   const tint = getTintClasses(article.topic.tint)
   const seriesNavigation = await getSeriesNavigation(article.id)
 
+  // Extract headings for TOC (server-side for Payload content)
+  const initialHeadings =
+    article.contentSource.type === 'payload'
+      ? extractHeadingsFromLexical(article.contentSource.content?.content)
+      : [] // Wiki content headings extracted client-side
+
   return (
     <div className="min-h-screen bg-void relative overflow-hidden">
       {/* Reading status bar - bottom of screen */}
       <ReadingStatus readingTime={article.readingTime} />
+
+      {/* Progress tracker - persists reading progress to API */}
+      <ReadProgressTracker articleId={article.id} />
 
       {/* Background atmospheric effects */}
       <div
@@ -51,9 +61,6 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
           `,
         }}
       />
-
-      {/* Floating nav - appears on scroll */}
-      <ScrollBackButton />
 
       {/* Hero Section - Full viewport */}
       <ArticleHero
@@ -85,31 +92,14 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 
           {/* Content grid */}
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_minmax(0,720px)_1fr] gap-8 px-6 md:px-12 lg:px-0">
-            {/* Left margin - decorative on large screens */}
-            <div className="hidden lg:flex flex-col items-end pt-12 pr-8">
-              <div className="sticky top-24 space-y-6">
-                {/* Reading progress indicator placeholder */}
-                <div className="w-px h-24 bg-gradient-to-b from-rga-green/50 to-transparent" />
+            {/* Left margin - empty spacer on large screens */}
+            <div className="hidden lg:block" />
 
-                {/* Decorative grid pattern */}
-                <div className="grid grid-cols-3 gap-1 opacity-20">
-                  {Array.from({ length: 9 }).map((_, i) => (
-                    <div
-                      key={i}
-                      className={cn(
-                        'w-2 h-2 rounded-sm',
-                        i % 3 === 0 ? 'bg-rga-green' : 'bg-rga-gray/30'
-                      )}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Main content */}
-            <article className="py-12 lg:py-16">
-              <ArticleContent contentSource={article.contentSource} />
-
+            {/* Center - Article content with fixed TOC */}
+            <ArticleWithTOC
+              contentSource={article.contentSource}
+              initialHeadings={initialHeadings}
+            >
               {/* Series navigation - only show if article is part of a series */}
               {seriesNavigation && (
                 <SeriesNavigation navigation={seriesNavigation} />
@@ -128,7 +118,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
                   <BackToTop />
                 </div>
               </footer>
-            </article>
+            </ArticleWithTOC>
 
             {/* Right margin - metadata on large screens */}
             <div className="hidden lg:block pt-12 pl-8">
