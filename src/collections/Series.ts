@@ -47,6 +47,14 @@ export const Series: CollectionConfig = {
       },
     },
     {
+      name: 'heroImage',
+      type: 'upload',
+      relationTo: 'media',
+      admin: {
+        description: 'Optional hero image for the series. Falls back to first article hero if not set.',
+      },
+    },
+    {
       name: 'articles',
       type: 'relationship',
       relationTo: 'articles',

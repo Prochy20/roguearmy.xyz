@@ -273,6 +273,10 @@ export interface Series {
    */
   description?: string | null;
   /**
+   * Optional hero image for the series. Falls back to first article hero if not set.
+   */
+  heroImage?: (string | null) | Media;
+  /**
    * Articles in this series. Drag to reorder - the order here defines the series order.
    */
   articles?: (string | Article)[] | null;
@@ -543,6 +547,7 @@ export interface SeriesSelect<T extends boolean = true> {
   name?: T;
   slug?: T;
   description?: T;
+  heroImage?: T;
   articles?: T;
   updatedAt?: T;
   createdAt?: T;
