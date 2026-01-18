@@ -26,8 +26,8 @@ export function ArticleFeed({
   const [isLoading, setIsLoading] = useState(false)
   const loadMoreRef = useRef<HTMLDivElement>(null)
 
-  // Filter articles
-  const filteredArticles = filterArticles(articles, filters)
+  // Filter articles (pass progress for read status filtering)
+  const filteredArticles = filterArticles(articles, filters, progress)
 
   // Reset displayed count when filters change
   useEffect(() => {

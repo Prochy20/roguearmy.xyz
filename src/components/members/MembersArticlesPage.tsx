@@ -28,9 +28,12 @@ export function MembersArticlesPage({
   const urlSearch = searchParams.get('search') || ''
 
   const [filters, setFilters] = useState<FilterState>({
+    readStatus: null,
+    readingTime: [],
+    series: null,
     games: [],
     topics: [],
-    tags: [],
+    contentTypes: [],
     search: urlSearch,
   })
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false)
@@ -48,7 +51,15 @@ export function MembersArticlesPage({
   }
 
   const handleClearFilters = () => {
-    setFilters({ games: [], topics: [], tags: [], search: '' })
+    setFilters({
+      readStatus: null,
+      readingTime: [],
+      series: null,
+      games: [],
+      topics: [],
+      contentTypes: [],
+      search: '',
+    })
     clearUrlSearch()
   }
 
