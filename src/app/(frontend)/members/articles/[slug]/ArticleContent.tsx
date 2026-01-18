@@ -4,18 +4,29 @@ import { useState, useEffect } from 'react'
 import { motion } from 'motion/react'
 import { RichText } from '@payloadcms/richtext-lexical/react'
 import { MarkdownRenderer } from '@/components/markdown'
+import { extractHeadingsFromMarkdown, type TOCHeading } from '@/lib/toc'
 import type { ArticleContentSource } from '@/lib/articles'
 
 interface ArticleContentProps {
   contentSource: ArticleContentSource
+  /** Callback to provide extracted headings to parent (for wiki content) */
+  onHeadingsExtracted?: (headings: TOCHeading[]) => void
 }
 
 /**
  * Renders article content from either Payload Lexical richText or Wiki markdown.
  */
-export function ArticleContent({ contentSource }: ArticleContentProps) {
+export function ArticleContent({
+  contentSource,
+  onHeadingsExtracted,
+}: ArticleContentProps) {
   if (contentSource.type === 'wiki' && contentSource.outlineDocumentId) {
-    return <WikiContent documentId={contentSource.outlineDocumentId} />
+    return (
+      <WikiContent
+        documentId={contentSource.outlineDocumentId}
+        onHeadingsExtracted={onHeadingsExtracted}
+      />
+    )
   }
 
   // Payload Lexical content
@@ -57,7 +68,13 @@ export function ArticleContent({ contentSource }: ArticleContentProps) {
 /**
  * Client component to fetch and render wiki markdown content.
  */
-function WikiContent({ documentId }: { documentId: string }) {
+function WikiContent({
+  documentId,
+  onHeadingsExtracted,
+}: {
+  documentId: string
+  onHeadingsExtracted?: (headings: TOCHeading[]) => void
+}) {
   const [content, setContent] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -73,6 +90,12 @@ function WikiContent({ documentId }: { documentId: string }) {
 
         const data = await response.json()
         setContent(data.content)
+
+        // Extract and report headings for TOC
+        if (onHeadingsExtracted && data.content) {
+          const headings = extractHeadingsFromMarkdown(data.content)
+          onHeadingsExtracted(headings)
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Unknown error')
       } finally {
@@ -81,7 +104,7 @@ function WikiContent({ documentId }: { documentId: string }) {
     }
 
     fetchContent()
-  }, [documentId])
+  }, [documentId, onHeadingsExtracted])
 
   if (isLoading) {
     return (
