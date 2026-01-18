@@ -13,6 +13,7 @@ import { Topics } from './collections/Topics'
 import { Tags } from './collections/Tags'
 import { Series } from './collections/Series'
 import { Articles } from './collections/Articles'
+import { ReadProgress } from './collections/ReadProgress'
 import { Homepage } from './globals/Homepage'
 
 const filename = fileURLToPath(import.meta.url)
@@ -33,7 +34,7 @@ export default buildConfig({
   cors: [process.env.NEXT_PUBLIC_SERVER_URL || ''].filter(Boolean),
 
   // Order determines admin menu group ordering: Content, Taxonomies, Assets, Users
-  collections: [Articles, Series, Games, Topics, Tags, Media, Users, Members],
+  collections: [Articles, Series, Games, Topics, Tags, Media, Users, Members, ReadProgress],
   globals: [Homepage],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',

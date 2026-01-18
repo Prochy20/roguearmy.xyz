@@ -75,6 +75,7 @@ export interface Config {
     media: Media;
     users: User;
     members: Member;
+    'read-progress': ReadProgress;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -90,6 +91,7 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     members: MembersSelect<false> | MembersSelect<true>;
+    'read-progress': ReadProgressSelect<false> | ReadProgressSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -370,6 +372,39 @@ export interface Member {
   createdAt: string;
 }
 /**
+ * Tracks article reading progress for members
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "read-progress".
+ */
+export interface ReadProgress {
+  id: string;
+  member: string | Member;
+  article: string | Article;
+  /**
+   * Scroll percentage (0-100)
+   */
+  progress: number;
+  /**
+   * When the member first visited this article
+   */
+  firstVisitedAt: string;
+  /**
+   * When the member last visited this article
+   */
+  lastVisitedAt: string;
+  /**
+   * Total time spent reading (seconds)
+   */
+  timeSpent: number;
+  /**
+   * True when progress reaches 85% or higher
+   */
+  completed?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -424,6 +459,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'members';
         value: string | Member;
+      } | null)
+    | ({
+        relationTo: 'read-progress';
+        value: string | ReadProgress;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -602,6 +641,21 @@ export interface MembersSelect<T extends boolean = true> {
   joinedAt?: T;
   lastLogin?: T;
   status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "read-progress_select".
+ */
+export interface ReadProgressSelect<T extends boolean = true> {
+  member?: T;
+  article?: T;
+  progress?: T;
+  firstVisitedAt?: T;
+  lastVisitedAt?: T;
+  timeSpent?: T;
+  completed?: T;
   updatedAt?: T;
   createdAt?: T;
 }
