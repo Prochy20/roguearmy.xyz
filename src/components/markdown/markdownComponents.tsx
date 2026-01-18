@@ -1,6 +1,32 @@
 import type { Components } from 'react-markdown'
+import type { ReactNode } from 'react'
 import { CodeBlock } from './CodeBlock'
 import { Callout } from './Callout'
+import { slugify } from '@/lib/toc'
+
+/**
+ * Extracts plain text from React children for generating heading IDs.
+ */
+function extractTextFromChildren(children: ReactNode): string {
+  if (typeof children === 'string') {
+    return children
+  }
+
+  if (typeof children === 'number') {
+    return String(children)
+  }
+
+  if (Array.isArray(children)) {
+    return children.map(extractTextFromChildren).join('')
+  }
+
+  if (children && typeof children === 'object' && 'props' in children) {
+    const props = (children as { props: { children?: ReactNode } }).props
+    return extractTextFromChildren(props.children)
+  }
+
+  return ''
+}
 
 /**
  * Custom React components for markdown elements with cyberpunk theme styling.
@@ -15,18 +41,32 @@ export const markdownComponents: Partial<Components> = {
     </h1>
   ),
 
-  h2: ({ children }) => (
-    <h2 className="font-display text-xl md:text-2xl text-rga-cyan mt-12 mb-5 flex items-center gap-3">
-      <span className="w-8 h-px bg-rga-cyan/50" />
-      {children}
-    </h2>
-  ),
+  h2: ({ children }) => {
+    const text = extractTextFromChildren(children)
+    const id = slugify(text)
+    return (
+      <h2
+        id={id}
+        className="font-display text-xl md:text-2xl text-rga-cyan mt-12 mb-5 flex items-center gap-3 scroll-mt-28"
+      >
+        <span className="w-8 h-px bg-rga-cyan/50" />
+        {children}
+      </h2>
+    )
+  },
 
-  h3: ({ children }) => (
-    <h3 className="font-bold text-lg md:text-xl text-white mt-8 mb-4 tracking-wide">
-      {children}
-    </h3>
-  ),
+  h3: ({ children }) => {
+    const text = extractTextFromChildren(children)
+    const id = slugify(text)
+    return (
+      <h3
+        id={id}
+        className="font-bold text-lg md:text-xl text-white mt-8 mb-4 tracking-wide scroll-mt-28"
+      >
+        {children}
+      </h3>
+    )
+  },
 
   h4: ({ children }) => (
     <h4 className="font-semibold text-base md:text-lg text-rga-cyan/90 mt-6 mb-3">
