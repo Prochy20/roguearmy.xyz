@@ -96,7 +96,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         tint={tint}
         publishedAt={article.publishedAt}
         readingTime={article.readingTime}
-        tags={article.tags}
+        contentType={article.contentType}
         games={article.games}
       />
 
