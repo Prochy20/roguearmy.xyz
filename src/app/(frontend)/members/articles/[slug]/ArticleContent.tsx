@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { motion } from 'motion/react'
 import { RichText } from '@payloadcms/richtext-lexical/react'
 import { MarkdownRenderer } from '@/components/markdown'
+import { DataStreamLoader } from '@/components/loading/DataStreamLoader'
 import { extractHeadingsFromMarkdown, type TOCHeading } from '@/lib/toc'
 import type { ArticleContentSource } from '@/lib/articles'
 
@@ -107,17 +108,7 @@ function WikiContent({
   }, [documentId, onHeadingsExtracted])
 
   if (isLoading) {
-    return (
-      <div className="space-y-4 animate-pulse">
-        <div className="h-8 bg-rga-gray/10 rounded w-3/4" />
-        <div className="h-4 bg-rga-gray/10 rounded w-full" />
-        <div className="h-4 bg-rga-gray/10 rounded w-5/6" />
-        <div className="h-4 bg-rga-gray/10 rounded w-4/6" />
-        <div className="h-6 bg-rga-gray/10 rounded w-2/3 mt-8" />
-        <div className="h-4 bg-rga-gray/10 rounded w-full" />
-        <div className="h-4 bg-rga-gray/10 rounded w-5/6" />
-      </div>
-    )
+    return <DataStreamLoader statusMessage="RETRIEVING TRANSMISSION" />
   }
 
   if (error) {
