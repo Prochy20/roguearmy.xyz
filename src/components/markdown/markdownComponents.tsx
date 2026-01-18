@@ -283,9 +283,9 @@ export const markdownComponents: Partial<Components> = {
     <div className="my-14 mx-auto max-w-xs h-px bg-gradient-to-r from-transparent via-rga-gray/20 to-transparent" />
   ),
 
-  // Strong/Bold
+  // Strong/Bold - slight horizontal margin for breathing room
   strong: ({ children }) => (
-    <strong className="text-white font-semibold">{children}</strong>
+    <strong className="text-white font-medium mx-[0.1em]">{children}</strong>
   ),
 
   // Emphasis/Italic
