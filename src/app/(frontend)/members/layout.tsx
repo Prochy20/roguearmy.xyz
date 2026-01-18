@@ -4,6 +4,7 @@ import config from '@payload-config'
 import { verifyMemberToken } from '@/lib/auth/jwt'
 import { MEMBER_SESSION_COOKIE } from '@/lib/auth/cookies'
 import { AccessDenied } from '@/components/auth/AccessDenied'
+import { MembersLayoutClient } from '@/components/members/MembersLayoutClient'
 
 interface MemberLayoutProps {
   children: React.ReactNode
@@ -49,9 +50,22 @@ async function getMemberSession() {
 export default async function MembersLayout({ children }: MemberLayoutProps) {
   const result = await getMemberSession()
 
-  if (!result.authenticated) {
-    return <AccessDenied reason={result.reason} />
+  if (!result.authenticated || !result.member) {
+    return <AccessDenied reason={result.reason ?? 'error'} />
   }
 
-  return <>{children}</>
+  // Extract member info for context
+  const { member } = result
+  const memberInfo = {
+    discordId: member.discordId,
+    avatar: member.avatar ?? null,
+    username: member.username,
+    globalName: member.globalName ?? null,
+  }
+
+  return (
+    <MembersLayoutClient member={memberInfo}>
+      {children}
+    </MembersLayoutClient>
+  )
 }
