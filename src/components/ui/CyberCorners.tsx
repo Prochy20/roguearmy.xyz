@@ -71,7 +71,7 @@ export function CyberCorners({
       style={{ padding: `${offset + gap}px` }}
     >
       {/* The actual content */}
-      <div className="relative z-10">{children}</div>
+      <div className="relative z-10 h-full">{children}</div>
 
       {/* Corner brackets - positioned outside the content */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
