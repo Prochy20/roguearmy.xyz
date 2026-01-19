@@ -2,16 +2,21 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion } from 'motion/react'
+import { cn } from '@/lib/utils'
 import { ArticleCard } from './ArticleCard'
+import { ArticleCardCompact } from './ArticleCardCompact'
+import { ArticleCardList } from './ArticleCardList'
 import { EmptyState } from './EmptyState'
 import { type Article, type FilterState, filterArticles } from '@/lib/articles'
 import { type ArticleProgress } from '@/lib/progress.server'
+import type { ViewMode } from '@/hooks/useViewMode'
 
 interface ArticleFeedProps {
   articles: Article[]
   filters: FilterState
   onClearFilters: () => void
   progress?: Record<string, ArticleProgress>
+  viewMode?: ViewMode
 }
 
 const ARTICLES_PER_PAGE = 4
@@ -21,6 +26,7 @@ export function ArticleFeed({
   filters,
   onClearFilters,
   progress,
+  viewMode = 'featured',
 }: ArticleFeedProps) {
   const [displayedCount, setDisplayedCount] = useState(ARTICLES_PER_PAGE)
   const [isLoading, setIsLoading] = useState(false)
@@ -78,18 +84,54 @@ export function ArticleFeed({
     return <EmptyState onClearFilters={onClearFilters} />
   }
 
-  return (
-    <div className="space-y-6">
-      {/* Article Grid */}
-      <div className="grid gap-6">
-        {displayedArticles.map((article, index) => (
+  // Grid classes based on view mode
+  const gridClasses = cn(
+    viewMode === 'featured' && 'grid gap-6',
+    viewMode === 'grid' && 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-fr',
+    viewMode === 'list' && 'flex flex-col gap-3'
+  )
+
+  // Render the appropriate card component based on view mode
+  const renderCard = (article: Article, index: number) => {
+    const cardProgress = progress?.[article.id]
+
+    switch (viewMode) {
+      case 'grid':
+        return (
+          <ArticleCardCompact
+            key={article.id}
+            article={article}
+            index={index}
+            progress={cardProgress}
+          />
+        )
+      case 'list':
+        return (
+          <ArticleCardList
+            key={article.id}
+            article={article}
+            index={index}
+            progress={cardProgress}
+          />
+        )
+      case 'featured':
+      default:
+        return (
           <ArticleCard
             key={article.id}
             article={article}
             index={index}
-            progress={progress?.[article.id]}
+            progress={cardProgress}
           />
-        ))}
+        )
+    }
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Article Grid */}
+      <div className={gridClasses}>
+        {displayedArticles.map((article, index) => renderCard(article, index))}
       </div>
 
       {/* Load More Trigger / Loading Indicator */}
