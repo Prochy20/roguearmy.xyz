@@ -4,6 +4,7 @@ import { ArrowLeft } from 'lucide-react'
 import { getTintClasses, formatArticleDate } from '@/lib/articles'
 import {
   getArticleBySlug,
+  getArticleBySlugWithDraft,
   getSeriesNavigation,
   getAllArticleSlugs,
 } from '@/lib/articles.server'
@@ -16,12 +17,14 @@ import { ReadProgressTracker } from '@/components/members/ReadProgressTracker'
 import { cn } from '@/lib/utils'
 import { ArticleHero } from './ArticleHero'
 import { ArticleWithTOC } from './ArticleWithTOC'
+import { ArticlePageClient } from './ArticlePageClient'
 import { BackToTop } from './BackToTop'
 import { ReadingStatus } from './ReadingStatus'
 import { SeriesNavigation } from './SeriesNavigation'
 
 interface ArticlePageProps {
   params: Promise<{ slug: string }>
+  searchParams: Promise<{ preview?: string }>
 }
 
 async function getMemberId() {
@@ -39,9 +42,15 @@ export async function generateStaticParams() {
   return slugs.map((slug) => ({ slug }))
 }
 
-export default async function ArticlePage({ params }: ArticlePageProps) {
+export default async function ArticlePage({ params, searchParams }: ArticlePageProps) {
   const { slug } = await params
-  const article = await getArticleBySlug(slug)
+  const { preview } = await searchParams
+  const isPreview = preview === 'true'
+
+  // Use draft-aware fetch for preview mode
+  const { article, rawArticle } = isPreview
+    ? await getArticleBySlugWithDraft(slug, true)
+    : { article: await getArticleBySlug(slug), rawArticle: null }
 
   if (!article) {
     notFound()
@@ -68,6 +77,20 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
       ? extractHeadingsFromLexical(article.contentSource.content?.content)
       : [] // Wiki content headings extracted client-side
 
+  // Preview mode: use client component with live preview hook
+  if (isPreview && rawArticle) {
+    return (
+      <ArticlePageClient
+        initialArticle={article}
+        rawArticle={rawArticle}
+        serverURL={process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'}
+        seriesNavigation={seriesNavigation}
+        seriesProgress={seriesProgress}
+      />
+    )
+  }
+
+  // Normal mode: server-rendered output
   return (
     <div className="min-h-screen bg-void relative overflow-hidden">
       {/* Reading status bar - bottom of screen */}
