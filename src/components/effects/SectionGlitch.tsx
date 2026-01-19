@@ -48,37 +48,12 @@ export function SectionGlitch({
   const ref = useRef<HTMLDivElement>(null)
   const config = intensityConfig[intensity]
   const primary = colorVars[colorPrimary]
+  const secondary = colorVars[colorSecondary]
 
   // Random delay offset so instances don't glitch at the same time
   const delayOffset = useMemo(() => Math.random() * 5, [])
-  const secondary = colorVars[colorSecondary]
 
-  // For minimal, just render a simple gradient line (no overlap/bleed)
-  if (intensity === "minimal") {
-    return (
-      <div
-        className={cn("relative w-full h-4 select-none", className)}
-        aria-hidden="true"
-      >
-        {/* Simple gradient line */}
-        <div
-          className="absolute top-1/2 left-0 right-0 h-px -translate-y-1/2"
-          style={{
-            background: `linear-gradient(90deg,
-              transparent 0%,
-              rgba(${primary.rgb}, 0.4) 20%,
-              rgba(${secondary.rgb}, 0.3) 50%,
-              rgba(${primary.rgb}, 0.4) 80%,
-              transparent 100%
-            )`,
-            boxShadow: `0 0 20px rgba(${primary.rgb}, 0.2)`,
-          }}
-        />
-      </div>
-    )
-  }
-
-  // Full glitch effect for subtle/medium/intense
+  // All hooks must be called unconditionally (before any early returns)
   // Scroll tracking for parallax
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -113,6 +88,32 @@ export function SectionGlitch({
         ],
   }), [intensity])
 
+  // For minimal, just render a simple gradient line (no overlap/bleed)
+  if (intensity === "minimal") {
+    return (
+      <div
+        className={cn("relative w-full h-4 select-none", className)}
+        aria-hidden="true"
+      >
+        {/* Simple gradient line */}
+        <div
+          className="absolute top-1/2 left-0 right-0 h-px -translate-y-1/2"
+          style={{
+            background: `linear-gradient(90deg,
+              transparent 0%,
+              rgba(${primary.rgb}, 0.4) 20%,
+              rgba(${secondary.rgb}, 0.3) 50%,
+              rgba(${primary.rgb}, 0.4) 80%,
+              transparent 100%
+            )`,
+            boxShadow: `0 0 20px rgba(${primary.rgb}, 0.2)`,
+          }}
+        />
+      </div>
+    )
+  }
+
+  // Full glitch effect for subtle/medium/intense
   return (
     <motion.div
       ref={ref}
