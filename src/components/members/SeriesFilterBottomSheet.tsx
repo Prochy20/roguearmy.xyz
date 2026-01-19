@@ -59,22 +59,6 @@ export function SeriesFilterBottomSheet({
     onFilterChange({ ...filters, sizes: newSizes })
   }
 
-  // Game handlers
-  const handleGameToggle = (id: string) => {
-    const newGames = filters.games.includes(id)
-      ? filters.games.filter((g) => g !== id)
-      : [...filters.games, id]
-    onFilterChange({ ...filters, games: newGames })
-  }
-
-  // Topic handlers
-  const handleTopicToggle = (id: string) => {
-    const newTopics = filters.topics.includes(id)
-      ? filters.topics.filter((t) => t !== id)
-      : [...filters.topics, id]
-    onFilterChange({ ...filters, topics: newTopics })
-  }
-
   const handleReset = () => {
     onFilterChange(getDefaultSeriesFilterState())
   }

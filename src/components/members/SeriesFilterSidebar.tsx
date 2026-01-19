@@ -8,7 +8,6 @@ import { getTintClasses, type TintColor } from '@/lib/articles'
 import {
   type SeriesFilterState,
   type SeriesFilterOptions,
-  type SeriesCompletionStatus,
   type SeriesSize,
   SERIES_SIZE_RANGES,
   countActiveFilters,

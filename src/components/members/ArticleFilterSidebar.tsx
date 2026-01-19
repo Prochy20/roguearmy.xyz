@@ -8,7 +8,6 @@ import {
   type FilterState,
   type FilterOptions,
   type TintColor,
-  type ReadStatusFilter,
   type ReadingTimeFilter,
   READING_TIME_RANGES,
   getTintClasses,
