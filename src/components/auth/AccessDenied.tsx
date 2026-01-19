@@ -3,6 +3,7 @@
 import { DiscordLoginButton } from './DiscordLoginButton'
 import { GlitchText } from '@/components/effects/GlitchText'
 import { MembersLoginPage } from './MembersLoginPage'
+import { ErrorPage } from '@/components/error/ErrorPage'
 
 interface AccessDeniedProps {
   reason?: 'not_authenticated' | 'not_member' | 'banned' | 'error'
@@ -42,6 +43,11 @@ export function AccessDenied({ reason = 'not_authenticated', errorCode }: Access
   // Show the immersive login page for unauthenticated users or cancelled OAuth
   if (actualReason === 'not_authenticated' || actualReason === 'oauth_denied') {
     return <MembersLoginPage />
+  }
+
+  // Show the full cyberpunk error page for banned users
+  if (actualReason === 'banned') {
+    return <ErrorPage errorType="BAN" showHomeButton={true} showRetryButton={false} />
   }
 
   const message = messages[actualReason] || messages.error
