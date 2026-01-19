@@ -10,8 +10,11 @@ import type {
   Article as PayloadArticle,
   Series as PayloadSeries,
   Media as PayloadMedia,
+  Topic as PayloadTopic,
+  Game as PayloadGame,
 } from '@/payload-types'
-import { transformPayloadArticle, type Article, type ArticleImage } from './articles'
+import { transformPayloadArticle, mapPayloadColorToTint, type Article, type ArticleImage, type TintColor } from './articles'
+import type { SeriesFilterOptions, SeriesWithFilterData } from './series'
 
 // ============================================================================
 // TYPES
@@ -38,6 +41,8 @@ export interface SeriesWithCount {
 export interface SeriesWithProgress extends SeriesWithCount {
   completedCount: number
   inProgressCount: number
+  gameIds: string[]
+  topicIds: string[]
 }
 
 // ============================================================================
@@ -206,9 +211,11 @@ export async function getSeriesWithProgress(memberId: string): Promise<SeriesWit
       }
     }
 
-    // Count completed and in-progress articles
+    // Count completed and in-progress articles, collect game and topic IDs
     let completedCount = 0
     let inProgressCount = 0
+    const gameIds = new Set<string>()
+    const topicIds = new Set<string>()
 
     for (const article of articles) {
       const progress = progressMap.get(article.id)
@@ -218,6 +225,20 @@ export async function getSeriesWithProgress(memberId: string): Promise<SeriesWit
         } else if (progress.progress > 0) {
           inProgressCount++
         }
+      }
+
+      // Collect game IDs
+      const games = article.categorization?.games || []
+      for (const game of games) {
+        if (typeof game !== 'string' && game !== null) {
+          gameIds.add(game.id)
+        }
+      }
+
+      // Collect topic ID
+      const topic = article.categorization?.topic
+      if (topic && typeof topic !== 'string') {
+        topicIds.add(topic.id)
       }
     }
 
@@ -230,6 +251,8 @@ export async function getSeriesWithProgress(memberId: string): Promise<SeriesWit
       articleCount: articles.length,
       completedCount,
       inProgressCount,
+      gameIds: Array.from(gameIds),
+      topicIds: Array.from(topicIds),
     }
   })
 }
@@ -247,4 +270,139 @@ export async function getAllSeriesSlugs(): Promise<string[]> {
   })
 
   return result.docs.map((series) => series.slug)
+}
+
+/**
+ * Get filter options for series page (unique games and topics from all series articles)
+ */
+export async function getSeriesFilterOptions(): Promise<SeriesFilterOptions> {
+  const payload = await getPayload({ config })
+
+  // Get all series with their articles populated
+  const seriesResult = await payload.find({
+    collection: 'series',
+    limit: 100,
+    depth: 2,
+  })
+
+  // Collect unique games and topics from all articles across all series
+  const gamesMap = new Map<string, { id: string; name: string; tint: TintColor }>()
+  const topicsMap = new Map<string, { id: string; name: string; tint: TintColor }>()
+
+  for (const series of seriesResult.docs) {
+    const typedSeries = series as PayloadSeries
+    const articles = (typedSeries.articles || []).filter(
+      (a): a is PayloadArticle => typeof a !== 'string' && a !== null
+    )
+
+    for (const article of articles) {
+      // Collect games
+      const games = article.categorization?.games || []
+      for (const game of games) {
+        if (typeof game !== 'string' && game !== null) {
+          const typedGame = game as PayloadGame
+          if (!gamesMap.has(typedGame.id)) {
+            gamesMap.set(typedGame.id, {
+              id: typedGame.id,
+              name: typedGame.name,
+              tint: mapPayloadColorToTint(typedGame.color),
+            })
+          }
+        }
+      }
+
+      // Collect topic
+      const topic = article.categorization?.topic
+      if (topic && typeof topic !== 'string') {
+        const typedTopic = topic as PayloadTopic
+        if (!topicsMap.has(typedTopic.id)) {
+          topicsMap.set(typedTopic.id, {
+            id: typedTopic.id,
+            name: typedTopic.name,
+            tint: mapPayloadColorToTint(typedTopic.color),
+          })
+        }
+      }
+    }
+  }
+
+  // Sort by name
+  const games = Array.from(gamesMap.values()).sort((a, b) => a.name.localeCompare(b.name))
+  const topics = Array.from(topicsMap.values()).sort((a, b) => a.name.localeCompare(b.name))
+
+  return { games, topics }
+}
+
+/**
+ * Get all series with filter data (for unauthenticated users)
+ */
+export async function getAllSeriesWithFilterData(): Promise<SeriesWithFilterData[]> {
+  const payload = await getPayload({ config })
+
+  const result = await payload.find({
+    collection: 'series',
+    limit: 100,
+    depth: 2,
+    sort: 'name',
+  })
+
+  return result.docs.map((series) => {
+    const typedSeries = series as PayloadSeries
+    const articles = (typedSeries.articles || []).filter(
+      (a): a is PayloadArticle => typeof a !== 'string' && a !== null
+    )
+
+    // Get hero image
+    let heroImage: ArticleImage | null = null
+
+    if (typedSeries.heroImage && typeof typedSeries.heroImage !== 'string') {
+      const media = typedSeries.heroImage as PayloadMedia
+      heroImage = {
+        url: media.url || '/placeholder-series.jpg',
+        alt: media.alt || typedSeries.name,
+      }
+    } else if (articles.length > 0) {
+      const firstArticle = articles[0]
+      if (firstArticle.heroImage && typeof firstArticle.heroImage !== 'string') {
+        const media = firstArticle.heroImage as PayloadMedia
+        heroImage = {
+          url: media.url || '/placeholder-series.jpg',
+          alt: media.alt || typedSeries.name,
+        }
+      }
+    }
+
+    // Collect game and topic IDs
+    const gameIds = new Set<string>()
+    const topicIds = new Set<string>()
+
+    for (const article of articles) {
+      // Collect game IDs
+      const games = article.categorization?.games || []
+      for (const game of games) {
+        if (typeof game !== 'string' && game !== null) {
+          gameIds.add(game.id)
+        }
+      }
+
+      // Collect topic ID
+      const topic = article.categorization?.topic
+      if (topic && typeof topic !== 'string') {
+        topicIds.add(topic.id)
+      }
+    }
+
+    return {
+      id: typedSeries.id,
+      name: typedSeries.name,
+      slug: typedSeries.slug,
+      description: typedSeries.description || null,
+      heroImage,
+      articleCount: articles.length,
+      completedCount: 0,
+      inProgressCount: 0,
+      gameIds: Array.from(gameIds),
+      topicIds: Array.from(topicIds),
+    }
+  })
 }
