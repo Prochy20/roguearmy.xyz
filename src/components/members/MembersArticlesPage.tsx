@@ -6,9 +6,11 @@ import { SlidersHorizontal } from 'lucide-react'
 import { ArticleFeed } from './ArticleFeed'
 import { ArticleFilterSidebar } from './ArticleFilterSidebar'
 import { FilterBottomSheet } from './FilterBottomSheet'
+import { ViewModeToggle } from './ViewModeToggle'
 import { HeroGlitch } from '@/components/effects'
 import { type Article, type FilterState, type FilterOptions } from '@/lib/articles'
 import { type ArticleProgress } from '@/lib/progress.server'
+import { useViewMode } from '@/hooks/useViewMode'
 
 interface MembersArticlesPageProps {
   articles: Article[]
@@ -23,6 +25,7 @@ export function MembersArticlesPage({
 }: MembersArticlesPageProps) {
   const searchParams = useSearchParams()
   const router = useRouter()
+  const { viewMode, setViewMode } = useViewMode()
 
   // Read search from URL, keep other filters local
   const urlSearch = searchParams.get('search') || ''
@@ -88,14 +91,20 @@ export function MembersArticlesPage({
               </p>
             </div>
 
-            {/* Mobile filter button - moved from nav */}
-            <button
-              onClick={() => setIsFilterSheetOpen(true)}
-              className="lg:hidden flex items-center gap-2 px-3 py-2 border border-rga-green/30 rounded-lg text-rga-gray text-sm hover:border-rga-green/50 hover:text-rga-green transition-colors shrink-0"
-            >
-              <SlidersHorizontal className="w-4 h-4" />
-              <span className="hidden sm:inline">Filters</span>
-            </button>
+            {/* View mode toggle + Mobile filter button */}
+            <div className="flex items-center gap-2 shrink-0">
+              <ViewModeToggle
+                viewMode={viewMode}
+                onViewModeChange={setViewMode}
+              />
+              <button
+                onClick={() => setIsFilterSheetOpen(true)}
+                className="lg:hidden flex items-center gap-2 px-3 py-2 border border-rga-green/30 rounded-lg text-rga-gray text-sm hover:border-rga-green/50 hover:text-rga-green transition-colors"
+              >
+                <SlidersHorizontal className="w-4 h-4" />
+                <span className="hidden sm:inline">Filters</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -116,6 +125,7 @@ export function MembersArticlesPage({
               filters={filters}
               onClearFilters={handleClearFilters}
               progress={progress}
+              viewMode={viewMode}
             />
           </div>
         </div>
