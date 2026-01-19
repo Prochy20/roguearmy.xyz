@@ -7,6 +7,12 @@ import { Bookmark, ChevronRight, BookmarkX } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useBookmarks } from '@/contexts/BookmarksContext'
 import { mapPayloadColorToTint, getTintClasses } from '@/lib/articles'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 
 const MAX_DROPDOWN_ITEMS = 5
 
@@ -30,23 +36,29 @@ export function NavBookmarksDropdown() {
   const hasMore = bookmarks.length > MAX_DROPDOWN_ITEMS
 
   return (
-    <div className="relative hidden sm:block" ref={menuRef}>
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className={cn(
-          'relative flex items-center gap-1.5 px-2 py-1.5 rounded-lg transition-colors',
-          isOpen ? 'bg-bg-elevated text-rga-cyan' : 'hover:bg-bg-elevated text-rga-gray hover:text-white'
-        )}
-        title="Bookmarks"
-      >
-        <Bookmark className="w-5 h-5" />
-        {/* Badge count */}
-        {bookmarks.length > 0 && (
-          <span className="flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-medium rounded-full bg-rga-cyan/20 text-rga-cyan">
-            {bookmarks.length > 99 ? '99+' : bookmarks.length}
-          </span>
-        )}
-      </button>
+    <TooltipProvider delayDuration={300}>
+      <div className="relative hidden sm:block" ref={menuRef}>
+        <Tooltip open={isOpen ? false : undefined}>
+          <TooltipTrigger asChild>
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className={cn(
+                'relative flex items-center gap-1.5 px-2 py-1.5 rounded-lg transition-colors',
+                isOpen ? 'bg-bg-elevated text-rga-cyan' : 'hover:bg-bg-elevated text-rga-gray hover:text-white'
+              )}
+              aria-label="Bookmarks"
+            >
+              <Bookmark className="w-5 h-5" />
+              {/* Badge count */}
+              {bookmarks.length > 0 && (
+                <span className="flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-medium rounded-full bg-rga-cyan/20 text-rga-cyan">
+                  {bookmarks.length > 99 ? '99+' : bookmarks.length}
+                </span>
+              )}
+            </button>
+          </TooltipTrigger>
+          <TooltipContent accent="cyan">Bookmarks</TooltipContent>
+        </Tooltip>
 
       <AnimatePresence>
         {isOpen && (
@@ -131,6 +143,7 @@ export function NavBookmarksDropdown() {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+      </div>
+    </TooltipProvider>
   )
 }
