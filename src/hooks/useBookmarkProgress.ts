@@ -22,7 +22,7 @@ interface UseBookmarkProgressResult {
  * Used by the bookmarks page to show progress indicators.
  */
 export function useBookmarkProgress(articleIds: string[]): UseBookmarkProgressResult {
-  const [progressMap, setProgressMap] = useState<Record<string, ArticleProgress>>({})
+  const [progressMap, setProgressMap] = useState<Record<string, BookmarkProgressData>>({})
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -73,7 +73,8 @@ export function useBookmarkProgress(articleIds: string[]): UseBookmarkProgressRe
     }
 
     fetchProgress()
-  }, [articleIds.join(',')]) // Re-fetch when article IDs change
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- articleIds.join(',') provides stable dependency
+  }, [articleIds.join(',')])
 
   return { progressMap, isLoading }
 }
