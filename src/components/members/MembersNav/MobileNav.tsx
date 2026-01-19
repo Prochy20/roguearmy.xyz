@@ -16,7 +16,6 @@ const navLinks = [
 
 const secondaryLinks = [
   { href: '/members/profile', label: 'Profile' },
-  { href: '/members/resources', label: 'Resources' },
 ]
 
 export function MobileNav() {

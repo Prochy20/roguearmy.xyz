@@ -93,13 +93,6 @@ export function NavUserMenu() {
               >
                 Profile
               </Link>
-              <Link
-                href="/members/resources"
-                onClick={() => setIsOpen(false)}
-                className="block px-4 py-2 text-sm text-rga-gray hover:text-white hover:bg-bg-surface transition-colors"
-              >
-                Resources
-              </Link>
               <a
                 href="https://discord.gg/roguearmy"
                 target="_blank"
