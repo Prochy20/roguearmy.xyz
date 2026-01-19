@@ -64,7 +64,7 @@ export function CommunityValues() {
           <div>
             <ScrollReveal direction="left">
               <p className="text-rga-green font-mono text-sm uppercase tracking-widest mb-4">
-                // OUR PHILOSOPHY
+                {'// OUR PHILOSOPHY'}
               </p>
               <h2 className="font-display text-5xl md:text-7xl lg:text-8xl uppercase leading-[0.9] mb-8">
                 <span className="text-white">NOT YOUR</span>

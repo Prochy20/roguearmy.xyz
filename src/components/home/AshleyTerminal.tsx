@@ -610,7 +610,7 @@ export function AshleyTerminal() {
                 <div className="text-center lg:text-left">
                   <div className="mb-6">
                     <p className="text-rga-magenta font-mono text-sm uppercase tracking-widest mb-2">
-                      // System Compromised
+                      {'// System Compromised'}
                     </p>
                     <HeroGlitch
                       minInterval={3}
