@@ -1,5 +1,5 @@
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
-import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { lexicalEditor, BlocksFeature } from '@payloadcms/richtext-lexical'
 import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
 import path from 'path'
 import { buildConfig } from 'payload'
@@ -16,6 +16,7 @@ import { Series } from './collections/Series'
 import { Articles } from './collections/Articles'
 import { ReadProgress } from './collections/ReadProgress'
 import { Homepage } from './globals/Homepage'
+import { CalloutBlock, CodeBlock, MermaidBlock } from './blocks'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -29,6 +30,24 @@ export default buildConfig({
     importMap: {
       baseDir: path.resolve(dirname),
     },
+    livePreview: {
+      url: ({ data, collectionConfig }) => {
+        const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
+
+        if (collectionConfig?.slug === 'articles') {
+          const slug = data?.slug || 'preview'
+          return `${baseUrl}/members/articles/${slug}?preview=true`
+        }
+
+        return baseUrl
+      },
+      collections: ['articles'],
+      breakpoints: [
+        { label: 'Mobile', name: 'mobile', width: 375, height: 667 },
+        { label: 'Tablet', name: 'tablet', width: 768, height: 1024 },
+        { label: 'Desktop', name: 'desktop', width: 1440, height: 900 },
+      ],
+    },
   },
 
   // CORS configuration - add your production domains here
@@ -37,7 +56,14 @@ export default buildConfig({
   // Order determines admin menu group ordering: Content, Taxonomies, Assets, Users
   collections: [Articles, Series, Games, Topics, ContentTypes, Media, Users, Members, ReadProgress],
   globals: [Homepage],
-  editor: lexicalEditor(),
+  editor: lexicalEditor({
+    features: ({ defaultFeatures }) => [
+      ...defaultFeatures,
+      BlocksFeature({
+        blocks: [CalloutBlock, CodeBlock, MermaidBlock],
+      }),
+    ],
+  }),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
