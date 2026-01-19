@@ -76,6 +76,7 @@ export interface Config {
     users: User;
     members: Member;
     'read-progress': ReadProgress;
+    bookmarks: Bookmark;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -92,6 +93,7 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     members: MembersSelect<false> | MembersSelect<true>;
     'read-progress': ReadProgressSelect<false> | ReadProgressSelect<true>;
+    bookmarks: BookmarksSelect<false> | BookmarksSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -409,6 +411,19 @@ export interface ReadProgress {
   createdAt: string;
 }
 /**
+ * Member bookmarked articles
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "bookmarks".
+ */
+export interface Bookmark {
+  id: string;
+  member: string | Member;
+  article: string | Article;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -467,6 +482,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'read-progress';
         value: string | ReadProgress;
+      } | null)
+    | ({
+        relationTo: 'bookmarks';
+        value: string | Bookmark;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -661,6 +680,16 @@ export interface ReadProgressSelect<T extends boolean = true> {
   lastVisitedAt?: T;
   timeSpent?: T;
   completed?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "bookmarks_select".
+ */
+export interface BookmarksSelect<T extends boolean = true> {
+  member?: T;
+  article?: T;
   updatedAt?: T;
   createdAt?: T;
 }

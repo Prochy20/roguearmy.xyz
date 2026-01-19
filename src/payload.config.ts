@@ -15,6 +15,7 @@ import { ContentTypes } from './collections/ContentTypes'
 import { Series } from './collections/Series'
 import { Articles } from './collections/Articles'
 import { ReadProgress } from './collections/ReadProgress'
+import { Bookmarks } from './collections/Bookmarks'
 import { Homepage } from './globals/Homepage'
 import { CalloutBlock, CodeBlock, MermaidBlock } from './blocks'
 
@@ -53,7 +54,7 @@ export default buildConfig({
   cors: [process.env.NEXT_PUBLIC_SERVER_URL || ''].filter(Boolean),
 
   // Order determines admin menu group ordering: Content, Taxonomies, Assets, Users
-  collections: [Articles, Series, Games, Topics, ContentTypes, Media, Users, Members, ReadProgress],
+  collections: [Articles, Series, Games, Topics, ContentTypes, Media, Users, Members, ReadProgress, Bookmarks],
   globals: [Homepage],
   editor: lexicalEditor({
     features: ({ defaultFeatures }) => [
