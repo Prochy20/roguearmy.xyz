@@ -19,6 +19,7 @@ export const DiscordAvatarCell: React.FC<DefaultCellComponentProps> = ({ rowData
 
   return (
     <Link href={`/admin/collections/members/${id}`}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={avatarUrl}
         alt={username || 'Avatar'}

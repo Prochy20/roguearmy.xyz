@@ -33,6 +33,7 @@ export const DiscordAvatarField: TextFieldClientComponent = () => {
         Discord Avatar
       </label>
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={avatarUrl}
           alt={username || 'Avatar'}
