@@ -143,10 +143,12 @@ export const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConvert
     switch (node.tag) {
       case 'h1':
         return (
-          <h1 className="relative font-display text-2xl md:text-3xl lg:text-4xl text-white mt-16 mb-8 first:mt-0">
-            <span className="absolute -left-6 top-0 bottom-0 w-1 bg-gradient-to-b from-rga-green to-transparent hidden lg:block" />
-            <span className="text-glow-green">{children}</span>
-          </h1>
+          <div className="mt-16 mb-8 first:mt-0">
+            <div className="w-12 h-px bg-rga-green/40 mb-4" />
+            <h1 className="font-display text-2xl md:text-3xl lg:text-4xl text-white tracking-wide">
+              {children}
+            </h1>
+          </div>
         )
       case 'h2':
         return (
