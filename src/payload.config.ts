@@ -32,14 +32,13 @@ export default buildConfig({
     },
     livePreview: {
       url: ({ data, collectionConfig }) => {
-        const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
-
+        // Use relative URLs so preview works from any origin (localhost, IP, production)
         if (collectionConfig?.slug === 'articles') {
           const slug = data?.slug || 'preview'
-          return `${baseUrl}/members/articles/${slug}?preview=true`
+          return `/members/articles/${slug}?preview=true`
         }
 
-        return baseUrl
+        return '/'
       },
       collections: ['articles'],
       breakpoints: [
