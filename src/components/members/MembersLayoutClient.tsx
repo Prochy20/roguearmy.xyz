@@ -3,6 +3,7 @@
 import { type ReactNode } from 'react'
 import { usePathname } from 'next/navigation'
 import { MembersProvider, type MemberInfo } from '@/contexts/MembersContext'
+import { BookmarksProvider } from '@/contexts/BookmarksContext'
 import { MembersNav } from './MembersNav'
 
 interface MembersLayoutClientProps {
@@ -18,8 +19,10 @@ export function MembersLayoutClient({ children, member }: MembersLayoutClientPro
 
   return (
     <MembersProvider member={member}>
-      <MembersNav hideOnScroll={!!isArticleDetailPage} />
-      {children}
+      <BookmarksProvider>
+        <MembersNav hideOnScroll={!!isArticleDetailPage} />
+        {children}
+      </BookmarksProvider>
     </MembersProvider>
   )
 }

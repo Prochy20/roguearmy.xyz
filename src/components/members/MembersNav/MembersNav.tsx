@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { motion } from 'motion/react'
 import { NavLinks } from './NavLinks'
 import { NavSearch } from './NavSearch'
+import { NavBookmarksDropdown } from './NavBookmarksDropdown'
 import { NavUserMenu } from './NavUserMenu'
 import { MobileNav } from './MobileNav'
 import { useScrollVisibility } from './useScrollVisibility'
@@ -44,8 +45,9 @@ export function MembersNav({ hideOnScroll = false }: MembersNavProps) {
           {/* Center: Search */}
           <NavSearch />
 
-          {/* Right: User menu (desktop) + Mobile hamburger */}
+          {/* Right: Bookmarks dropdown + User menu (desktop) + Mobile hamburger */}
           <div className="flex items-center gap-2">
+            <NavBookmarksDropdown />
             <div className="hidden sm:block">
               <NavUserMenu />
             </div>
