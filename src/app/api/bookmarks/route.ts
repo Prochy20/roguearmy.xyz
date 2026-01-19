@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { getSessionCookie, verifyMemberToken } from '@/lib/auth'
-import type { Article, Topic, Media } from '@/payload-types'
+import type { Article, Topic, Media, Game, ContentType } from '@/payload-types'
 
 /**
  * GET /api/bookmarks
@@ -75,6 +75,16 @@ export async function GET(request: NextRequest) {
     const article = bookmark.article as Article
     const topic = article?.categorization?.topic as Topic | undefined
     const heroImage = article?.heroImage as Media | undefined
+    const contentType = article?.categorization?.contentType as ContentType | undefined
+
+    // Get games array from categorization
+    const games = (article?.categorization?.games || [])
+      .filter((g): g is Game => typeof g !== 'string' && g !== null)
+      .map((game) => ({
+        id: game.id,
+        name: game.name,
+        color: game.color,
+      }))
 
     return {
       id: bookmark.id,
@@ -88,6 +98,10 @@ export async function GET(request: NextRequest) {
           : null,
         topic: topic
           ? { id: topic.id, name: topic.name, slug: topic.slug, color: topic.color }
+          : null,
+        games,
+        contentType: contentType
+          ? { id: contentType.id, slug: contentType.slug, name: contentType.name }
           : null,
         readingTime: article?.readingTime || 5,
         publishedAt: article?.publishedAt || article?.createdAt || '',
