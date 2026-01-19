@@ -15,6 +15,7 @@ import {
 } from '@/lib/articles'
 import { type ArticleProgress } from '@/lib/progress.server'
 import { ReadStatusIndicator, getReadStatus } from './ReadStatusIndicator'
+import { BookmarkButton } from './BookmarkButton'
 
 // Map article tint to CyberCorners color
 const tintToColor = (tint: TintColor) => {
@@ -126,14 +127,17 @@ export function ArticleCard({ article, index = 0, progress }: ArticleCardProps) 
                   </div>
                 </div>
 
-                {/* Read Status Indicator - right side (only when authenticated) */}
-                {progress !== undefined && (
-                  <ReadStatusIndicator
-                    status={getReadStatus(progress?.progress, progress?.completed)}
-                    progress={progress?.progress}
-                    size="md"
-                  />
-                )}
+                {/* Right side actions */}
+                <div className="flex items-center gap-2">
+                  <BookmarkButton articleId={article.id} size="sm" />
+                  {progress !== undefined && (
+                    <ReadStatusIndicator
+                      status={getReadStatus(progress?.progress, progress?.completed)}
+                      progress={progress?.progress}
+                      size="md"
+                    />
+                  )}
+                </div>
               </div>
             </div>
           </div>

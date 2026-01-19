@@ -103,6 +103,7 @@ export function ArticlePageClient({
 
       {/* Hero Section - Full viewport */}
       <ArticleHero
+        articleId={article.id}
         title={article.title}
         heroImage={article.heroImage}
         topic={article.topic}

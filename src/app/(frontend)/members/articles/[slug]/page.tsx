@@ -112,6 +112,7 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
 
       {/* Hero Section - Full viewport */}
       <ArticleHero
+        articleId={article.id}
         title={article.title}
         heroImage={article.heroImage}
         topic={article.topic}

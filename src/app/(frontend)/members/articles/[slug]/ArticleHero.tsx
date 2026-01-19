@@ -14,6 +14,7 @@ import {
   type TintColor,
   formatArticleDate,
 } from '@/lib/articles'
+import { BookmarkButton } from '@/components/members/BookmarkButton'
 
 // Map article tint to CyberTag color
 const tintToColor = (tint: TintColor) => {
@@ -28,6 +29,7 @@ const tintToColor = (tint: TintColor) => {
 }
 
 interface ArticleHeroProps {
+  articleId: string
   title: string
   heroImage: ArticleImage
   topic: ArticleTopic
@@ -46,6 +48,7 @@ interface ArticleHeroProps {
 }
 
 export function ArticleHero({
+  articleId,
   title,
   heroImage,
   topic,
@@ -168,6 +171,12 @@ export function ArticleHero({
                 <span>{readingTime} min read</span>
               </div>
             </div>
+
+            {/* Separator */}
+            <span className="hidden sm:block w-px h-4 bg-rga-gray/30" />
+
+            {/* Bookmark Button */}
+            <BookmarkButton articleId={articleId} size="md" />
           </motion.div>
         </div>
 
