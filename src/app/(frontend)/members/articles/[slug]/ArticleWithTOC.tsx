@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import { TableOfContents, MobileTOC } from '@/components/toc'
 import type { TOCHeading } from '@/lib/toc'
 import type { ArticleContentSource } from '@/lib/articles'
@@ -26,6 +26,11 @@ export function ArticleWithTOC({
   // For Wiki content, this will be updated via callback
   const [headings, setHeadings] = useState<TOCHeading[]>(initialHeadings)
   const articleRef = useRef<HTMLElement>(null)
+
+  // Sync headings when initialHeadings changes (e.g., during live preview)
+  useEffect(() => {
+    setHeadings(initialHeadings)
+  }, [initialHeadings])
 
   const handleHeadingsExtracted = useCallback((extractedHeadings: TOCHeading[]) => {
     setHeadings(extractedHeadings)
