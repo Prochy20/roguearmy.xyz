@@ -411,4 +411,11 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+
+  /* Hide elements on touch devices (coarse pointer) */
+  @media (pointer: coarse) {
+    .touch-device\:hidden {
+      display: none !important;
+    }
+  }
 }
