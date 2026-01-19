@@ -7,9 +7,10 @@ import {
   ServerCrash,
   WifiOff,
   CloudOff,
+  Ban,
 } from "lucide-react"
 
-export type ErrorCode = "404" | "401" | "403" | "400" | "500" | "502" | "503"
+export type ErrorCode = "404" | "401" | "403" | "400" | "500" | "502" | "503" | "BAN"
 
 export interface TerminalLine {
   prefix: "$" | ">" | "!"
@@ -175,6 +176,27 @@ export const ERROR_CONFIGS: Record<ErrorCode, ErrorConfig> = {
     color: "magenta",
     icon: CloudOff,
     glitchColors: ["#ff00ff", "#00ffff"],
+  },
+
+  BAN: {
+    code: "BAN",
+    title: "ACCESS REVOKED",
+    subtitle: "Your access has been terminated",
+    ashleyMessage: [
+      "Sorry Agent... your access has been revoked.",
+      "This area is now off-limits to your account.",
+      "Contact an admin if you believe this is an error.",
+    ],
+    terminalLog: [
+      { prefix: "$", text: "auth --verify membership", color: "cyan" },
+      { prefix: ">", text: "Checking member status...", color: "white" },
+      { prefix: ">", text: "Account: IDENTIFIED", color: "yellow" },
+      { prefix: "!", text: "Status: BANNED", status: "REVOKED", color: "red" },
+      { prefix: "$", text: "access --denied", color: "red" },
+    ],
+    color: "red",
+    icon: Ban,
+    glitchColors: ["#ff0000", "#ff00ff"],
   },
 }
 

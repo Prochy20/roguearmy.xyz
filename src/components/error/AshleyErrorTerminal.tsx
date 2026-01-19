@@ -32,6 +32,7 @@ const statusClasses: Record<string, string> = {
   BAD: "bg-red-500/20 text-red-500",
   DOWN: "bg-red-500/20 text-red-500",
   "NOT FOUND": "bg-red-500/20 text-red-500",
+  REVOKED: "bg-red-500/20 text-red-500",
   OK: "bg-rga-green/20 text-rga-green",
   DONE: "bg-rga-green/20 text-rga-green",
 }
