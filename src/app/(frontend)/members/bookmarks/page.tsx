@@ -4,14 +4,21 @@ import { useMemo } from 'react'
 import Link from 'next/link'
 import { motion } from 'motion/react'
 import { BookmarkX, ArrowRight } from 'lucide-react'
+import { cn } from '@/lib/utils'
 import { useBookmarks } from '@/contexts/BookmarksContext'
 import { ArticleCard } from '@/components/members/ArticleCard'
+import { ArticleCardCompact } from '@/components/members/ArticleCardCompact'
+import { ArticleCardList } from '@/components/members/ArticleCardList'
+import { ViewModeToggle } from '@/components/members/ViewModeToggle'
 import { HeroGlitch } from '@/components/effects'
 import { transformBookmarkToArticle } from '@/lib/bookmarks'
 import { useBookmarkProgress } from '@/hooks/useBookmarkProgress'
+import { useViewMode } from '@/hooks/useViewMode'
+import type { Article } from '@/lib/articles'
 
 export default function BookmarksPage() {
   const { bookmarks, isLoading: bookmarksLoading } = useBookmarks()
+  const { viewMode, setViewMode } = useViewMode()
 
   // Extract article IDs for progress fetching
   const articleIds = useMemo(
@@ -33,26 +40,78 @@ export default function BookmarksPage() {
 
   const isLoading = bookmarksLoading || progressLoading
 
+  // Grid classes based on view mode
+  const gridClasses = cn(
+    viewMode === 'featured' && 'grid grid-cols-1 md:grid-cols-2 gap-6',
+    viewMode === 'grid' && 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-fr',
+    viewMode === 'list' && 'flex flex-col gap-3'
+  )
+
+  // Render the appropriate card component based on view mode
+  const renderCard = (article: Article, index: number) => {
+    const cardProgress = progressMap[article.id] || null
+
+    switch (viewMode) {
+      case 'grid':
+        return (
+          <ArticleCardCompact
+            key={article.id}
+            article={article}
+            index={index}
+            progress={cardProgress}
+          />
+        )
+      case 'list':
+        return (
+          <ArticleCardList
+            key={article.id}
+            article={article}
+            index={index}
+            progress={cardProgress}
+          />
+        )
+      case 'featured':
+      default:
+        return (
+          <ArticleCard
+            key={article.id}
+            article={article}
+            index={index}
+            progress={cardProgress}
+          />
+        )
+    }
+  }
+
   return (
     <div className="min-h-screen bg-void">
       <main className="container mx-auto px-4 py-8">
         {/* Page Header */}
         <div className="mb-8">
-          <h1 className="font-display text-3xl sm:text-4xl md:text-5xl text-white mb-3">
-            <HeroGlitch
-              minInterval={4}
-              maxInterval={10}
-              intensity={8}
-              dataCorruption
-              scanlines
-            >
-              YOUR BOOKMARKS
-            </HeroGlitch>
-          </h1>
-          <p className="text-rga-gray max-w-2xl">
-            Your saved articles for later reading. Bookmark guides and content you want to
-            come back to, and access them anytime from here.
-          </p>
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h1 className="font-display text-3xl sm:text-4xl md:text-5xl text-white mb-3">
+                <HeroGlitch
+                  minInterval={4}
+                  maxInterval={10}
+                  intensity={8}
+                  dataCorruption
+                  scanlines
+                >
+                  YOUR BOOKMARKS
+                </HeroGlitch>
+              </h1>
+              <p className="text-rga-gray max-w-2xl">
+                Your saved articles for later reading. Bookmark guides and content you want to
+                come back to, and access them anytime from here.
+              </p>
+            </div>
+            <ViewModeToggle
+              viewMode={viewMode}
+              onViewModeChange={setViewMode}
+              className="shrink-0"
+            />
+          </div>
         </div>
 
         {/* Content */}
@@ -74,15 +133,8 @@ export default function BookmarksPage() {
         ) : articles.length === 0 ? (
           <EmptyState />
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {articles.map((article, index) => (
-              <ArticleCard
-                key={article.id}
-                article={article}
-                index={index}
-                progress={progressMap[article.id] || null}
-              />
-            ))}
+          <div className={gridClasses}>
+            {articles.map((article, index) => renderCard(article, index))}
           </div>
         )}
       </main>
