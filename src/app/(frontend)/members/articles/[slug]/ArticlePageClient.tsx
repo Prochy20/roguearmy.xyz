@@ -24,7 +24,6 @@ import { SeriesNavigation } from './SeriesNavigation'
 interface ArticlePageClientProps {
   initialArticle: Article
   rawArticle: PayloadArticle
-  serverURL: string
   seriesNavigation: SeriesNavType | null
   seriesProgress?: Record<string, ArticleProgress>
 }
@@ -32,10 +31,13 @@ interface ArticlePageClientProps {
 export function ArticlePageClient({
   initialArticle,
   rawArticle,
-  serverURL,
   seriesNavigation,
   seriesProgress,
 }: ArticlePageClientProps) {
+  // Use browser origin for live preview - this ensures it works in any environment
+  // since the admin panel and frontend are on the same domain
+  const serverURL = typeof window !== 'undefined' ? window.location.origin : ''
+
   // Live preview hook - syncs with Payload admin panel
   const { data: liveData, isLoading } = useLivePreview<PayloadArticle>({
     initialData: rawArticle,

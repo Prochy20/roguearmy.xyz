@@ -83,7 +83,6 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
       <ArticlePageClient
         initialArticle={article}
         rawArticle={rawArticle}
-        serverURL={process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'}
         seriesNavigation={seriesNavigation}
         seriesProgress={seriesProgress}
       />
