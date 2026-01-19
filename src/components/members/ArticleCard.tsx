@@ -13,9 +13,14 @@ import {
   getTintClasses,
   formatArticleDate,
 } from '@/lib/articles'
-import { type ArticleProgress } from '@/lib/progress.server'
 import { ReadStatusIndicator, getReadStatus } from './ReadStatusIndicator'
 import { BookmarkButton } from './BookmarkButton'
+
+/** Minimal progress data needed for article card display */
+interface CardProgressData {
+  progress: number
+  completed: boolean
+}
 
 // Map article tint to CyberCorners color
 const tintToColor = (tint: TintColor) => {
@@ -32,7 +37,7 @@ const tintToColor = (tint: TintColor) => {
 interface ArticleCardProps {
   article: Article
   index?: number
-  progress?: ArticleProgress | null
+  progress?: CardProgressData | null
 }
 
 export function ArticleCard({ article, index = 0, progress }: ArticleCardProps) {
