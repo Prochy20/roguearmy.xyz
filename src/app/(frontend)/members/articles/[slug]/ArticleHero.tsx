@@ -8,6 +8,12 @@ import { cn } from '@/lib/utils'
 import { HeroGlitch } from '@/components/effects'
 import { CyberTag } from '@/components/ui/CyberCorners'
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
+import {
   type ArticleTopic,
   type ArticleContentType,
   type ArticleGame,
@@ -186,13 +192,20 @@ export function ArticleHero({
             {series && (
               <>
                 <span className="hidden sm:block w-px h-4 bg-rga-gray/30" />
-                <Link
-                  href={`/members/series/${series.slug}`}
-                  className="text-rga-gray/60 hover:text-rga-gray transition-colors inline-flex items-center gap-1.5 text-sm"
-                >
-                  <BookOpen className="w-4 h-4" />
-                  {series.name}
-                </Link>
+                <TooltipProvider delayDuration={300}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Link
+                        href={`/members/series/${series.slug}`}
+                        className="text-rga-gray/60 hover:text-rga-gray transition-colors inline-flex items-center gap-1.5 text-sm"
+                      >
+                        <BookOpen className="w-4 h-4" />
+                        {series.name}
+                      </Link>
+                    </TooltipTrigger>
+                    <TooltipContent>View series</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </>
             )}
           </motion.div>
