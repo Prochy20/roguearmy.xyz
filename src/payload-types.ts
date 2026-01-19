@@ -734,6 +734,85 @@ export interface HomepageSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CalloutBlockType".
+ */
+export interface CalloutBlockType {
+  type: 'info' | 'warning' | 'tip' | 'success' | 'danger' | 'error' | 'note';
+  title?: string | null;
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'callout';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CodeBlockType".
+ */
+export interface CodeBlockType {
+  language:
+    | 'typescript'
+    | 'javascript'
+    | 'tsx'
+    | 'jsx'
+    | 'python'
+    | 'ruby'
+    | 'go'
+    | 'rust'
+    | 'cpp'
+    | 'c'
+    | 'csharp'
+    | 'java'
+    | 'php'
+    | 'swift'
+    | 'kotlin'
+    | 'sql'
+    | 'json'
+    | 'yaml'
+    | 'xml'
+    | 'html'
+    | 'css'
+    | 'scss'
+    | 'markdown'
+    | 'bash'
+    | 'powershell'
+    | 'dockerfile'
+    | 'graphql'
+    | 'prisma'
+    | 'text';
+  code: string;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'codeBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MermaidBlockType".
+ */
+export interface MermaidBlockType {
+  /**
+   * Enter Mermaid diagram syntax (flowchart, sequence, etc.)
+   */
+  code: string;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'mermaid';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "auth".
  */
 export interface Auth {
