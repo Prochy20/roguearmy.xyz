@@ -136,8 +136,8 @@ export function CyberCorners({
 }
 
 /**
- * Inline cyber corners for small elements like tags/badges
- * Uses CSS borders instead of positioned elements for better sizing
+ * Tactical HUD style badge with military targeting brackets
+ * Corner brackets animate outward on hover with strong glow effect
  */
 interface CyberTagProps {
   children: React.ReactNode
@@ -145,44 +145,124 @@ interface CyberTagProps {
   color?: CornerColor
 }
 
-export function CyberTag({ children, className, color = 'green' }: CyberTagProps) {
-  const colorStyles: Record<CornerColor, string> = {
-    green: 'border-rga-green/60 shadow-[0_0_8px_rgba(0,255,65,0.15)]',
-    cyan: 'border-rga-cyan/60 shadow-[0_0_8px_rgba(0,255,255,0.15)]',
-    magenta: 'border-rga-magenta/60 shadow-[0_0_8px_rgba(255,0,255,0.15)]',
-    orange: 'border-orange-500/60 shadow-[0_0_8px_rgba(249,115,22,0.15)]',
-    red: 'border-red-500/60 shadow-[0_0_8px_rgba(239,68,68,0.15)]',
-    gray: 'border-rga-gray/30',
-  }
+const tagColorConfig: Record<
+  CornerColor,
+  { bg: string; text: string; glow: string; gradient: string }
+> = {
+  green: {
+    bg: 'bg-rga-green',
+    text: 'text-rga-green',
+    glow: 'shadow-[0_0_16px_rgba(0,255,65,0.5)]',
+    gradient: 'from-rga-green/20 to-transparent',
+  },
+  cyan: {
+    bg: 'bg-rga-cyan',
+    text: 'text-rga-cyan',
+    glow: 'shadow-[0_0_16px_rgba(0,255,255,0.5)]',
+    gradient: 'from-rga-cyan/20 to-transparent',
+  },
+  magenta: {
+    bg: 'bg-rga-magenta',
+    text: 'text-rga-magenta',
+    glow: 'shadow-[0_0_16px_rgba(255,0,255,0.5)]',
+    gradient: 'from-rga-magenta/20 to-transparent',
+  },
+  orange: {
+    bg: 'bg-orange-500',
+    text: 'text-orange-500',
+    glow: 'shadow-[0_0_16px_rgba(249,115,22,0.5)]',
+    gradient: 'from-orange-500/20 to-transparent',
+  },
+  red: {
+    bg: 'bg-red-500',
+    text: 'text-red-500',
+    glow: 'shadow-[0_0_16px_rgba(239,68,68,0.5)]',
+    gradient: 'from-red-500/20 to-transparent',
+  },
+  gray: {
+    bg: 'bg-rga-gray/50',
+    text: 'text-rga-gray',
+    glow: '',
+    gradient: 'from-rga-gray/10 to-transparent',
+  },
+}
 
-  const cornerColors: Record<CornerColor, string> = {
-    green: 'bg-rga-green',
-    cyan: 'bg-rga-cyan',
-    magenta: 'bg-rga-magenta',
-    orange: 'bg-orange-500',
-    red: 'bg-red-500',
-    gray: 'bg-rga-gray/50',
-  }
+export function CyberTag({ children, className, color = 'green' }: CyberTagProps) {
+  const cfg = tagColorConfig[color]
 
   return (
     <span
       className={cn(
-        'relative inline-flex items-center',
-        // Clip corners using clip-path for sharp cyberpunk look
-        '[clip-path:polygon(6px_0,100%_0,100%_calc(100%-6px),calc(100%-6px)_100%,0_100%,0_6px)]',
-        // Base styling
-        'px-3 py-1 text-xs font-medium tracking-wide uppercase',
-        'bg-void/80 backdrop-blur-sm border',
-        colorStyles[color],
+        'group/tag relative inline-flex items-center',
+        'px-4 py-1.5 text-xs font-bold tracking-wider uppercase',
+        'bg-void/90 backdrop-blur-sm',
+        cfg.text,
+        cfg.glow,
         className
       )}
     >
-      {/* Corner accent marks */}
-      <span className={cn('absolute top-0 left-0 w-[6px] h-px', cornerColors[color])} />
-      <span className={cn('absolute top-0 left-0 w-px h-[6px]', cornerColors[color])} />
-      <span className={cn('absolute bottom-0 right-0 w-[6px] h-px', cornerColors[color])} />
-      <span className={cn('absolute bottom-0 right-0 w-px h-[6px]', cornerColors[color])} />
-      {children}
+      {/* Corner brackets - top left */}
+      <span
+        className={cn(
+          'absolute -top-px -left-px w-3 h-px transition-all duration-300 group-hover/tag:-translate-x-0.5 group-hover/tag:-translate-y-0.5',
+          cfg.bg
+        )}
+      />
+      <span
+        className={cn(
+          'absolute -top-px -left-px w-px h-3 transition-all duration-300 group-hover/tag:-translate-x-0.5 group-hover/tag:-translate-y-0.5',
+          cfg.bg
+        )}
+      />
+
+      {/* Corner brackets - top right */}
+      <span
+        className={cn(
+          'absolute -top-px -right-px w-3 h-px transition-all duration-300 group-hover/tag:translate-x-0.5 group-hover/tag:-translate-y-0.5',
+          cfg.bg
+        )}
+      />
+      <span
+        className={cn(
+          'absolute -top-px -right-px w-px h-3 transition-all duration-300 group-hover/tag:translate-x-0.5 group-hover/tag:-translate-y-0.5',
+          cfg.bg
+        )}
+      />
+
+      {/* Corner brackets - bottom left */}
+      <span
+        className={cn(
+          'absolute -bottom-px -left-px w-3 h-px transition-all duration-300 group-hover/tag:-translate-x-0.5 group-hover/tag:translate-y-0.5',
+          cfg.bg
+        )}
+      />
+      <span
+        className={cn(
+          'absolute -bottom-px -left-px w-px h-3 transition-all duration-300 group-hover/tag:-translate-x-0.5 group-hover/tag:translate-y-0.5',
+          cfg.bg
+        )}
+      />
+
+      {/* Corner brackets - bottom right */}
+      <span
+        className={cn(
+          'absolute -bottom-px -right-px w-3 h-px transition-all duration-300 group-hover/tag:translate-x-0.5 group-hover/tag:translate-y-0.5',
+          cfg.bg
+        )}
+      />
+      <span
+        className={cn(
+          'absolute -bottom-px -right-px w-px h-3 transition-all duration-300 group-hover/tag:translate-x-0.5 group-hover/tag:translate-y-0.5',
+          cfg.bg
+        )}
+      />
+
+      {/* Inner backlight */}
+      <span
+        className={cn('absolute inset-0 opacity-20 bg-gradient-to-b', cfg.gradient)}
+      />
+
+      <span className="relative z-10">{children}</span>
     </span>
   )
 }
