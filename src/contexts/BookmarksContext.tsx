@@ -77,6 +77,8 @@ export function BookmarksProvider({ children }: BookmarksProviderProps) {
             perex: '',
             heroImage: null,
             topic: null,
+            games: [],
+            contentType: null,
             readingTime: 0,
             publishedAt: new Date().toISOString(),
           },
