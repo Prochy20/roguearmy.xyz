@@ -218,6 +218,68 @@ export async function getSeriesNavigation(articleId: string): Promise<SeriesNavi
 }
 
 /**
+ * Get article by slug with draft support for Live Preview.
+ * Returns both transformed article and raw payload data.
+ */
+export async function getArticleBySlugWithDraft(
+  slug: string,
+  isDraft: boolean = false
+): Promise<{ article: Article | null; rawArticle: PayloadArticle | null }> {
+  const payload = await getPayload({ config })
+
+  const result = await payload.find({
+    collection: 'articles',
+    where: isDraft
+      ? { slug: { equals: slug } }
+      : {
+          slug: { equals: slug },
+          _status: { equals: 'published' },
+        },
+    depth: 2,
+    limit: 1,
+    draft: isDraft,
+  })
+
+  if (result.docs.length === 0) {
+    return { article: null, rawArticle: null }
+  }
+
+  const rawArticle = result.docs[0]
+
+  // Check if article is in any series
+  const seriesResult = await payload.find({
+    collection: 'series',
+    where: {
+      articles: { contains: rawArticle.id },
+    },
+    depth: 0,
+    limit: 1,
+  })
+
+  let seriesInfo: { name: string; slug: string; order: number } | undefined
+
+  if (seriesResult.docs.length > 0) {
+    const series = seriesResult.docs[0]
+    const articleIds = (series.articles || []).map((a) =>
+      typeof a === 'string' ? a : a.id
+    )
+    const orderIndex = articleIds.indexOf(rawArticle.id)
+    if (orderIndex !== -1) {
+      seriesInfo = {
+        name: series.name,
+        slug: series.slug,
+        order: orderIndex + 1,
+      }
+    }
+  }
+
+  return {
+    article: transformPayloadArticle(rawArticle, seriesInfo),
+    rawArticle,
+  }
+}
+
+/**
  * Get all article slugs (for generateStaticParams)
  */
 export async function getAllArticleSlugs(): Promise<string[]> {
