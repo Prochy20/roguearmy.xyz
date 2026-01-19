@@ -121,6 +121,7 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
         readingTime={article.readingTime}
         contentType={article.contentType}
         games={article.games}
+        series={article.series}
       />
 
       {/* Content Section */}

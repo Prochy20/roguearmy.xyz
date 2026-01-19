@@ -1,8 +1,9 @@
 'use client'
 
 import Image from 'next/image'
+import Link from 'next/link'
 import { motion } from 'motion/react'
-import { Clock, Calendar } from 'lucide-react'
+import { Clock, Calendar, BookOpen } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { HeroGlitch } from '@/components/effects'
 import { CyberTag } from '@/components/ui/CyberCorners'
@@ -11,6 +12,7 @@ import {
   type ArticleContentType,
   type ArticleGame,
   type ArticleImage,
+  type ArticleSeries,
   type TintColor,
   formatArticleDate,
 } from '@/lib/articles'
@@ -45,6 +47,7 @@ interface ArticleHeroProps {
   readingTime: number
   contentType: ArticleContentType
   games?: ArticleGame[]
+  series?: ArticleSeries
 }
 
 export function ArticleHero({
@@ -57,6 +60,7 @@ export function ArticleHero({
   readingTime,
   contentType,
   games = [],
+  series,
 }: ArticleHeroProps) {
   return (
     <section className="relative min-h-[85vh] md:min-h-[90vh] flex items-end overflow-hidden">
@@ -99,7 +103,7 @@ export function ArticleHero({
 
       {/* Content */}
       <div className="relative z-10 w-full px-6 md:px-12 lg:px-20 pb-20 md:pb-32">
-        <div className="max-w-5xl">
+        <div className="max-w-7xl">
           {/* Topic and Games badges - animated in */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -124,7 +128,7 @@ export function ArticleHero({
             transition={{ duration: 0.6, delay: 0.3 }}
             className="mb-8"
           >
-            <h1 className="font-display text-[10vw] md:text-[8vw] lg:text-[6vw] leading-[0.85] tracking-tight">
+            <h1 className="font-display text-[10vw] md:text-[8vw] lg:text-[5vw] leading-[0.85] tracking-tight">
               <HeroGlitch
                 minInterval={4}
                 maxInterval={10}
@@ -177,6 +181,20 @@ export function ArticleHero({
 
             {/* Bookmark Button */}
             <BookmarkButton articleId={articleId} size="md" />
+
+            {/* Series indicator */}
+            {series && (
+              <>
+                <span className="hidden sm:block w-px h-4 bg-rga-gray/30" />
+                <Link
+                  href={`/members/series/${series.slug}`}
+                  className="text-rga-gray/60 hover:text-rga-gray transition-colors inline-flex items-center gap-1.5 text-sm"
+                >
+                  <BookOpen className="w-4 h-4" />
+                  {series.name}
+                </Link>
+              </>
+            )}
           </motion.div>
         </div>
 

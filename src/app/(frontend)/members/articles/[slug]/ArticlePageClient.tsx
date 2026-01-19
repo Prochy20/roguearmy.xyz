@@ -112,6 +112,7 @@ export function ArticlePageClient({
         readingTime={article.readingTime}
         contentType={article.contentType}
         games={article.games}
+        series={article.series}
       />
 
       {/* Content Section */}
