@@ -65,6 +65,7 @@ export function ArticleHero({
           fill
           className="object-cover"
           priority
+          unoptimized={heroImage.url.endsWith('.svg')}
         />
 
         {/* Multi-layer gradient overlay for depth */}
