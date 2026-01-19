@@ -5,9 +5,11 @@ import { GlowButton } from '@/components/shared/GlowButton'
 
 interface EmptyStateProps {
   onClearFilters: () => void
+  message?: string
 }
 
-export function EmptyState({ onClearFilters }: EmptyStateProps) {
+export function EmptyState({ onClearFilters, message }: EmptyStateProps) {
+  const displayMessage = message ?? 'No articles match your current filters. Try adjusting your search or clear all filters to see everything.'
   return (
     <div className="flex flex-col items-center justify-center py-20 px-4">
       {/* Glitchy NO SIGNAL container */}
@@ -91,8 +93,7 @@ export function EmptyState({ onClearFilters }: EmptyStateProps) {
         transition={{ delay: 0.3 }}
         className="text-rga-gray text-center max-w-md mb-6"
       >
-        No articles match your current filters. Try adjusting your search or
-        clear all filters to see everything.
+        {displayMessage}
       </motion.p>
 
       {/* Static noise animation */}
