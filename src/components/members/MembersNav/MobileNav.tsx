@@ -10,12 +10,13 @@ import { UserAvatar } from '@/components/auth'
 import { useMember } from '@/contexts/MembersContext'
 
 const navLinks = [
-  { href: '/members', label: 'Articles', pattern: /^\/members(\/articles)?/ },
+  { href: '/members', label: 'Articles', pattern: /^\/members(\/articles(\/.*)?)?$/ },
   { href: '/members/series', label: 'Series', pattern: /^\/members\/series/ },
 ]
 
 const secondaryLinks = [
   { href: '/members/profile', label: 'Profile' },
+  { href: '/members/history', label: 'Reading History' },
 ]
 
 export function MobileNav() {

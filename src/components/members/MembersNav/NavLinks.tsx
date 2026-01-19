@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 
 const navLinks = [
-  { href: '/members', label: 'Articles', pattern: /^\/members(\/articles)?/ },
+  { href: '/members', label: 'Articles', pattern: /^\/members(\/articles(\/.*)?)?$/ },
   { href: '/members/series', label: 'Series', pattern: /^\/members\/series/ },
 ]
 
