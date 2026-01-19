@@ -1,20 +1,37 @@
 'use client'
 
+import { useMemo } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
 import { motion } from 'motion/react'
-import { BookmarkX, Bookmark, Clock, ArrowRight } from 'lucide-react'
+import { BookmarkX, ArrowRight } from 'lucide-react'
 import { useBookmarks } from '@/contexts/BookmarksContext'
-import { BookmarkButton } from '@/components/members/BookmarkButton'
-import { CyberCorners, CyberTag } from '@/components/ui/CyberCorners'
-import { HoverGlitch } from '@/components/effects/HoverGlitch'
+import { ArticleCard } from '@/components/members/ArticleCard'
 import { HeroGlitch } from '@/components/effects'
-import { cn } from '@/lib/utils'
-import { mapPayloadColorToTint, getTintClasses } from '@/lib/articles'
-import type { BookmarkWithArticle } from '@/lib/bookmarks'
+import { transformBookmarkToArticle } from '@/lib/bookmarks'
+import { useBookmarkProgress } from '@/hooks/useBookmarkProgress'
 
 export default function BookmarksPage() {
-  const { bookmarks, isLoading } = useBookmarks()
+  const { bookmarks, isLoading: bookmarksLoading } = useBookmarks()
+
+  // Extract article IDs for progress fetching
+  const articleIds = useMemo(
+    () => bookmarks.map((b) => b.article.id),
+    [bookmarks]
+  )
+
+  // Fetch progress for all bookmarked articles
+  const { progressMap, isLoading: progressLoading } = useBookmarkProgress(articleIds)
+
+  // Transform bookmarks to Article format
+  const articles = useMemo(
+    () =>
+      bookmarks
+        .map((bookmark) => transformBookmarkToArticle(bookmark))
+        .filter((article): article is NonNullable<typeof article> => article !== null),
+    [bookmarks]
+  )
+
+  const isLoading = bookmarksLoading || progressLoading
 
   return (
     <div className="min-h-screen bg-void">
@@ -54,12 +71,17 @@ export default function BookmarksPage() {
               </div>
             ))}
           </div>
-        ) : bookmarks.length === 0 ? (
+        ) : articles.length === 0 ? (
           <EmptyState />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {bookmarks.map((bookmark, index) => (
-              <BookmarkCard key={bookmark.id} bookmark={bookmark} index={index} />
+            {articles.map((article, index) => (
+              <ArticleCard
+                key={article.id}
+                article={article}
+                index={index}
+                progress={progressMap[article.id] || null}
+              />
             ))}
           </div>
         )}
@@ -92,109 +114,5 @@ function EmptyState() {
         <ArrowRight className="w-4 h-4" />
       </Link>
     </motion.div>
-  )
-}
-
-interface BookmarkCardProps {
-  bookmark: BookmarkWithArticle
-  index: number
-}
-
-function BookmarkCard({ bookmark, index }: BookmarkCardProps) {
-  const { article } = bookmark
-  const tint = article.topic?.color
-    ? getTintClasses(mapPayloadColorToTint(article.topic.color))
-    : getTintClasses('cyan')
-  const cornerColor = article.topic?.color
-    ? (mapPayloadColorToTint(article.topic.color) as 'cyan' | 'green' | 'magenta' | 'orange' | 'red')
-    : 'cyan'
-
-  return (
-    <motion.article
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-50px' }}
-      transition={{
-        duration: 0.5,
-        delay: index * 0.1,
-        ease: [0.25, 0.46, 0.45, 0.94],
-      }}
-    >
-      <Link href={`/members/articles/${article.slug}`} className="block group">
-        <CyberCorners color={cornerColor} size="md" glow>
-          <div
-            className={cn(
-              'relative overflow-hidden border bg-bg-elevated transition-all duration-300',
-              tint.border,
-              tint.hoverBorder,
-              tint.glow
-            )}
-          >
-            {/* Hero Image */}
-            <div className="relative aspect-[5/2] overflow-hidden">
-              {article.heroImage ? (
-                <Image
-                  src={article.heroImage.url}
-                  alt={article.heroImage.alt}
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-              ) : (
-                <div className="absolute inset-0 bg-bg-surface flex items-center justify-center">
-                  <Bookmark className="w-12 h-12 text-rga-gray/20" />
-                </div>
-              )}
-
-              {/* Gradient Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-bg-elevated via-bg-elevated/50 to-transparent" />
-
-              {/* Scanline effect on hover */}
-              <div className="absolute inset-0 bg-[repeating-linear-gradient(0deg,transparent,transparent_2px,rgba(0,255,255,0.03)_2px,rgba(0,255,255,0.03)_4px)] opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-
-              {/* Topic Badge */}
-              {article.topic && (
-                <div className="absolute bottom-4 left-4">
-                  <CyberTag color={cornerColor} className={tint.text}>
-                    {article.topic.name}
-                  </CyberTag>
-                </div>
-              )}
-            </div>
-
-            {/* Content */}
-            <div className="p-5">
-              {/* Title */}
-              <HoverGlitch
-                intensity={5}
-                dataCorruption
-                className="block font-display text-xl md:text-2xl text-white leading-tight mb-3"
-              >
-                {article.title}
-              </HoverGlitch>
-
-              {/* Perex */}
-              {article.perex && (
-                <p className="text-rga-gray text-sm md:text-base line-clamp-2 mb-4">
-                  {article.perex}
-                </p>
-              )}
-
-              {/* Metadata Row */}
-              <div className="flex items-center justify-between text-xs text-rga-gray/60">
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-1">
-                    <Clock className="w-3.5 h-3.5" />
-                    <span>{article.readingTime} min read</span>
-                  </div>
-                </div>
-
-                {/* Bookmark button */}
-                <BookmarkButton articleId={article.id} size="sm" />
-              </div>
-            </div>
-          </div>
-        </CyberCorners>
-      </Link>
-    </motion.article>
   )
 }
