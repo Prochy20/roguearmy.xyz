@@ -272,7 +272,7 @@ export function transformPayloadArticle(
   // Get hero image
   const heroMedia = payloadArticle.heroImage as PayloadMedia | null
   const heroImage: ArticleImage = {
-    url: heroMedia?.url || '/placeholder-article.jpg',
+    url: heroMedia?.url || '/placeholder-article.svg',
     alt: heroMedia?.alt || payloadArticle.title,
   }
 
