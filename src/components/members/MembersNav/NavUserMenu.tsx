@@ -40,10 +40,7 @@ export function NavUserMenu() {
           {member.globalName || member.username}
         </span>
         <ChevronDown
-          className={cn(
-            'w-4 h-4 text-rga-gray transition-transform',
-            isOpen && 'rotate-180'
-          )}
+          className={cn('w-4 h-4 text-rga-gray transition-transform', isOpen && 'rotate-180')}
         />
       </button>
 
@@ -61,9 +58,7 @@ export function NavUserMenu() {
               <p className="text-white text-sm font-medium truncate">
                 {member.globalName || member.username}
               </p>
-              <p className="text-rga-gray/60 text-xs truncate">
-                @{member.username}
-              </p>
+              <p className="text-rga-gray/60 text-xs truncate">@{member.username}</p>
             </div>
 
             {/* Navigation links */}

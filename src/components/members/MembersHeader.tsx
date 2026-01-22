@@ -42,10 +42,7 @@ export function MembersHeader({
   // Close user menu on outside click
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (
-        userMenuRef.current &&
-        !userMenuRef.current.contains(event.target as Node)
-      ) {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
         setIsUserMenuOpen(false)
       }
     }
@@ -175,7 +172,7 @@ export function MembersHeader({
               <ChevronDown
                 className={cn(
                   'w-4 h-4 text-rga-gray transition-transform',
-                  isUserMenuOpen && 'rotate-180'
+                  isUserMenuOpen && 'rotate-180',
                 )}
               />
             </button>
@@ -193,9 +190,7 @@ export function MembersHeader({
                     <p className="text-white text-sm font-medium truncate">
                       {member.globalName || member.username}
                     </p>
-                    <p className="text-rga-gray/60 text-xs truncate">
-                      @{member.username}
-                    </p>
+                    <p className="text-rga-gray/60 text-xs truncate">@{member.username}</p>
                   </div>
                   <nav className="py-1">
                     {/* Mobile-only navigation links */}

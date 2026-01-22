@@ -86,9 +86,7 @@ export function MobileNav() {
                     <p className="text-white text-sm font-medium truncate">
                       {member.globalName || member.username}
                     </p>
-                    <p className="text-rga-gray/60 text-xs truncate">
-                      @{member.username}
-                    </p>
+                    <p className="text-rga-gray/60 text-xs truncate">@{member.username}</p>
                   </div>
                 </div>
                 <button
@@ -117,7 +115,7 @@ export function MobileNav() {
                           'block px-3 py-2 rounded-lg text-sm transition-colors',
                           isActive
                             ? 'bg-rga-green/10 text-rga-green'
-                            : 'text-rga-gray hover:text-white hover:bg-bg-surface'
+                            : 'text-rga-gray hover:text-white hover:bg-bg-surface',
                         )}
                       >
                         {link.label}
@@ -128,9 +126,7 @@ export function MobileNav() {
 
                 {/* Secondary links */}
                 <div className="space-y-1 mb-6">
-                  <p className="text-rga-gray/40 text-xs uppercase tracking-wider mb-2">
-                    Account
-                  </p>
+                  <p className="text-rga-gray/40 text-xs uppercase tracking-wider mb-2">Account</p>
                   {secondaryLinks.map((link) => (
                     <Link
                       key={link.href}
