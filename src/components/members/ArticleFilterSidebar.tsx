@@ -20,12 +20,16 @@ interface ArticleFilterSidebarProps {
   onClearAll?: () => void
 }
 
+type DropdownId = 'games' | 'type' | 'topics' | 'series'
+
 export function ArticleFilterSidebar({
   filterOptions,
   filters,
   onFilterChange,
   onClearAll,
 }: ArticleFilterSidebarProps) {
+  const [openDropdown, setOpenDropdown] = useState<DropdownId | null>(null)
+
   const activeFilterCount =
     (filters.readStatus ? 1 : 0) +
     filters.readingTime.length +
@@ -50,7 +54,7 @@ export function ArticleFilterSidebar({
 
   return (
     <aside className="w-64 flex-shrink-0 hidden lg:block">
-      <div className="sticky top-20 space-y-5">
+      <div className="sticky top-20 space-y-5 pb-4">
         {/* Header */}
         <div className="flex items-center justify-between">
           <h2 className="text-white font-bold text-lg">Filters</h2>
@@ -78,6 +82,8 @@ export function ArticleFilterSidebar({
               tint: g.tint,
             }))}
             placeholder="All Games"
+            isOpen={openDropdown === 'games'}
+            onToggle={() => setOpenDropdown(openDropdown === 'games' ? null : 'games')}
           />
         )}
 
@@ -93,6 +99,8 @@ export function ArticleFilterSidebar({
               label: c.name,
             }))}
             placeholder="All Types"
+            isOpen={openDropdown === 'type'}
+            onToggle={() => setOpenDropdown(openDropdown === 'type' ? null : 'type')}
           />
         )}
 
@@ -109,6 +117,8 @@ export function ArticleFilterSidebar({
               tint: t.tint,
             }))}
             placeholder="All Topics"
+            isOpen={openDropdown === 'topics'}
+            onToggle={() => setOpenDropdown(openDropdown === 'topics' ? null : 'topics')}
           />
         )}
 
@@ -127,6 +137,8 @@ export function ArticleFilterSidebar({
                 count: s.articleCount,
               })),
             ]}
+            isOpen={openDropdown === 'series'}
+            onToggle={() => setOpenDropdown(openDropdown === 'series' ? null : 'series')}
           />
         )}
 
@@ -211,10 +223,22 @@ interface FilterDropdownProps {
   value: string | null
   onChange: (value: string | null) => void
   options: DropdownOption[]
+  isOpen?: boolean
+  onToggle?: () => void
 }
 
-function FilterDropdown({ label, icon, value, onChange, options }: FilterDropdownProps) {
-  const [isOpen, setIsOpen] = useState(false)
+function FilterDropdown({
+  label,
+  icon,
+  value,
+  onChange,
+  options,
+  isOpen: controlledIsOpen,
+  onToggle,
+}: FilterDropdownProps) {
+  const [internalIsOpen, setInternalIsOpen] = useState(false)
+  const isOpen = controlledIsOpen ?? internalIsOpen
+  const handleToggle = onToggle ?? (() => setInternalIsOpen(!internalIsOpen))
   const [search, setSearch] = useState('')
   const searchInputRef = useRef<HTMLInputElement>(null)
 
@@ -239,7 +263,7 @@ function FilterDropdown({ label, icon, value, onChange, options }: FilterDropdow
       <div>
         <button
           type="button"
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={handleToggle}
           className={cn(
             'w-full flex items-center justify-between px-3 py-2 rounded-lg border transition-all text-sm',
             value
@@ -291,7 +315,8 @@ function FilterDropdown({ label, icon, value, onChange, options }: FilterDropdow
                           type="button"
                           onClick={() => {
                             onChange(option.value)
-                            setIsOpen(false)
+                            if (onToggle) onToggle()
+                            else setInternalIsOpen(false)
                           }}
                           className={cn(
                             'w-full flex items-center justify-between px-3 py-1.5 text-xs transition-colors',
@@ -334,6 +359,8 @@ interface FilterMultiDropdownProps {
   onChange: (values: string[]) => void
   options: MultiDropdownOption[]
   placeholder: string
+  isOpen?: boolean
+  onToggle?: () => void
 }
 
 function FilterMultiDropdown({
@@ -343,8 +370,12 @@ function FilterMultiDropdown({
   onChange,
   options,
   placeholder,
+  isOpen: controlledIsOpen,
+  onToggle,
 }: FilterMultiDropdownProps) {
-  const [isOpen, setIsOpen] = useState(false)
+  const [internalIsOpen, setInternalIsOpen] = useState(false)
+  const isOpen = controlledIsOpen ?? internalIsOpen
+  const handleDropdownToggle = onToggle ?? (() => setInternalIsOpen(!internalIsOpen))
   const [search, setSearch] = useState('')
   const searchInputRef = useRef<HTMLInputElement>(null)
 
@@ -360,7 +391,7 @@ function FilterMultiDropdown({
     o.label.toLowerCase().includes(search.toLowerCase())
   )
 
-  const handleToggle = (value: string) => {
+  const handleItemToggle = (value: string) => {
     if (values.includes(value)) {
       onChange(values.filter((v) => v !== value))
     } else {
@@ -384,7 +415,7 @@ function FilterMultiDropdown({
       <div>
         <button
           type="button"
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={handleDropdownToggle}
           className={cn(
             'w-full flex items-center justify-between px-3 py-2 rounded-lg border transition-all text-sm',
             selectedCount > 0
@@ -435,7 +466,7 @@ function FilterMultiDropdown({
                         <button
                           key={option.value}
                           type="button"
-                          onClick={() => handleToggle(option.value)}
+                          onClick={() => handleItemToggle(option.value)}
                           className={cn(
                             'w-full flex items-center justify-between px-3 py-1.5 text-xs transition-colors',
                             isSelected
