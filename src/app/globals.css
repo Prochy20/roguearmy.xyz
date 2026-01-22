@@ -418,4 +418,35 @@
       display: none !important;
     }
   }
+
+  /* Scrollbar visible only on hover */
+  .scrollbar-on-hover {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+  }
+
+  .scrollbar-on-hover:hover {
+    scrollbar-color: theme('colors.rga-green / 30%') transparent;
+  }
+
+  /* Webkit (Chrome, Safari, Edge) */
+  .scrollbar-on-hover::-webkit-scrollbar {
+    @apply w-1.5;
+  }
+
+  .scrollbar-on-hover::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  .scrollbar-on-hover::-webkit-scrollbar-thumb {
+    @apply bg-transparent rounded-full transition-colors;
+  }
+
+  .scrollbar-on-hover:hover::-webkit-scrollbar-thumb {
+    @apply bg-rga-green/30;
+  }
+
+  .scrollbar-on-hover:hover::-webkit-scrollbar-thumb:hover {
+    @apply bg-rga-green/50;
+  }
 }
