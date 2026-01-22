@@ -17,7 +17,8 @@ const messages: Record<string, { title: string; description: string }> = {
   },
   banned: {
     title: 'ACCESS REVOKED',
-    description: 'Your access to the members area has been revoked. Contact an admin if you believe this is an error.',
+    description:
+      'Your access to the members area has been revoked. Contact an admin if you believe this is an error.',
   },
   invalid_request: {
     title: 'INVALID REQUEST',
@@ -69,7 +70,7 @@ export function AccessDenied({ reason = 'not_authenticated', errorCode }: Access
             <p className="text-text-muted text-sm">
               Not a member yet?{' '}
               <a
-                href="https://discord.gg/roguearmy"
+                href="https://dc.roguearmy.xyz"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-rga-cyan hover:text-rga-cyan/80 underline"
