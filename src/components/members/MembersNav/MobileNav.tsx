@@ -141,7 +141,7 @@ export function MobileNav() {
                     </Link>
                   ))}
                   <a
-                    href="https://discord.gg/roguearmy"
+                    href="https://dc.roguearmy.xyz"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-rga-gray hover:text-white hover:bg-bg-surface transition-colors"

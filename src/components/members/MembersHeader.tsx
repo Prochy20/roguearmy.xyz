@@ -220,7 +220,7 @@ export function MembersHeader({
                       Profile
                     </Link>
                     <a
-                      href="https://discord.gg/roguearmy"
+                      href="https://dc.roguearmy.xyz"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="block px-4 py-2 text-sm text-rga-gray hover:text-white hover:bg-bg-surface transition-colors"
