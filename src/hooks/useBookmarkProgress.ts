@@ -36,7 +36,7 @@ export function useBookmarkProgress(articleIds: string[]): UseBookmarkProgressRe
     async function fetchProgress() {
       setIsLoading(true)
       try {
-        const response = await fetch('/api/read-progress')
+        const response = await fetch('/api/member/read-progress')
         if (response.ok) {
           const data = await response.json()
           const progressRecords = data.progress as Array<{

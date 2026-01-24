@@ -57,7 +57,7 @@ export function ReadProgressTracker({ articleId }: ReadProgressTrackerProps) {
 
     isSyncingRef.current = true
     try {
-      await fetch('/api/read-progress', {
+      await fetch('/api/member/read-progress', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
