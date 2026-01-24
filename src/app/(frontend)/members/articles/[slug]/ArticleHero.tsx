@@ -157,22 +157,6 @@ export function ArticleHero({
             transition={{ duration: 0.5, delay: 0.5 }}
             className="flex flex-wrap items-center gap-4 md:gap-6"
           >
-            {/* Content Type - subtle floating label */}
-            <motion.span
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.3, delay: 0.6 }}
-              className={cn(
-                "text-[10px] font-mono uppercase tracking-[0.2em]",
-                tint.textMuted
-              )}
-            >
-              {contentType.name}
-            </motion.span>
-
-            {/* Separator */}
-            <span className="hidden sm:block w-px h-4 bg-rga-gray/30" />
-
             {/* Date & Reading time */}
             <div className="flex items-center gap-4 text-sm text-rga-gray/60">
               <div className="flex items-center gap-2">
