@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'motion/react'
-import { ChevronLeft, ChevronRight, Clock, ArrowRight, CheckCircle } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Clock, ArrowRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { CyberCorners, CyberTag } from '@/components/ui/CyberCorners'
 import { type Article, type SeriesNavigation as SeriesNavType } from '@/lib/articles'
@@ -150,11 +150,6 @@ interface SeriesNavigationProps {
 export function SeriesNavigation({ navigation, seriesProgress }: SeriesNavigationProps) {
   const { seriesName, seriesSlug, currentOrder, totalParts, articleIds, previous, next } = navigation
 
-  // Calculate completion stats
-  const completedCount = seriesProgress
-    ? articleIds.filter((id) => seriesProgress[id]?.completed).length
-    : 0
-
   return (
     <motion.section
       initial={{ opacity: 0, y: 20 }}
@@ -182,21 +177,10 @@ export function SeriesNavigation({ navigation, seriesProgress }: SeriesNavigatio
           </div>
         </div>
 
-        {/* Status badges */}
-        <div className="flex items-center gap-2">
-          <CyberTag color="green" className="text-rga-green">
-            Part {currentOrder} of {totalParts}
-          </CyberTag>
-          {seriesProgress && (
-            <CyberTag
-              color={completedCount === totalParts ? 'green' : 'cyan'}
-              className={completedCount === totalParts ? 'text-rga-green' : 'text-rga-cyan'}
-            >
-              <CheckCircle className="w-3 h-3 mr-1" />
-              {completedCount} of {totalParts}
-            </CyberTag>
-          )}
-        </div>
+        {/* Series position badge */}
+        <CyberTag color="green" className="text-rga-green">
+          Part {currentOrder} of {totalParts}
+        </CyberTag>
       </div>
 
       {/* Navigation cards grid */}
