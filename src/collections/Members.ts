@@ -136,6 +136,7 @@ export const Members: CollectionConfig = {
       options: [
         { label: 'Active', value: 'active' },
         { label: 'Banned', value: 'banned' },
+        { label: 'Left Server', value: 'left_server' },
       ],
       admin: {
         description: 'Set to Banned to revoke access',

@@ -373,7 +373,7 @@ export interface Member {
   /**
    * Set to Banned to revoke access
    */
-  status: 'active' | 'banned';
+  status: 'active' | 'banned' | 'left_server';
   updatedAt: string;
   createdAt: string;
 }
