@@ -13,17 +13,18 @@ import {
   LinkJSXConverter,
 } from '@payloadcms/richtext-lexical/react'
 
-import type { CalloutBlockType, CodeBlockType, MermaidBlockType, VideoEmbedBlockType } from '@/payload-types'
+import type { CalloutBlockType, CodeBlockType, MermaidBlockType, SocialEmbedBlockType, VideoEmbedBlockType } from '@/payload-types'
 import { Callout } from '@/components/markdown/Callout'
 import { LexicalCodeBlock } from './LexicalCodeBlock'
 import { MermaidDiagram } from '@/components/markdown/MermaidDiagram'
+import { SocialEmbed } from './SocialEmbed'
 import { VideoEmbed } from './VideoEmbed'
 import { slugify } from '@/lib/toc'
 
 // Extend node types to include our custom blocks
 type NodeTypes =
   | DefaultNodeTypes
-  | SerializedBlockNode<CalloutBlockType | CodeBlockType | MermaidBlockType | VideoEmbedBlockType>
+  | SerializedBlockNode<CalloutBlockType | CodeBlockType | MermaidBlockType | SocialEmbedBlockType | VideoEmbedBlockType>
 
 /**
  * Extracts text from Lexical children nodes
@@ -482,6 +483,11 @@ export const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConvert
     mermaid: ({ node }) => {
       const { code } = node.fields
       return <MermaidDiagram code={code} />
+    },
+
+    socialEmbed: ({ node }) => {
+      const { url, caption } = node.fields
+      return <SocialEmbed url={url} caption={caption} />
     },
 
     videoEmbed: ({ node }) => {

@@ -1,4 +1,5 @@
 export { CalloutBlock } from './CalloutBlock'
 export { CodeBlock } from './CodeBlock'
 export { MermaidBlock } from './MermaidBlock'
+export { SocialEmbedBlock } from './SocialEmbedBlock'
 export { VideoEmbedBlock } from './VideoEmbedBlock'

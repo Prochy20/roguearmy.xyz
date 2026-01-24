@@ -847,6 +847,23 @@ export interface MermaidBlockType {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SocialEmbedBlockType".
+ */
+export interface SocialEmbedBlockType {
+  /**
+   * Supports tweets, posts, reels, and videos from public accounts
+   */
+  url: string;
+  /**
+   * Additional context shown beneath the embedded post
+   */
+  caption?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'socialEmbed';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "VideoEmbedBlockType".
  */
 export interface VideoEmbedBlockType {
