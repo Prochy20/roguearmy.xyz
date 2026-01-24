@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 import { MembersProvider, type MemberInfo } from '@/contexts/MembersContext'
 import { BookmarksProvider } from '@/contexts/BookmarksContext'
 import { MembersNav } from './MembersNav'
+import { MembersFooter } from './MembersFooter'
 
 interface MembersLayoutClientProps {
   children: ReactNode
@@ -20,8 +21,11 @@ export function MembersLayoutClient({ children, member }: MembersLayoutClientPro
   return (
     <MembersProvider member={member}>
       <BookmarksProvider>
-        <MembersNav hideOnScroll={!!isArticleDetailPage} />
-        {children}
+        <div className="min-h-screen flex flex-col">
+          <MembersNav hideOnScroll={!!isArticleDetailPage} />
+          <main className="flex-1">{children}</main>
+          <MembersFooter />
+        </div>
       </BookmarksProvider>
     </MembersProvider>
   )
