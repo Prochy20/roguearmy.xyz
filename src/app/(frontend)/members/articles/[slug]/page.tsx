@@ -1,27 +1,26 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { cookies } from 'next/headers'
-import { ArrowLeft } from 'lucide-react'
 import { getTintClasses, formatArticleDate } from '@/lib/articles'
 import {
   getArticleBySlug,
   getArticleBySlugWithDraft,
   getSeriesNavigation,
+  getFeaturedArticles,
   getAllArticleSlugs,
 } from '@/lib/articles.server'
 import { verifyMemberToken } from '@/lib/auth/jwt'
 import { MEMBER_SESSION_COOKIE } from '@/lib/auth/cookies'
 import { getMemberProgressMap } from '@/lib/progress.server'
 import { extractHeadingsFromLexical } from '@/lib/toc'
-import { CyberButton } from '@/components/members/CyberButton'
 import { ReadProgressTracker } from '@/components/members/ReadProgressTracker'
 import { cn } from '@/lib/utils'
 import { ArticleHero } from './ArticleHero'
 import { ArticleWithTOC } from './ArticleWithTOC'
 import { ArticlePageClient } from './ArticlePageClient'
-import { BackToTop } from './BackToTop'
 import { ReadingStatus } from './ReadingStatus'
 import { SeriesNavigation } from './SeriesNavigation'
+import { FeaturedArticles } from '@/components/members/FeaturedArticles'
 
 interface ArticlePageProps {
   params: Promise<{ slug: string }>
@@ -90,28 +89,58 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
   const { preview } = await searchParams
   const isPreview = preview === 'true'
 
-  // Use draft-aware fetch for preview mode
-  const { article, rawArticle } = isPreview
-    ? await getArticleBySlugWithDraft(slug, true)
-    : { article: await getArticleBySlug(slug), rawArticle: null }
+  // Always fetch with draft support to get rawArticle for relatedArticles
+  const { article, rawArticle } = await getArticleBySlugWithDraft(slug, isPreview)
 
-  if (!article) {
+  if (!article || !rawArticle) {
     notFound()
   }
 
   const tint = getTintClasses(article.topic.tint)
   const seriesNavigation = await getSeriesNavigation(article.id)
 
-  // Get member's reading progress for series articles
+  // Extract curated article IDs from relatedArticles field
+  const curatedArticleIds = (rawArticle.relatedArticles || []).map((a) =>
+    typeof a === 'string' ? a : a.id
+  )
+
+  // Get featured articles (curated + algorithmic)
+  const featuredArticles = await getFeaturedArticles(
+    article.id,
+    article.topic.id,
+    article.games.map((g) => g.id),
+    curatedArticleIds,
+    seriesNavigation?.articleIds
+  )
+
+  // Get member's reading progress for series articles and featured articles
   const memberId = await getMemberId()
-  const seriesProgressMap =
-    seriesNavigation && memberId
-      ? await getMemberProgressMap(memberId, seriesNavigation.articleIds)
-      : undefined
+
+  // Collect all article IDs that need progress
+  const progressArticleIds = [
+    ...(seriesNavigation?.articleIds || []),
+    ...featuredArticles.map((a) => a.id),
+  ]
+
+  const progressMap = memberId && progressArticleIds.length > 0
+    ? await getMemberProgressMap(memberId, progressArticleIds)
+    : undefined
 
   // Convert Map to serializable object for client component
-  const seriesProgress = seriesProgressMap
-    ? Object.fromEntries(seriesProgressMap)
+  const seriesProgress = progressMap && seriesNavigation
+    ? Object.fromEntries(
+        seriesNavigation.articleIds
+          .filter((id) => progressMap.has(id))
+          .map((id) => [id, progressMap.get(id)!])
+      )
+    : undefined
+
+  const featuredProgress = progressMap && featuredArticles.length > 0
+    ? Object.fromEntries(
+        featuredArticles
+          .filter((a) => progressMap.has(a.id))
+          .map((a) => [a.id, progressMap.get(a.id)!])
+      )
     : undefined
 
   // Extract headings for TOC (server-side for Payload content)
@@ -121,7 +150,7 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
       : [] // Wiki content headings extracted client-side
 
   // Preview mode: use client component with live preview hook
-  if (isPreview && rawArticle) {
+  if (isPreview) {
     return (
       <ArticlePageClient
         initialArticle={article}
@@ -129,6 +158,8 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
         slug={slug}
         seriesNavigation={seriesNavigation}
         seriesProgress={seriesProgress}
+        featuredArticles={featuredArticles}
+        featuredProgress={featuredProgress}
       />
     )
   }
@@ -203,19 +234,13 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
                 />
               )}
 
-              {/* Article footer */}
-              <footer className="mt-20 pt-8 border-t border-rga-green/10">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                  <CyberButton
-                    href="/members"
-                    iconLeft={<ArrowLeft className="w-4 h-4" />}
-                  >
-                    Back to all articles
-                  </CyberButton>
-
-                  <BackToTop />
-                </div>
-              </footer>
+              {/* Featured articles - "You might also like" section (only show with exactly 3) */}
+              {featuredArticles.length === 3 && (
+                <FeaturedArticles
+                  articles={featuredArticles}
+                  progress={featuredProgress}
+                />
+              )}
             </ArticleWithTOC>
 
             {/* Right margin - metadata on large screens */}
