@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react'
 import { useLivePreview } from '@payloadcms/live-preview-react'
-import { ArrowLeft, Eye, RefreshCw } from 'lucide-react'
+import { Eye, RefreshCw } from 'lucide-react'
 import type { Article as PayloadArticle } from '@/payload-types'
 import {
   type Article,
@@ -14,12 +14,11 @@ import {
 import { type ArticleProgress } from '@/lib/progress.server'
 import { extractHeadingsFromLexical } from '@/lib/toc'
 import { cn } from '@/lib/utils'
-import { CyberButton } from '@/components/members/CyberButton'
 import { ArticleHero } from './ArticleHero'
 import { ArticleWithTOC } from './ArticleWithTOC'
-import { BackToTop } from './BackToTop'
 import { ReadingStatus } from './ReadingStatus'
 import { SeriesNavigation } from './SeriesNavigation'
+import { FeaturedArticles } from '@/components/members/FeaturedArticles'
 
 interface ArticlePageClientProps {
   initialArticle: Article
@@ -27,6 +26,8 @@ interface ArticlePageClientProps {
   slug: string
   seriesNavigation: SeriesNavType | null
   seriesProgress?: Record<string, ArticleProgress>
+  featuredArticles?: Article[]
+  featuredProgress?: Record<string, ArticleProgress>
 }
 
 export function ArticlePageClient({
@@ -35,6 +36,8 @@ export function ArticlePageClient({
   slug,
   seriesNavigation,
   seriesProgress,
+  featuredArticles,
+  featuredProgress,
 }: ArticlePageClientProps) {
   // Use browser origin for live preview - this ensures it works in any environment
   // since the admin panel and frontend are on the same domain
@@ -152,19 +155,13 @@ export function ArticlePageClient({
                 />
               )}
 
-              {/* Article footer */}
-              <footer className="mt-20 pt-8 border-t border-rga-green/10">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                  <CyberButton
-                    href="/members"
-                    iconLeft={<ArrowLeft className="w-4 h-4" />}
-                  >
-                    Back to all articles
-                  </CyberButton>
-
-                  <BackToTop />
-                </div>
-              </footer>
+              {/* Featured articles - "You might also like" section (only show with exactly 3) */}
+              {featuredArticles && featuredArticles.length === 3 && (
+                <FeaturedArticles
+                  articles={featuredArticles}
+                  progress={featuredProgress}
+                />
+              )}
             </ArticleWithTOC>
 
             {/* Right margin - metadata on large screens */}
