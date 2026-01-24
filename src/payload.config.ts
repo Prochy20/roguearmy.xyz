@@ -17,7 +17,7 @@ import { Articles } from './collections/Articles'
 import { ReadProgress } from './collections/ReadProgress'
 import { Bookmarks } from './collections/Bookmarks'
 import { Homepage } from './globals/Homepage'
-import { CalloutBlock, CodeBlock, MermaidBlock } from './blocks'
+import { CalloutBlock, CodeBlock, MermaidBlock, VideoEmbedBlock } from './blocks'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -60,7 +60,7 @@ export default buildConfig({
     features: ({ defaultFeatures }) => [
       ...defaultFeatures,
       BlocksFeature({
-        blocks: [CalloutBlock, CodeBlock, MermaidBlock],
+        blocks: [CalloutBlock, CodeBlock, MermaidBlock, VideoEmbedBlock],
       }),
     ],
   }),

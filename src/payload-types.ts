@@ -842,6 +842,23 @@ export interface MermaidBlockType {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "VideoEmbedBlockType".
+ */
+export interface VideoEmbedBlockType {
+  /**
+   * Supports videos, playlists, channels, clips, and live streams
+   */
+  url: string;
+  /**
+   * Used as the iframe title attribute for screen readers
+   */
+  title?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'videoEmbed';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "auth".
  */
 export interface Auth {
