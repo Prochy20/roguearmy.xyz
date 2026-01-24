@@ -208,8 +208,8 @@ export function SeriesNavigation({ navigation, seriesProgress }: SeriesNavigatio
         )}
       </div>
 
-      {/* Progress bar - shows reading status for each article */}
-      <div className="mt-6 flex items-center gap-2">
+      {/* Progress dots - minimalist style */}
+      <div className="mt-6 flex items-center justify-center gap-2">
         {articleIds.map((articleId, index) => {
           const partNumber = index + 1
           const isCurrent = partNumber === currentOrder
@@ -217,44 +217,24 @@ export function SeriesNavigation({ navigation, seriesProgress }: SeriesNavigatio
           const isCompleted = progress?.completed ?? false
           const isInProgress = progress && !progress.completed && progress.progress > 0
 
+          // Determine visual state
+          const showAsCompleted = seriesProgress ? isCompleted : partNumber < currentOrder
+          const showAsInProgress = seriesProgress ? isInProgress : isCurrent
+
           return (
             <div
               key={articleId}
               className={cn(
-                'h-1.5 flex-1 rounded-full transition-all duration-300 relative',
-                // Reading status colors (when progress available)
-                seriesProgress && isCompleted && 'bg-rga-green',
-                seriesProgress && isInProgress && 'bg-rga-cyan/70',
-                seriesProgress && !isCompleted && !isInProgress && 'bg-rga-gray/20',
-                // Fallback position-based colors (when no progress)
-                !seriesProgress && isCurrent && 'bg-rga-green',
-                !seriesProgress && !isCurrent && partNumber < currentOrder && 'bg-rga-cyan/50',
-                !seriesProgress && !isCurrent && partNumber > currentOrder && 'bg-rga-gray/20',
-                // Current article highlight
-                isCurrent && 'ring-2 ring-white/30 ring-offset-1 ring-offset-void'
+                'w-2 h-2 rounded-full transition-all duration-300',
+                showAsCompleted && 'bg-rga-green shadow-[0_0_6px_rgba(0,255,65,0.6)]',
+                showAsInProgress && !showAsCompleted && 'bg-rga-cyan shadow-[0_0_6px_rgba(0,255,255,0.6)]',
+                !showAsCompleted && !showAsInProgress && 'bg-rga-gray/30',
+                isCurrent && 'scale-150'
               )}
             />
           )
         })}
       </div>
-
-      {/* Progress bar legend */}
-      {seriesProgress && (
-        <div className="mt-3 flex items-center justify-center gap-4 text-xs text-rga-gray/50">
-          <div className="flex items-center gap-1.5">
-            <div className="w-2.5 h-2.5 rounded-full bg-rga-green" />
-            <span>Completed</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <div className="w-2.5 h-2.5 rounded-full bg-rga-cyan/70" />
-            <span>In progress</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <div className="w-2.5 h-2.5 rounded-full bg-rga-gray/20" />
-            <span>Unread</span>
-          </div>
-        </div>
-      )}
     </motion.section>
   )
 }
