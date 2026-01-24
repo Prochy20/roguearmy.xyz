@@ -43,15 +43,34 @@ export async function GET(request: NextRequest) {
     // Get Discord user info
     const discordUser = await getDiscordUser(accessToken)
 
+    // Get Payload instance (needed for both guild check failure and success)
+    const payload = await getPayload({ config })
+
     // Check guild membership
     const guildMember = await getGuildMember(accessToken)
 
     if (!guildMember) {
+      // User is not in the guild - update their status if they exist
+      const existingMembers = await payload.find({
+        collection: 'members',
+        where: { discordId: { equals: discordUser.id } },
+        limit: 1,
+      })
+
+      if (existingMembers.docs.length > 0) {
+        const existingMember = existingMembers.docs[0]
+        // Only update to left_server if not already banned
+        if (existingMember.status !== 'banned') {
+          await payload.update({
+            collection: 'members',
+            id: existingMember.id,
+            data: { status: 'left_server' },
+          })
+        }
+      }
+
       return NextResponse.redirect(`${appUrl}/members?error=not_member`)
     }
-
-    // Get Payload instance
-    const payload = await getPayload({ config })
 
     // Find or create member
     const existingMembers = await payload.find({
@@ -81,6 +100,7 @@ export async function GET(request: NextRequest) {
             joinedDiscordAt: guildMember.joined_at,
           },
           lastLogin: now,
+          status: 'active', // Restore status if member rejoins
         },
       })
     } else {

@@ -38,8 +38,8 @@ export async function GET(request: NextRequest) {
       id: session.memberId,
     })
 
-    if (!member || member.status === 'banned') {
-      return NextResponse.json({ error: 'Member not found or banned' }, { status: 403 })
+    if (!member || member.status !== 'active') {
+      return NextResponse.json({ error: 'Member not found or inactive' }, { status: 403 })
     }
   } catch {
     return NextResponse.json({ error: 'Member not found' }, { status: 404 })
@@ -99,8 +99,8 @@ export async function PATCH(request: NextRequest) {
       id: session.memberId,
     })
 
-    if (!member || member.status === 'banned') {
-      return NextResponse.json({ error: 'Member not found or banned' }, { status: 403 })
+    if (!member || member.status !== 'active') {
+      return NextResponse.json({ error: 'Member not found or inactive' }, { status: 403 })
     }
   } catch {
     return NextResponse.json({ error: 'Member not found' }, { status: 404 })

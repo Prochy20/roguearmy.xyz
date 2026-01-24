@@ -37,7 +37,7 @@ async function getMemberSession() {
       return { authenticated: false, reason: 'not_authenticated' as const }
     }
 
-    if (member.status === 'banned') {
+    if (member.status !== 'active') {
       return { authenticated: false, reason: 'banned' as const }
     }
 
