@@ -54,12 +54,13 @@ export function ArticleCard({ article, index = 0, progress }: ArticleCardProps) 
         delay: index * 0.1,
         ease: [0.25, 0.46, 0.45, 0.94],
       }}
+      className="h-full"
     >
-      <Link href={`/members/articles/${article.slug}`} className="block group">
-        <CyberCorners color={cornerColor} size="md" glow>
+      <Link href={`/members/articles/${article.slug}`} className="block group h-full">
+        <CyberCorners color={cornerColor} size="md" glow className="h-full">
           <div
             className={cn(
-              'relative overflow-hidden border bg-bg-elevated transition-all duration-300',
+              'relative overflow-hidden border bg-bg-elevated transition-all duration-300 h-full flex flex-col',
               tint.border,
               tint.hoverBorder,
               tint.glow
@@ -95,7 +96,7 @@ export function ArticleCard({ article, index = 0, progress }: ArticleCardProps) 
             </div>
 
             {/* Content */}
-            <div className="p-5">
+            <div className="p-5 flex-1 flex flex-col">
               {/* Title with intense Glitch Effect on hover */}
               <HoverGlitch
                 intensity={5}
@@ -111,7 +112,7 @@ export function ArticleCard({ article, index = 0, progress }: ArticleCardProps) 
               </p>
 
               {/* Metadata Row */}
-              <div className="flex items-center gap-x-4 gap-y-2 text-xs text-rga-gray/60">
+              <div className="flex items-center gap-x-4 gap-y-2 text-xs text-rga-gray/60 mt-auto">
                 {/* Left side: Content Type, Date, Reading Time */}
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-2 flex-1">
                   {/* Content Type - subtle pill */}
