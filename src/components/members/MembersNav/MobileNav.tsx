@@ -14,10 +14,7 @@ const navLinks = [
   { href: '/members/series', label: 'Series', pattern: /^\/members\/series/ },
 ]
 
-const secondaryLinks = [
-  { href: '/members/profile', label: 'Profile' },
-  { href: '/members/history', label: 'Reading History' },
-]
+const secondaryLinks = [{ href: '/members/history', label: 'Reading History' }]
 
 export function MobileNav() {
   const [isOpen, setIsOpen] = useState(false)
