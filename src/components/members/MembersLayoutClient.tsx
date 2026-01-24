@@ -18,13 +18,16 @@ export function MembersLayoutClient({ children, member }: MembersLayoutClientPro
   // Enable hide-on-scroll only on article detail pages
   const isArticleDetailPage = pathname.match(/^\/members\/articles\/[^/]+$/)
 
+  // Show footer on article detail pages
+  const showFooter = !!isArticleDetailPage
+
   return (
     <MembersProvider member={member}>
       <BookmarksProvider>
         <div className="min-h-screen flex flex-col">
           <MembersNav hideOnScroll={!!isArticleDetailPage} />
           <main className="flex-1">{children}</main>
-          <MembersFooter />
+          {showFooter && <MembersFooter />}
         </div>
       </BookmarksProvider>
     </MembersProvider>
