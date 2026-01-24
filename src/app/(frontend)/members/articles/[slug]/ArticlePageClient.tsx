@@ -24,6 +24,7 @@ import { SeriesNavigation } from './SeriesNavigation'
 interface ArticlePageClientProps {
   initialArticle: Article
   rawArticle: PayloadArticle
+  slug: string
   seriesNavigation: SeriesNavType | null
   seriesProgress?: Record<string, ArticleProgress>
 }
@@ -31,6 +32,7 @@ interface ArticlePageClientProps {
 export function ArticlePageClient({
   initialArticle,
   rawArticle,
+  slug,
   seriesNavigation,
   seriesProgress,
 }: ArticlePageClientProps) {
@@ -104,6 +106,7 @@ export function ArticlePageClient({
       {/* Hero Section - Full viewport */}
       <ArticleHero
         articleId={article.id}
+        slug={slug}
         title={article.title}
         heroImage={article.heroImage}
         topic={article.topic}

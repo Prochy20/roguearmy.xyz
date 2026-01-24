@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { cookies } from 'next/headers'
 import { ArrowLeft } from 'lucide-react'
@@ -25,6 +26,48 @@ import { SeriesNavigation } from './SeriesNavigation'
 interface ArticlePageProps {
   params: Promise<{ slug: string }>
   searchParams: Promise<{ preview?: string }>
+}
+
+const siteUrl = 'https://roguearmy.xyz'
+
+export async function generateMetadata({ params }: ArticlePageProps): Promise<Metadata> {
+  const { slug } = await params
+  const article = await getArticleBySlug(slug)
+
+  if (!article) {
+    return {
+      title: 'Article Not Found | Rogue Army',
+    }
+  }
+
+  const articleUrl = `${siteUrl}/members/articles/${slug}`
+
+  return {
+    title: `${article.title} | Rogue Army`,
+    description: `${article.topic.name} - ${article.readingTime} min read`,
+    openGraph: {
+      type: 'article',
+      url: articleUrl,
+      title: article.title,
+      description: `${article.topic.name} - ${article.readingTime} min read`,
+      siteName: 'Rogue Army',
+      images: [
+        {
+          url: article.heroImage.url,
+          width: 1200,
+          height: 630,
+          alt: article.heroImage.alt,
+        },
+      ],
+      publishedTime: article.publishedAt.toISOString(),
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: article.title,
+      description: `${article.topic.name} - ${article.readingTime} min read`,
+      images: [article.heroImage.url],
+    },
+  }
 }
 
 async function getMemberId() {
@@ -83,6 +126,7 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
       <ArticlePageClient
         initialArticle={article}
         rawArticle={rawArticle}
+        slug={slug}
         seriesNavigation={seriesNavigation}
         seriesProgress={seriesProgress}
       />
@@ -113,6 +157,7 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
       {/* Hero Section - Full viewport */}
       <ArticleHero
         articleId={article.id}
+        slug={slug}
         title={article.title}
         heroImage={article.heroImage}
         topic={article.topic}

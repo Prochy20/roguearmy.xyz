@@ -23,6 +23,7 @@ import {
   formatArticleDate,
 } from '@/lib/articles'
 import { BookmarkButton } from '@/components/members/BookmarkButton'
+import { ShareButton } from '@/components/members/ShareButton'
 
 // Map article tint to CyberTag color
 const tintToColor = (tint: TintColor) => {
@@ -38,6 +39,7 @@ const tintToColor = (tint: TintColor) => {
 
 interface ArticleHeroProps {
   articleId: string
+  slug: string
   title: string
   heroImage: ArticleImage
   topic: ArticleTopic
@@ -58,6 +60,7 @@ interface ArticleHeroProps {
 
 export function ArticleHero({
   articleId,
+  slug,
   title,
   heroImage,
   topic,
@@ -181,6 +184,12 @@ export function ArticleHero({
                 <span>{readingTime} min read</span>
               </div>
             </div>
+
+            {/* Separator */}
+            <span className="hidden sm:block w-px h-4 bg-rga-gray/30" />
+
+            {/* Share Button */}
+            <ShareButton articleSlug={slug} size="md" />
 
             {/* Separator */}
             <span className="hidden sm:block w-px h-4 bg-rga-gray/30" />
