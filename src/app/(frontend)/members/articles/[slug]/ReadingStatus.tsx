@@ -22,16 +22,39 @@ export function ReadingStatus({ readingTime }: ReadingStatusProps) {
 
   useEffect(() => {
     const calculate = () => {
-      const scrollTop = window.scrollY
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight
-      const scrollProgress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0
+      const article = document.querySelector('.article-content')
+      if (!article) {
+        setIsVisible(false)
+        return
+      }
 
-      setProgress(Math.min(scrollProgress, 100))
+      const rect = article.getBoundingClientRect()
+      const viewportHeight = window.innerHeight
+
+      // Calculate progress based on article content position
+      // 0% when top of article is at top of viewport
+      // 100% when bottom of article reaches bottom of viewport
+      const scrolledIntoArticle = -rect.top
+      const readableDistance = article.clientHeight - viewportHeight
+
+      let scrollProgress = 0
+      if (readableDistance > 0) {
+        scrollProgress = (scrolledIntoArticle / readableDistance) * 100
+        scrollProgress = Math.max(0, Math.min(100, scrollProgress))
+      } else {
+        // Article is shorter than viewport
+        scrollProgress = rect.top <= 0 ? 100 : 0
+      }
+
+      setProgress(scrollProgress)
       setTimeRemaining(Math.max(0, Math.ceil(readingTime * (1 - scrollProgress / 100))))
 
-      // Show after scrolling past 15% of viewport
-      const threshold = window.innerHeight * 0.15
-      setIsVisible(scrollTop > threshold)
+      // Show when we've started reading (scrolled into article)
+      // Hide when we've scrolled past the article (bottom above viewport center)
+      const hasStartedReading = rect.top < viewportHeight * 0.7
+      const hasFinishedReading = rect.bottom < viewportHeight * 0.4
+
+      setIsVisible(hasStartedReading && !hasFinishedReading)
     }
 
     const handleScroll = () => {
