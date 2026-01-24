@@ -294,3 +294,146 @@ export async function getAllArticleSlugs(): Promise<string[]> {
 
   return result.docs.map((article) => article.slug)
 }
+
+/**
+ * Get featured articles for "You might also like" section.
+ * Uses hybrid logic: curated first, then algorithmic fallback.
+ */
+export async function getFeaturedArticles(
+  currentArticleId: string,
+  topicId: string,
+  gameIds: string[],
+  curatedArticleIds?: string[],
+  seriesArticleIds?: string[],
+  limit: number = 3
+): Promise<Article[]> {
+  const payload = await getPayload({ config })
+
+  // Build exclusion list: current article + series articles
+  const excludeIds = new Set([currentArticleId, ...(seriesArticleIds || [])])
+
+  // Filter out any excluded articles from curated list
+  const validCuratedIds = (curatedArticleIds || []).filter((id) => !excludeIds.has(id))
+
+  // If we have enough curated articles, just fetch those
+  if (validCuratedIds.length >= limit) {
+    const curatedResult = await payload.find({
+      collection: 'articles',
+      where: {
+        id: { in: validCuratedIds.slice(0, limit) },
+        _status: { equals: 'published' },
+      },
+      depth: 2,
+    })
+
+    // Preserve curator's order
+    const curatedMap = new Map(curatedResult.docs.map((a) => [a.id, a]))
+    const orderedCurated = validCuratedIds
+      .slice(0, limit)
+      .map((id) => curatedMap.get(id))
+      .filter((a): a is PayloadArticle => a !== undefined)
+
+    return orderedCurated.map((a) => transformPayloadArticle(a))
+  }
+
+  // Start with curated articles
+  const articles: PayloadArticle[] = []
+  const usedIds = new Set(excludeIds)
+
+  // Fetch curated articles first (if any)
+  if (validCuratedIds.length > 0) {
+    const curatedResult = await payload.find({
+      collection: 'articles',
+      where: {
+        id: { in: validCuratedIds },
+        _status: { equals: 'published' },
+      },
+      depth: 2,
+    })
+
+    // Preserve curator's order
+    const curatedMap = new Map(curatedResult.docs.map((a) => [a.id, a]))
+    for (const id of validCuratedIds) {
+      const article = curatedMap.get(id)
+      if (article) {
+        articles.push(article)
+        usedIds.add(article.id)
+      }
+    }
+  }
+
+  // Calculate how many more we need
+  const needed = limit - articles.length
+  if (needed <= 0) {
+    return articles.map((a) => transformPayloadArticle(a))
+  }
+
+  // Fetch same-topic articles
+  const topicResult = await payload.find({
+    collection: 'articles',
+    where: {
+      and: [
+        { _status: { equals: 'published' } },
+        { id: { not_in: Array.from(usedIds) } },
+        { 'categorization.topic': { equals: topicId } },
+      ],
+    },
+    depth: 2,
+    sort: '-publishedAt',
+    limit: needed,
+  })
+
+  for (const article of topicResult.docs) {
+    if (articles.length >= limit) break
+    articles.push(article)
+    usedIds.add(article.id)
+  }
+
+  // If still need more, fetch same-game articles
+  const stillNeeded = limit - articles.length
+  if (stillNeeded > 0 && gameIds.length > 0) {
+    const gameResult = await payload.find({
+      collection: 'articles',
+      where: {
+        and: [
+          { _status: { equals: 'published' } },
+          { id: { not_in: Array.from(usedIds) } },
+          { 'categorization.games': { in: gameIds } },
+        ],
+      },
+      depth: 2,
+      sort: '-publishedAt',
+      limit: stillNeeded,
+    })
+
+    for (const article of gameResult.docs) {
+      if (articles.length >= limit) break
+      articles.push(article)
+      usedIds.add(article.id)
+    }
+  }
+
+  // Final fallback: fetch any recent articles if we still don't have enough
+  const finalNeeded = limit - articles.length
+  if (finalNeeded > 0) {
+    const recentResult = await payload.find({
+      collection: 'articles',
+      where: {
+        and: [
+          { _status: { equals: 'published' } },
+          { id: { not_in: Array.from(usedIds) } },
+        ],
+      },
+      depth: 2,
+      sort: '-publishedAt',
+      limit: finalNeeded,
+    })
+
+    for (const article of recentResult.docs) {
+      if (articles.length >= limit) break
+      articles.push(article)
+    }
+  }
+
+  return articles.map((a) => transformPayloadArticle(a))
+}
