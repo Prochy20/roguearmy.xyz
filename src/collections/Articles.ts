@@ -82,6 +82,19 @@ export const Articles: CollectionConfig = {
       relationTo: 'media',
       required: true,
     },
+    {
+      name: 'relatedArticles',
+      type: 'relationship',
+      relationTo: 'articles',
+      hasMany: true,
+      maxRows: 3,
+      admin: {
+        description: 'Curated articles to show in "You might also like" section. Leave empty for automatic selection.',
+      },
+      filterOptions: ({ id }) => ({
+        id: { not_equals: id },
+      }),
+    },
 
     // Categorization
     {

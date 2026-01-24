@@ -151,6 +151,10 @@ export interface Article {
    */
   perex: string;
   heroImage: string | Media;
+  /**
+   * Curated articles to show in "You might also like" section. Leave empty for automatic selection.
+   */
+  relatedArticles?: (string | Article)[] | null;
   categorization: {
     /**
      * Primary content type (Guide, Build, News, etc.)
@@ -540,6 +544,7 @@ export interface ArticlesSelect<T extends boolean = true> {
   title?: T;
   perex?: T;
   heroImage?: T;
+  relatedArticles?: T;
   categorization?:
     | T
     | {
