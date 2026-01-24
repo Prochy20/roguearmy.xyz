@@ -11,7 +11,7 @@ export function MembersFooter() {
   }
 
   return (
-    <footer className="mt-auto py-12 text-center">
+    <footer className="mt-auto py-6 text-center">
       {/* Links row */}
       <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-6">
         <a
