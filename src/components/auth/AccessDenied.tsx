@@ -1,12 +1,15 @@
 'use client'
 
+import Link from 'next/link'
+import { LogOut } from 'lucide-react'
 import { DiscordLoginButton } from './DiscordLoginButton'
 import { GlitchText } from '@/components/effects/GlitchText'
 import { MembersLoginPage } from './MembersLoginPage'
 import { ErrorPage } from '@/components/error/ErrorPage'
+import { GlowButton } from '@/components/shared/GlowButton'
 
 interface AccessDeniedProps {
-  reason?: 'not_authenticated' | 'not_member' | 'banned' | 'error'
+  reason?: 'not_authenticated' | 'not_member' | 'banned' | 'left_server' | 'error'
   errorCode?: string
 }
 
@@ -49,6 +52,25 @@ export function AccessDenied({ reason = 'not_authenticated', errorCode }: Access
   // Show the full cyberpunk error page for banned users
   if (actualReason === 'banned') {
     return <ErrorPage errorType="BAN" showHomeButton={true} showRetryButton={false} />
+  }
+
+  // Show a friendlier error page for users who left the server
+  if (actualReason === 'left_server') {
+    return (
+      <ErrorPage
+        errorType="AWOL"
+        showHomeButton={true}
+        showRetryButton={false}
+        extraButtons={
+          <Link href="https://dc.roguearmy.xyz" target="_blank">
+            <GlowButton glowColor="cyan" size="lg" className="gap-2">
+              <LogOut className="w-4 h-4" />
+              Rejoin Discord
+            </GlowButton>
+          </Link>
+        }
+      />
+    )
   }
 
   const message = messages[actualReason] || messages.error
