@@ -5,7 +5,7 @@
 export interface TOCHeading {
   id: string
   text: string
-  level: 2 | 3
+  level: 1 | 2 | 3
 }
 
 /**
@@ -35,8 +35,8 @@ export function slugify(text: string): string {
 }
 
 /**
- * Extracts headings (H2 and H3) from markdown content.
- * Parses `##` and `###` patterns from the markdown string.
+ * Extracts headings (H1, H2, and H3) from markdown content.
+ * Parses `#`, `##`, and `###` patterns from the markdown string.
  */
 export function extractHeadingsFromMarkdown(content: string): TOCHeading[] {
   const headings: TOCHeading[] = []
@@ -44,11 +44,17 @@ export function extractHeadingsFromMarkdown(content: string): TOCHeading[] {
   const seenIds = new Set<string>()
 
   for (const line of lines) {
-    // Match ## and ### headings (but not # or ####)
+    // Match #, ## and ### headings (but not ####)
+    const h1Match = line.match(/^#\s+(.+)$/)
     const h2Match = line.match(/^##\s+(.+)$/)
     const h3Match = line.match(/^###\s+(.+)$/)
 
-    if (h2Match) {
+    if (h1Match) {
+      const text = h1Match[1].trim()
+      const id = getUniqueId(slugify(text), seenIds)
+      seenIds.add(id)
+      headings.push({ id, text, level: 1 })
+    } else if (h2Match) {
       const text = h2Match[1].trim()
       const id = getUniqueId(slugify(text), seenIds)
       seenIds.add(id)
@@ -103,10 +109,10 @@ export function extractHeadingsFromLexical(content: unknown): TOCHeading[] {
       }
 
       // Check if this is a heading node
-      if (n.type === 'heading' && (n.tag === 'h2' || n.tag === 'h3')) {
+      if (n.type === 'heading' && (n.tag === 'h1' || n.tag === 'h2' || n.tag === 'h3')) {
         const text = extractTextFromNode(n).trim()
         if (text) {
-          const level = n.tag === 'h2' ? 2 : 3
+          const level = n.tag === 'h1' ? 1 : n.tag === 'h2' ? 2 : 3
           const id = getUniqueId(slugify(text), seenIds)
           seenIds.add(id)
           headings.push({ id, text, level })

@@ -24,8 +24,9 @@ export const TOCItem = forwardRef<HTMLButtonElement, TOCItemProps>(
         className={cn(
           'group relative w-full text-left font-mono text-xs leading-relaxed transition-all duration-200',
           'pl-3 py-1.5 border-l-2',
-          // Indentation for H3
-          heading.level === 3 && 'ml-3',
+          // Indentation for H2 and H3 (H1 is top level)
+          heading.level === 2 && 'ml-3',
+          heading.level === 3 && 'ml-6',
           // Active state
           isActive
             ? 'text-rga-green border-l-rga-green'
