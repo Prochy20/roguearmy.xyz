@@ -147,7 +147,10 @@ export const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConvert
         return (
           <div className="mt-16 mb-8 first:mt-0">
             <div className="w-12 h-px bg-rga-green/40 mb-4" />
-            <h1 className="font-display text-2xl md:text-3xl lg:text-4xl text-white tracking-wide">
+            <h1
+              id={id}
+              className="font-display text-2xl md:text-3xl lg:text-4xl text-white tracking-wide scroll-mt-28"
+            >
               {children}
             </h1>
           </div>

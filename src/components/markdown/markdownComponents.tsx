@@ -34,14 +34,21 @@ function extractTextFromChildren(children: ReactNode): string {
  */
 export const markdownComponents: Partial<Components> = {
   // Headings
-  h1: ({ children }) => (
-    <div className="mt-16 mb-8 first:mt-0">
-      <div className="w-12 h-px bg-rga-green/40 mb-4" />
-      <h1 className="font-display text-2xl md:text-3xl lg:text-4xl text-white tracking-wide">
-        {children}
-      </h1>
-    </div>
-  ),
+  h1: ({ children }) => {
+    const text = extractTextFromChildren(children)
+    const id = slugify(text)
+    return (
+      <div className="mt-16 mb-8 first:mt-0">
+        <div className="w-12 h-px bg-rga-green/40 mb-4" />
+        <h1
+          id={id}
+          className="font-display text-2xl md:text-3xl lg:text-4xl text-white tracking-wide scroll-mt-28"
+        >
+          {children}
+        </h1>
+      </div>
+    )
+  },
 
   h2: ({ children }) => {
     const text = extractTextFromChildren(children)
