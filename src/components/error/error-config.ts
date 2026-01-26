@@ -8,9 +8,10 @@ import {
   WifiOff,
   CloudOff,
   Ban,
+  UserX,
 } from "lucide-react"
 
-export type ErrorCode = "404" | "401" | "403" | "400" | "500" | "502" | "503" | "BAN"
+export type ErrorCode = "404" | "401" | "403" | "400" | "500" | "502" | "503" | "BAN" | "AWOL"
 
 export interface TerminalLine {
   prefix: "$" | ">" | "!"
@@ -197,6 +198,27 @@ export const ERROR_CONFIGS: Record<ErrorCode, ErrorConfig> = {
     color: "red",
     icon: Ban,
     glitchColors: ["#ff0000", "#ff00ff"],
+  },
+
+  AWOL: {
+    code: "AWOL",
+    title: "GONE AWOL",
+    subtitle: "Agent no longer in active roster",
+    ashleyMessage: [
+      "Agent... you're not on our roster anymore.",
+      "Looks like you left the Discord server.",
+      "The doors are still open if you want back in.",
+    ],
+    terminalLog: [
+      { prefix: "$", text: "roster --check membership", color: "cyan" },
+      { prefix: ">", text: "Scanning active roster...", color: "white" },
+      { prefix: ">", text: "Agent: IDENTIFIED", color: "yellow" },
+      { prefix: "!", text: "Status: LEFT_SERVER", status: "AWOL", color: "cyan" },
+      { prefix: "$", text: "suggest --rejoin dc.roguearmy.xyz", color: "green" },
+    ],
+    color: "cyan",
+    icon: UserX,
+    glitchColors: ["#00ffff", "#00ff41"],
   },
 }
 

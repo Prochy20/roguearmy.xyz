@@ -19,6 +19,8 @@ interface ErrorPageProps {
   showHomeButton?: boolean
   /** Show the "Try Again" button (default: true if reset provided) */
   showRetryButton?: boolean
+  /** Additional CTA buttons to render alongside Home/Retry */
+  extraButtons?: React.ReactNode
 }
 
 /**
@@ -30,6 +32,7 @@ export function ErrorPage({
   reset,
   showHomeButton = true,
   showRetryButton,
+  extraButtons,
 }: ErrorPageProps) {
   const config = getErrorConfig(errorType)
   const pathname = usePathname()
@@ -194,6 +197,8 @@ export function ErrorPage({
               Try Again
             </GlowButton>
           )}
+
+          {extraButtons}
         </motion.div>
 
         {/* Hex decoration */}
