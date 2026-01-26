@@ -105,7 +105,7 @@ export function ArticleCardMini({ article, index = 0, progress }: ArticleCardMin
               {/* Title */}
               <HoverGlitch
                 intensity={3}
-                className="block font-display text-sm text-white leading-tight line-clamp-2 flex-1"
+                className="block font-display text-sm text-white leading-tight line-clamp-2 flex-1 min-h-[2.5rem]"
               >
                 {article.title}
               </HoverGlitch>
