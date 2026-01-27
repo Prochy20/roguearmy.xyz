@@ -46,3 +46,27 @@ export async function clearOAuthStateCookie(): Promise<void> {
   const cookieStore = await cookies()
   cookieStore.delete(OAUTH_STATE_COOKIE)
 }
+
+// Return URL cookie for post-login redirect
+export const RETURN_TO_COOKIE = 'rga_return_to'
+
+export async function setReturnToCookie(returnTo: string): Promise<void> {
+  const cookieStore = await cookies()
+  cookieStore.set(RETURN_TO_COOKIE, returnTo, {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: 'lax',
+    maxAge: 60 * 10, // 10 minutes
+    path: '/',
+  })
+}
+
+export async function getReturnToCookie(): Promise<string | undefined> {
+  const cookieStore = await cookies()
+  return cookieStore.get(RETURN_TO_COOKIE)?.value
+}
+
+export async function clearReturnToCookie(): Promise<void> {
+  const cookieStore = await cookies()
+  cookieStore.delete(RETURN_TO_COOKIE)
+}

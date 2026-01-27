@@ -9,6 +9,8 @@ import {
   clearOAuthStateCookie,
   setSessionCookie,
   signMemberToken,
+  getReturnToCookie,
+  clearReturnToCookie,
 } from '@/lib/auth'
 
 export async function GET(request: NextRequest) {
@@ -21,11 +23,11 @@ export async function GET(request: NextRequest) {
 
   // Handle OAuth errors
   if (error) {
-    return NextResponse.redirect(`${appUrl}/members?error=oauth_denied`)
+    return NextResponse.redirect(`${appUrl}/auth/error/oauth_denied`)
   }
 
   if (!code || !state) {
-    return NextResponse.redirect(`${appUrl}/members?error=invalid_request`)
+    return NextResponse.redirect(`${appUrl}/auth/error/invalid_request`)
   }
 
   // Verify state for CSRF protection
@@ -33,7 +35,7 @@ export async function GET(request: NextRequest) {
   await clearOAuthStateCookie()
 
   if (state !== storedState) {
-    return NextResponse.redirect(`${appUrl}/members?error=invalid_state`)
+    return NextResponse.redirect(`${appUrl}/auth/error/invalid_state`)
   }
 
   try {
@@ -69,7 +71,7 @@ export async function GET(request: NextRequest) {
         }
       }
 
-      return NextResponse.redirect(`${appUrl}/members?error=not_member`)
+      return NextResponse.redirect(`${appUrl}/auth/error/not_member`)
     }
 
     // Find or create member
@@ -127,7 +129,8 @@ export async function GET(request: NextRequest) {
 
     // Check if member is banned
     if (member.status === 'banned') {
-      return NextResponse.redirect(`${appUrl}/members?error=banned`)
+      await clearReturnToCookie()
+      return NextResponse.redirect(`${appUrl}/auth/error/banned`)
     }
 
     // Create JWT session
@@ -142,10 +145,16 @@ export async function GET(request: NextRequest) {
     // Set session cookie
     await setSessionCookie(token)
 
-    // Redirect to members area
-    return NextResponse.redirect(`${appUrl}/members`)
+    // Get returnTo URL and clear cookie
+    const returnTo = await getReturnToCookie()
+    await clearReturnToCookie()
+
+    // Redirect to returnTo URL or default to blog
+    const redirectUrl = returnTo && returnTo.startsWith('/') ? returnTo : '/blog'
+    return NextResponse.redirect(`${appUrl}${redirectUrl}`)
   } catch (error) {
     console.error('Discord OAuth error:', error)
-    return NextResponse.redirect(`${appUrl}/members?error=auth_failed`)
+    await clearReturnToCookie()
+    return NextResponse.redirect(`${appUrl}/auth/error/auth_failed`)
   }
 }
