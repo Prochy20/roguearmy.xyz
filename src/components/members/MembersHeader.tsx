@@ -81,13 +81,13 @@ export function MembersHeader({
             {/* Main Navigation */}
             <nav className="hidden sm:flex items-center gap-1 ml-4">
               <Link
-                href="/members"
+                href="/blog"
                 className="px-3 py-1.5 text-sm text-rga-gray hover:text-white transition-colors"
               >
                 Articles
               </Link>
               <Link
-                href="/members/series"
+                href="/blog/series"
                 className="px-3 py-1.5 text-sm text-rga-gray hover:text-white transition-colors"
               >
                 Series
@@ -196,20 +196,20 @@ export function MembersHeader({
                     {/* Mobile-only navigation links */}
                     <div className="sm:hidden border-b border-rga-green/10 pb-1 mb-1">
                       <Link
-                        href="/members"
+                        href="/blog"
                         className="block px-4 py-2 text-sm text-rga-gray hover:text-white hover:bg-bg-surface transition-colors"
                       >
                         Articles
                       </Link>
                       <Link
-                        href="/members/series"
+                        href="/blog/series"
                         className="block px-4 py-2 text-sm text-rga-gray hover:text-white hover:bg-bg-surface transition-colors"
                       >
                         Series
                       </Link>
                     </div>
                     <Link
-                      href="/members/profile"
+                      href="/blog/profile"
                       className="block px-4 py-2 text-sm text-rga-gray hover:text-white hover:bg-bg-surface transition-colors"
                     >
                       Profile

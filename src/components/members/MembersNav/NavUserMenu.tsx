@@ -57,7 +57,7 @@ export function NavUserMenu() {
         <div className="sm:hidden">
           <DropdownMenuItem asChild>
             <Link
-              href="/members"
+              href="/blog"
               className="px-4 py-2 text-sm text-rga-gray hover:text-white cursor-pointer"
             >
               Articles
@@ -65,7 +65,7 @@ export function NavUserMenu() {
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link
-              href="/members/series"
+              href="/blog/series"
               className="px-4 py-2 text-sm text-rga-gray hover:text-white cursor-pointer"
             >
               Series
@@ -76,7 +76,7 @@ export function NavUserMenu() {
 
         <DropdownMenuItem asChild>
           <Link
-            href="/members/history"
+            href="/blog/history"
             className="px-4 py-2 text-sm text-rga-gray hover:text-white cursor-pointer"
           >
             Reading History

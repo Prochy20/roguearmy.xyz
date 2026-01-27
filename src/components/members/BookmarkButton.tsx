@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { motion } from 'motion/react'
 import { Bookmark, BookmarkCheck } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { useBookmarks } from '@/contexts/BookmarksContext'
+import { useBookmarksOptional } from '@/contexts/BookmarksContext'
 import {
   Tooltip,
   TooltipContent,
@@ -19,9 +19,15 @@ interface BookmarkButtonProps {
 }
 
 export function BookmarkButton({ articleId, size = 'sm', className }: BookmarkButtonProps) {
-  const { isBookmarked, toggleBookmark } = useBookmarks()
+  const bookmarksContext = useBookmarksOptional()
   const [isAnimating, setIsAnimating] = useState(false)
 
+  // Don't render if outside BookmarksProvider (e.g., in preview mode)
+  if (!bookmarksContext) {
+    return null
+  }
+
+  const { isBookmarked, toggleBookmark } = bookmarksContext
   const bookmarked = isBookmarked(articleId)
 
   const handleClick = async (e: React.MouseEvent) => {

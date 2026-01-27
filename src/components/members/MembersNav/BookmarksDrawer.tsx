@@ -194,7 +194,7 @@ export function BookmarksDrawer() {
         {bookmarks.length > 0 && (
           <DrawerFooter accent="cyan">
             <Link
-              href="/members/bookmarks"
+              href="/blog/bookmarks"
               onClick={() => setIsOpen(false)}
               className="flex items-center justify-between w-full px-3 py-2 text-sm text-rga-cyan hover:text-white hover:bg-bg-surface rounded-lg transition-colors"
             >

@@ -159,3 +159,11 @@ export function useBookmarks() {
   }
   return context
 }
+
+/**
+ * Optional version of useBookmarks that returns null when outside provider.
+ * Useful for components that may render in preview mode without the provider.
+ */
+export function useBookmarksOptional() {
+  return useContext(BookmarksContext)
+}

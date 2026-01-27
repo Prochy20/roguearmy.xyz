@@ -2,6 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { motion } from 'motion/react'
 import { Clock, Calendar, BookOpen } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -71,6 +72,9 @@ export function ArticleHero({
   games = [],
   series,
 }: ArticleHeroProps) {
+  const searchParams = useSearchParams()
+  const isPreview = searchParams.get('preview') === 'true'
+
   return (
     <section className="relative min-h-[85vh] md:min-h-[90vh] flex items-end overflow-hidden">
       {/* Background Image */}
@@ -169,17 +173,15 @@ export function ArticleHero({
               </div>
             </div>
 
-            {/* Separator */}
-            <span className="hidden sm:block w-px h-4 bg-rga-gray/30" />
-
-            {/* Share Button */}
-            <ShareButton articleSlug={slug} size="md" />
-
-            {/* Separator */}
-            <span className="hidden sm:block w-px h-4 bg-rga-gray/30" />
-
-            {/* Bookmark Button */}
-            <BookmarkButton articleId={articleId} size="md" />
+            {/* Share & Bookmark - hidden in preview mode */}
+            {!isPreview && (
+              <>
+                <span className="hidden sm:block w-px h-4 bg-rga-gray/30" />
+                <ShareButton articleSlug={slug} size="md" />
+                <span className="hidden sm:block w-px h-4 bg-rga-gray/30" />
+                <BookmarkButton articleId={articleId} size="md" />
+              </>
+            )}
 
             {/* Series indicator */}
             {series && (

@@ -189,8 +189,7 @@ export function ErrorPage({
             <GlowButton
               glowColor="cyan"
               size="lg"
-              variant="outline"
-              className="gap-2 border-rga-cyan/50 text-rga-cyan hover:bg-rga-cyan/10"
+              className="gap-2"
               onClick={reset}
             >
               <RotateCcw className="w-4 h-4" />

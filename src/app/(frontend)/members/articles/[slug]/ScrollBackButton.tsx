@@ -36,7 +36,7 @@ export function ScrollBackButton() {
       style={{ pointerEvents: isVisible ? 'auto' : 'none' }}
     >
       <CyberButton
-        href="/members"
+        href="/blog"
         iconLeft={<ArrowLeft className="w-4 h-4" />}
       >
         Back

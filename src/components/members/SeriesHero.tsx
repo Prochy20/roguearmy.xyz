@@ -14,7 +14,7 @@ interface SeriesHeroProps {
   description: string | null
   heroImage: ArticleImage | null
   articleCount: number
-  completedCount: number
+  completedCount?: number
 }
 
 /**
@@ -83,7 +83,7 @@ export function SeriesHero({
             className="mb-6 flex flex-wrap items-center gap-3"
           >
             <CyberButton
-              href="/members/series"
+              href="/blog/series"
               iconLeft={<ArrowLeft className="w-4 h-4" />}
               color="gray"
             >
@@ -127,18 +127,20 @@ export function SeriesHero({
           )}
 
           {/* Progress bar */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.5 }}
-            className="max-w-sm"
-          >
-            <SeriesProgressBar
-              completedCount={completedCount}
-              totalCount={articleCount}
-              size="md"
-            />
-          </motion.div>
+          {completedCount !== undefined && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.5 }}
+              className="max-w-sm"
+            >
+              <SeriesProgressBar
+                completedCount={completedCount}
+                totalCount={articleCount}
+                size="md"
+              />
+            </motion.div>
+          )}
         </div>
 
         {/* Scroll indicator */}

@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { X } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { mapPayloadColorToTint, getTintClasses } from '@/lib/articles'
+import { mapPayloadColorToTint, getTintClasses, getArticleUrl } from '@/lib/articles'
 import { ReadStatusIndicator, getReadStatus, type ReadStatus } from '@/components/members/ReadStatusIndicator'
 import type { BookmarkWithArticle } from '@/lib/bookmarks'
 import type { BookmarkProgressData } from '@/hooks/useBookmarkProgress'
@@ -31,6 +31,11 @@ export function BookmarkDrawerItem({
   // Determine read status
   const status: ReadStatus = getReadStatus(progress?.progress, progress?.completed)
 
+  // Build article URL - use getArticleUrl if topic exists, fallback to slug-only path
+  const articleUrl = article.topic?.slug
+    ? getArticleUrl({ slug: article.slug, topic: { slug: article.topic.slug } })
+    : `/blog/${article.slug}`
+
   return (
     <div className="group relative flex items-start gap-3 px-4 py-3 hover:bg-bg-surface transition-colors">
       {/* Topic color dot */}
@@ -43,7 +48,7 @@ export function BookmarkDrawerItem({
 
       {/* Article info */}
       <Link
-        href={`/members/articles/${article.slug}`}
+        href={articleUrl}
         onClick={onNavigate}
         className="flex-1 min-w-0"
       >

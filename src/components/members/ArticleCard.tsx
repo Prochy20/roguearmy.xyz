@@ -12,6 +12,7 @@ import {
   type TintColor,
   getTintClasses,
   formatArticleDate,
+  getArticleUrl,
 } from '@/lib/articles'
 import { ReadStatusIndicator, getReadStatus } from './ReadStatusIndicator'
 import { BookmarkButton } from './BookmarkButton'
@@ -56,7 +57,7 @@ export function ArticleCard({ article, index = 0, progress }: ArticleCardProps) 
       }}
       className="h-full"
     >
-      <Link href={`/members/articles/${article.slug}`} className="block group h-full">
+      <Link href={getArticleUrl(article)} className="block group h-full">
         <CyberCorners color={cornerColor} size="md" glow className="h-full">
           <div
             className={cn(

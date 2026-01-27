@@ -11,6 +11,7 @@ import {
   type Article,
   type TintColor,
   getTintClasses,
+  getArticleUrl,
 } from '@/lib/articles'
 import { ReadStatusIndicator, getReadStatus } from './ReadStatusIndicator'
 import { BookmarkButton } from './BookmarkButton'
@@ -56,7 +57,7 @@ export function ArticleCardList({ article, index = 0, progress }: ArticleCardLis
         ease: [0.25, 0.46, 0.45, 0.94],
       }}
     >
-      <Link href={`/members/articles/${article.slug}`} className="block group">
+      <Link href={getArticleUrl(article)} className="block group">
         <CyberCorners color={cornerColor} size="sm" glow={false}>
           <div
             className={cn(

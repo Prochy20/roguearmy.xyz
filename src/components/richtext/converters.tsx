@@ -60,8 +60,20 @@ const internalDocToHref = ({ linkNode }: { linkNode: SerializedLinkNode }) => {
   const slug = (value as { slug?: string }).slug
 
   switch (relationTo) {
-    case 'articles':
-      return `/members/articles/${slug}`
+    case 'articles': {
+      // Extract topic slug from the article's categorization
+      const article = value as {
+        slug?: string
+        categorization?: {
+          topic?: { slug?: string } | string
+        }
+      }
+      const topic = article.categorization?.topic
+      const topicSlug = typeof topic === 'object' && topic?.slug
+        ? topic.slug
+        : 'article' // Fallback if topic not populated
+      return `/blog/${topicSlug}/${slug}`
+    }
     case 'games':
       return `/games/${slug}`
     default:

@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils'
 import { CyberCorners } from '@/components/ui/CyberCorners'
 import { HoverGlitch } from '@/components/effects/HoverGlitch'
 import { SeriesProgressBar } from './SeriesProgressBar'
-import type { ArticleImage } from '@/lib/articles'
+import { type ArticleImage, getSeriesUrl } from '@/lib/articles'
 
 interface SeriesCardProps {
   id: string
@@ -50,7 +50,7 @@ export function SeriesCard({
         ease: [0.25, 0.46, 0.45, 0.94],
       }}
     >
-      <Link href={`/members/series/${slug}`} className="block group">
+      <Link href={getSeriesUrl({ slug })} className="block group">
         <CyberCorners color={isComplete ? 'green' : 'cyan'} size="md" glow>
           <div
             className={cn(

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'motion/react'
 import { Share2, Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -12,17 +13,19 @@ import {
 } from '@/components/ui/tooltip'
 
 interface ShareButtonProps {
-  articleSlug: string
+  /** @deprecated No longer needed - uses current page URL */
+  articleSlug?: string
   size?: 'sm' | 'md'
   className?: string
 }
 
 export function ShareButton({
-  articleSlug,
   size = 'sm',
   className,
 }: ShareButtonProps) {
+  const searchParams = useSearchParams()
   const [copied, setCopied] = useState(false)
+  const isPreview = searchParams.get('preview') === 'true'
 
   const sizeClasses = {
     sm: 'w-7 h-7',
@@ -66,14 +69,20 @@ export function ShareButton({
   const handleCopy = useCallback(async () => {
     if (copied) return
 
-    const url = `${window.location.origin}/members/articles/${articleSlug}`
+    // Use the current page URL (works for both /blog and /members routes)
+    const url = window.location.href.split('?')[0] // Remove query params
     const success = await copyToClipboard(url)
 
     if (success) {
       setCopied(true)
       setTimeout(() => setCopied(false), 1500)
     }
-  }, [articleSlug, copied, copyToClipboard])
+  }, [copied, copyToClipboard])
+
+  // Don't render in preview mode
+  if (isPreview) {
+    return null
+  }
 
   return (
     <TooltipProvider delayDuration={300}>

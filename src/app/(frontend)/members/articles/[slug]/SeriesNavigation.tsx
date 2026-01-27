@@ -6,7 +6,7 @@ import { motion } from 'motion/react'
 import { ChevronLeft, ChevronRight, Clock, ArrowRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { CyberCorners, CyberTag } from '@/components/ui/CyberCorners'
-import { type Article, type SeriesNavigation as SeriesNavType } from '@/lib/articles'
+import { type Article, type SeriesNavigation as SeriesNavType, getArticleUrl, getSeriesUrl } from '@/lib/articles'
 import { type ArticleProgress } from '@/lib/progress.server'
 import { ReadStatusIndicator, getReadStatus } from '@/components/members/ReadStatusIndicator'
 
@@ -49,7 +49,7 @@ function SeriesNavCard({ article, direction, progress }: SeriesNavCardProps) {
 
   return (
     <Link
-      href={`/members/articles/${article.slug}`}
+      href={getArticleUrl(article)}
       className={cn(
         'group block',
         isPrevious ? 'text-left' : 'text-right'
@@ -168,7 +168,7 @@ export function SeriesNavigation({ navigation, seriesProgress }: SeriesNavigatio
               Part of a series
             </p>
             <Link
-              href={`/members/series/${seriesSlug}`}
+              href={getSeriesUrl({ slug: seriesSlug })}
               className="group flex items-center gap-1.5 text-base font-medium text-white hover:text-rga-cyan transition-colors"
             >
               {seriesName}

@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils'
 import { CyberCorners, CyberTag } from '@/components/ui/CyberCorners'
 import { HoverGlitch } from '@/components/effects/HoverGlitch'
 import { ReadStatusIndicator, getReadStatus, type ReadStatus } from './ReadStatusIndicator'
-import type { Article } from '@/lib/articles'
+import { type Article, getArticleUrl } from '@/lib/articles'
 import type { ArticleProgress } from '@/lib/progress.server'
 
 interface SeriesArticleCardProps {
@@ -41,7 +41,7 @@ export function SeriesArticleCard({
         ease: [0.25, 0.46, 0.45, 0.94],
       }}
     >
-      <Link href={`/members/articles/${article.slug}`} className="block group">
+      <Link href={getArticleUrl(article)} className="block group">
         <CyberCorners
           color={readStatus === 'completed' ? 'green' : readStatus === 'in_progress' ? 'cyan' : 'gray'}
           size="sm"

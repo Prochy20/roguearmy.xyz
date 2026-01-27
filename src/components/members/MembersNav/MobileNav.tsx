@@ -10,11 +10,11 @@ import { UserAvatar } from '@/components/auth'
 import { useMember } from '@/contexts/MembersContext'
 
 const navLinks = [
-  { href: '/members', label: 'Articles', pattern: /^\/members(\/articles(\/.*)?)?$/ },
-  { href: '/members/series', label: 'Series', pattern: /^\/members\/series/ },
+  { href: '/blog', label: 'Articles', pattern: /^\/blog(?!\/series|\/bookmarks|\/history)/ },
+  { href: '/blog/series', label: 'Series', pattern: /^\/blog\/series/ },
 ]
 
-const secondaryLinks = [{ href: '/members/history', label: 'Reading History' }]
+const secondaryLinks = [{ href: '/blog/history', label: 'Reading History' }]
 
 export function MobileNav() {
   const [isOpen, setIsOpen] = useState(false)

@@ -201,7 +201,7 @@ function HistoryEmptyState({ statusFilter }: { statusFilter: HistoryStatusFilter
       <h2 className="text-xl font-display text-white mb-2">{title}</h2>
       <p className="text-rga-gray/60 max-w-md mb-6">{description}</p>
       <Link
-        href="/members"
+        href="/blog"
         className="inline-flex items-center gap-2 px-4 py-2 bg-rga-green/10 text-rga-green border border-rga-green/30 rounded-lg hover:bg-rga-green/20 transition-colors"
       >
         Browse articles

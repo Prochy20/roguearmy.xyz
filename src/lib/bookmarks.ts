@@ -5,6 +5,7 @@
 
 import {
   type Article,
+  type ArticleVisibility,
   type TintColor,
   mapPayloadColorToTint,
 } from './articles'
@@ -23,6 +24,7 @@ export interface BookmarkArticle {
   contentType: { id: string; slug: string; name: string } | null
   readingTime: number
   publishedAt: string
+  visibility?: ArticleVisibility
 }
 
 export interface BookmarkWithArticle {
@@ -80,6 +82,7 @@ export function transformBookmarkToArticle(bookmark: BookmarkWithArticle): Artic
     },
     publishedAt: new Date(article.publishedAt),
     readingTime: article.readingTime,
+    visibility: article.visibility || 'members_only',
     contentSource: { type: 'payload' }, // Not used for cards
   }
 }
