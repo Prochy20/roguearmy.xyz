@@ -296,6 +296,203 @@ export async function getAllArticleSlugs(): Promise<string[]> {
 }
 
 /**
+ * Get all article params for static generation (topic + slug)
+ */
+export async function getAllArticleParams(): Promise<{ topic: string; slug: string }[]> {
+  const payload = await getPayload({ config })
+
+  const result = await payload.find({
+    collection: 'articles',
+    where: { _status: { equals: 'published' } },
+    limit: 500,
+    depth: 1, // Need topic data
+  })
+
+  return result.docs
+    .filter((article) => {
+      const topic = article.categorization.topic
+      return typeof topic !== 'string' && topic !== null
+    })
+    .map((article) => {
+      const topic = article.categorization.topic as { slug: string }
+      return {
+        topic: topic.slug,
+        slug: article.slug,
+      }
+    })
+}
+
+/**
+ * Get a single article by topic slug and article slug
+ */
+export async function getArticleByTopicAndSlug(
+  topicSlug: string,
+  articleSlug: string
+): Promise<Article | null> {
+  const payload = await getPayload({ config })
+
+  // First find the topic by slug
+  const topicResult = await payload.find({
+    collection: 'topics',
+    where: { slug: { equals: topicSlug } },
+    limit: 1,
+  })
+
+  if (topicResult.docs.length === 0) {
+    return null
+  }
+
+  const topic = topicResult.docs[0]
+
+  // Find article with matching slug AND topic
+  const result = await payload.find({
+    collection: 'articles',
+    where: {
+      and: [
+        { slug: { equals: articleSlug } },
+        { _status: { equals: 'published' } },
+        { 'categorization.topic': { equals: topic.id } },
+      ],
+    },
+    depth: 2,
+    limit: 1,
+  })
+
+  if (result.docs.length === 0) {
+    return null
+  }
+
+  const article = result.docs[0]
+
+  // Check if article is in any series
+  const seriesResult = await payload.find({
+    collection: 'series',
+    where: {
+      articles: { contains: article.id },
+    },
+    depth: 0,
+    limit: 1,
+  })
+
+  let seriesInfo: { name: string; slug: string; order: number } | undefined
+
+  if (seriesResult.docs.length > 0) {
+    const series = seriesResult.docs[0]
+    const articleIds = (series.articles || []).map((a) =>
+      typeof a === 'string' ? a : a.id
+    )
+    const orderIndex = articleIds.indexOf(article.id)
+    if (orderIndex !== -1) {
+      seriesInfo = {
+        name: series.name,
+        slug: series.slug,
+        order: orderIndex + 1,
+      }
+    }
+  }
+
+  return transformPayloadArticle(article, seriesInfo)
+}
+
+/**
+ * Get article by topic and slug with draft support for Live Preview.
+ * Returns both transformed article and raw payload data.
+ *
+ * Special case: When topicSlug is "preview" and isDraft is true,
+ * skips topic validation for Payload Live Preview (where topic may not be populated).
+ */
+export async function getArticleByTopicAndSlugWithDraft(
+  topicSlug: string,
+  articleSlug: string,
+  isDraft: boolean = false
+): Promise<{ article: Article | null; rawArticle: PayloadArticle | null }> {
+  const payload = await getPayload({ config })
+
+  // Special handling for Live Preview when topic isn't populated
+  const isPreviewFallback = topicSlug === 'preview' && isDraft
+
+  let topicId: string | null = null
+
+  if (!isPreviewFallback) {
+    // Normal flow: find the topic by slug
+    const topicResult = await payload.find({
+      collection: 'topics',
+      where: { slug: { equals: topicSlug } },
+      limit: 1,
+    })
+
+    if (topicResult.docs.length === 0) {
+      return { article: null, rawArticle: null }
+    }
+
+    topicId = topicResult.docs[0].id
+  }
+
+  // Find article - with or without topic constraint
+  const result = await payload.find({
+    collection: 'articles',
+    where: isPreviewFallback
+      ? // Preview mode without topic - just find by slug
+        { slug: { equals: articleSlug } }
+      : isDraft
+        ? {
+            and: [
+              { slug: { equals: articleSlug } },
+              { 'categorization.topic': { equals: topicId } },
+            ],
+          }
+        : {
+            and: [
+              { slug: { equals: articleSlug } },
+              { _status: { equals: 'published' } },
+              { 'categorization.topic': { equals: topicId } },
+            ],
+          },
+    depth: 2,
+    limit: 1,
+    draft: isDraft,
+  })
+
+  if (result.docs.length === 0) {
+    return { article: null, rawArticle: null }
+  }
+
+  const rawArticle = result.docs[0]
+
+  // Check if article is in any series
+  const seriesResult = await payload.find({
+    collection: 'series',
+    where: {
+      articles: { contains: rawArticle.id },
+    },
+    depth: 0,
+    limit: 1,
+  })
+
+  let seriesInfo: { name: string; slug: string; order: number } | undefined
+
+  if (seriesResult.docs.length > 0) {
+    const series = seriesResult.docs[0]
+    const articleIds = (series.articles || []).map((a) =>
+      typeof a === 'string' ? a : a.id
+    )
+    const orderIndex = articleIds.indexOf(rawArticle.id)
+    if (orderIndex !== -1) {
+      seriesInfo = {
+        name: series.name,
+        slug: series.slug,
+        order: orderIndex + 1,
+      }
+    }
+  }
+
+  return {
+    article: transformPayloadArticle(rawArticle, seriesInfo),
+    rawArticle,
+  }
+}
+
+/**
  * Get featured articles for "You might also like" section.
  * Uses hybrid logic: curated first, then algorithmic fallback.
  */

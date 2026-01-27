@@ -20,6 +20,9 @@ import type {
 /** Tint colors used for styling across the frontend */
 export type TintColor = 'orange' | 'red' | 'cyan' | 'green' | 'magenta' | 'blue' | 'yellow' | 'teal' | 'purple' | 'pink'
 
+/** Article visibility options */
+export type ArticleVisibility = 'public' | 'members_only'
+
 /** Read status filter options */
 export type ReadStatusFilter = 'unread' | 'in_progress' | 'completed' | null
 
@@ -93,6 +96,7 @@ export interface Article {
   readingTime: number
   series?: ArticleSeries
   contentSource: ArticleContentSource
+  visibility: ArticleVisibility
 }
 
 export interface FilterState {
@@ -238,6 +242,24 @@ export function getTintClasses(tint: TintColor) {
 export const getCategoryTintClasses = getTintClasses
 
 // ============================================================================
+// URL HELPERS
+// ============================================================================
+
+/**
+ * Generate the URL for an article based on its topic and slug
+ */
+export function getArticleUrl(article: { slug: string; topic: { slug: string } }): string {
+  return `/blog/${article.topic.slug}/${article.slug}`
+}
+
+/**
+ * Generate the URL for a series
+ */
+export function getSeriesUrl(series: { slug: string }): string {
+  return `/blog/series/${series.slug}`
+}
+
+// ============================================================================
 // TYPE TRANSFORMERS
 // ============================================================================
 
@@ -303,6 +325,7 @@ export function transformPayloadArticle(
     readingTime: payloadArticle.readingTime || 5,
     series: seriesInfo,
     contentSource,
+    visibility: (payloadArticle.visibility as ArticleVisibility) || 'members_only',
   }
 }
 
