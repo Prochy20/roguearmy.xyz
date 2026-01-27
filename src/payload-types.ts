@@ -152,6 +152,10 @@ export interface Article {
   perex: string;
   heroImage: string | Media;
   /**
+   * Public articles are visible to everyone. Members Only requires Discord server membership.
+   */
+  visibility: 'public' | 'members_only';
+  /**
    * Curated articles to show in "You might also like" section. Leave empty for automatic selection.
    */
   relatedArticles?: (string | Article)[] | null;
@@ -544,6 +548,7 @@ export interface ArticlesSelect<T extends boolean = true> {
   title?: T;
   perex?: T;
   heroImage?: T;
+  visibility?: T;
   relatedArticles?: T;
   categorization?:
     | T

@@ -83,6 +83,19 @@ export const Articles: CollectionConfig = {
       required: true,
     },
     {
+      name: 'visibility',
+      type: 'select',
+      required: true,
+      options: [
+        { label: 'Public', value: 'public' },
+        { label: 'Members Only', value: 'members_only' },
+      ],
+      admin: {
+        description: 'Public articles are visible to everyone. Members Only requires Discord server membership.',
+        position: 'sidebar',
+      },
+    },
+    {
       name: 'relatedArticles',
       type: 'relationship',
       relationTo: 'articles',

@@ -33,10 +33,17 @@ export default buildConfig({
     },
     livePreview: {
       url: ({ data, collectionConfig }) => {
-        // Use relative URLs so preview works from any origin (localhost, IP, production)
+        // Live Preview uses iframe with postMessage for real-time updates
+        // Return direct URL - admin is already authenticated in Payload
         if (collectionConfig?.slug === 'articles') {
-          const slug = data?.slug || 'preview'
-          return `/members/articles/${slug}?preview=true`
+          const articleSlug = data?.slug || 'preview'
+          const topic = data?.categorization?.topic
+          // Topic could be an ID string or a populated object with slug
+          const topicSlug = typeof topic === 'object' && topic?.slug
+            ? topic.slug
+            : 'preview'
+
+          return `/blog/${topicSlug}/${articleSlug}?preview=true`
         }
 
         return '/'
