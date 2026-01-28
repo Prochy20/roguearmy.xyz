@@ -4,8 +4,11 @@ import { type ReactNode } from 'react'
 import { usePathname } from 'next/navigation'
 import { MembersProvider, type MemberInfo } from '@/contexts/MembersContext'
 import { BookmarksProvider } from '@/contexts/BookmarksContext'
-import { MembersNav } from './MembersNav'
+import { MembersNav } from './MembersNav/MembersNav'
 import { MembersFooter } from './MembersFooter'
+
+// Cache regex pattern outside component to prevent recreation on each render
+const ARTICLE_DETAIL_REGEX = /^\/members\/articles\/[^/]+$/
 
 interface MembersLayoutClientProps {
   children: ReactNode
@@ -16,7 +19,7 @@ export function MembersLayoutClient({ children, member }: MembersLayoutClientPro
   const pathname = usePathname()
 
   // Enable hide-on-scroll only on article detail pages
-  const isArticleDetailPage = pathname.match(/^\/members\/articles\/[^/]+$/)
+  const isArticleDetailPage = ARTICLE_DETAIL_REGEX.test(pathname)
 
   // Show footer on article detail pages
   const showFooter = !!isArticleDetailPage
