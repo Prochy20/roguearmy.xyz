@@ -111,8 +111,11 @@ export default async function BlogArticlePage({ params, searchParams }: ArticleP
   // Preview mode is used by Payload Live Preview (iframe with postMessage)
   const isPreview = preview === 'true'
 
-  // Always fetch with draft support to get rawArticle for relatedArticles
-  const { article, rawArticle } = await getArticleByTopicAndSlugWithDraft(topic, slug, isPreview)
+  // Step 1: Parallel fetch article + memberId (independent operations)
+  const [{ article, rawArticle }, memberId] = await Promise.all([
+    getArticleByTopicAndSlugWithDraft(topic, slug, isPreview),
+    getActiveMemberId(),
+  ])
 
   if (!article || !rawArticle) {
     notFound()
@@ -121,7 +124,6 @@ export default async function BlogArticlePage({ params, searchParams }: ArticleP
   // Check if user can view full content
   // In preview mode (Payload Live Preview iframe), allow full content for CMS editing
   // This is secure because Live Preview only works within authenticated Payload admin
-  const memberId = await getActiveMemberId()
   const canViewFullContent =
     isPreview || // Preview mode (Live Preview iframe or draft mode) can always view
     article.visibility === 'public' ||
@@ -133,6 +135,8 @@ export default async function BlogArticlePage({ params, searchParams }: ArticleP
   }
 
   const tint = getTintClasses(article.topic.tint)
+
+  // Step 2: Series navigation (depends on article)
   const seriesNavigation = await getSeriesNavigation(article.id)
 
   // Extract curated article IDs from relatedArticles field
@@ -140,39 +144,46 @@ export default async function BlogArticlePage({ params, searchParams }: ArticleP
     typeof a === 'string' ? a : a.id
   )
 
-  // Get featured articles (curated + algorithmic)
-  const featuredArticles = await getFeaturedArticles(
-    article.id,
-    article.topic.id,
-    article.games.map((g) => g.id),
-    curatedArticleIds,
-    seriesNavigation?.articleIds
-  )
+  // Collect all article IDs that need progress (for parallel fetch below)
+  const seriesArticleIds = seriesNavigation?.articleIds || []
 
-  // Collect all article IDs that need progress
+  // Step 3: Parallel fetch featured articles + progress (independent after series)
+  const [featuredArticles, progressMap] = await Promise.all([
+    getFeaturedArticles(
+      article.id,
+      article.topic.id,
+      article.games.map((g) => g.id),
+      curatedArticleIds,
+      seriesArticleIds
+    ),
+    // Defer progress fetch - we'll fetch with all IDs after we know featured articles
+    Promise.resolve(undefined as Map<string, import('@/lib/progress.server').ArticleProgress> | undefined),
+  ])
+
+  // Now fetch progress for all articles if authenticated
   const progressArticleIds = [
-    ...(seriesNavigation?.articleIds || []),
+    ...seriesArticleIds,
     ...featuredArticles.map((a) => a.id),
   ]
 
-  const progressMap = memberId && progressArticleIds.length > 0
+  const finalProgressMap = memberId && progressArticleIds.length > 0
     ? await getMemberProgressMap(memberId, progressArticleIds)
-    : undefined
+    : progressMap
 
   // Convert Map to serializable object for client component
-  const seriesProgress = progressMap && seriesNavigation
+  const seriesProgress = finalProgressMap && seriesNavigation
     ? Object.fromEntries(
         seriesNavigation.articleIds
-          .filter((id) => progressMap.has(id))
-          .map((id) => [id, progressMap.get(id)!])
+          .filter((id) => finalProgressMap.has(id))
+          .map((id) => [id, finalProgressMap.get(id)!])
       )
     : undefined
 
-  const featuredProgress = progressMap && featuredArticles.length > 0
+  const featuredProgress = finalProgressMap && featuredArticles.length > 0
     ? Object.fromEntries(
         featuredArticles
-          .filter((a) => progressMap.has(a.id))
-          .map((a) => [a.id, progressMap.get(a.id)!])
+          .filter((a) => finalProgressMap.has(a.id))
+          .map((a) => [a.id, finalProgressMap.get(a.id)!])
       )
     : undefined
 

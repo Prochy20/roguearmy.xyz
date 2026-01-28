@@ -89,14 +89,19 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
   const { preview } = await searchParams
   const isPreview = preview === 'true'
 
-  // Always fetch with draft support to get rawArticle for relatedArticles
-  const { article, rawArticle } = await getArticleBySlugWithDraft(slug, isPreview)
+  // Step 1: Parallel fetch article + memberId (independent operations)
+  const [{ article, rawArticle }, memberId] = await Promise.all([
+    getArticleBySlugWithDraft(slug, isPreview),
+    getMemberId(),
+  ])
 
   if (!article || !rawArticle) {
     notFound()
   }
 
   const tint = getTintClasses(article.topic.tint)
+
+  // Step 2: Series navigation (depends on article)
   const seriesNavigation = await getSeriesNavigation(article.id)
 
   // Extract curated article IDs from relatedArticles field
@@ -104,21 +109,21 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
     typeof a === 'string' ? a : a.id
   )
 
-  // Get featured articles (curated + algorithmic)
+  // Collect series article IDs for parallel fetch
+  const seriesArticleIds = seriesNavigation?.articleIds || []
+
+  // Step 3: Get featured articles (depends on series navigation for exclusion)
   const featuredArticles = await getFeaturedArticles(
     article.id,
     article.topic.id,
     article.games.map((g) => g.id),
     curatedArticleIds,
-    seriesNavigation?.articleIds
+    seriesArticleIds
   )
 
-  // Get member's reading progress for series articles and featured articles
-  const memberId = await getMemberId()
-
-  // Collect all article IDs that need progress
+  // Step 4: Collect all article IDs and fetch progress
   const progressArticleIds = [
-    ...(seriesNavigation?.articleIds || []),
+    ...seriesArticleIds,
     ...featuredArticles.map((a) => a.id),
   ]
 
