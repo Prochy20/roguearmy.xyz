@@ -8,6 +8,9 @@ import { BookmarksProvider } from '@/contexts/BookmarksContext'
 import { BlogNav } from './BlogNav'
 import { MembersFooter } from '@/components/members/MembersFooter'
 
+// Cache regex pattern outside component to prevent recreation on each render
+const ARTICLE_DETAIL_REGEX = /^\/blog\/[^/]+\/[^/]+$/
+
 interface BlogLayoutClientProps {
   children: ReactNode
   authState: BlogAuthState
@@ -17,7 +20,7 @@ export function BlogLayoutClient({ children, authState }: BlogLayoutClientProps)
   const pathname = usePathname()
 
   // Enable hide-on-scroll only on article detail pages
-  const isArticleDetailPage = pathname.match(/^\/blog\/[^/]+\/[^/]+$/)
+  const isArticleDetailPage = ARTICLE_DETAIL_REGEX.test(pathname)
 
   // Show footer on article detail pages
   const showFooter = !!isArticleDetailPage
