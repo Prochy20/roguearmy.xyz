@@ -392,7 +392,7 @@
 
   /* Gradient Text */
   .text-gradient-rga {
-    @apply bg-gradient-to-r from-rga-green via-rga-cyan to-rga-magenta bg-clip-text text-transparent;
+    @apply bg-linear-to-r from-rga-green via-rga-cyan to-rga-magenta bg-clip-text text-transparent;
   }
 
   /* Noise Overlay (use as ::before on parent) */
@@ -448,5 +448,20 @@
 
   .scrollbar-on-hover:hover::-webkit-scrollbar-thumb:hover {
     @apply bg-rga-green/50;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   11. ACCESSIBILITY - Reduced Motion Support
+   Respects user's motion preferences for vestibular disorders
+   ═══════════════════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
