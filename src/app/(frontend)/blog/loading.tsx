@@ -32,7 +32,7 @@ export default function BlogLoading() {
               <Skeleton className="h-5 w-3/4 max-w-sm" />
             </div>
 
-            {/* View mode toggle + filter button skeleton */}
+            {/* Toolbar: View mode toggle + filter button skeleton */}
             <div className="flex items-center gap-2 shrink-0">
               {/* ViewModeToggle skeleton */}
               <div className="inline-flex items-center gap-1 p-1 bg-bg-elevated border border-rga-gray/20 rounded-sm">
@@ -40,26 +40,17 @@ export default function BlogLoading() {
                 <Skeleton className="w-8 h-8 rounded-sm" />
                 <Skeleton className="w-8 h-8 rounded-sm" />
               </div>
-              {/* Mobile filter button skeleton */}
-              <Skeleton className="lg:hidden h-10 w-10 sm:w-24" />
+              {/* Filter button skeleton - always visible */}
+              <div className="inline-flex items-center p-1 bg-bg-elevated border border-rga-gray/20 rounded-sm">
+                <Skeleton className="w-8 h-8 rounded-sm" />
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Content Layout - matches BlogArticlesPage */}
-        <div className="flex gap-8">
-          {/* Sidebar skeleton - Desktop only */}
-          <aside className="w-64 flex-shrink-0 hidden lg:block space-y-4">
-            <Skeleton className="h-10 w-full" />
-            <Skeleton className="h-32 w-full" />
-            <Skeleton className="h-32 w-full" />
-            <Skeleton className="h-24 w-full" />
-          </aside>
-
-          {/* Article Feed skeleton */}
-          <div className="flex-1 min-w-0">
-            <ArticleFeedSkeleton viewMode={viewMode} />
-          </div>
+        {/* Full-width content layout - no sidebar */}
+        <div className="w-full">
+          <ArticleFeedSkeleton viewMode={viewMode} />
         </div>
       </main>
     </div>
@@ -78,9 +69,10 @@ function ArticleFeedSkeleton({ viewMode }: { viewMode: ViewMode }) {
   }
 
   if (viewMode === 'grid') {
+    // Grid now has more columns without sidebar
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {Array.from({ length: 6 }).map((_, i) => (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {Array.from({ length: 8 }).map((_, i) => (
           <ArticleGridSkeleton key={i} index={i} />
         ))}
       </div>
