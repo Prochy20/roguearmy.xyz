@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useCallback, useRef, useEffect } from 'react'
-import { TableOfContents, MobileTOC } from '@/components/toc'
+import { TableOfContents } from '@/components/toc/TableOfContents'
+import { MobileTOC } from '@/components/toc/MobileTOC'
 import type { TOCHeading } from '@/lib/toc'
 import type { ArticleContentSource } from '@/lib/articles'
 import { ArticleContent } from './ArticleContent'

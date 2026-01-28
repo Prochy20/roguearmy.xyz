@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { ChevronDown, ExternalLink } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { UserAvatar } from '@/components/auth'
+import { UserAvatar } from '@/components/auth/UserAvatar'
 import { useMember } from '@/contexts/MembersContext'
 import {
   DropdownMenu,

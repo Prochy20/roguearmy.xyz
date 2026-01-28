@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from "react"
 import { motion } from "motion/react"
 import { Bot } from "lucide-react"
-import { TypeWriter } from "@/components/effects"
+import { TypeWriter } from "@/components/effects/TypeWriter"
 import type { ErrorConfig, TerminalLine } from "./error-config"
 
 interface AshleyErrorTerminalProps {

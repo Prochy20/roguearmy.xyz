@@ -1,14 +1,12 @@
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import type { Game } from '@/payload-types'
-import {
-  Hero,
-  GamesShowcase,
-  StatsTicker,
-  CommunityValues,
-  AshleyTerminal,
-  FinalCTA,
-} from "@/components/home"
+import { Hero } from "@/components/home/Hero"
+import { GamesShowcase } from "@/components/home/GamesShowcase"
+import { StatsTicker } from "@/components/home/StatsTicker"
+import { CommunityValues } from "@/components/home/CommunityValues"
+import { AshleyTerminal } from "@/components/home/AshleyTerminal"
+import { FinalCTA } from "@/components/home/FinalCTA"
 
 export default async function HomePage() {
   const payload = await getPayload({ config })

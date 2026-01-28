@@ -3,8 +3,8 @@ import type { Metadata } from 'next'
 import Script from 'next/script'
 import { Analytics } from '@vercel/analytics/react'
 import '@/app/globals.css'
-import { ScanlineOverlay } from '@/components/effects'
-import { AuthProvider } from '@/components/auth'
+import { ScanlineOverlay } from '@/components/effects/ScanlineOverlay'
+import { AuthProvider } from '@/components/auth/AuthProvider'
 
 const siteUrl = 'https://roguearmy.xyz'
 

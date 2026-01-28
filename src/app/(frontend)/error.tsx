@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect } from "react"
-import { ErrorPage } from "@/components/error"
+import { ErrorPage } from "@/components/error/ErrorPage"
 
 interface ErrorProps {
   error: Error & { digest?: string }

@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 import { cookies } from 'next/headers'
-import { MembersHistoryPage } from '@/components/members'
+import { MembersHistoryPage } from '@/components/members/MembersHistoryPage'
 import { verifyMemberToken } from '@/lib/auth/jwt'
 import { MEMBER_SESSION_COOKIE } from '@/lib/auth/cookies'
 import { getReadingHistory, type HistoryStatusFilter } from '@/lib/history.server'

@@ -2,8 +2,9 @@
 
 import Image from "next/image"
 import { motion } from "motion/react"
-import { ChromaticText, SectionGlitch } from "@/components/effects"
-import { ScrollReveal, ScrollRevealContainer, ScrollRevealItem } from "@/components/shared"
+import { ChromaticText } from "@/components/effects/ChromaticText"
+import { SectionGlitch } from "@/components/effects/SectionGlitch"
+import { ScrollReveal, ScrollRevealContainer, ScrollRevealItem } from "@/components/shared/ScrollReveal"
 import { Shield, Users, Heart } from "lucide-react"
 
 const VALUES = [

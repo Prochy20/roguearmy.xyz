@@ -7,7 +7,7 @@ import { SeriesGrid } from './SeriesGrid'
 import { SeriesFilterSidebar } from './SeriesFilterSidebar'
 import { SeriesFilterBottomSheet } from './SeriesFilterBottomSheet'
 import { EmptyState } from './EmptyState'
-import { HeroGlitch } from '@/components/effects'
+import { HeroGlitch } from '@/components/effects/HeroGlitch'
 import {
   type SeriesFilterState,
   type SeriesFilterOptions,

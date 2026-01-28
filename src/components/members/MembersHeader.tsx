@@ -5,7 +5,7 @@ import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { Search, X, Menu, ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { UserAvatar } from '@/components/auth'
+import { UserAvatar } from '@/components/auth/UserAvatar'
 
 interface MemberInfo {
   discordId: string

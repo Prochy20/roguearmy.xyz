@@ -1,8 +1,8 @@
 "use client"
 
 import { motion } from "motion/react"
-import { SectionGlitch } from "@/components/effects"
-import { ScrollReveal } from "@/components/shared"
+import { SectionGlitch } from "@/components/effects/SectionGlitch"
+import { ScrollReveal } from "@/components/shared/ScrollReveal"
 import type { Game } from "@/payload-types"
 
 interface GamesShowcaseProps {

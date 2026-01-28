@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 import { cookies } from 'next/headers'
-import { MembersArticlesPage } from '@/components/members'
+import { MembersArticlesPage } from '@/components/members/MembersArticlesPage'
 import { getPublishedArticles, getFilterOptions } from '@/lib/articles.server'
 import { verifyMemberToken } from '@/lib/auth/jwt'
 import { MEMBER_SESSION_COOKIE } from '@/lib/auth/cookies'

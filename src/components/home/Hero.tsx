@@ -2,8 +2,10 @@
 
 import { motion } from "motion/react"
 import Image from "next/image"
-import { HeroGlitch, TypeWriter } from "@/components/effects"
-import { GlowButton, DiscordIcon } from "@/components/shared"
+import { HeroGlitch } from "@/components/effects/HeroGlitch"
+import { TypeWriter } from "@/components/effects/TypeWriter"
+import { GlowButton } from "@/components/shared/GlowButton"
+import { DiscordIcon } from "@/components/shared/DiscordIcon"
 import { ChevronDown } from "lucide-react"
 
 const DISCORD_INVITE = "https://dc.roguearmy.xyz"

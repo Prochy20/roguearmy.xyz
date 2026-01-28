@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'motion/react'
-import { RichTextRenderer } from '@/components/richtext'
-import { MarkdownRenderer } from '@/components/markdown'
+import { RichTextRenderer } from '@/components/richtext/RichTextRenderer'
+import { MarkdownRenderer } from '@/components/markdown/MarkdownRenderer'
 import { DataStreamLoader } from '@/components/loading/DataStreamLoader'
 import { extractHeadingsFromMarkdown, type TOCHeading } from '@/lib/toc'
 import type { ArticleContentSource } from '@/lib/articles'

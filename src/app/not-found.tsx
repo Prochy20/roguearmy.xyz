@@ -1,5 +1,5 @@
-import { ErrorPage } from "@/components/error"
-import { ScanlineOverlay } from "@/components/effects"
+import { ErrorPage } from "@/components/error/ErrorPage"
+import { ScanlineOverlay } from "@/components/effects/ScanlineOverlay"
 
 /**
  * Root 404 Not Found page.

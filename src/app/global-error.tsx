@@ -1,8 +1,8 @@
 "use client"
 
 import { useEffect } from "react"
-import { ErrorPage } from "@/components/error"
-import { ScanlineOverlay } from "@/components/effects"
+import { ErrorPage } from "@/components/error/ErrorPage"
+import { ScanlineOverlay } from "@/components/effects/ScanlineOverlay"
 import "@/app/globals.css"
 
 interface GlobalErrorProps {

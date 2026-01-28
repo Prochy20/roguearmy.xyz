@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation'
 import { motion } from 'motion/react'
 import { Clock, Calendar, Shield, Fingerprint } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { HeroGlitch } from '@/components/effects'
+import { HeroGlitch } from '@/components/effects/HeroGlitch'
 import { CyberCorners, CyberTag } from '@/components/ui/CyberCorners'
 import { DiscordIcon } from '@/components/shared/DiscordIcon'
 import {

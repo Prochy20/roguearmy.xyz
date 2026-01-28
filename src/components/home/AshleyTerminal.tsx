@@ -3,7 +3,7 @@
 import { useRef } from "react"
 import Image from "next/image"
 import { motion, useScroll, useTransform, useMotionValueEvent, useMotionTemplate, type MotionValue } from "motion/react"
-import { HeroGlitch } from "@/components/effects"
+import { HeroGlitch } from "@/components/effects/HeroGlitch"
 import { Bot, Zap, AlertTriangle, Skull } from "lucide-react"
 import { useState } from "react"
 

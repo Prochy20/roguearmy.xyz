@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { motion } from 'motion/react'
 import { Clock, Calendar, BookOpen } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { HeroGlitch } from '@/components/effects'
+import { HeroGlitch } from '@/components/effects/HeroGlitch'
 import { CyberTag } from '@/components/ui/CyberCorners'
 import {
   Tooltip,

@@ -1,4 +1,4 @@
-import { ErrorPage } from "@/components/error"
+import { ErrorPage } from "@/components/error/ErrorPage"
 
 /**
  * 404 Not Found page for frontend routes.
