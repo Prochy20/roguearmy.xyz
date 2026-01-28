@@ -209,7 +209,7 @@ export function MembersLoginPage() {
                                     hover:shadow-[0_0_20px_rgba(0,255,255,0.3),inset_0_0_20px_rgba(0,255,255,0.1)]">
                       {/* Scan line effect on hover */}
                       <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none overflow-hidden">
-                        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-rga-cyan/10 to-transparent
+                        <div className="absolute inset-0 bg-linear-to-b from-transparent via-rga-cyan/10 to-transparent
                                         translate-y-[-100%] group-hover:translate-y-[100%] transition-transform duration-700" />
                       </div>
 

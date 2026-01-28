@@ -79,7 +79,7 @@ function ArticleCardCompactComponent({ article, index = 0, progress }: ArticleCa
               />
 
               {/* Gradient Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-bg-elevated via-bg-elevated/30 to-transparent" />
+              <div className="absolute inset-0 bg-linear-to-t from-bg-elevated via-bg-elevated/30 to-transparent" />
 
               {/* Scanline effect on hover */}
               <div className="absolute inset-0 bg-[repeating-linear-gradient(0deg,transparent,transparent_2px,rgba(0,255,65,0.03)_2px,rgba(0,255,65,0.03)_4px)] opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />

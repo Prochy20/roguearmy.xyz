@@ -47,9 +47,9 @@ export function SeriesHero({
         )}
 
         {/* Multi-layer gradient overlay for depth */}
-        <div className="absolute inset-0 bg-gradient-to-t from-void via-void/70 to-void/20" />
-        <div className="absolute inset-0 bg-gradient-to-r from-void/50 via-transparent to-void/30" />
-        <div className="absolute inset-0 bg-gradient-to-b from-void/60 via-transparent to-transparent h-40" />
+        <div className="absolute inset-0 bg-linear-to-t from-void via-void/70 to-void/20" />
+        <div className="absolute inset-0 bg-linear-to-r from-void/50 via-transparent to-void/30" />
+        <div className="absolute inset-0 bg-linear-to-b from-void/60 via-transparent to-transparent h-40" />
 
         {/* Scanline overlay */}
         <div className="absolute inset-0 bg-[repeating-linear-gradient(0deg,transparent,transparent_2px,rgba(0,255,65,0.015)_2px,rgba(0,255,65,0.015)_4px)] pointer-events-none" />
@@ -158,7 +158,7 @@ export function SeriesHero({
             <span className="text-xs uppercase tracking-widest font-mono rotate-90 origin-center translate-x-4">
               Scroll
             </span>
-            <div className="w-px h-12 bg-gradient-to-b from-rga-cyan/50 to-transparent" />
+            <div className="w-px h-12 bg-linear-to-b from-rga-cyan/50 to-transparent" />
           </motion.div>
         </motion.div>
       </div>

@@ -35,7 +35,7 @@ export function FeaturedArticles({ articles, progress }: FeaturedArticlesProps) 
       {/* Section header */}
       <div className="flex items-center gap-3 mb-6">
         {/* Accent line */}
-        <div className="w-1 h-8 bg-gradient-to-b from-rga-magenta via-rga-cyan to-rga-green rounded-full" />
+        <div className="w-1 h-8 bg-linear-to-b from-rga-magenta via-rga-cyan to-rga-green rounded-full" />
         <div className="flex items-center gap-2">
           <Sparkles className="w-4 h-4 text-rga-cyan" />
           <h3 className="text-base font-medium text-white">

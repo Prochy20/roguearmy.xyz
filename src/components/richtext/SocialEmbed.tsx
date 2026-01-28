@@ -86,7 +86,7 @@ function getPlatformColors(platform: SocialPlatform): { bg: string; text: string
       containerBg: 'bg-neutral-900/5',
     },
     instagram: {
-      bg: 'bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500',
+      bg: 'bg-linear-to-r from-purple-500 via-pink-500 to-orange-500',
       text: 'text-white',
       corner: 'text-pink-500/40',
       containerBg: 'bg-pink-500/5',

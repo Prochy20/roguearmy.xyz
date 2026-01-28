@@ -131,7 +131,7 @@ export const CyberButton = forwardRef<
       <span className="absolute inset-x-0 top-0 h-full overflow-hidden opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
         <span
           className={cn(
-            'absolute inset-x-0 h-px bg-gradient-to-r from-transparent to-transparent animate-scan',
+            'absolute inset-x-0 h-px bg-linear-to-r from-transparent to-transparent animate-scan',
             styles.scanLine
           )}
         />

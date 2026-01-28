@@ -259,7 +259,7 @@ export function CyberTag({ children, className, color = 'green' }: CyberTagProps
 
       {/* Inner backlight */}
       <span
-        className={cn('absolute inset-0 opacity-20 bg-gradient-to-b', cfg.gradient)}
+        className={cn('absolute inset-0 opacity-20 bg-linear-to-b', cfg.gradient)}
       />
 
       <span className="relative z-10">{children}</span>
