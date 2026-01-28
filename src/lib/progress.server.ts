@@ -4,6 +4,7 @@
  */
 import 'server-only'
 
+import { cache } from 'react'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 
@@ -94,11 +95,12 @@ export async function getArticleProgress(
 
 /**
  * Get a map of article IDs to progress data for a member
+ * Wrapped with React.cache() for request deduplication
  */
-export async function getMemberProgressMap(
+export const getMemberProgressMap = cache(async function getMemberProgressMap(
   memberId: string,
   articleIds?: string[]
 ): Promise<Map<string, ArticleProgress>> {
   const progress = await getMemberProgress(memberId, articleIds)
   return new Map(progress.map((p) => [p.articleId, p]))
-}
+})

@@ -4,6 +4,7 @@
  */
 import 'server-only'
 
+import { cache } from 'react'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import type {
@@ -158,8 +159,9 @@ export async function getFilterOptions(): Promise<FilterOptions> {
 
 /**
  * Get series navigation for an article
+ * Wrapped with React.cache() for request deduplication
  */
-export async function getSeriesNavigation(articleId: string): Promise<SeriesNavigation | null> {
+export const getSeriesNavigation = cache(async function getSeriesNavigation(articleId: string): Promise<SeriesNavigation | null> {
   const payload = await getPayload({ config })
 
   // Find series containing this article
@@ -215,7 +217,7 @@ export async function getSeriesNavigation(articleId: string): Promise<SeriesNavi
         })
       : null,
   }
-}
+})
 
 /**
  * Get article by slug with draft support for Live Preview.
