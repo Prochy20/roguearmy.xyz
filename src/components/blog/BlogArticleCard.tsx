@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'motion/react'
-import { Clock, Calendar, Lock } from 'lucide-react'
+import { Clock, Calendar } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { HoverGlitch } from '@/components/effects/HoverGlitch'
 import { CyberCorners, CyberTag } from '@/components/ui/CyberCorners'
@@ -16,7 +16,7 @@ import {
 } from '@/lib/articles'
 import { ReadStatusIndicator, getReadStatus } from '@/components/members/ReadStatusIndicator'
 import { BookmarkButton } from '@/components/members/BookmarkButton'
-import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip'
+import { MembersOnlyOverlay } from './MembersOnlyOverlay'
 
 /** Minimal progress data needed for article card display */
 interface CardProgressData {
@@ -86,18 +86,9 @@ export function BlogArticleCard({ article, index = 0, progress, isAuthenticated 
               {/* Scanline effect on hover */}
               <div className="absolute inset-0 bg-[repeating-linear-gradient(0deg,transparent,transparent_2px,rgba(0,255,65,0.03)_2px,rgba(0,255,65,0.03)_4px)] opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
-              {/* Members-only lock icon - top right */}
-              {isMembersOnly && (
-                <TooltipProvider delayDuration={300}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div className="absolute top-4 right-4 flex items-center justify-center w-8 h-8 bg-bg-elevated/80 backdrop-blur-sm rounded border border-rga-cyan/30 cursor-help">
-                        <Lock className="w-4 h-4 text-rga-cyan" />
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent accent="cyan">Members only</TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+              {/* Members-only overlay - centered, only shown when not authenticated */}
+              {isMembersOnly && !isAuthenticated && (
+                <MembersOnlyOverlay size="lg" />
               )}
 
               {/* Topic Badge + Game Badge */}
