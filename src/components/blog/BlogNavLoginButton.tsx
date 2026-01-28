@@ -91,13 +91,13 @@ export function BlogNavLoginButton() {
 
       {/* Scan line effect on hover */}
       <span className="absolute inset-x-0 top-0 h-full overflow-hidden opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-        <span className="absolute inset-x-0 h-px bg-gradient-to-r from-transparent via-rga-cyan/40 to-transparent animate-scan" />
+        <span className="absolute inset-x-0 h-px bg-linear-to-r from-transparent via-rga-cyan/40 to-transparent animate-scan" />
       </span>
 
       {/* Inner glow on hover */}
       <span
         className={cn(
-          'absolute inset-0 bg-gradient-to-b from-rga-cyan/10 to-transparent opacity-0 transition-opacity duration-300',
+          'absolute inset-0 bg-linear-to-b from-rga-cyan/10 to-transparent opacity-0 transition-opacity duration-300',
           'group-hover:opacity-100'
         )}
       />

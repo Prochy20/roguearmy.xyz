@@ -93,7 +93,7 @@ export function BlogArticleCardList({ article, index = 0, progress, isAuthentica
                 className="object-cover transition-transform duration-300 group-hover:scale-105"
               />
               {/* Subtle overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-bg-elevated/50 to-transparent" />
+              <div className="absolute inset-0 bg-linear-to-t from-bg-elevated/50 to-transparent" />
 
               {/* Members-only lock icon overlay */}
               {isMembersOnly && (

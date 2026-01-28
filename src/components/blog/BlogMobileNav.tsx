@@ -197,7 +197,7 @@ export function BlogMobileNav({ isAuthenticated }: BlogMobileNavProps) {
                         <span className="absolute -bottom-px -right-px w-px h-3 bg-rga-cyan shadow-[0_0_6px_rgba(0,255,255,0.5)] transition-all duration-300 group-hover:h-4 group-hover:translate-x-0.5 group-hover:translate-y-0.5" />
 
                         {/* Inner glow on hover */}
-                        <span className="absolute inset-0 bg-gradient-to-b from-rga-cyan/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                        <span className="absolute inset-0 bg-linear-to-b from-rga-cyan/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
                         <DiscordIcon className="relative w-4 h-4 text-rga-gray group-hover:text-rga-cyan transition-colors duration-300" />
                         <span className="relative tracking-wider text-rga-gray group-hover:text-rga-cyan transition-colors duration-300 uppercase text-xs font-medium">

@@ -123,7 +123,7 @@ export default function BookmarksPage() {
             {[...Array(4)].map((_, i) => (
               <div key={i} className="animate-pulse">
                 <div className="bg-bg-elevated border border-rga-cyan/10 rounded">
-                  <div className="aspect-[5/2] bg-bg-surface" />
+                  <div className="aspect-5/2 bg-bg-surface" />
                   <div className="p-5 space-y-3">
                     <div className="h-6 bg-bg-surface rounded w-3/4" />
                     <div className="h-4 bg-bg-surface rounded w-full" />

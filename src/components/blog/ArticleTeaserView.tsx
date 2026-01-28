@@ -68,9 +68,9 @@ export function ArticleTeaserView({ article }: ArticleTeaserViewProps) {
           />
 
           {/* Multi-layer gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-void via-void/70 to-void/20" />
-          <div className="absolute inset-0 bg-gradient-to-r from-void/50 via-transparent to-void/30" />
-          <div className="absolute inset-0 bg-gradient-to-b from-void/60 via-transparent to-transparent h-40" />
+          <div className="absolute inset-0 bg-linear-to-t from-void via-void/70 to-void/20" />
+          <div className="absolute inset-0 bg-linear-to-r from-void/50 via-transparent to-void/30" />
+          <div className="absolute inset-0 bg-linear-to-b from-void/60 via-transparent to-transparent h-40" />
 
           {/* Scanline overlay - magenta tint */}
           <div className="absolute inset-0 bg-[repeating-linear-gradient(0deg,transparent,transparent_2px,rgba(255,0,255,0.02)_2px,rgba(255,0,255,0.02)_4px)] pointer-events-none" />
@@ -146,7 +146,7 @@ export function ArticleTeaserView({ article }: ArticleTeaserViewProps) {
 
         {/* Bottom edge glow line - magenta for locked state */}
         <div
-          className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-rga-magenta to-transparent opacity-40"
+          className="absolute bottom-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-rga-magenta to-transparent opacity-40"
         />
       </section>
 
@@ -177,7 +177,7 @@ export function ArticleTeaserView({ article }: ArticleTeaserViewProps) {
                   {/* Animated scan line effect */}
                   <div className="absolute inset-0 overflow-hidden pointer-events-none">
                     <motion.div
-                      className="absolute inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-rga-magenta/40 to-transparent"
+                      className="absolute inset-x-0 h-[2px] bg-linear-to-r from-transparent via-rga-magenta/40 to-transparent"
                       initial={{ top: '-2px' }}
                       animate={{ top: '100%' }}
                       transition={{
@@ -209,11 +209,11 @@ export function ArticleTeaserView({ article }: ArticleTeaserViewProps) {
                       transition={{ delay: 0.8, duration: 0.5 }}
                       className="flex items-center justify-center gap-3 mb-6"
                     >
-                      <div className="h-px flex-1 max-w-[60px] bg-gradient-to-r from-transparent to-rga-magenta/50" />
+                      <div className="h-px flex-1 max-w-[60px] bg-linear-to-r from-transparent to-rga-magenta/50" />
                       <span className="font-mono text-[10px] tracking-[0.3em] text-rga-magenta/70 uppercase">
                         Restricted Access
                       </span>
-                      <div className="h-px flex-1 max-w-[60px] bg-gradient-to-l from-transparent to-rga-magenta/50" />
+                      <div className="h-px flex-1 max-w-[60px] bg-linear-to-l from-transparent to-rga-magenta/50" />
                     </motion.div>
 
                     {/* Security Terminal Icon */}
@@ -232,7 +232,7 @@ export function ArticleTeaserView({ article }: ArticleTeaserViewProps) {
                           style={{ width: '72px', height: '72px', margin: '-4px' }}
                         />
                         {/* Main icon container */}
-                        <div className="relative w-16 h-16 rounded-full bg-gradient-to-br from-rga-magenta/20 to-rga-magenta/5 border border-rga-magenta/40 flex items-center justify-center">
+                        <div className="relative w-16 h-16 rounded-full bg-linear-to-br from-rga-magenta/20 to-rga-magenta/5 border border-rga-magenta/40 flex items-center justify-center">
                           {/* Inner glow */}
                           <div className="absolute inset-2 rounded-full bg-rga-magenta/10 blur-sm" />
                           {/* Shield icon with fingerprint */}
@@ -283,11 +283,11 @@ export function ArticleTeaserView({ article }: ArticleTeaserViewProps) {
                     >
                       {/* Scan effect on hover */}
                       <span className="absolute inset-x-0 top-0 h-full overflow-hidden opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-                        <span className="absolute inset-x-0 h-px bg-gradient-to-r from-transparent via-rga-magenta/60 to-transparent animate-scan" />
+                        <span className="absolute inset-x-0 h-px bg-linear-to-r from-transparent via-rga-magenta/60 to-transparent animate-scan" />
                       </span>
 
                       {/* Inner glow on hover */}
-                      <span className="absolute inset-0 bg-gradient-to-b from-rga-magenta/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      <span className="absolute inset-0 bg-linear-to-b from-rga-magenta/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
                       <DiscordIcon className="relative w-5 h-5 text-rga-magenta group-hover:drop-shadow-[0_0_8px_rgba(255,0,255,0.6)] transition-all duration-300" />
                       <span className="relative font-mono text-white tracking-wide uppercase text-sm">
@@ -339,7 +339,7 @@ export function ArticleTeaserView({ article }: ArticleTeaserViewProps) {
       </main>
 
       {/* Bottom fade */}
-      <div className="h-32 bg-gradient-to-t from-void to-transparent" />
+      <div className="h-32 bg-linear-to-t from-void to-transparent" />
     </div>
   )
 }
