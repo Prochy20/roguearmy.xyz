@@ -16,6 +16,7 @@ import {
 import { ReadStatusIndicator, getReadStatus } from '@/components/members/ReadStatusIndicator'
 import { BookmarkButton } from '@/components/members/BookmarkButton'
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip'
+import { MembersOnlyOverlay } from './MembersOnlyOverlay'
 
 interface CardProgressData {
   progress: number
@@ -70,16 +71,16 @@ export function BlogArticleCardList({ article, index = 0, progress, isAuthentica
               tint.hoverBorder
             )}
           >
-            {/* Mobile-only lock icon - fixed position top right */}
-            {isMembersOnly && (
+            {/* Mobile-only lock icon - fixed position top right, only shown when not authenticated */}
+            {isMembersOnly && !isAuthenticated && (
               <TooltipProvider delayDuration={300}>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <div className="absolute top-2 right-2 sm:hidden flex items-center justify-center w-6 h-6 bg-bg-elevated/80 backdrop-blur-sm rounded border border-rga-cyan/30 cursor-help">
-                      <Lock className="w-3 h-3 text-rga-cyan" />
+                    <div className="absolute top-2 right-2 sm:hidden flex items-center justify-center w-6 h-6 bg-bg-elevated/80 backdrop-blur-sm rounded border border-rga-magenta/30 cursor-help">
+                      <Lock className="w-3 h-3 text-rga-magenta" />
                     </div>
                   </TooltipTrigger>
-                  <TooltipContent accent="cyan">Members only</TooltipContent>
+                  <TooltipContent accent="magenta">Members only</TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             )}
@@ -95,18 +96,9 @@ export function BlogArticleCardList({ article, index = 0, progress, isAuthentica
               {/* Subtle overlay */}
               <div className="absolute inset-0 bg-linear-to-t from-bg-elevated/50 to-transparent" />
 
-              {/* Members-only lock icon overlay */}
-              {isMembersOnly && (
-                <TooltipProvider delayDuration={300}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div className="absolute inset-0 flex items-center justify-center bg-bg-elevated/60 cursor-help">
-                        <Lock className="w-4 h-4 text-rga-cyan" />
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent accent="cyan">Members only</TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+              {/* Members-only overlay - only shown when not authenticated */}
+              {isMembersOnly && !isAuthenticated && (
+                <MembersOnlyOverlay size="sm" />
               )}
             </div>
 
