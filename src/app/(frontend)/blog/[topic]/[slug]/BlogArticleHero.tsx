@@ -69,7 +69,7 @@ export function BlogArticleHero({
   tint,
   publishedAt,
   readingTime,
-  contentType,
+  contentType: _contentType,
   games = [],
   series,
   isAuthenticated = false,

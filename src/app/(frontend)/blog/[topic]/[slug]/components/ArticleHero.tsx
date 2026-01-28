@@ -22,6 +22,7 @@ import {
   type ArticleSeries,
   type TintColor,
   formatArticleDate,
+  getSeriesUrl,
 } from '@/lib/articles'
 import { BookmarkButton } from '@/components/members/BookmarkButton'
 import { ShareButton } from '@/components/members/ShareButton'
@@ -68,7 +69,7 @@ export function ArticleHero({
   tint,
   publishedAt,
   readingTime,
-  contentType,
+  contentType: _contentType,
   games = [],
   series,
 }: ArticleHeroProps) {
@@ -191,7 +192,7 @@ export function ArticleHero({
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Link
-                        href={`/members/series/${series.slug}`}
+                        href={getSeriesUrl(series)}
                         className="text-rga-gray/60 hover:text-rga-gray transition-colors inline-flex items-center gap-1.5 text-sm"
                       >
                         <BookOpen className="w-4 h-4" />
