@@ -5,6 +5,7 @@
 import 'server-only'
 
 import { cache } from 'react'
+import { unstable_cache } from 'next/cache'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import type {
@@ -495,24 +496,24 @@ export async function getArticleByTopicAndSlugWithDraft(
 }
 
 /**
- * Get featured articles for "You might also like" section.
- * Uses hybrid logic: curated first, then algorithmic fallback.
+ * Internal implementation of featured articles fetching.
+ * Wrapped by getFeaturedArticles with caching.
  */
-export async function getFeaturedArticles(
+async function getFeaturedArticlesImpl(
   currentArticleId: string,
   topicId: string,
   gameIds: string[],
-  curatedArticleIds?: string[],
-  seriesArticleIds?: string[],
-  limit: number = 3
+  curatedArticleIds: string[],
+  seriesArticleIds: string[],
+  limit: number
 ): Promise<Article[]> {
   const payload = await getPayload({ config })
 
   // Build exclusion list: current article + series articles
-  const excludeIds = new Set([currentArticleId, ...(seriesArticleIds || [])])
+  const excludeIds = new Set([currentArticleId, ...seriesArticleIds])
 
   // Filter out any excluded articles from curated list
-  const validCuratedIds = (curatedArticleIds || []).filter((id) => !excludeIds.has(id))
+  const validCuratedIds = curatedArticleIds.filter((id) => !excludeIds.has(id))
 
   // If we have enough curated articles, just fetch those
   if (validCuratedIds.length >= limit) {
@@ -635,4 +636,49 @@ export async function getFeaturedArticles(
   }
 
   return articles.map((a) => transformPayloadArticle(a))
+}
+
+/**
+ * Get featured articles for "You might also like" section.
+ * Uses hybrid logic: curated first, then algorithmic fallback.
+ * Cached for 5 minutes to reduce DB load.
+ */
+export async function getFeaturedArticles(
+  currentArticleId: string,
+  topicId: string,
+  gameIds: string[],
+  curatedArticleIds?: string[],
+  seriesArticleIds?: string[],
+  limit: number = 3
+): Promise<Article[]> {
+  // Normalize optional arrays to empty arrays for consistent cache keys
+  const normalizedCurated = curatedArticleIds || []
+  const normalizedSeries = seriesArticleIds || []
+
+  // Create a cached version with a unique key based on inputs
+  const cachedFetch = unstable_cache(
+    () => getFeaturedArticlesImpl(
+      currentArticleId,
+      topicId,
+      gameIds,
+      normalizedCurated,
+      normalizedSeries,
+      limit
+    ),
+    [
+      'featured-articles',
+      currentArticleId,
+      topicId,
+      gameIds.join(','),
+      normalizedCurated.join(','),
+      normalizedSeries.join(','),
+      String(limit),
+    ],
+    {
+      revalidate: 300, // 5 minutes
+      tags: ['articles', 'featured-articles'],
+    }
+  )
+
+  return cachedFetch()
 }
