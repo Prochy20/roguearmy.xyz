@@ -3,7 +3,7 @@
 import { ChevronUp } from 'lucide-react'
 import { DiscordIcon } from '@/components/shared/DiscordIcon'
 
-export function MembersFooter() {
+export function BlogFooter() {
   const currentYear = new Date().getFullYear()
 
   const scrollToTop = () => {

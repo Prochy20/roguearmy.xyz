@@ -8,7 +8,7 @@ import { BlogNavUserMenu } from './BlogNavUserMenu'
 import { BlogNavLoginButton } from './BlogNavLoginButton'
 import { BlogMobileNav } from './BlogMobileNav'
 import { BlogBookmarksDrawer } from './BlogBookmarksDrawer'
-import { useScrollVisibility } from '@/components/members/MembersNav/useScrollVisibility'
+import { useScrollVisibility } from './useScrollVisibility'
 import { useBlogAuth } from '@/contexts/BlogAuthContext'
 
 interface BlogNavProps {

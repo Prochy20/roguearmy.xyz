@@ -3,10 +3,9 @@
 import { type ReactNode } from 'react'
 import { usePathname } from 'next/navigation'
 import { BlogAuthProvider, type BlogAuthState } from '@/contexts/BlogAuthContext'
-import { MembersProvider } from '@/contexts/MembersContext'
 import { BookmarksProvider } from '@/contexts/BookmarksContext'
 import { BlogNav } from './BlogNav'
-import { MembersFooter } from '@/components/members/MembersFooter'
+import { BlogFooter } from './BlogFooter'
 
 // Cache regex pattern outside component to prevent recreation on each render
 const ARTICLE_DETAIL_REGEX = /^\/blog\/[^/]+\/[^/]+$/
@@ -30,20 +29,18 @@ export function BlogLayoutClient({ children, authState }: BlogLayoutClientProps)
     <div className="min-h-screen flex flex-col">
       <BlogNav hideOnScroll={!!isArticleDetailPage} isAuthenticated={authState.authenticated} />
       <main className="flex-1">{children}</main>
-      {showFooter && <MembersFooter />}
+      {showFooter && <BlogFooter />}
     </div>
   )
 
   // Always wrap with BlogAuthProvider for auth state access
-  // Only wrap with MembersProvider and BookmarksProvider if authenticated
+  // Only wrap with BookmarksProvider if authenticated
   if (authState.authenticated && authState.member) {
     return (
       <BlogAuthProvider authState={authState}>
-        <MembersProvider member={authState.member}>
-          <BookmarksProvider>
-            {content}
-          </BookmarksProvider>
-        </MembersProvider>
+        <BookmarksProvider>
+          {content}
+        </BookmarksProvider>
       </BlogAuthProvider>
     )
   }
