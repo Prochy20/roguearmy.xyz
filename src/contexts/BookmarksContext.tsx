@@ -7,6 +7,7 @@ import {
   useEffect,
   useCallback,
   useMemo,
+  useRef,
   type ReactNode,
 } from 'react'
 import type { BookmarkWithArticle } from '@/lib/bookmarks'
@@ -35,6 +36,12 @@ export function BookmarksProvider({ children }: BookmarksProviderProps) {
     [bookmarks]
   )
 
+  // Use ref to avoid recreating callbacks when bookmarks change
+  const bookmarkedIdsRef = useRef(bookmarkedIds)
+  useEffect(() => {
+    bookmarkedIdsRef.current = bookmarkedIds
+  }, [bookmarkedIds])
+
   // Fetch all bookmarks on mount
   useEffect(() => {
     async function fetchBookmarks() {
@@ -54,13 +61,14 @@ export function BookmarksProvider({ children }: BookmarksProviderProps) {
     fetchBookmarks()
   }, [])
 
+  // Stable callback using ref - doesn't change when bookmarks change
   const isBookmarked = useCallback(
-    (articleId: string) => bookmarkedIds.has(articleId),
-    [bookmarkedIds]
+    (articleId: string) => bookmarkedIdsRef.current.has(articleId),
+    [] // Empty deps - uses ref for current value
   )
 
   const toggleBookmark = useCallback(async (articleId: string) => {
-    const isCurrentlyBookmarked = bookmarkedIds.has(articleId)
+    const isCurrentlyBookmarked = bookmarkedIdsRef.current.has(articleId)
 
     // Optimistic update
     if (isCurrentlyBookmarked) {
@@ -132,7 +140,7 @@ export function BookmarksProvider({ children }: BookmarksProviderProps) {
         setBookmarks(result.bookmarks || [])
       }
     }
-  }, [bookmarkedIds])
+  }, []) // Empty deps - uses ref for current value
 
   const value = useMemo(
     () => ({
