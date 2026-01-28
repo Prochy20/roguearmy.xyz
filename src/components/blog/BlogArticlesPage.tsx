@@ -27,7 +27,7 @@ export function BlogArticlesPage({
 }: BlogArticlesPageProps) {
   const searchParams = useSearchParams()
   const router = useRouter()
-  const { viewMode, setViewMode } = useViewMode()
+  const { viewMode, setViewMode, isHydrated } = useViewMode()
 
   // Read search from URL, keep other filters local
   const urlSearch = searchParams.get('search') || ''
@@ -120,8 +120,11 @@ export function BlogArticlesPage({
             onClearAll={clearUrlSearch}
           />
 
-          {/* Article Feed */}
-          <div className="flex-1 min-w-0">
+          {/* Article Feed - fade in after hydration to prevent view mode bounce */}
+          <div
+            className="flex-1 min-w-0 transition-opacity duration-200"
+            style={{ opacity: isHydrated ? 1 : 0 }}
+          >
             <BlogArticleFeed
               articles={articles}
               filters={filters}

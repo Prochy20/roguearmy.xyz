@@ -30,7 +30,7 @@ const statusOptions: { value: HistoryStatusFilter; label: string; icon: typeof L
 export function BlogHistoryPage({ articles, progress, statusFilter }: BlogHistoryPageProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { viewMode, setViewMode } = useViewMode()
+  const { viewMode, setViewMode, isHydrated } = useViewMode()
 
   // Handle filter change
   const handleFilterChange = (newFilter: HistoryStatusFilter) => {
@@ -155,11 +155,14 @@ export function BlogHistoryPage({ articles, progress, statusFilter }: BlogHistor
           </div>
         </div>
 
-        {/* Content */}
+        {/* Content - fade in after hydration to prevent view mode bounce */}
         {articles.length === 0 ? (
           <HistoryEmptyState statusFilter={statusFilter} />
         ) : (
-          <div className={gridClasses}>
+          <div
+            className={cn(gridClasses, 'transition-opacity duration-200')}
+            style={{ opacity: isHydrated ? 1 : 0 }}
+          >
             {articles.map((article, index) => renderCard(article, index))}
           </div>
         )}

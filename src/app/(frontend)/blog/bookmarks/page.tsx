@@ -18,7 +18,7 @@ import type { Article } from '@/lib/articles'
 
 export default function BookmarksPage() {
   const { bookmarks, isLoading: bookmarksLoading } = useBookmarks()
-  const { viewMode, setViewMode } = useViewMode()
+  const { viewMode, setViewMode, isHydrated } = useViewMode()
 
   // Extract article IDs for progress fetching
   const articleIds = useMemo(
@@ -136,7 +136,10 @@ export default function BookmarksPage() {
         ) : articles.length === 0 ? (
           <EmptyState />
         ) : (
-          <div className={gridClasses}>
+          <div
+            className={cn(gridClasses, 'transition-opacity duration-200')}
+            style={{ opacity: isHydrated ? 1 : 0 }}
+          >
             {articles.map((article, index) => renderCard(article, index))}
           </div>
         )}
