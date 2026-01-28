@@ -2,21 +2,24 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { SlidersHorizontal } from 'lucide-react'
+import { Gamepad2, Tag, Layers, BookOpen } from 'lucide-react'
 import { SeriesGrid } from '@/components/members/SeriesGrid'
-import { SeriesFilterSidebar } from '@/components/members/SeriesFilterSidebar'
-import { SeriesFilterBottomSheet } from '@/components/members/SeriesFilterBottomSheet'
+import { BlogFilterDrawer } from './BlogFilterDrawer'
+import { BlogFilterButton } from './BlogFilterButton'
 import { EmptyState } from '@/components/members/EmptyState'
 import { HeroGlitch } from '@/components/effects/HeroGlitch'
+import { FilterMultiDropdown, FilterPills } from '@/components/blog/filter-fields'
 import {
   type SeriesFilterState,
   type SeriesFilterOptions,
   type SeriesWithFilterData,
+  type SeriesSize,
   filterSeries,
   parseSeriesFiltersFromUrl,
   serializeSeriesFiltersToUrl,
   getDefaultSeriesFilterState,
   hasActiveFilters,
+  SERIES_SIZE_RANGES,
 } from '@/lib/series'
 
 interface BlogSeriesPageProps {
@@ -24,6 +27,8 @@ interface BlogSeriesPageProps {
   filterOptions: SeriesFilterOptions
   isAuthenticated?: boolean
 }
+
+type DropdownId = 'games' | 'topics'
 
 export function BlogSeriesPage({ series, filterOptions, isAuthenticated = false }: BlogSeriesPageProps) {
   const searchParams = useSearchParams()
@@ -33,13 +38,21 @@ export function BlogSeriesPage({ series, filterOptions, isAuthenticated = false 
   const [filters, setFilters] = useState<SeriesFilterState>(() =>
     parseSeriesFiltersFromUrl(searchParams)
   )
-  const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false)
+  const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false)
+  const [openDropdown, setOpenDropdown] = useState<DropdownId | null>(null)
 
   // Sync filters with URL changes (e.g., browser back/forward)
   useEffect(() => {
     const urlFilters = parseSeriesFiltersFromUrl(searchParams)
     setFilters(urlFilters)
   }, [searchParams])
+
+  // Close dropdowns when drawer closes
+  useEffect(() => {
+    if (!isFilterDrawerOpen) {
+      setOpenDropdown(null)
+    }
+  }, [isFilterDrawerOpen])
 
   // Update URL when filters change
   const updateFiltersAndUrl = useCallback(
@@ -57,10 +70,18 @@ export function BlogSeriesPage({ series, filterOptions, isAuthenticated = false 
 
   const handleClearFilters = useCallback(() => {
     updateFiltersAndUrl(getDefaultSeriesFilterState())
+    setOpenDropdown(null)
   }, [updateFiltersAndUrl])
 
   // Filter series client-side
   const filteredSeries = filterSeries(series, filters)
+
+  // Count active filters (exclude completionStatus for anonymous users)
+  const activeFilterCount =
+    (isAuthenticated && filters.completionStatus !== 'all' ? 1 : 0) +
+    filters.sizes.length +
+    filters.games.length +
+    filters.topics.length
 
   return (
     <div className="min-h-screen bg-void">
@@ -86,49 +107,102 @@ export function BlogSeriesPage({ series, filterOptions, isAuthenticated = false 
               </p>
             </div>
 
-            {/* Mobile filter button */}
-            <button
-              onClick={() => setIsFilterSheetOpen(true)}
-              className="lg:hidden flex items-center gap-2 px-3 py-2 border border-rga-green/30 rounded-lg text-rga-gray text-sm hover:border-rga-green/50 hover:text-rga-green transition-colors shrink-0"
-            >
-              <SlidersHorizontal className="w-4 h-4" />
-              <span className="hidden sm:inline">Filters</span>
-            </button>
+            {/* Filter button */}
+            <BlogFilterButton
+              activeCount={activeFilterCount}
+              onClick={() => setIsFilterDrawerOpen(true)}
+              className="shrink-0"
+            />
           </div>
         </div>
 
-        {/* Content Layout */}
-        <div className="flex gap-8">
-          {/* Sidebar - Desktop only */}
-          <SeriesFilterSidebar
-            filterOptions={filterOptions}
-            filters={filters}
-            onFilterChange={updateFiltersAndUrl}
-            onClearAll={handleClearFilters}
-          />
-
-          {/* Series Grid */}
-          <div className="flex-1 min-w-0">
-            {filteredSeries.length === 0 && hasActiveFilters(filters) ? (
-              <EmptyState
-                onClearFilters={handleClearFilters}
-                message="No series match your current filters. Try adjusting your selection or clear all filters to see everything."
-              />
-            ) : (
-              <SeriesGrid series={filteredSeries} />
-            )}
-          </div>
+        {/* Full-width content layout */}
+        <div className="w-full">
+          {filteredSeries.length === 0 && hasActiveFilters(filters) ? (
+            <EmptyState
+              onClearFilters={handleClearFilters}
+              message="No series match your current filters. Try adjusting your selection or clear all filters to see everything."
+            />
+          ) : (
+            <SeriesGrid series={filteredSeries} />
+          )}
         </div>
       </main>
 
-      {/* Mobile Filter Bottom Sheet */}
-      <SeriesFilterBottomSheet
-        isOpen={isFilterSheetOpen}
-        onClose={() => setIsFilterSheetOpen(false)}
-        filterOptions={filterOptions}
-        filters={filters}
-        onFilterChange={updateFiltersAndUrl}
-      />
+      {/* Filter Drawer */}
+      <BlogFilterDrawer
+        open={isFilterDrawerOpen}
+        onOpenChange={setIsFilterDrawerOpen}
+        title="Filters"
+        activeCount={activeFilterCount}
+        onClearAll={handleClearFilters}
+      >
+        {/* Completion Status - Single-select Pills (authenticated users only) */}
+        {isAuthenticated && (
+          <FilterPills
+            mode="single"
+            label="Progress"
+            icon={<BookOpen className="w-3.5 h-3.5" />}
+            value={filters.completionStatus}
+            onChange={(val) => updateFiltersAndUrl({ ...filters, completionStatus: val ?? 'all' })}
+            options={[
+              { value: 'all', label: 'All' },
+              { value: 'not_started', label: 'Not Started' },
+              { value: 'in_progress', label: 'In Progress' },
+              { value: 'completed', label: 'Completed' },
+            ]}
+          />
+        )}
+
+        {/* Size - Multi-select Pills */}
+        <FilterPills
+          mode="multi"
+          label="Size"
+          icon={<Layers className="w-3.5 h-3.5" />}
+          values={filters.sizes}
+          onChange={(vals) => updateFiltersAndUrl({ ...filters, sizes: vals })}
+          options={(Object.keys(SERIES_SIZE_RANGES) as SeriesSize[]).map((key) => ({
+            value: key,
+            label: SERIES_SIZE_RANGES[key].description,
+          }))}
+        />
+
+        {/* Games - Multi-select Dropdown */}
+        {filterOptions.games.length > 0 && (
+          <FilterMultiDropdown
+            label="Games"
+            icon={<Gamepad2 className="w-3.5 h-3.5" />}
+            values={filters.games}
+            onChange={(vals) => updateFiltersAndUrl({ ...filters, games: vals })}
+            options={filterOptions.games.map((g) => ({
+              value: g.id,
+              label: g.name,
+              tint: g.tint,
+            }))}
+            placeholder="All Games"
+            isOpen={openDropdown === 'games'}
+            onToggle={() => setOpenDropdown(openDropdown === 'games' ? null : 'games')}
+          />
+        )}
+
+        {/* Topics - Multi-select Dropdown */}
+        {filterOptions.topics.length > 0 && (
+          <FilterMultiDropdown
+            label="Topics"
+            icon={<Tag className="w-3.5 h-3.5" />}
+            values={filters.topics}
+            onChange={(vals) => updateFiltersAndUrl({ ...filters, topics: vals })}
+            options={filterOptions.topics.map((t) => ({
+              value: t.id,
+              label: t.name,
+              tint: t.tint,
+            }))}
+            placeholder="All Topics"
+            isOpen={openDropdown === 'topics'}
+            onToggle={() => setOpenDropdown(openDropdown === 'topics' ? null : 'topics')}
+          />
+        )}
+      </BlogFilterDrawer>
     </div>
   )
 }
