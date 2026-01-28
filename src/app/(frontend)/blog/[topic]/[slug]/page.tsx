@@ -1,8 +1,5 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { cookies } from 'next/headers'
-import { getPayload } from 'payload'
-import config from '@payload-config'
 import { getTintClasses, formatArticleDate, getArticleUrl } from '@/lib/articles'
 import {
   getArticleByTopicAndSlug,
@@ -11,8 +8,7 @@ import {
   getFeaturedArticles,
   getAllArticleParams,
 } from '@/lib/articles.server'
-import { verifyMemberToken } from '@/lib/auth/jwt'
-import { MEMBER_SESSION_COOKIE } from '@/lib/auth/cookies'
+import { getActiveMemberId } from '@/lib/auth/session.server'
 import { getMemberProgressMap } from '@/lib/progress.server'
 import { extractHeadingsFromLexical } from '@/lib/toc'
 import { ReadProgressTracker } from '@/components/members/ReadProgressTracker'
@@ -69,33 +65,6 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
       description: article.perex,
       images: [article.heroImage.url],
     },
-  }
-}
-
-async function getActiveMemberId(): Promise<string | null> {
-  const cookieStore = await cookies()
-  const token = cookieStore.get(MEMBER_SESSION_COOKIE)?.value
-
-  if (!token) return null
-
-  const session = await verifyMemberToken(token)
-  if (!session) return null
-
-  // Verify member is active
-  const payload = await getPayload({ config })
-  try {
-    const member = await payload.findByID({
-      collection: 'members',
-      id: session.memberId,
-    })
-
-    if (!member || member.status !== 'active') {
-      return null
-    }
-
-    return session.memberId
-  } catch {
-    return null
   }
 }
 

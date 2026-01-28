@@ -5,6 +5,7 @@ import { Analytics } from '@vercel/analytics/react'
 import '@/app/globals.css'
 import { ScanlineOverlay } from '@/components/effects/ScanlineOverlay'
 import { AuthProvider } from '@/components/auth/AuthProvider'
+import { getJwtSession } from '@/lib/auth/session.server'
 
 const siteUrl = 'https://roguearmy.xyz'
 
@@ -101,8 +102,19 @@ const jsonLd = {
 export default async function FrontendLayout(props: { children: React.ReactNode }) {
   const { children } = props
 
+  // Get JWT session from server (cached, no DB hit)
+  // This provides initial auth state to AuthProvider, eliminating the client-side fetch
+  const session = await getJwtSession()
+
+  const initialAuthState = session
+    ? {
+        isAuthenticated: true,
+        member: session,
+      }
+    : undefined
+
   return (
-    <AuthProvider>
+    <AuthProvider initialState={initialAuthState}>
       <Script
         id="json-ld"
         type="application/ld+json"

@@ -1,7 +1,5 @@
 import { notFound } from 'next/navigation'
-import { cookies } from 'next/headers'
-import { verifyMemberToken } from '@/lib/auth/jwt'
-import { MEMBER_SESSION_COOKIE } from '@/lib/auth/cookies'
+import { getActiveMemberId } from '@/lib/auth/session.server'
 import { getSeriesBySlug, getAllSeriesSlugs } from '@/lib/series.server'
 import { getMemberProgressMap } from '@/lib/progress.server'
 import { SeriesHero } from '@/components/members/SeriesHero'
@@ -9,16 +7,6 @@ import { BlogSeriesArticleCard } from '@/components/blog/BlogSeriesArticleCard'
 
 interface SeriesDetailPageProps {
   params: Promise<{ slug: string }>
-}
-
-async function getOptionalMemberId() {
-  const cookieStore = await cookies()
-  const token = cookieStore.get(MEMBER_SESSION_COOKIE)?.value
-
-  if (!token) return null
-
-  const session = await verifyMemberToken(token)
-  return session?.memberId || null
 }
 
 export async function generateStaticParams() {
@@ -34,7 +22,7 @@ export default async function SeriesDetailPage({ params }: SeriesDetailPageProps
     notFound()
   }
 
-  const memberId = await getOptionalMemberId()
+  const memberId = await getActiveMemberId()
 
   // Get progress for all articles in this series (only for authenticated users)
   const articleIds = series.articles.map((a) => a.id)

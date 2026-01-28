@@ -10,11 +10,34 @@ interface AuthContextType extends AuthState {
 
 const AuthContext = createContext<AuthContextType | null>(null)
 
-export function AuthProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<AuthState>({
-    isAuthenticated: false,
-    isLoading: true,
-    member: null,
+interface AuthProviderProps {
+  children: ReactNode
+  /**
+   * Initial auth state from server. When provided, skips the client-side
+   * /api/auth/me fetch, eliminating a round-trip on page load.
+   */
+  initialState?: {
+    isAuthenticated: boolean
+    member: MemberSession | null
+  }
+}
+
+export function AuthProvider({ children, initialState }: AuthProviderProps) {
+  const [state, setState] = useState<AuthState>(() => {
+    // If server provided initial state, use it and skip loading
+    if (initialState) {
+      return {
+        isAuthenticated: initialState.isAuthenticated,
+        isLoading: false,
+        member: initialState.member,
+      }
+    }
+    // Otherwise, start in loading state
+    return {
+      isAuthenticated: false,
+      isLoading: true,
+      member: null,
+    }
   })
 
   const fetchSession = async () => {
@@ -51,8 +74,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   useEffect(() => {
-    fetchSession()
-  }, [])
+    // Only fetch if no initial state was provided
+    if (!initialState) {
+      fetchSession()
+    }
+  }, [initialState])
 
   return (
     <AuthContext.Provider value={{ ...state, logout, refresh }}>
