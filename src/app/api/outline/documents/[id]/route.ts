@@ -25,44 +25,66 @@ export async function GET(request: Request, { params }: RouteParams) {
       return NextResponse.json({ error: 'Document ID required' }, { status: 400 })
     }
 
-    // Check member authentication
-    const token = await getSessionCookie()
-
-    if (!token) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const session = await verifyMemberToken(token)
-
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    // Verify member is still active
     const payload = await getPayload({ config })
-    const member = await payload.findByID({
-      collection: 'members',
-      id: session.memberId,
+
+    // Check if this document belongs to a public article
+    const articles = await payload.find({
+      collection: 'articles',
+      where: {
+        'articleContent.outlineDocumentId': { equals: id },
+        _status: { equals: 'published' },
+      },
+      limit: 1,
+      depth: 0,
     })
 
-    if (!member || member.status === 'banned') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const article = articles.docs[0]
+    const isPublicArticle = article?.visibility === 'public'
+
+    // For members-only articles (or documents not linked to any article), require auth
+    if (!isPublicArticle) {
+      const token = await getSessionCookie()
+
+      if (!token) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      }
+
+      const session = await verifyMemberToken(token)
+
+      if (!session) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      }
+
+      const member = await payload.findByID({
+        collection: 'members',
+        id: session.memberId,
+      })
+
+      if (!member || member.status === 'banned') {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      }
     }
 
     // Fetch document content from Outline
     const document = await getDocumentContent(id)
 
-    return NextResponse.json({
-      id: document.id,
-      title: document.title,
-      content: document.text,
-      updatedAt: document.updatedAt,
-    }, {
-      headers: {
-        // Cache for 5 minutes, stale-while-revalidate for 1 hour
-        'Cache-Control': 'private, max-age=300, stale-while-revalidate=3600',
+    return NextResponse.json(
+      {
+        id: document.id,
+        title: document.title,
+        content: document.text,
+        updatedAt: document.updatedAt,
       },
-    })
+      {
+        headers: {
+          // Cache for 5 minutes, stale-while-revalidate for 1 hour
+          // Use public cache for public articles, private for members-only
+          'Cache-Control': isPublicArticle
+            ? 'public, max-age=300, stale-while-revalidate=3600'
+            : 'private, max-age=300, stale-while-revalidate=3600',
+        },
+      },
+    )
   } catch (error) {
     console.error('Error fetching Outline document:', error)
     return NextResponse.json(
