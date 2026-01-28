@@ -79,12 +79,33 @@ export function ReadProgressTracker({ articleId }: ReadProgressTrackerProps) {
     }
   }, [articleId])
 
-  // Calculate scroll progress
+  // Calculate scroll progress based on article content element
   const calculateProgress = useCallback(() => {
-    const scrollTop = window.scrollY
-    const docHeight = document.documentElement.scrollHeight - window.innerHeight
-    const scrollProgress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0
-    progressRef.current = Math.min(scrollProgress, 100)
+    const article = document.querySelector('.article-content')
+    if (!article) {
+      progressRef.current = 0
+      return
+    }
+
+    const rect = article.getBoundingClientRect()
+    const viewportHeight = window.innerHeight
+
+    // Calculate progress based on article content position
+    // 0% when top of article is at top of viewport
+    // 100% when bottom of article reaches bottom of viewport
+    const scrolledIntoArticle = -rect.top
+    const readableDistance = article.clientHeight - viewportHeight
+
+    let scrollProgress = 0
+    if (readableDistance > 0) {
+      scrollProgress = (scrolledIntoArticle / readableDistance) * 100
+      scrollProgress = Math.max(0, Math.min(100, scrollProgress))
+    } else {
+      // Article is shorter than viewport
+      scrollProgress = rect.top <= 0 ? 100 : 0
+    }
+
+    progressRef.current = scrollProgress
   }, [])
 
   // Handle scroll with debounced sync
