@@ -1,6 +1,0 @@
-export { Hero } from "./Hero"
-export { GamesShowcase } from "./GamesShowcase"
-export { StatsTicker } from "./StatsTicker"
-export { CommunityValues } from "./CommunityValues"
-export { AshleyTerminal } from "./AshleyTerminal"
-export { FinalCTA } from "./FinalCTA"
