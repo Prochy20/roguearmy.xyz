@@ -11,7 +11,11 @@ interface RouteParams {
 /**
  * GET /api/outline/documents/[id]
  * Fetches document content from Outline wiki by ID.
- * Protected - requires authenticated member.
+ *
+ * Access control:
+ * - Public articles: No authentication required
+ * - Members-only articles: Requires authenticated member
+ * - Documents not linked to any published article: Requires authentication
  */
 export async function GET(request: Request, { params }: RouteParams) {
   try {
