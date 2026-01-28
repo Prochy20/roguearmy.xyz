@@ -3,6 +3,7 @@
 import React, { useRef, useEffect, useState, useCallback, useMemo } from "react"
 import { motion, AnimatePresence } from "motion/react"
 import { cn } from "@/lib/utils"
+import { useInView } from "motion/react"
 
 interface HeroGlitchProps {
   children: React.ReactNode
@@ -43,6 +44,9 @@ export function HeroGlitch({
   const [glitchPhase, setGlitchPhase] = useState(0)
   const [corruptedText, setCorruptedText] = useState<string | null>(null)
   const [sliceOffsets, setSliceOffsets] = useState<number[]>([0, 0, 0, 0, 0])
+
+  // Pause glitch effects when component is off-screen to save resources
+  const isInView = useInView(containerRef, { margin: "100px" })
 
   // Extract text content for corruption effect
   const textContent = useMemo(() => {
@@ -125,8 +129,10 @@ export function HeroGlitch({
     }, 400)
   }, [intensity, dataCorruption, textContent, corruptText, generateSlices])
 
-  // Set up periodic glitch triggers
+  // Set up periodic glitch triggers - only when in view
   useEffect(() => {
+    if (!isInView) return // Skip scheduling when not visible
+
     const scheduleNextGlitch = () => {
       const delay = (minInterval + Math.random() * (maxInterval - minInterval)) * 1000
       return setTimeout(() => {
@@ -146,7 +152,7 @@ export function HeroGlitch({
       clearTimeout(timeoutRef.current)
       clearTimeout(initialTimeout)
     }
-  }, [minInterval, maxInterval, triggerGlitch])
+  }, [minInterval, maxInterval, triggerGlitch, isInView])
 
   // Calculate intensity-based values
   const rgbOffset = intensity * 0.8
