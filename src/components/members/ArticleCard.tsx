@@ -1,5 +1,6 @@
 'use client'
 
+import { memo } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'motion/react'
@@ -41,7 +42,7 @@ interface ArticleCardProps {
   progress?: CardProgressData | null
 }
 
-export function ArticleCard({ article, index = 0, progress }: ArticleCardProps) {
+function ArticleCardComponent({ article, index = 0, progress }: ArticleCardProps) {
   const tint = getTintClasses(article.topic.tint)
   const cornerColor = tintToColor(article.topic.tint)
 
@@ -153,3 +154,11 @@ export function ArticleCard({ article, index = 0, progress }: ArticleCardProps) 
     </motion.article>
   )
 }
+
+// Memoize to prevent re-renders when parent state changes
+export const ArticleCard = memo(ArticleCardComponent, (prev, next) =>
+  prev.article.id === next.article.id &&
+  prev.index === next.index &&
+  prev.progress?.progress === next.progress?.progress &&
+  prev.progress?.completed === next.progress?.completed
+)
