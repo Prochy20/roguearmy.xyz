@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { motion } from 'motion/react'
 import { cn } from '@/lib/utils'
 import { ArticleCard } from './ArticleCard'
@@ -21,6 +21,16 @@ interface ArticleFeedProps {
 
 const ARTICLES_PER_PAGE = 4
 
+// Animation constants extracted outside component to prevent recreation
+const LOADING_DOT_ANIMATION = {
+  active: { scale: [1, 1.5, 1], opacity: [0.3, 1, 0.3] },
+  inactive: { scale: 1, opacity: 0.3 },
+}
+const LOADING_TRANSITION_BASE = {
+  duration: 0.6,
+  ease: 'easeInOut' as const,
+}
+
 export function ArticleFeed({
   articles,
   filters,
@@ -32,8 +42,11 @@ export function ArticleFeed({
   const [isLoading, setIsLoading] = useState(false)
   const loadMoreRef = useRef<HTMLDivElement>(null)
 
-  // Filter articles (pass progress for read status filtering)
-  const filteredArticles = filterArticles(articles, filters, progress)
+  // Memoize filtered articles to avoid recalculation on every render
+  const filteredArticles = useMemo(
+    () => filterArticles(articles, filters, progress),
+    [articles, filters, progress]
+  )
 
   // Reset displayed count when filters change
   useEffect(() => {
@@ -166,15 +179,11 @@ function LoadingIndicator({ isLoading }: { isLoading: boolean }) {
         <motion.div
           key={i}
           className="w-2 h-2 bg-rga-green rounded-full"
-          animate={{
-            scale: isLoading ? [1, 1.5, 1] : 1,
-            opacity: isLoading ? [0.3, 1, 0.3] : 0.3,
-          }}
+          animate={isLoading ? LOADING_DOT_ANIMATION.active : LOADING_DOT_ANIMATION.inactive}
           transition={{
-            duration: 0.6,
+            ...LOADING_TRANSITION_BASE,
             repeat: isLoading ? Infinity : 0,
             delay: i * 0.15,
-            ease: 'easeInOut',
           }}
         />
       ))}
