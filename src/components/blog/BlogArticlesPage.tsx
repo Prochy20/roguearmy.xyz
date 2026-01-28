@@ -2,13 +2,24 @@
 
 import { useState, useEffect } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { SlidersHorizontal } from 'lucide-react'
+import { Gamepad2, FileText, Tag, Layers, Clock, BookOpen } from 'lucide-react'
 import { BlogArticleFeed } from './BlogArticleFeed'
-import { ArticleFilterSidebar } from '@/components/members/ArticleFilterSidebar'
-import { FilterBottomSheet } from '@/components/members/FilterBottomSheet'
+import { BlogFilterDrawer } from './BlogFilterDrawer'
+import { BlogFilterButton } from './BlogFilterButton'
 import { ViewModeToggle } from '@/components/members/ViewModeToggle'
 import { HeroGlitch } from '@/components/effects/HeroGlitch'
-import { type Article, type FilterState, type FilterOptions } from '@/lib/articles'
+import {
+  FilterMultiDropdown,
+  FilterSingleDropdown,
+  FilterPills,
+} from '@/components/blog/filter-fields'
+import {
+  type Article,
+  type FilterState,
+  type FilterOptions,
+  type ReadingTimeFilter,
+  READING_TIME_RANGES,
+} from '@/lib/articles'
 import { type ArticleProgress } from '@/lib/progress.server'
 import { useViewMode } from '@/hooks/useViewMode'
 
@@ -18,6 +29,8 @@ interface BlogArticlesPageProps {
   progress?: Record<string, ArticleProgress>
   isAuthenticated?: boolean
 }
+
+type DropdownId = 'games' | 'type' | 'topics' | 'series'
 
 export function BlogArticlesPage({
   articles,
@@ -41,12 +54,20 @@ export function BlogArticlesPage({
     contentTypes: [],
     search: urlSearch,
   })
-  const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false)
+  const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false)
+  const [openDropdown, setOpenDropdown] = useState<DropdownId | null>(null)
 
   // Sync search filter with URL changes
   useEffect(() => {
     setFilters((prev) => ({ ...prev, search: urlSearch }))
   }, [urlSearch])
+
+  // Close dropdowns when drawer closes
+  useEffect(() => {
+    if (!isFilterDrawerOpen) {
+      setOpenDropdown(null)
+    }
+  }, [isFilterDrawerOpen])
 
   const clearUrlSearch = () => {
     const params = new URLSearchParams(searchParams.toString())
@@ -66,13 +87,23 @@ export function BlogArticlesPage({
       search: '',
     })
     clearUrlSearch()
+    setOpenDropdown(null)
   }
+
+  // Count active filters (excluding search which is in URL, and readStatus for anonymous users)
+  const activeFilterCount =
+    (isAuthenticated && filters.readStatus ? 1 : 0) +
+    filters.readingTime.length +
+    (filters.series ? 1 : 0) +
+    filters.games.length +
+    filters.topics.length +
+    filters.contentTypes.length
 
   return (
     <div className="min-h-screen bg-void">
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
-        {/* Page Title with mobile filter button */}
+        {/* Page Title with toolbar */}
         <div className="mb-8">
           <div className="flex items-start justify-between gap-4">
             <div>
@@ -93,36 +124,25 @@ export function BlogArticlesPage({
               </p>
             </div>
 
-            {/* View mode toggle + Mobile filter button */}
+            {/* Toolbar: View mode toggle + Filter button */}
             <div className="flex items-center gap-2 shrink-0">
               <ViewModeToggle
                 viewMode={viewMode}
                 onViewModeChange={setViewMode}
               />
-              <button
-                onClick={() => setIsFilterSheetOpen(true)}
-                className="lg:hidden flex items-center gap-2 px-3 py-2 border border-rga-green/30 rounded-lg text-rga-gray text-sm hover:border-rga-green/50 hover:text-rga-green transition-colors"
-              >
-                <SlidersHorizontal className="w-4 h-4" />
-                <span className="hidden sm:inline">Filters</span>
-              </button>
+              <BlogFilterButton
+                activeCount={activeFilterCount}
+                onClick={() => setIsFilterDrawerOpen(true)}
+              />
             </div>
           </div>
         </div>
 
-        {/* Content Layout */}
-        <div className="flex gap-8">
-          {/* Sidebar - Desktop only */}
-          <ArticleFilterSidebar
-            filterOptions={filterOptions}
-            filters={filters}
-            onFilterChange={setFilters}
-            onClearAll={clearUrlSearch}
-          />
-
+        {/* Full-width content layout */}
+        <div className="w-full">
           {/* Article Feed - fade in after hydration to prevent view mode bounce */}
           <div
-            className="flex-1 min-w-0 transition-opacity duration-200"
+            className="transition-opacity duration-200"
             style={{ opacity: isHydrated ? 1 : 0 }}
           >
             <BlogArticleFeed
@@ -137,14 +157,117 @@ export function BlogArticlesPage({
         </div>
       </main>
 
-      {/* Mobile Filter Bottom Sheet */}
-      <FilterBottomSheet
-        isOpen={isFilterSheetOpen}
-        onClose={() => setIsFilterSheetOpen(false)}
-        filterOptions={filterOptions}
-        filters={filters}
-        onFilterChange={setFilters}
-      />
+      {/* Filter Drawer */}
+      <BlogFilterDrawer
+        open={isFilterDrawerOpen}
+        onOpenChange={setIsFilterDrawerOpen}
+        title="Filters"
+        activeCount={activeFilterCount}
+        onClearAll={handleClearFilters}
+      >
+        {/* Games - Multi-select Dropdown */}
+        {filterOptions.games.length > 0 && (
+          <FilterMultiDropdown
+            label="Games"
+            icon={<Gamepad2 className="w-3.5 h-3.5" />}
+            values={filters.games}
+            onChange={(vals) => setFilters({ ...filters, games: vals })}
+            options={filterOptions.games.map((g) => ({
+              value: g.id,
+              label: g.name,
+              tint: g.tint,
+            }))}
+            placeholder="All Games"
+            isOpen={openDropdown === 'games'}
+            onToggle={() => setOpenDropdown(openDropdown === 'games' ? null : 'games')}
+          />
+        )}
+
+        {/* Content Type - Multi-select Dropdown */}
+        {filterOptions.contentTypes.length > 0 && (
+          <FilterMultiDropdown
+            label="Type"
+            icon={<FileText className="w-3.5 h-3.5" />}
+            values={filters.contentTypes}
+            onChange={(vals) => setFilters({ ...filters, contentTypes: vals })}
+            options={filterOptions.contentTypes.map((c) => ({
+              value: c.id,
+              label: c.name,
+            }))}
+            placeholder="All Types"
+            isOpen={openDropdown === 'type'}
+            onToggle={() => setOpenDropdown(openDropdown === 'type' ? null : 'type')}
+          />
+        )}
+
+        {/* Topics - Multi-select Dropdown */}
+        {filterOptions.topics.length > 0 && (
+          <FilterMultiDropdown
+            label="Topics"
+            icon={<Tag className="w-3.5 h-3.5" />}
+            values={filters.topics}
+            onChange={(vals) => setFilters({ ...filters, topics: vals })}
+            options={filterOptions.topics.map((t) => ({
+              value: t.id,
+              label: t.name,
+              tint: t.tint,
+            }))}
+            placeholder="All Topics"
+            isOpen={openDropdown === 'topics'}
+            onToggle={() => setOpenDropdown(openDropdown === 'topics' ? null : 'topics')}
+          />
+        )}
+
+        {/* Series - Single-select Dropdown */}
+        {filterOptions.series.length > 0 && (
+          <FilterSingleDropdown
+            label="Series"
+            icon={<Layers className="w-3.5 h-3.5" />}
+            value={filters.series}
+            onChange={(val) => setFilters({ ...filters, series: val })}
+            options={[
+              { value: null, label: 'All Series' },
+              ...filterOptions.series.map((s) => ({
+                value: s.slug,
+                label: s.name,
+                count: s.articleCount,
+              })),
+            ]}
+            isOpen={openDropdown === 'series'}
+            onToggle={() => setOpenDropdown(openDropdown === 'series' ? null : 'series')}
+          />
+        )}
+
+        {/* Reading Time - Multi-select Pills */}
+        <FilterPills
+          mode="multi"
+          label="Length"
+          icon={<Clock className="w-3.5 h-3.5" />}
+          values={filters.readingTime}
+          onChange={(vals) => setFilters({ ...filters, readingTime: vals })}
+          options={(Object.keys(READING_TIME_RANGES) as ReadingTimeFilter[]).map((key) => ({
+            value: key,
+            label: READING_TIME_RANGES[key].description,
+          }))}
+        />
+
+        {/* Read Status - Single-select Pills (authenticated users only) */}
+        {isAuthenticated && (
+          <FilterPills
+            mode="single"
+            label="Status"
+            icon={<BookOpen className="w-3.5 h-3.5" />}
+            value={filters.readStatus}
+            onChange={(val) => setFilters({ ...filters, readStatus: val })}
+            options={[
+              { value: null, label: 'All' },
+              { value: 'unread', label: 'Unread' },
+              { value: 'in_progress', label: 'Reading' },
+              { value: 'completed', label: 'Done' },
+            ]}
+          />
+        )}
+      </BlogFilterDrawer>
     </div>
   )
 }
