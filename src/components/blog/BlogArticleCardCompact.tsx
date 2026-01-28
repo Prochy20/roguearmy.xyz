@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'motion/react'
-import { Clock, Lock } from 'lucide-react'
+import { Clock } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { HoverGlitch } from '@/components/effects/HoverGlitch'
 import { CyberCorners, CyberTag } from '@/components/ui/CyberCorners'
@@ -15,7 +15,7 @@ import {
 } from '@/lib/articles'
 import { ReadStatusIndicator, getReadStatus } from '@/components/members/ReadStatusIndicator'
 import { BookmarkButton } from '@/components/members/BookmarkButton'
-import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip'
+import { MembersOnlyOverlay } from './MembersOnlyOverlay'
 
 interface CardProgressData {
   progress: number
@@ -99,18 +99,9 @@ export function BlogArticleCardCompact({ article, index = 0, progress, isAuthent
                 )}
               </div>
 
-              {/* Members-only lock icon - top right */}
-              {isMembersOnly && (
-                <TooltipProvider delayDuration={300}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div className="absolute top-3 right-3 flex items-center justify-center w-6 h-6 bg-bg-elevated/80 backdrop-blur-sm rounded border border-rga-cyan/30 cursor-help">
-                        <Lock className="w-3 h-3 text-rga-cyan" />
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent accent="cyan">Members only</TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+              {/* Members-only overlay - centered, only shown when not authenticated */}
+              {isMembersOnly && !isAuthenticated && (
+                <MembersOnlyOverlay size="md" />
               )}
             </div>
 
