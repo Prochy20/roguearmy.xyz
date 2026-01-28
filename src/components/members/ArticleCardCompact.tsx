@@ -1,5 +1,6 @@
 'use client'
 
+import { memo } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'motion/react'
@@ -42,7 +43,7 @@ interface ArticleCardCompactProps {
  * Compact article card for grid view
  * 16:9 hero, title, condensed metadata
  */
-export function ArticleCardCompact({ article, index = 0, progress }: ArticleCardCompactProps) {
+function ArticleCardCompactComponent({ article, index = 0, progress }: ArticleCardCompactProps) {
   const tint = getTintClasses(article.topic.tint)
   const cornerColor = tintToColor(article.topic.tint)
 
@@ -138,3 +139,11 @@ export function ArticleCardCompact({ article, index = 0, progress }: ArticleCard
     </motion.article>
   )
 }
+
+// Memoize to prevent re-renders when parent state changes
+export const ArticleCardCompact = memo(ArticleCardCompactComponent, (prev, next) =>
+  prev.article.id === next.article.id &&
+  prev.index === next.index &&
+  prev.progress?.progress === next.progress?.progress &&
+  prev.progress?.completed === next.progress?.completed
+)
