@@ -118,6 +118,22 @@ hooks: {
 - **Use Tailwind CSS** - No vanilla CSS for frontend components
 - **Use shadcn/ui** - When UI components are needed (buttons, forms, dialogs, etc.)
 
+### Tailwind CSS v4 Syntax
+
+Use canonical Tailwind v4 class names:
+
+```typescript
+// Gradients - use bg-linear-* not bg-gradient-*
+className="bg-linear-to-r from-rga-green to-rga-cyan"  // CORRECT
+className="bg-gradient-to-r from-rga-green to-rga-cyan" // WRONG (deprecated)
+
+// Aspect ratios - use canonical form without brackets
+className="aspect-16/9"  // CORRECT
+className="aspect-[16/9]" // WRONG (unnecessary arbitrary value)
+className="aspect-5/2"   // CORRECT
+className="aspect-[5/2]"  // WRONG
+```
+
 ## Extended Documentation
 
 Detailed Payload CMS patterns are in:
