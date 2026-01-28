@@ -1,5 +1,5 @@
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
-import { lexicalEditor, BlocksFeature } from '@payloadcms/richtext-lexical'
+import { lexicalEditor, BlocksFeature, FixedToolbarFeature } from '@payloadcms/richtext-lexical'
 import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
 import path from 'path'
 import { buildConfig } from 'payload'
@@ -69,6 +69,7 @@ export default buildConfig({
       BlocksFeature({
         blocks: [CalloutBlock, CodeBlock, MermaidBlock, SocialEmbedBlock, VideoEmbedBlock],
       }),
+      FixedToolbarFeature(),
     ],
   }),
   secret: process.env.PAYLOAD_SECRET || '',
