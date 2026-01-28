@@ -162,7 +162,7 @@ export function SeriesNavigation({ navigation, seriesProgress }: SeriesNavigatio
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
         <div className="flex items-center gap-3">
           {/* Series indicator line */}
-          <div className="w-1 h-8 bg-gradient-to-b from-rga-cyan via-rga-green to-rga-magenta rounded-full" />
+          <div className="w-1 h-8 bg-linear-to-b from-rga-cyan via-rga-green to-rga-magenta rounded-full" />
           <div>
             <p className="text-xs uppercase tracking-wider text-rga-gray/50 mb-0.5">
               Part of a series

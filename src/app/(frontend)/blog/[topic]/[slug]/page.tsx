@@ -248,7 +248,7 @@ export default async function BlogArticlePage({ params, searchParams }: ArticleP
       {/* Content Section */}
       <main className="relative z-10">
         {/* Transition gradient from hero */}
-        <div className="h-32 bg-gradient-to-b from-transparent to-void -mt-32 relative z-20" />
+        <div className="h-32 bg-linear-to-b from-transparent to-void -mt-32 relative z-20" />
 
         {/* Article Body - Full width with internal rhythm */}
         <div className="bg-void relative">
@@ -256,7 +256,7 @@ export default async function BlogArticlePage({ params, searchParams }: ArticleP
           <div
             className={cn(
               'absolute left-0 top-0 bottom-0 w-1 hidden lg:block',
-              'bg-gradient-to-b from-transparent via-current to-transparent opacity-20',
+              'bg-linear-to-b from-transparent via-current to-transparent opacity-20',
               tint.text
             )}
           />
@@ -335,7 +335,7 @@ export default async function BlogArticlePage({ params, searchParams }: ArticleP
                 </div>
 
                 {/* Decorative element */}
-                <div className="w-16 h-px bg-gradient-to-r from-rga-green/30 to-transparent" />
+                <div className="w-16 h-px bg-linear-to-r from-rga-green/30 to-transparent" />
               </div>
             </div>
           </div>
@@ -343,7 +343,7 @@ export default async function BlogArticlePage({ params, searchParams }: ArticleP
       </main>
 
       {/* Bottom fade */}
-      <div className="h-32 bg-gradient-to-t from-void to-transparent" />
+      <div className="h-32 bg-linear-to-t from-void to-transparent" />
     </div>
   )
 }
