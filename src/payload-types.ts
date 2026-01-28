@@ -150,29 +150,6 @@ export interface Article {
    * Short excerpt/description shown in article listings
    */
   perex: string;
-  heroImage: string | Media;
-  /**
-   * Public articles are visible to everyone. Members Only requires Discord server membership.
-   */
-  visibility: 'public' | 'members_only';
-  /**
-   * Curated articles to show in "You might also like" section. Leave empty for automatic selection.
-   */
-  relatedArticles?: (string | Article)[] | null;
-  categorization: {
-    /**
-     * Primary content type (Guide, Build, News, etc.)
-     */
-    topic: string | Topic;
-    /**
-     * Optional: Link to specific games this article is about
-     */
-    games?: (string | Game)[] | null;
-    /**
-     * Content format: Article, Video, Podcast, etc.
-     */
-    contentType: string | ContentType;
-  };
   articleContent?: {
     /**
      * Choose where the article content comes from
@@ -198,6 +175,29 @@ export interface Article {
      */
     outlineDocumentId?: string | null;
   };
+  heroImage: string | Media;
+  categorization: {
+    /**
+     * Primary content type (Guide, Build, News, etc.)
+     */
+    topic: string | Topic;
+    /**
+     * Optional: Link to specific games this article is about
+     */
+    games?: (string | Game)[] | null;
+    /**
+     * Content format: Article, Video, Podcast, etc.
+     */
+    contentType: string | ContentType;
+  };
+  /**
+   * Curated articles to show in "You might also like" section. Leave empty for automatic selection.
+   */
+  relatedArticles?: (string | Article)[] | null;
+  /**
+   * Public articles are visible to everyone. Members Only requires Discord server membership.
+   */
+  visibility: 'public' | 'members_only';
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -547,16 +547,6 @@ export interface ArticlesSelect<T extends boolean = true> {
   readingTime?: T;
   title?: T;
   perex?: T;
-  heroImage?: T;
-  visibility?: T;
-  relatedArticles?: T;
-  categorization?:
-    | T
-    | {
-        topic?: T;
-        games?: T;
-        contentType?: T;
-      };
   articleContent?:
     | T
     | {
@@ -564,6 +554,16 @@ export interface ArticlesSelect<T extends boolean = true> {
         content?: T;
         outlineDocumentId?: T;
       };
+  heroImage?: T;
+  categorization?:
+    | T
+    | {
+        topic?: T;
+        games?: T;
+        contentType?: T;
+      };
+  relatedArticles?: T;
+  visibility?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
