@@ -393,7 +393,7 @@ export const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConvert
   // ==================== HORIZONTAL RULE ====================
 
   horizontalrule: () => (
-    <div className="my-14 mx-auto max-w-xs h-px bg-gradient-to-r from-transparent via-rga-gray/20 to-transparent" />
+    <div className="my-14 mx-auto max-w-xs h-px bg-linear-to-r from-transparent via-rga-gray/20 to-transparent" />
   ),
 
   // ==================== TEXT FORMATTING ====================

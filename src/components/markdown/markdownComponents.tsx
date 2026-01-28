@@ -329,7 +329,7 @@ export const markdownComponents: Partial<Components> = {
 
   // Horizontal rule - subtle
   hr: () => (
-    <div className="my-14 mx-auto max-w-xs h-px bg-gradient-to-r from-transparent via-rga-gray/20 to-transparent" />
+    <div className="my-14 mx-auto max-w-xs h-px bg-linear-to-r from-transparent via-rga-gray/20 to-transparent" />
   ),
 
   // Strong/Bold - slight horizontal margin for breathing room
