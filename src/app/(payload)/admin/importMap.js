@@ -10,6 +10,7 @@ import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { HeadingFeatureClient as HeadingFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { default as default_795a8e50d55e928391acb1cbe2300386 } from '@/components/admin/SocialEmbedPreview'
+import { default as default_08b465a0b6904803ecd979762799c11b } from '@/components/admin/TrelloCardPreview'
 import { default as default_a389bcbfdb0cf4a6286401b59a04d357 } from '@/components/admin/VideoEmbedPreview'
 import { InlineToolbarFeatureClient as InlineToolbarFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { HorizontalRuleFeatureClient as HorizontalRuleFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
@@ -45,6 +46,7 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#HeadingFeatureClient": HeadingFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@/components/admin/SocialEmbedPreview#default": default_795a8e50d55e928391acb1cbe2300386,
+  "@/components/admin/TrelloCardPreview#default": default_08b465a0b6904803ecd979762799c11b,
   "@/components/admin/VideoEmbedPreview#default": default_a389bcbfdb0cf4a6286401b59a04d357,
   "@payloadcms/richtext-lexical/client#InlineToolbarFeatureClient": InlineToolbarFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#HorizontalRuleFeatureClient": HorizontalRuleFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
