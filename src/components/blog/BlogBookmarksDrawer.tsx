@@ -21,8 +21,8 @@ type FilterStatus = 'all' | 'unread' | 'in_progress' | 'completed'
 const filterTabs: { value: FilterStatus; label: string }[] = [
   { value: 'all', label: 'All' },
   { value: 'unread', label: 'Unread' },
-  { value: 'in_progress', label: 'In Progress' },
-  { value: 'completed', label: 'Completed' },
+  { value: 'in_progress', label: 'Reading' },
+  { value: 'completed', label: 'Done' },
 ]
 
 export function BlogBookmarksDrawer() {
@@ -120,7 +120,7 @@ export function BlogBookmarksDrawer() {
 
         {/* Filter tabs */}
         {bookmarks.length > 0 && (
-          <div className="flex gap-1 px-4 py-3 border-b border-rga-cyan/10 overflow-x-auto">
+          <div className="flex flex-wrap gap-1 px-4 py-3 border-b border-rga-cyan/10 overflow-hidden">
             {filterTabs.map((tab) => {
               const count = counts[tab.value]
               const isActive = filter === tab.value
