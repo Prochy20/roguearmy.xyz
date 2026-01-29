@@ -13,6 +13,8 @@ import {
 interface ViewModeToggleProps {
   viewMode: ViewMode
   onViewModeChange: (mode: ViewMode) => void
+  /** Disable featured mode (e.g., when filters are active) */
+  disableFeatured?: boolean
   className?: string
 }
 
@@ -29,6 +31,7 @@ const modes: { value: ViewMode; icon: typeof LayoutGrid; label: string }[] = [
 export function ViewModeToggle({
   viewMode,
   onViewModeChange,
+  disableFeatured = false,
   className,
 }: ViewModeToggleProps) {
   return (
@@ -43,29 +46,34 @@ export function ViewModeToggle({
       >
         {modes.map(({ value, icon: Icon, label }) => {
           const isActive = viewMode === value
+          const isDisabled = value === 'featured' && disableFeatured
 
           return (
             <Tooltip key={value}>
               <TooltipTrigger asChild>
                 <button
-                  onClick={() => onViewModeChange(value)}
+                  onClick={() => !isDisabled && onViewModeChange(value)}
                   role="radio"
                   aria-checked={isActive}
                   aria-label={label}
+                  aria-disabled={isDisabled}
+                  disabled={isDisabled}
                   className={cn(
                     'relative flex items-center justify-center w-8 h-8 rounded-sm transition-all duration-200',
-                    isActive
-                      ? 'text-rga-green bg-rga-green/10'
-                      : 'text-rga-gray/60 hover:text-rga-gray hover:bg-white/5'
+                    isDisabled
+                      ? 'text-rga-gray/30 cursor-not-allowed'
+                      : isActive
+                        ? 'text-rga-green bg-rga-green/10'
+                        : 'text-rga-gray/60 hover:text-rga-gray hover:bg-white/5'
                   )}
                 >
                   {/* Active state glow */}
-                  {isActive && (
+                  {isActive && !isDisabled && (
                     <div className="absolute inset-0 rounded-sm border border-rga-green/40 shadow-[0_0_8px_rgba(0,255,65,0.2)]" />
                   )}
 
                   {/* Corner accents for active state */}
-                  {isActive && (
+                  {isActive && !isDisabled && (
                     <>
                       <span className="absolute top-0 left-0 w-1.5 h-px bg-rga-green" />
                       <span className="absolute top-0 left-0 w-px h-1.5 bg-rga-green" />
@@ -77,7 +85,9 @@ export function ViewModeToggle({
                   <Icon className="w-4 h-4 relative z-10" />
                 </button>
               </TooltipTrigger>
-              <TooltipContent>{label}</TooltipContent>
+              <TooltipContent>
+                {isDisabled ? 'Not available with filters' : label}
+              </TooltipContent>
             </Tooltip>
           )
         })}
