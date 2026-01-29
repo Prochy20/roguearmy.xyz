@@ -61,7 +61,7 @@ function ArticleFeedSkeleton({ viewMode }: { viewMode: ViewMode }) {
   if (viewMode === 'list') {
     return (
       <div className="flex flex-col gap-3">
-        {Array.from({ length: 4 }).map((_, i) => (
+        {Array.from({ length: 6 }).map((_, i) => (
           <ArticleListSkeleton key={i} index={i} />
         ))}
       </div>
@@ -69,73 +69,119 @@ function ArticleFeedSkeleton({ viewMode }: { viewMode: ViewMode }) {
   }
 
   if (viewMode === 'grid') {
-    // Grid now has more columns without sidebar
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {Array.from({ length: 8 }).map((_, i) => (
-          <ArticleGridSkeleton key={i} index={i} />
+          <ArticleCardSkeleton key={i} index={i} />
         ))}
       </div>
     )
   }
 
-  // Featured view (default)
+  // Featured view (default) - 3-section layout
   return (
-    <div className="grid gap-6">
-      {Array.from({ length: 4 }).map((_, i) => (
-        <ArticleFeaturedSkeleton key={i} index={i} />
-      ))}
+    <div className="space-y-8">
+      {/* Priority Transmission Section */}
+      <section className="space-y-4">
+        <SectionDividerSkeleton />
+        <PriorityTransmissionSkeleton />
+      </section>
+
+      {/* Recent Section - 3 columns */}
+      <section className="space-y-4">
+        <SectionDividerSkeleton />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <ArticleCardSkeleton key={i} index={i} />
+          ))}
+        </div>
+      </section>
+
+      {/* Archive Section - 4 columns */}
+      <section className="space-y-4">
+        <SectionDividerSkeleton />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <ArticleCardSkeleton key={i} index={i} size="sm" />
+          ))}
+        </div>
+      </section>
     </div>
   )
 }
 
-function ArticleFeaturedSkeleton({ index }: { index: number }) {
+function SectionDividerSkeleton() {
+  return (
+    <div className="flex items-center gap-3">
+      <Skeleton className="h-3 w-28" />
+      <div className="flex-1 h-px bg-rga-gray/20" />
+    </div>
+  )
+}
+
+function PriorityTransmissionSkeleton() {
   return (
     <div
-      className="bg-void-light border border-rga-gray/10 rounded-lg overflow-hidden animate-in fade-in duration-300"
-      style={{ animationDelay: `${index * 100}ms`, animationFillMode: 'backwards' }}
+      className="animate-in fade-in duration-300"
+      style={{ animationFillMode: 'backwards' }}
     >
-      <div className="flex flex-col md:flex-row">
-        {/* Hero image */}
-        <CyberCorners color="green" size="sm" glow={false}>
-          <Skeleton className="aspect-16/9 md:aspect-auto md:w-80 md:h-48 rounded-none" />
-        </CyberCorners>
+      <CyberCorners color="green" size="sm" glow={false}>
+        <div className="border border-rga-gray/20 bg-bg-elevated overflow-hidden">
+          {/* Hero image - 5:2 aspect ratio */}
+          <Skeleton className="aspect-5/2 w-full rounded-none" />
 
-        {/* Content */}
-        <div className="flex-1 p-4 md:p-6 space-y-3">
-          <Skeleton className="h-5 w-20" />
-          <Skeleton className="h-7 w-full" glow />
-          <Skeleton className="h-7 w-3/4" />
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-2/3" />
-          <div className="flex gap-4 pt-2">
-            <Skeleton className="h-4 w-24" />
-            <Skeleton className="h-4 w-16" />
+          {/* Content */}
+          <div className="p-5 space-y-3">
+            <Skeleton className="h-7 w-full max-w-xl" glow />
+            <Skeleton className="h-7 w-3/4 max-w-md" />
+            <Skeleton className="h-4 w-full max-w-2xl" />
+            <Skeleton className="h-4 w-2/3 max-w-xl" />
+            <div className="flex items-center gap-4 pt-2">
+              <Skeleton className="h-5 w-20" />
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-4 w-16" />
+            </div>
           </div>
         </div>
-      </div>
+      </CyberCorners>
     </div>
   )
 }
 
-function ArticleGridSkeleton({ index }: { index: number }) {
+function ArticleCardSkeleton({ index, size = 'md' }: { index: number; size?: 'sm' | 'md' }) {
+  const isSmall = size === 'sm'
+
   return (
     <div
-      className="bg-void-light border border-rga-gray/10 rounded-lg overflow-hidden animate-in fade-in duration-300"
+      className="animate-in fade-in duration-300"
       style={{ animationDelay: `${index * 50}ms`, animationFillMode: 'backwards' }}
     >
       <CyberCorners color="green" size="sm" glow={false}>
-        <Skeleton className="aspect-16/9 w-full rounded-none" />
-      </CyberCorners>
-      <div className="p-3 space-y-2">
-        <Skeleton className="h-4 w-16" />
-        <Skeleton className="h-5 w-full" glow />
-        <Skeleton className="h-5 w-3/4" />
-        <div className="flex gap-3 pt-1">
-          <Skeleton className="h-3 w-20" />
-          <Skeleton className="h-3 w-12" />
+        <div className="border border-rga-gray/20 bg-bg-elevated overflow-hidden h-full flex flex-col">
+          {/* Image - 16:9 */}
+          <Skeleton className="aspect-video w-full rounded-none" />
+
+          {/* Content */}
+          <div className={`flex-1 flex flex-col ${isSmall ? 'p-3 pt-2' : 'p-3 pt-2'}`}>
+            {/* Title */}
+            <div className={isSmall ? 'min-h-[2.25rem] mb-1.5' : 'min-h-[2.5rem] mb-2'}>
+              <Skeleton className={`h-4 w-full ${isSmall ? '' : ''}`} glow />
+              <Skeleton className={`h-4 w-3/4 mt-1`} />
+            </div>
+
+            {/* Perex */}
+            <div className="mb-auto">
+              <Skeleton className={`h-3 w-full ${isSmall ? 'mb-1' : 'mb-1'}`} />
+              <Skeleton className="h-3 w-4/5" />
+            </div>
+
+            {/* Footer */}
+            <div className={`flex items-center justify-between gap-2 ${isSmall ? 'pt-2.5 mt-2' : 'pt-3 mt-2'} border-t border-white/5`}>
+              <Skeleton className="h-3 w-12" />
+            </div>
+          </div>
         </div>
-      </div>
+      </CyberCorners>
     </div>
   )
 }
@@ -143,29 +189,25 @@ function ArticleGridSkeleton({ index }: { index: number }) {
 function ArticleListSkeleton({ index }: { index: number }) {
   return (
     <div
-      className="flex gap-4 p-3 bg-void-light border border-rga-gray/10 rounded-lg animate-in fade-in duration-300"
+      className="animate-in fade-in duration-300"
       style={{ animationDelay: `${index * 75}ms`, animationFillMode: 'backwards' }}
     >
-      {/* Thumbnail */}
       <CyberCorners color="green" size="sm" glow={false}>
-        <Skeleton className="w-24 h-16 md:w-32 md:h-20 rounded-none shrink-0" />
-      </CyberCorners>
+        <div className="flex gap-3 sm:gap-4 p-3 sm:p-4 border border-rga-gray/20 bg-bg-elevated">
+          {/* Thumbnail */}
+          <Skeleton className="w-20 h-20 rounded-sm shrink-0 hidden sm:block" />
 
-      {/* Content */}
-      <div className="flex-1 min-w-0 space-y-2">
-        <div className="flex items-center gap-2">
-          <Skeleton className="h-4 w-16" />
-          <Skeleton className="h-3 w-20" />
+          {/* Content */}
+          <div className="flex-1 min-w-0 flex flex-col justify-center">
+            <Skeleton className="h-5 w-full mb-1" glow />
+            <Skeleton className="h-4 w-3/4 mb-2" />
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-4 w-16" />
+              <Skeleton className="h-3 w-12" />
+            </div>
+          </div>
         </div>
-        <Skeleton className="h-5 w-full" glow />
-        <Skeleton className="h-4 w-3/4 hidden sm:block" />
-      </div>
-
-      {/* Meta */}
-      <div className="hidden md:flex flex-col items-end gap-1 shrink-0">
-        <Skeleton className="h-3 w-16" />
-        <Skeleton className="h-3 w-12" />
-      </div>
+      </CyberCorners>
     </div>
   )
 }
