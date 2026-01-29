@@ -869,6 +869,23 @@ export interface SocialEmbedBlockType {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TrelloCardBlockType".
+ */
+export interface TrelloCardBlockType {
+  /**
+   * Paste a Trello card URL from a public board
+   */
+  url: string;
+  /**
+   * Additional context shown beneath the embedded card
+   */
+  caption?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'trelloCard';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "VideoEmbedBlockType".
  */
 export interface VideoEmbedBlockType {
