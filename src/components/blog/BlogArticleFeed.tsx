@@ -6,6 +6,8 @@ import { cn } from '@/lib/utils'
 import { BlogArticleCard } from './BlogArticleCard'
 import { BlogArticleCardCompact } from './BlogArticleCardCompact'
 import { BlogArticleCardList } from './BlogArticleCardList'
+import { BlogArticleCardIncoming } from './BlogArticleCardIncoming'
+import { BlogSectionDivider } from './BlogSectionDivider'
 import { EmptyState } from '@/components/members/EmptyState'
 import { type Article, type FilterState, filterArticles } from '@/lib/articles'
 import { type ArticleProgress } from '@/lib/progress.server'
@@ -21,6 +23,22 @@ interface BlogArticleFeedProps {
 }
 
 const ARTICLES_PER_PAGE = 4
+const RECENT_COUNT = 3
+
+/**
+ * Check if any filters are active
+ */
+function hasActiveFilters(filters: FilterState): boolean {
+  return (
+    filters.search !== '' ||
+    filters.readStatus !== null ||
+    filters.readingTime.length > 0 ||
+    filters.series !== null ||
+    filters.games.length > 0 ||
+    filters.topics.length > 0 ||
+    filters.contentTypes.length > 0
+  )
+}
 
 export function BlogArticleFeed({
   articles,
@@ -30,20 +48,35 @@ export function BlogArticleFeed({
   viewMode = 'featured',
   isAuthenticated = false,
 }: BlogArticleFeedProps) {
-  const [displayedCount, setDisplayedCount] = useState(ARTICLES_PER_PAGE)
+  const [displayedArchiveCount, setDisplayedArchiveCount] = useState(ARTICLES_PER_PAGE)
   const [isLoading, setIsLoading] = useState(false)
   const loadMoreRef = useRef<HTMLDivElement>(null)
 
   // Filter articles (pass progress for read status filtering)
   const filteredArticles = filterArticles(articles, filters, progress)
 
+  // Determine effective view mode - auto-switch to grid when filters are active
+  const isFiltered = hasActiveFilters(filters)
+  const effectiveViewMode = viewMode === 'featured' && isFiltered ? 'grid' : viewMode
+
   // Reset displayed count when filters change
   useEffect(() => {
-    setDisplayedCount(ARTICLES_PER_PAGE)
+    setDisplayedArchiveCount(ARTICLES_PER_PAGE)
   }, [filters])
 
-  const displayedArticles = filteredArticles.slice(0, displayedCount)
-  const hasMore = displayedCount < filteredArticles.length
+  // Split articles for sectioned layout (only used when effectiveViewMode === 'featured')
+  const featuredArticle = filteredArticles[0] ?? null
+  const recentArticles = filteredArticles.slice(1, 1 + RECENT_COUNT)
+  const allArchiveArticles = filteredArticles.slice(1 + RECENT_COUNT)
+  const displayedArchiveArticles = allArchiveArticles.slice(0, displayedArchiveCount)
+
+  // For grid/list modes, use all filtered articles with pagination
+  const displayedArticles = filteredArticles.slice(0, displayedArchiveCount + 1 + RECENT_COUNT)
+
+  // Determine if there's more content to load
+  const hasMoreArchive = displayedArchiveCount < allArchiveArticles.length
+  const hasMoreFlat = displayedArticles.length < filteredArticles.length
+  const hasMore = effectiveViewMode === 'featured' ? hasMoreArchive : hasMoreFlat
 
   // Infinite scroll with Intersection Observer
   const loadMore = useCallback(() => {
@@ -52,12 +85,12 @@ export function BlogArticleFeed({
     setIsLoading(true)
     // Simulate network delay for smoother UX
     setTimeout(() => {
-      setDisplayedCount((prev) =>
-        Math.min(prev + ARTICLES_PER_PAGE, filteredArticles.length)
+      setDisplayedArchiveCount((prev) =>
+        Math.min(prev + ARTICLES_PER_PAGE, effectiveViewMode === 'featured' ? allArchiveArticles.length : filteredArticles.length)
       )
       setIsLoading(false)
     }, 300)
-  }, [isLoading, hasMore, filteredArticles.length])
+  }, [isLoading, hasMore, allArchiveArticles.length, filteredArticles.length, effectiveViewMode])
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -86,18 +119,85 @@ export function BlogArticleFeed({
     return <EmptyState onClearFilters={onClearFilters} />
   }
 
-  // Grid classes based on view mode
+  // Featured sectioned layout
+  if (effectiveViewMode === 'featured') {
+    return (
+      <div className="space-y-8">
+        {/* Priority Transmission Section */}
+        {featuredArticle && (
+          <section className="space-y-4">
+            <BlogSectionDivider label="Priority Transmission" />
+            <BlogArticleCard
+              article={featuredArticle}
+              index={0}
+              progress={progress?.[featuredArticle.id]}
+              isAuthenticated={isAuthenticated}
+            />
+          </section>
+        )}
+
+        {/* Recent Section */}
+        {recentArticles.length > 0 && (
+          <section className="space-y-4">
+            <BlogSectionDivider label="Recent" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-fr">
+              {recentArticles.map((article, index) => (
+                <BlogArticleCardIncoming
+                  key={article.id}
+                  article={article}
+                  index={index}
+                  progress={progress?.[article.id]}
+                  isAuthenticated={isAuthenticated}
+                />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Archive Section */}
+        {allArchiveArticles.length > 0 && (
+          <section className="space-y-4">
+            <BlogSectionDivider label="Archive" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-fr">
+              {displayedArchiveArticles.map((article, index) => (
+                <BlogArticleCardCompact
+                  key={article.id}
+                  article={article}
+                  index={index}
+                  progress={progress?.[article.id]}
+                  isAuthenticated={isAuthenticated}
+                />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Load More Trigger / Loading Indicator */}
+        {hasMore && (
+          <div ref={loadMoreRef} className="flex justify-center py-8">
+            <LoadingIndicator isLoading={isLoading} />
+          </div>
+        )}
+
+        {/* End of Feed */}
+        {!hasMore && filteredArticles.length > 0 && (
+          <EndOfFeed />
+        )}
+      </div>
+    )
+  }
+
+  // Grid and List modes (flat layout)
   const gridClasses = cn(
-    viewMode === 'featured' && 'grid gap-6',
-    viewMode === 'grid' && 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 auto-rows-fr',
-    viewMode === 'list' && 'flex flex-col gap-3'
+    effectiveViewMode === 'grid' && 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 auto-rows-fr',
+    effectiveViewMode === 'list' && 'flex flex-col gap-3'
   )
 
   // Render the appropriate card component based on view mode
   const renderCard = (article: Article, index: number) => {
     const cardProgress = progress?.[article.id]
 
-    switch (viewMode) {
+    switch (effectiveViewMode) {
       case 'grid':
         return (
           <BlogArticleCardCompact
@@ -118,17 +218,8 @@ export function BlogArticleFeed({
             isAuthenticated={isAuthenticated}
           />
         )
-      case 'featured':
       default:
-        return (
-          <BlogArticleCard
-            key={article.id}
-            article={article}
-            index={index}
-            progress={cardProgress}
-            isAuthenticated={isAuthenticated}
-          />
-        )
+        return null
     }
   }
 
@@ -148,17 +239,7 @@ export function BlogArticleFeed({
 
       {/* End of Feed */}
       {!hasMore && displayedArticles.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="text-center py-8"
-        >
-          <div className="inline-flex items-center gap-3 text-rga-gray/40 text-sm">
-            <span className="w-8 h-px bg-rga-gray/20" />
-            <span>End of feed</span>
-            <span className="w-8 h-px bg-rga-gray/20" />
-          </div>
-        </motion.div>
+        <EndOfFeed />
       )}
     </div>
   )
@@ -184,5 +265,21 @@ function LoadingIndicator({ isLoading }: { isLoading: boolean }) {
         />
       ))}
     </div>
+  )
+}
+
+function EndOfFeed() {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="text-center py-8"
+    >
+      <div className="inline-flex items-center gap-3 text-rga-gray/40 text-sm">
+        <span className="w-8 h-px bg-rga-gray/20" />
+        <span>End of feed</span>
+        <span className="w-8 h-px bg-rga-gray/20" />
+      </div>
+    </motion.div>
   )
 }
