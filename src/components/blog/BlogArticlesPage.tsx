@@ -90,6 +90,16 @@ export function BlogArticlesPage({
     setOpenDropdown(null)
   }
 
+  // Check if any filters are active (for disabling featured view)
+  const hasActiveFilters =
+    filters.search !== '' ||
+    filters.readStatus !== null ||
+    filters.readingTime.length > 0 ||
+    filters.series !== null ||
+    filters.games.length > 0 ||
+    filters.topics.length > 0 ||
+    filters.contentTypes.length > 0
+
   // Count active filters (excluding search which is in URL, and readStatus for anonymous users)
   const activeFilterCount =
     (isAuthenticated && filters.readStatus ? 1 : 0) +
@@ -98,6 +108,13 @@ export function BlogArticlesPage({
     filters.games.length +
     filters.topics.length +
     filters.contentTypes.length
+
+  // Auto-switch to grid when filters are active and view is featured
+  useEffect(() => {
+    if (hasActiveFilters && viewMode === 'featured') {
+      setViewMode('grid')
+    }
+  }, [hasActiveFilters, viewMode, setViewMode])
 
   return (
     <div className="min-h-screen bg-void">
@@ -129,6 +146,7 @@ export function BlogArticlesPage({
               <ViewModeToggle
                 viewMode={viewMode}
                 onViewModeChange={setViewMode}
+                disableFeatured={hasActiveFilters}
               />
               <BlogFilterButton
                 activeCount={activeFilterCount}
