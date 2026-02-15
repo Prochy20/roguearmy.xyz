@@ -7,25 +7,51 @@ import Image from "next/image"
 const INTENSITY = 14
 const COLORS: [string, string] = ["#00ffff", "#ff00ff"]
 
+type MorphPhase =
+  | "idle"
+  | "glitch-out"
+  | "flash"
+  | "text-in"
+  | "text-hold"
+  | "glitch-back"
+  | "flash-back"
+  | "logo-in"
+
 interface OverlayLogoProps {
   /** Minimum seconds between glitch bursts */
   minInterval?: number
   /** Maximum seconds between glitch bursts */
   maxInterval?: number
+  /** Minimum seconds between morph sequences */
+  minMorphInterval?: number
+  /** Maximum seconds between morph sequences */
+  maxMorphInterval?: number
 }
 
 /**
  * Streaming overlay logo with the same glitch effect as the homepage H1.
  * Adapted from HeroGlitch for images. Designed for OBS browser sources.
+ *
+ * Features:
+ * - Periodic RGB chromatic aberration glitch bursts
+ * - Skull → "ROGUE ARMY" text morph with CRT flash transitions
  */
 export function OverlayLogo({
   minInterval = 4,
   maxInterval = 10,
+  minMorphInterval = 15,
+  maxMorphInterval = 25,
 }: OverlayLogoProps) {
   const [isGlitching, setIsGlitching] = useState(false)
   const [sliceOffsets, setSliceOffsets] = useState<number[]>([0, 0, 0, 0, 0])
+  const [showText, setShowText] = useState(false)
+  const [isMorphing, setIsMorphing] = useState(false)
+  const [morphPhase, setMorphPhase] = useState<MorphPhase>("idle")
+
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>(null)
   const initialRef = useRef<ReturnType<typeof setTimeout>>(null)
+  const morphTimeoutRef = useRef<ReturnType<typeof setTimeout>>(null)
+  const morphCleanupRef = useRef<ReturnType<typeof setTimeout>[]>([])
 
   const generateSlices = useCallback((power: number): number[] => {
     return Array(5)
