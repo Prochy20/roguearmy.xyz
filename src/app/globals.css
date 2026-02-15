@@ -271,6 +271,27 @@
       transform: translateX(100%);
     }
   }
+
+  /* Neon Flicker (for overlay boxes) */
+  --animate-neon-flicker: neon-flicker 4s ease-in-out infinite;
+
+  @keyframes neon-flicker {
+    0%, 100% { opacity: 1; }
+    4% { opacity: 0.9; }
+    6% { opacity: 1; }
+    7% { opacity: 0.4; }
+    8% { opacity: 1; }
+    48% { opacity: 1; }
+    50% { opacity: 0.7; }
+    52% { opacity: 1; }
+    53% { opacity: 0.3; }
+    54% { opacity: 1; }
+    82% { opacity: 1; }
+    83% { opacity: 0.5; }
+    84% { opacity: 1; }
+    85% { opacity: 0.6; }
+    86% { opacity: 1; }
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
