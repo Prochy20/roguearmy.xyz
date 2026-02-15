@@ -195,7 +195,33 @@ export function OverlayLogo({
     }
   }, [minInterval, maxInterval, triggerGlitch])
 
+  // --- Morph timer ---
+  useEffect(() => {
+    const scheduleMorph = () => {
+      const delay =
+        (minMorphInterval + Math.random() * (maxMorphInterval - minMorphInterval)) * 1000
+      return setTimeout(() => {
+        triggerMorph()
+        morphTimeoutRef.current = scheduleMorph()
+      }, delay)
+    }
+
+    // First morph after ~8s so logo settles first
+    morphTimeoutRef.current = setTimeout(() => {
+      triggerMorph()
+      morphTimeoutRef.current = scheduleMorph()
+    }, 8000)
+
+    return () => {
+      if (morphTimeoutRef.current) clearTimeout(morphTimeoutRef.current)
+      morphCleanupRef.current.forEach(clearTimeout)
+      morphCleanupRef.current = []
+    }
+  }, [minMorphInterval, maxMorphInterval, triggerMorph])
+
   const rgbOffset = INTENSITY * 0.8
+
+  const isFlashing = morphPhase === "flash" || morphPhase === "flash-back"
 
   const logoImage = (
     <Image
@@ -206,6 +232,20 @@ export function OverlayLogo({
       aria-hidden="true"
     />
   )
+
+  const textClasses = "font-display text-[18vw] leading-[0.85] text-center select-none whitespace-nowrap"
+
+  // Lightweight text for RGB split / slice layers (no shadows — those layers
+  // already apply their own color treatment via drop-shadow + mixBlendMode)
+  const textSimple = (
+    <div className="absolute inset-0 flex items-center justify-center">
+      <span className={`${textClasses} text-white`}>
+        ROGUE<br />ARMY
+      </span>
+    </div>
+  )
+
+  const currentContent = showText ? textSimple : logoImage
 
   return (
     <div className="relative h-screen w-screen" style={{ perspective: "1000px" }}>
@@ -232,7 +272,7 @@ export function OverlayLogo({
               )`,
             }}
           >
-            {logoImage}
+            {currentContent}
           </motion.div>
         )}
       </AnimatePresence>
@@ -260,7 +300,7 @@ export function OverlayLogo({
               )`,
             }}
           >
-            {logoImage}
+            {currentContent}
           </motion.div>
         )}
       </AnimatePresence>
@@ -289,12 +329,60 @@ export function OverlayLogo({
               filter: Math.abs(offset) > 3 ? "brightness(1.2)" : "none",
             }}
           >
-            {logoImage}
+            {currentContent}
           </motion.div>
         ))}
       </AnimatePresence>
 
-      {/* Main logo */}
+      {/* CRT Flash overlay */}
+      <AnimatePresence>
+        {isFlashing && (
+          <motion.div
+            className="absolute inset-0 z-30 pointer-events-none"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: [0, 0.9, 0.4, 0.8, 0] }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
+            style={{
+              background: `
+                rgba(255,255,255,0.15)
+              `,
+              backgroundImage: `repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(255,255,255,0.08) 2px,
+                rgba(255,255,255,0.08) 4px
+              )`,
+            }}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Scanline overlay during text hold */}
+      <AnimatePresence>
+        {morphPhase === "text-hold" && (
+          <motion.div
+            className="absolute inset-0 z-20 pointer-events-none"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.08 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            style={{
+              backgroundImage: `repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0,0,0,0.15) 2px,
+                rgba(0,0,0,0.15) 4px
+              )`,
+              animation: "scanlines 0.1s linear infinite",
+            }}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Main content — logo or text */}
       <motion.div
         animate={isGlitching ? {
           x: [0, -6, 10, -4, 7, -3, 0],
@@ -306,15 +394,90 @@ export function OverlayLogo({
         transition={{ duration: 0.4, ease: "easeInOut" }}
         className="relative z-10 h-full w-full"
       >
-        <Image
-          src="/logo.png"
-          alt="Rogue Army Logo"
-          fill
-          className="object-contain drop-shadow-[0_0_30px_rgba(0,255,65,0.5)]"
-          priority
-        />
+        <AnimatePresence mode="wait">
+          {showText ? (
+            <motion.div
+              key="text"
+              className="absolute inset-0 flex items-center justify-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.1 }}
+            >
+              {/* Cyan chromatic offset — GPU-composited via transform */}
+              <motion.span
+                aria-hidden="true"
+                className={`absolute ${textClasses} pointer-events-none`}
+                style={{ color: COLORS[0], mixBlendMode: "screen", opacity: 0.7, willChange: "transform" }}
+                animate={
+                  morphPhase === "text-hold"
+                    ? { x: [-4, 4, -3, -4], y: [0, 1, -1, 0] }
+                    : { x: -4, y: 0 }
+                }
+                transition={
+                  morphPhase === "text-hold"
+                    ? { duration: 2, repeat: Infinity, ease: "easeInOut" }
+                    : { duration: 0.1 }
+                }
+              >
+                ROGUE<br />ARMY
+              </motion.span>
+
+              {/* Magenta chromatic offset — GPU-composited via transform */}
+              <motion.span
+                aria-hidden="true"
+                className={`absolute ${textClasses} pointer-events-none`}
+                style={{ color: COLORS[1], mixBlendMode: "screen", opacity: 0.7, willChange: "transform" }}
+                animate={
+                  morphPhase === "text-hold"
+                    ? { x: [4, -4, 3, 4], y: [0, -1, 1, 0] }
+                    : { x: 4, y: 0 }
+                }
+                transition={
+                  morphPhase === "text-hold"
+                    ? { duration: 2, repeat: Infinity, ease: "easeInOut" }
+                    : { duration: 0.1 }
+                }
+              >
+                ROGUE<br />ARMY
+              </motion.span>
+
+              {/* Main white text — static glow, painted once */}
+              <span
+                className={`${textClasses} text-white`}
+                style={{ textShadow: "0 0 40px rgba(255,255,255,0.8)" }}
+              >
+                ROGUE<br />ARMY
+              </span>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="logo"
+              className="absolute inset-0"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.1 }}
+            >
+              <Image
+                src="/logo.png"
+                alt="Rogue Army Logo"
+                fill
+                className="object-contain drop-shadow-[0_0_30px_rgba(0,255,65,0.5)]"
+                priority
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.div>
 
+      {/* Global styles for scanlines animation */}
+      <style jsx global>{`
+        @keyframes scanlines {
+          0% { background-position: 0 0; }
+          100% { background-position: 0 4px; }
+        }
+      `}</style>
     </div>
   )
 }
