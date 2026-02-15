@@ -87,8 +87,96 @@ export function OverlayLogo({
       setIsGlitching(false)
       setSliceOffsets([0, 0, 0, 0, 0])
     }, 400)
+  }, [generateSlices, isMorphing])
+
+  // --- Morph sequence ---
+  const triggerMorph = useCallback(() => {
+    const isSubliminal = Math.random() < 0.4
+    const holdDuration = isSubliminal
+      ? 150 + Math.random() * 350 // 150-500ms
+      : 2000 + Math.random() * 1000 // 2000-3000ms
+
+    setIsMorphing(true)
+    morphCleanupRef.current = []
+
+    const schedule = (fn: () => void, delay: number) => {
+      const id = setTimeout(fn, delay)
+      morphCleanupRef.current.push(id)
+      return id
+    }
+
+    // Phase 1: glitch-out (0-300ms) — intensify skull glitch
+    setMorphPhase("glitch-out")
+    setIsGlitching(true)
+    setSliceOffsets(generateSlices(INTENSITY * 2.5))
+
+    schedule(() => setSliceOffsets(generateSlices(INTENSITY * 3)), 80)
+    schedule(() => setSliceOffsets(generateSlices(INTENSITY * 2.8)), 160)
+    schedule(() => setSliceOffsets(generateSlices(INTENSITY * 2)), 240)
+
+    // Phase 2: flash (300-400ms) — CRT flash, swap content
+    schedule(() => {
+      setMorphPhase("flash")
+      setShowText(true)
+      setSliceOffsets([0, 0, 0, 0, 0])
+    }, 300)
+
+    // Phase 3: text-in (400-650ms) — text entrance glitch
+    schedule(() => {
+      setMorphPhase("text-in")
+      setSliceOffsets(generateSlices(INTENSITY * 1.5))
+    }, 400)
+
+    schedule(() => {
+      setSliceOffsets(generateSlices(INTENSITY * 0.8))
+    }, 500)
+
+    // Phase 4: text-hold (650ms - 650+hold)
+    schedule(() => {
+      setMorphPhase("text-hold")
+      setIsGlitching(false)
+      setSliceOffsets([0, 0, 0, 0, 0])
+    }, 650)
+
+    const holdEnd = 650 + holdDuration
+
+    // Phase 5: glitch-back (holdEnd - holdEnd+250ms)
+    schedule(() => {
+      setMorphPhase("glitch-back")
+      setIsGlitching(true)
+      setSliceOffsets(generateSlices(INTENSITY * 2.5))
+    }, holdEnd)
+
+    schedule(() => setSliceOffsets(generateSlices(INTENSITY * 3)), holdEnd + 80)
+    schedule(() => setSliceOffsets(generateSlices(INTENSITY * 2)), holdEnd + 160)
+
+    // Phase 6: flash-back (holdEnd+250 - holdEnd+350)
+    schedule(() => {
+      setMorphPhase("flash-back")
+      setShowText(false)
+      setSliceOffsets([0, 0, 0, 0, 0])
+    }, holdEnd + 250)
+
+    // Phase 7: logo-in (holdEnd+350 - holdEnd+700)
+    schedule(() => {
+      setMorphPhase("logo-in")
+      setSliceOffsets(generateSlices(INTENSITY * 1))
+    }, holdEnd + 350)
+
+    schedule(() => {
+      setSliceOffsets(generateSlices(INTENSITY * 0.4))
+    }, holdEnd + 500)
+
+    // Settle
+    schedule(() => {
+      setMorphPhase("idle")
+      setIsGlitching(false)
+      setIsMorphing(false)
+      setSliceOffsets([0, 0, 0, 0, 0])
+    }, holdEnd + 700)
   }, [generateSlices])
 
+  // --- Normal glitch timer ---
   useEffect(() => {
     const scheduleNext = () => {
       const delay = (minInterval + Math.random() * (maxInterval - minInterval)) * 1000
