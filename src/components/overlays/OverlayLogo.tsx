@@ -60,22 +60,24 @@ export function OverlayLogo({
   }, [])
 
   const triggerGlitch = useCallback(() => {
+    if (isMorphing) return
+
     setIsGlitching(true)
 
-    // Phase 1: Initial spike (0–80ms)
+    // Phase 1: Initial spike (0-80ms)
     setSliceOffsets(generateSlices(INTENSITY))
 
-    // Phase 2: Intense (80–200ms)
+    // Phase 2: Intense (80-200ms)
     setTimeout(() => {
       setSliceOffsets(generateSlices(INTENSITY * 1.5))
     }, 80)
 
-    // Phase 3: Decay (200–300ms)
+    // Phase 3: Decay (200-300ms)
     setTimeout(() => {
       setSliceOffsets(generateSlices(INTENSITY * 0.5))
     }, 200)
 
-    // Phase 4: Aftershock (300–400ms)
+    // Phase 4: Aftershock (300-400ms)
     setTimeout(() => {
       setSliceOffsets(generateSlices(INTENSITY * 0.2))
     }, 300)
