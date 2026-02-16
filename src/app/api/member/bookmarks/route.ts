@@ -5,7 +5,7 @@ import { getSessionCookie, verifyMemberToken } from '@/lib/auth'
 import type { Article, Topic, Media, Game, ContentType } from '@/payload-types'
 
 /**
- * GET /api/bookmarks
+ * GET /api/member/bookmarks
  * Fetch bookmarks for the authenticated member
  * Optional query param: ?articleId=X to check if specific article is bookmarked
  */
@@ -114,7 +114,7 @@ export async function GET(request: NextRequest) {
 }
 
 /**
- * POST /api/bookmarks
+ * POST /api/member/bookmarks
  * Create a bookmark
  * Body: { articleId: string }
  */
@@ -203,7 +203,7 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * DELETE /api/bookmarks
+ * DELETE /api/member/bookmarks
  * Remove a bookmark
  * Body: { articleId: string }
  */
