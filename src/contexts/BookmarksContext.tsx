@@ -46,7 +46,7 @@ export function BookmarksProvider({ children }: BookmarksProviderProps) {
   useEffect(() => {
     async function fetchBookmarks() {
       try {
-        const response = await fetch('/api/bookmarks')
+        const response = await fetch('/api/member/bookmarks')
         if (response.ok) {
           const data = await response.json()
           setBookmarks(data.bookmarks || [])
@@ -98,7 +98,7 @@ export function BookmarksProvider({ children }: BookmarksProviderProps) {
 
     try {
       if (isCurrentlyBookmarked) {
-        const response = await fetch('/api/bookmarks', {
+        const response = await fetch('/api/member/bookmarks', {
           method: 'DELETE',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ articleId }),
@@ -106,14 +106,14 @@ export function BookmarksProvider({ children }: BookmarksProviderProps) {
 
         if (!response.ok) {
           // Revert on error
-          const data = await fetch('/api/bookmarks')
+          const data = await fetch('/api/member/bookmarks')
           if (data.ok) {
             const result = await data.json()
             setBookmarks(result.bookmarks || [])
           }
         }
       } else {
-        const response = await fetch('/api/bookmarks', {
+        const response = await fetch('/api/member/bookmarks', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ articleId }),
@@ -121,7 +121,7 @@ export function BookmarksProvider({ children }: BookmarksProviderProps) {
 
         if (response.ok) {
           // Refetch to get full article data
-          const data = await fetch('/api/bookmarks')
+          const data = await fetch('/api/member/bookmarks')
           if (data.ok) {
             const result = await data.json()
             setBookmarks(result.bookmarks || [])
@@ -134,7 +134,7 @@ export function BookmarksProvider({ children }: BookmarksProviderProps) {
     } catch (error) {
       console.error('Failed to toggle bookmark:', error)
       // Refetch to restore correct state
-      const data = await fetch('/api/bookmarks')
+      const data = await fetch('/api/member/bookmarks')
       if (data.ok) {
         const result = await data.json()
         setBookmarks(result.bookmarks || [])
