@@ -33,7 +33,7 @@ export function OverlayHero({ config }: OverlayHeroProps) {
     <div
       ref={containerRef}
       className="relative w-full h-full overflow-hidden"
-      style={{ background: config.bgTransparent ? 'transparent' : '#000' }}
+      style={{ background: config.bgTransparent ? `rgba(0,0,0,${config.bgBaseOpacity / 100})` : '#000' }}
     >
       {/* Background image */}
       {bgSrc && (

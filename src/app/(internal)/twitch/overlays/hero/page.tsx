@@ -12,7 +12,7 @@ function HeroOverlayContent() {
 
   return (
     <div className="w-screen h-screen flex items-center justify-center overflow-hidden"
-      style={{ background: config.bgTransparent ? 'transparent' : '#000' }}
+      style={{ background: config.bgTransparent ? 'transparent' : '#000' /* base opacity handled by OverlayHero */ }}
     >
       {/* 16:9 container that fills viewport via object-fit contain logic */}
       <div
