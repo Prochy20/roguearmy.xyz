@@ -45,6 +45,7 @@ export interface HeroParagraphLayer {
 export interface HeroOverlayConfig {
   bg: HeroBgKey
   bgTransparent: boolean // true = transparent base, false = solid black
+  bgBaseOpacity: number // 0–100, black layer opacity when transparent (0 = fully see-through, 100 = solid black)
   bgOpacity: number // 0–100, image opacity (lower = darker tint)
   texts: HeroTextLayer[]
   paragraphs: HeroParagraphLayer[]
@@ -111,6 +112,7 @@ export function createParagraphLayer(partial?: Partial<HeroParagraphLayer>): Her
 export const DEFAULT_CONFIG: HeroOverlayConfig = {
   bg: 'Bg_01',
   bgTransparent: false,
+  bgBaseOpacity: 0,
   bgOpacity: 50,
   texts: [
     createTextLayer({ content: 'ROGUE ARMY', x: 50, y: 50, size: 80, color: 'green', anchor: 'center', flicker: true }),
@@ -149,6 +151,7 @@ export function decodeHeroConfig(encoded: string): HeroOverlayConfig {
     return {
       bg: isValidBg(parsed.bg) ? parsed.bg : DEFAULT_CONFIG.bg,
       bgTransparent: typeof parsed.bgTransparent === 'boolean' ? parsed.bgTransparent : false,
+      bgBaseOpacity: clamp(parsed.bgBaseOpacity, 0, 100, 0),
       bgOpacity: clamp(parsed.bgOpacity, 0, 100, 100),
       texts: Array.isArray(parsed.texts)
         ? parsed.texts.map(validateTextLayer).filter(Boolean) as HeroTextLayer[]
