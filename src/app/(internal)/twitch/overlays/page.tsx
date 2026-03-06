@@ -350,7 +350,85 @@ export default function OverlaysPage() {
         {/* ═══════════════════════════════════════════════════════════════════
             DIVIDER 3
             ═══════════════════════════════════════════════════════════════════ */}
-        <SectionGlitch intensity="medium" colorPrimary="magenta" colorSecondary="green" />
+        <SectionGlitch intensity="subtle" colorPrimary="magenta" colorSecondary="green" />
+
+        {/* ═══════════════════════════════════════════════════════════════════
+            HERO OVERLAY SHOWCASE
+            ═══════════════════════════════════════════════════════════════════ */}
+        <section className="relative px-6 py-16 max-w-6xl mx-auto">
+          <ScrollReveal>
+            <CyberCorners color="magenta" size="md">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-6 md:p-8">
+                {/* Preview */}
+                <div
+                  className="relative overflow-hidden border border-white/10 aspect-16/9"
+                  style={{
+                    background: `
+                      radial-gradient(ellipse 80% 60% at 50% 50%, rgba(255,0,255,0.06) 0%, transparent 60%),
+                      linear-gradient(180deg, rgba(0,0,0,0.9) 0%, rgba(10,10,10,1) 100%)
+                    `,
+                  }}
+                >
+                  <Image
+                    src="/images/bg/Bg_01.jpg"
+                    alt="Hero Overlay Preview"
+                    fill
+                    className="object-cover opacity-60"
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span
+                      className="font-display text-4xl md:text-5xl uppercase tracking-tight text-white"
+                      style={{ textShadow: '0 0 20px rgba(255,255,255,0.3), 0 0 40px rgba(0,255,255,0.3)' }}
+                    >
+                      ROGUE ARMY
+                    </span>
+                  </div>
+                  <div
+                    className="absolute inset-0 pointer-events-none opacity-[0.06]"
+                    style={{
+                      backgroundImage:
+                        'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.4) 2px, rgba(0,0,0,0.4) 4px)',
+                    }}
+                  />
+                </div>
+
+                {/* Description */}
+                <div className="flex flex-col justify-center space-y-4">
+                  <p className="font-mono text-xs text-text-muted tracking-widest uppercase">
+                    {'// OVERLAY 03'}
+                  </p>
+                  <ChromaticText as="h2" className="font-display text-3xl md:text-4xl uppercase tracking-tight text-white">
+                    Hero Overlay
+                  </ChromaticText>
+                  <p className="text-text-secondary text-sm md:text-base leading-relaxed">
+                    Full-screen background with glitching Hanson text layers and optional RGA logo.
+                    Perfect for BRB screens, starting soon scenes, or dramatic title cards.
+                  </p>
+                  <ul className="space-y-2 font-mono text-xs text-rga-cyan">
+                    <li>{'>'} 5 cinematic background images</li>
+                    <li>{'>'} Multiple text layers with HeroGlitch effect</li>
+                    <li>{'>'} Draggable positioning in the builder</li>
+                    <li>{'>'} Configurable glitch intensity & timing</li>
+                    <li>{'>'} Optional RGA skull logo placement</li>
+                  </ul>
+                  <div className="pt-2">
+                    <Link href="/twitch/overlays/hero/builder">
+                      <GlowButton glowColor="magenta" pulse className="text-sm px-6 py-3">
+                        Open Hero Builder
+                      </GlowButton>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </CyberCorners>
+          </ScrollReveal>
+        </section>
+
+        {/* ═══════════════════════════════════════════════════════════════════
+            DIVIDER 4
+            ═══════════════════════════════════════════════════════════════════ */}
+        <SectionGlitch intensity="medium" colorPrimary="green" colorSecondary="magenta" />
 
         {/* ═══════════════════════════════════════════════════════════════════
             OBS SETUP GUIDE
