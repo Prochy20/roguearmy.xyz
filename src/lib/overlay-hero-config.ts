@@ -137,7 +137,10 @@ export const DEFAULT_CONFIG: HeroOverlayConfig = {
 
 export function encodeHeroConfig(config: HeroOverlayConfig): string {
   const json = JSON.stringify(config)
-  const b64 = btoa(json)
+  const bytes = new TextEncoder().encode(json)
+  let binary = ''
+  for (const byte of bytes) binary += String.fromCharCode(byte)
+  const b64 = btoa(binary)
   return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
 }
 
@@ -145,7 +148,9 @@ export function decodeHeroConfig(encoded: string): HeroOverlayConfig {
   try {
     let b64 = encoded.replace(/-/g, '+').replace(/_/g, '/')
     while (b64.length % 4) b64 += '='
-    const json = atob(b64)
+    const binary = atob(b64)
+    const bytes = Uint8Array.from(binary, c => c.charCodeAt(0))
+    const json = new TextDecoder().decode(bytes)
     const parsed = JSON.parse(json)
 
     return {
