@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useMemo } from "react"
+import { useRef, useState, useEffect } from "react"
 import { motion, useScroll, useTransform, useSpring } from "motion/react"
 import { cn } from "@/lib/utils"
 
@@ -51,7 +51,50 @@ export function SectionGlitch({
   const secondary = colorVars[colorSecondary]
 
   // Random delay offset so instances don't glitch at the same time
-  const delayOffset = useMemo(() => Math.random() * 5, [])
+  // Deferred to client-side to avoid hydration mismatch
+  const [delayOffset, setDelayOffset] = useState(0)
+
+  // Pre-generate static data — deterministic defaults for SSR, random values after mount
+  const [glitchData, setGlitchData] = useState(() => ({
+    hexFragments: Array.from({ length: intensity === "intense" ? 8 : intensity === "medium" ? 5 : 3 }, (_, i) => ({
+      value: `0x0000`,
+      x: 5 + (i * 18),
+      y: 50,
+    })),
+    glitchBlocks: intensity === "subtle"
+      ? [
+          { top: 30, left: 10, width: 25, colorIdx: 0 },
+          { top: 60, left: 50, width: 30, colorIdx: 1 },
+        ]
+      : [
+          { top: 15, left: 5, width: 30, colorIdx: 0 },
+          { top: 40, left: 45, width: 40, colorIdx: 1 },
+          { top: 65, left: 20, width: 25, colorIdx: 0 },
+          { top: 80, left: 60, width: 35, colorIdx: 1 },
+        ],
+  }))
+
+  useEffect(() => {
+    setDelayOffset(Math.random() * 5)
+    setGlitchData({
+      hexFragments: Array.from({ length: intensity === "intense" ? 8 : intensity === "medium" ? 5 : 3 }, (_, i) => ({
+        value: `0x${randomHex(4)}`,
+        x: 5 + (i * 18) + Math.random() * 8,
+        y: 15 + Math.random() * 70,
+      })),
+      glitchBlocks: intensity === "subtle"
+        ? [
+            { top: 30, left: 10, width: 25, colorIdx: 0 },
+            { top: 60, left: 50, width: 30, colorIdx: 1 },
+          ]
+        : [
+            { top: 15, left: 5, width: 30, colorIdx: 0 },
+            { top: 40, left: 45, width: 40, colorIdx: 1 },
+            { top: 65, left: 20, width: 25, colorIdx: 0 },
+            { top: 80, left: 60, width: 35, colorIdx: 1 },
+          ],
+    })
+  }, [intensity])
 
   // All hooks must be called unconditionally (before any early returns)
   // Scroll tracking for parallax
@@ -67,26 +110,6 @@ export function SectionGlitch({
   const parallaxBack = useTransform(smoothProgress, [0, 1], [120 * config.parallax, -120 * config.parallax])
   const parallaxMid = useTransform(smoothProgress, [0, 1], [60 * config.parallax, -60 * config.parallax])
   const parallaxFront = useTransform(smoothProgress, [0, 1], [30 * config.parallax, -30 * config.parallax])
-
-  // Pre-generate static data
-  const glitchData = useMemo(() => ({
-    hexFragments: Array.from({ length: intensity === "intense" ? 8 : intensity === "medium" ? 5 : 3 }, (_, i) => ({
-      value: `0x${randomHex(4)}`,
-      x: 5 + (i * 18) + Math.random() * 8,
-      y: 15 + Math.random() * 70,
-    })),
-    glitchBlocks: intensity === "subtle"
-      ? [
-          { top: 30, left: 10, width: 25, colorIdx: 0 },
-          { top: 60, left: 50, width: 30, colorIdx: 1 },
-        ]
-      : [
-          { top: 15, left: 5, width: 30, colorIdx: 0 },
-          { top: 40, left: 45, width: 40, colorIdx: 1 },
-          { top: 65, left: 20, width: 25, colorIdx: 0 },
-          { top: 80, left: 60, width: 35, colorIdx: 1 },
-        ],
-  }), [intensity])
 
   // For minimal, just render a simple gradient line (no overlap/bleed)
   if (intensity === "minimal") {
