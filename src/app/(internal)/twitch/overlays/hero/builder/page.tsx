@@ -27,6 +27,7 @@ import { OverlayHero } from '@/components/overlays/OverlayHero'
 const INITIAL_CONFIG: HeroOverlayConfig = {
   bg: 'Bg_01',
   bgTransparent: false,
+  bgBaseOpacity: 0,
   bgOpacity: 50,
   texts: [
     createTextLayer({ content: 'ROGUE ARMY', x: 50, y: 50, size: 80, color: 'green', anchor: 'center', flicker: true }),
@@ -123,6 +124,7 @@ export default function HeroBuilderPage() {
     setConfig({
       bg: 'none',
       bgTransparent: false,
+      bgBaseOpacity: 0,
       bgOpacity: 100,
       texts: [],
       paragraphs: [],
@@ -236,11 +238,27 @@ export default function HeroBuilderPage() {
                 ? 'Base is transparent — stream content shows through where the image is faded'
                 : 'Base is solid black — fading the image darkens toward black'}
             </p>
+            {config.bgTransparent && (
+              <div className="mt-3">
+                <SliderRow
+                  label="Opacity"
+                  value={config.bgBaseOpacity}
+                  min={0}
+                  max={100}
+                  suffix="%"
+                  color="#00FFFF"
+                  onChange={(v) => setConfig((prev) => ({ ...prev, bgBaseOpacity: v }))}
+                />
+                <p className="text-[9px] text-text-muted mt-1.5">
+                  0% = fully transparent, 100% = solid black
+                </p>
+              </div>
+            )}
           </Section>
 
           {/* Image Opacity / Tint */}
           {config.bg !== 'none' && (
-            <Section label="Image Darkness">
+            <Section label="Image Opacity">
               <SliderRow
                 label="Opacity"
                 value={config.bgOpacity}
@@ -869,7 +887,16 @@ function DraggablePreview({ config, selected, onSelect, onMoveText, onMoveParagr
     <div
       ref={containerRef}
       className="relative w-full overflow-hidden border border-white/10 select-none"
-      style={{ aspectRatio: '16 / 9' }}
+      style={{
+        aspectRatio: '16 / 9',
+        ...(config.bgTransparent ? {
+          backgroundImage:
+            'linear-gradient(45deg, #1a1a1a 25%, transparent 25%), linear-gradient(-45deg, #1a1a1a 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #1a1a1a 75%), linear-gradient(-45deg, transparent 75%, #1a1a1a 75%)',
+          backgroundSize: '20px 20px',
+          backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px',
+          backgroundColor: '#111',
+        } : {}),
+      }}
     >
       {/* Live preview (non-interactive background) */}
       <div className="absolute inset-0 pointer-events-none">
