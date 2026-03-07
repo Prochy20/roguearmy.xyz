@@ -468,6 +468,29 @@ export default function OverlaysPage() {
         </section>
 
         {/* ═══════════════════════════════════════════════════════════════════
+            BRAND MANUAL CTA
+            ═══════════════════════════════════════════════════════════════════ */}
+        <section className="px-6 py-12 max-w-3xl mx-auto">
+          <ScrollReveal>
+            <div className="border border-rga-green/20 bg-rga-green/5 px-6 py-5 text-center">
+              <p className="font-mono text-xs text-rga-green tracking-widest uppercase mb-2">
+                {'>'} Brand Guidelines
+              </p>
+              <p className="text-text-secondary text-sm leading-relaxed mb-4">
+                Building custom scenes or graphics for your stream? Check the RGA Brand Manual for the
+                official color palette, fonts, logo usage rules, and design guidelines to keep your
+                content on-brand.
+              </p>
+              <Link href="/brand">
+                <GlowButton glowColor="green" pulse={false} className="text-sm px-6 py-3">
+                  Open Brand Manual
+                </GlowButton>
+              </Link>
+            </div>
+          </ScrollReveal>
+        </section>
+
+        {/* ═══════════════════════════════════════════════════════════════════
             FOOTER
             ═══════════════════════════════════════════════════════════════════ */}
         <footer className="px-6 pt-12 pb-16">
