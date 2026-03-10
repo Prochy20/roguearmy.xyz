@@ -604,7 +604,7 @@ export default function BrandPage() {
                 </CyberCorners>
                 <div className="flex flex-col sm:flex-row sm:items-start gap-4 px-1">
                   <p className="text-text-secondary text-sm leading-relaxed flex-1">
-                    Our display typeface. Used exclusively for major headings (H1, H2), hero text, and brand moments.
+                    Our display typeface. Used for all headings (H1, H2, H3), hero text, and brand moments.
                     Always set in <strong className="text-white">UPPERCASE</strong> — Hanson Bold is not designed for mixed case.
                     Apply tight tracking and leading for maximum impact. Pair with chromatic aberration or glow effects
                     on hero headings for the full RGA look.
@@ -638,7 +638,7 @@ export default function BrandPage() {
                     Our body typeface for all readable content — paragraphs, descriptions, UI labels, and navigation.
                     Use <strong className="text-white">Regular 400</strong> for body text
                     and <strong className="text-white">Semibold 600</strong> or <strong className="text-white">Bold 700</strong> for
-                    emphasis and sub-headings (H3). Light 300 can be used for large-size decorative text but avoid it
+                    emphasis and inline labels. Light 300 can be used for large-size decorative text but avoid it
                     at small sizes where readability suffers.
                   </p>
                   <a href="https://fonts.google.com/specimen/Outfit" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 font-mono text-xs text-rga-cyan hover:text-white transition-colors border border-rga-cyan/30 px-3 py-1.5 hover:border-rga-cyan/60 shrink-0 self-start">
