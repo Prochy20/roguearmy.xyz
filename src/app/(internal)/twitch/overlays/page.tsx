@@ -447,13 +447,14 @@ export default function OverlaysPage() {
                   </ChromaticText>
                   <p className="text-text-secondary text-sm md:text-base leading-relaxed">
                     Viewers type <span className="font-mono text-rga-cyan">!drop</span> in chat and
-                    a Division 2-style loot item falls on screen. Rarity is rolled with weighted
-                    odds — from common greens to exotic teals.
+                    a Division 2-style loot item materializes on screen with a beam, ground disc,
+                    and particle burst. Rarity is rolled with weighted odds across 6 tiers.
                   </p>
                   <ul className="space-y-2 font-mono text-xs text-rga-cyan">
                     <li>{'>'} Anonymous Twitch chat integration — no tokens needed</li>
-                    <li>{'>'} 5 rarity tiers with Division 2 color language</li>
-                    <li>{'>'} Glowing orbs, loot beams & particle bursts</li>
+                    <li>{'>'} 6 rarity tiers with Division 2 names & colors</li>
+                    <li>{'>'} Ground discs, loot beams & particle bursts</li>
+                    <li>{'>'} Real Division 2 weapon & gear names</li>
                     <li>{'>'} Per-user & global cooldowns</li>
                     <li>{'>'} Fully configurable in the builder</li>
                   </ul>
@@ -466,50 +467,125 @@ export default function OverlaysPage() {
                   </div>
                 </div>
 
-                {/* Preview — static loot beam mockup */}
+                {/* Preview — static loot drop mockup */}
                 <div
                   className="relative overflow-hidden border border-white/10 aspect-16/9 order-1 lg:order-2"
                   style={{
                     background: `
-                      radial-gradient(ellipse 80% 60% at 50% 80%, rgba(245,158,11,0.08) 0%, transparent 60%),
+                      radial-gradient(ellipse 80% 60% at 50% 85%, rgba(245,158,11,0.06) 0%, transparent 60%),
                       linear-gradient(180deg, rgba(0,0,0,0.95) 0%, rgba(10,10,10,1) 100%)
                     `,
                   }}
                 >
-                  {/* Static loot beams at different rarity colors */}
+                  {/* Static loot drops at different rarity colors */}
                   {[
-                    { color: '#4ADE80', x: '20%', h: '70%', delay: 0 },
-                    { color: '#60A5FA', x: '40%', h: '85%', delay: 0.5 },
-                    { color: '#C084FC', x: '60%', h: '60%', delay: 1 },
-                    { color: '#F59E0B', x: '75%', h: '90%', delay: 1.5 },
-                    { color: '#22D3EE', x: '88%', h: '75%', delay: 2 },
-                  ].map((beam, i) => (
-                    <div key={i} className="absolute bottom-0" style={{ left: beam.x, transform: 'translateX(-50%)' }}>
-                      {/* Beam line */}
+                    { color: '#4ADE80', x: '12%', y: '72%', h: '30%', label: 'STD' },
+                    { color: '#60A5FA', x: '30%', y: '65%', h: '45%', label: 'SPC' },
+                    { color: '#C084FC', x: '48%', y: '70%', h: '55%', label: 'SUP' },
+                    { color: '#F97316', x: '63%', y: '62%', h: '70%', label: 'H-E' },
+                    { color: '#2DD4BF', x: '78%', y: '74%', h: '65%', label: 'SET' },
+                    { color: '#EF4444', x: '91%', y: '66%', h: '85%', label: 'EXO' },
+                  ].map((drop, i) => (
+                    <div
+                      key={i}
+                      className="absolute"
+                      style={{ left: drop.x, top: drop.y, transform: 'translate(-50%, -50%)' }}
+                    >
+                      {/* Beam outer glow */}
                       <div
+                        className="absolute left-1/2 -translate-x-1/2"
                         style={{
-                          width: 3,
-                          height: beam.h,
-                          background: `linear-gradient(to top, ${beam.color}aa, ${beam.color}44 50%, transparent)`,
-                          boxShadow: `0 0 12px ${beam.color}44`,
+                          width: 12,
+                          bottom: '50%',
+                          height: drop.h,
+                          background: `linear-gradient(to top, ${drop.color}33, ${drop.color}11 40%, transparent)`,
+                          filter: 'blur(4px)',
                         }}
                       />
-                      {/* Ground glow dot */}
+                      {/* Beam main */}
                       <div
-                        className="absolute -bottom-1 left-1/2 -translate-x-1/2 rounded-full"
+                        className="absolute left-1/2 -translate-x-1/2"
                         style={{
-                          width: 8,
-                          height: 8,
-                          backgroundColor: beam.color,
-                          boxShadow: `0 0 12px ${beam.color}, 0 0 24px ${beam.color}88`,
+                          width: 4,
+                          bottom: '50%',
+                          height: drop.h,
+                          background: `linear-gradient(to top, ${drop.color}bb, ${drop.color}55 20%, ${drop.color}22 50%, transparent)`,
+                          boxShadow: `0 0 8px ${drop.color}33`,
                         }}
                       />
+                      {/* Beam inner core */}
+                      <div
+                        className="absolute left-1/2 -translate-x-1/2"
+                        style={{
+                          width: 1.5,
+                          bottom: '50%',
+                          height: `calc(${drop.h} * 0.7)`,
+                          background: `linear-gradient(to top, #ffffffaa, ${drop.color}88 15%, transparent 70%)`,
+                        }}
+                      />
+                      {/* Ground disc — outer ring */}
+                      <div
+                        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+                        style={{
+                          width: 40,
+                          height: 12,
+                          borderRadius: '50%',
+                          background: `radial-gradient(ellipse, transparent 30%, ${drop.color}33 60%, ${drop.color}55 75%, transparent)`,
+                        }}
+                      />
+                      {/* Ground disc — inner */}
+                      <div
+                        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+                        style={{
+                          width: 20,
+                          height: 7,
+                          borderRadius: '50%',
+                          background: `radial-gradient(ellipse, ${drop.color}ee, ${drop.color}66 50%, transparent)`,
+                          boxShadow: `0 0 8px ${drop.color}66`,
+                        }}
+                      />
+                      {/* Ground disc — hot center */}
+                      <div
+                        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+                        style={{
+                          width: 6,
+                          height: 2.5,
+                          borderRadius: '50%',
+                          background: `radial-gradient(ellipse, #fff, ${drop.color} 60%, transparent)`,
+                          boxShadow: `0 0 4px #fff, 0 0 8px ${drop.color}`,
+                        }}
+                      />
+                      {/* Ground light spill */}
+                      <div
+                        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+                        style={{
+                          width: 56,
+                          height: 18,
+                          borderRadius: '50%',
+                          background: `radial-gradient(ellipse, ${drop.color}18, transparent 70%)`,
+                          filter: 'blur(6px)',
+                        }}
+                      />
+                      {/* Tiny rarity label */}
+                      <div
+                        className="absolute left-1/2 -translate-x-1/2 font-mono text-center"
+                        style={{
+                          top: 'calc(50% + 10px)',
+                          fontSize: 7,
+                          letterSpacing: '0.15em',
+                          color: drop.color,
+                          textShadow: `0 0 6px ${drop.color}`,
+                          opacity: 0.8,
+                        }}
+                      >
+                        {drop.label}
+                      </div>
                     </div>
                   ))}
 
                   {/* Scanline overlay */}
                   <div
-                    className="absolute inset-0 pointer-events-none opacity-[0.06]"
+                    className="absolute inset-0 pointer-events-none opacity-[0.04]"
                     style={{
                       backgroundImage:
                         'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.4) 2px, rgba(0,0,0,0.4) 4px)',
