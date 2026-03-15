@@ -428,6 +428,102 @@ export default function OverlaysPage() {
         {/* ═══════════════════════════════════════════════════════════════════
             DIVIDER 4
             ═══════════════════════════════════════════════════════════════════ */}
+        <SectionGlitch intensity="subtle" colorPrimary="cyan" colorSecondary="magenta" />
+
+        {/* ═══════════════════════════════════════════════════════════════════
+            LOOT DROP OVERLAY SHOWCASE
+            ═══════════════════════════════════════════════════════════════════ */}
+        <section className="relative px-6 py-16 max-w-6xl mx-auto">
+          <ScrollReveal>
+            <CyberCorners color="orange" size="md">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-6 md:p-8">
+                {/* Description */}
+                <div className="flex flex-col justify-center space-y-4 order-2 lg:order-1">
+                  <p className="font-mono text-xs text-text-muted tracking-widest uppercase">
+                    {'// OVERLAY 04'}
+                  </p>
+                  <ChromaticText as="h2" className="font-display text-3xl md:text-4xl uppercase tracking-tight text-white">
+                    Loot Drop
+                  </ChromaticText>
+                  <p className="text-text-secondary text-sm md:text-base leading-relaxed">
+                    Viewers type <span className="font-mono text-rga-cyan">!drop</span> in chat and
+                    a Division 2-style loot item falls on screen. Rarity is rolled with weighted
+                    odds — from common greens to exotic teals.
+                  </p>
+                  <ul className="space-y-2 font-mono text-xs text-rga-cyan">
+                    <li>{'>'} Anonymous Twitch chat integration — no tokens needed</li>
+                    <li>{'>'} 5 rarity tiers with Division 2 color language</li>
+                    <li>{'>'} Glowing orbs, loot beams & particle bursts</li>
+                    <li>{'>'} Per-user & global cooldowns</li>
+                    <li>{'>'} Fully configurable in the builder</li>
+                  </ul>
+                  <div className="pt-2">
+                    <Link href="/twitch/overlays/drop/builder">
+                      <GlowButton glowColor="cyan" pulse className="text-sm px-6 py-3">
+                        Open Drop Builder
+                      </GlowButton>
+                    </Link>
+                  </div>
+                </div>
+
+                {/* Preview — static loot beam mockup */}
+                <div
+                  className="relative overflow-hidden border border-white/10 aspect-16/9 order-1 lg:order-2"
+                  style={{
+                    background: `
+                      radial-gradient(ellipse 80% 60% at 50% 80%, rgba(245,158,11,0.08) 0%, transparent 60%),
+                      linear-gradient(180deg, rgba(0,0,0,0.95) 0%, rgba(10,10,10,1) 100%)
+                    `,
+                  }}
+                >
+                  {/* Static loot beams at different rarity colors */}
+                  {[
+                    { color: '#4ADE80', x: '20%', h: '70%', delay: 0 },
+                    { color: '#60A5FA', x: '40%', h: '85%', delay: 0.5 },
+                    { color: '#C084FC', x: '60%', h: '60%', delay: 1 },
+                    { color: '#F59E0B', x: '75%', h: '90%', delay: 1.5 },
+                    { color: '#22D3EE', x: '88%', h: '75%', delay: 2 },
+                  ].map((beam, i) => (
+                    <div key={i} className="absolute bottom-0" style={{ left: beam.x, transform: 'translateX(-50%)' }}>
+                      {/* Beam line */}
+                      <div
+                        style={{
+                          width: 3,
+                          height: beam.h,
+                          background: `linear-gradient(to top, ${beam.color}aa, ${beam.color}44 50%, transparent)`,
+                          boxShadow: `0 0 12px ${beam.color}44`,
+                        }}
+                      />
+                      {/* Ground glow dot */}
+                      <div
+                        className="absolute -bottom-1 left-1/2 -translate-x-1/2 rounded-full"
+                        style={{
+                          width: 8,
+                          height: 8,
+                          backgroundColor: beam.color,
+                          boxShadow: `0 0 12px ${beam.color}, 0 0 24px ${beam.color}88`,
+                        }}
+                      />
+                    </div>
+                  ))}
+
+                  {/* Scanline overlay */}
+                  <div
+                    className="absolute inset-0 pointer-events-none opacity-[0.06]"
+                    style={{
+                      backgroundImage:
+                        'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.4) 2px, rgba(0,0,0,0.4) 4px)',
+                    }}
+                  />
+                </div>
+              </div>
+            </CyberCorners>
+          </ScrollReveal>
+        </section>
+
+        {/* ═══════════════════════════════════════════════════════════════════
+            DIVIDER 5
+            ═══════════════════════════════════════════════════════════════════ */}
         <SectionGlitch intensity="medium" colorPrimary="green" colorSecondary="magenta" />
 
         {/* ═══════════════════════════════════════════════════════════════════
