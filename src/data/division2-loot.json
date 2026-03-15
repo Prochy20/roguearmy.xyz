@@ -1,0 +1,4220 @@
+[
+  {
+    "name": "ACR",
+    "rarity": "regular",
+    "category": "Assault Rifle",
+    "subtitle": "ACR"
+  },
+  {
+    "name": "ACR-E",
+    "rarity": "regular",
+    "category": "Assault Rifle",
+    "subtitle": "ACR"
+  },
+  {
+    "name": "Military AK-M",
+    "rarity": "regular",
+    "category": "Assault Rifle",
+    "subtitle": "AK-47"
+  },
+  {
+    "name": "Black Market AK-M Replica",
+    "rarity": "regular",
+    "category": "Assault Rifle",
+    "subtitle": "AK-47"
+  },
+  {
+    "name": "F2000 Replica",
+    "rarity": "regular",
+    "category": "Assault Rifle",
+    "subtitle": "F2000"
+  },
+  {
+    "name": "FAL SA-58",
+    "rarity": "regular",
+    "category": "Assault Rifle",
+    "subtitle": "FAL"
+  },
+  {
+    "name": "FAL SA-58 Para",
+    "rarity": "regular",
+    "category": "Assault Rifle",
+    "subtitle": "FAL"
+  },
+  {
+    "name": "FAL SA-58 Para Replica",
+    "rarity": "regular",
+    "category": "Assault Rifle",
+    "subtitle": "FAL"
+  },
+  {
+    "name": "FAMAS 2010",
+    "rarity": "regular",
+    "category": "Assault Rifle",
+    "subtitle": "Famas"
+  },
+  {
+    "name": "FAMAS 2010 Replica",
+    "rarity": "regular",
+    "category": "Assault Rifle",
+    "subtitle": "Famas"
+  },
+  {
+    "name": "G36 C",
+    "rarity": "regular",
+    "category": "Assault Rifle",
+    "subtitle": "G36"
+  },
+  {
+    "name": "G36 Enhanced Replica",
+    "rarity": "regular",
+    "category": "Assault Rifle",
+    "subtitle": "G36"
+  },
+  {
+    "name": "Police M4 Replica",
+    "rarity": "regular",
+    "category": "Assault Rifle",
+    "subtitle": "M4"
+  },
+  {
+    "name": "Mk16",
+    "rarity": "regular",
+    "category": "Assault Rifle",
+    "subtitle": "MK16"
+  },
+  {
+    "name": "Tactical Mk 16",
+    "rarity": "regular",
+    "category": "Assault Rifle",
+    "subtitle": "MK16"
+  },
+  {
+    "name": "Tactical Mk 16 Replica",
+    "rarity": "regular",
+    "category": "Assault Rifle",
+    "subtitle": "MK16"
+  },
+  {
+    "name": "Military P416",
+    "rarity": "regular",
+    "category": "Assault Rifle",
+    "subtitle": "P416"
+  },
+  {
+    "name": "Custom P416 G3",
+    "rarity": "regular",
+    "category": "Assault Rifle",
+    "subtitle": "P416"
+  },
+  {
+    "name": "Sig Sauer 556",
+    "rarity": "regular",
+    "category": "Assault Rifle",
+    "subtitle": "SIG 556"
+  },
+  {
+    "name": "Military L86 LSW",
+    "rarity": "regular",
+    "category": "LMG",
+    "subtitle": "L86"
+  },
+  {
+    "name": "Custom L86 A2",
+    "rarity": "regular",
+    "category": "LMG",
+    "subtitle": "L86"
+  },
+  {
+    "name": "Custom L86 A2 Replica",
+    "rarity": "regular",
+    "category": "LMG",
+    "subtitle": "L86"
+  },
+  {
+    "name": "M249 B",
+    "rarity": "regular",
+    "category": "LMG",
+    "subtitle": "M249"
+  },
+  {
+    "name": "Tactical M249 Para",
+    "rarity": "regular",
+    "category": "LMG",
+    "subtitle": "M249"
+  },
+  {
+    "name": "Military MK46",
+    "rarity": "regular",
+    "category": "LMG",
+    "subtitle": "M249"
+  },
+  {
+    "name": "Military MK46 Replica",
+    "rarity": "regular",
+    "category": "LMG",
+    "subtitle": "M249"
+  },
+  {
+    "name": "Classic M60",
+    "rarity": "regular",
+    "category": "LMG",
+    "subtitle": "M60"
+  },
+  {
+    "name": "Military M60 E4",
+    "rarity": "regular",
+    "category": "LMG",
+    "subtitle": "M60"
+  },
+  {
+    "name": "Black Market M60 E6",
+    "rarity": "regular",
+    "category": "LMG",
+    "subtitle": "M60"
+  },
+  {
+    "name": "Classic M60 Replica",
+    "rarity": "regular",
+    "category": "LMG",
+    "subtitle": "M60"
+  },
+  {
+    "name": "Black Market M60 E6 Replica",
+    "rarity": "regular",
+    "category": "LMG",
+    "subtitle": "M60"
+  },
+  {
+    "name": "Infantry MG5",
+    "rarity": "regular",
+    "category": "LMG",
+    "subtitle": "MG5"
+  },
+  {
+    "name": "Infantry MG5 Replica",
+    "rarity": "regular",
+    "category": "LMG",
+    "subtitle": "MG5"
+  },
+  {
+    "name": "IWI NEGEV",
+    "rarity": "regular",
+    "category": "LMG",
+    "subtitle": "NEGEV"
+  },
+  {
+    "name": "Classic RPK-74",
+    "rarity": "regular",
+    "category": "LMG",
+    "subtitle": "RPK"
+  },
+  {
+    "name": "Military RPK-74",
+    "rarity": "regular",
+    "category": "LMG",
+    "subtitle": "RPK"
+  },
+  {
+    "name": "Black Market RPK-74",
+    "rarity": "regular",
+    "category": "LMG",
+    "subtitle": "RPK"
+  },
+  {
+    "name": "Black Market RPK-74 Replica",
+    "rarity": "regular",
+    "category": "LMG",
+    "subtitle": "RPK"
+  },
+  {
+    "name": "Converted SMG-9",
+    "rarity": "regular",
+    "category": "SMG",
+    "subtitle": "SMG-9"
+  },
+  {
+    "name": "Converted SMG-9 Replica",
+    "rarity": "regular",
+    "category": "SMG",
+    "subtitle": "SMG-9"
+  },
+  {
+    "name": "MP5 ST Replica",
+    "rarity": "regular",
+    "category": "SMG",
+    "subtitle": "MP5"
+  },
+  {
+    "name": "MP5A2",
+    "rarity": "regular",
+    "category": "SMG",
+    "subtitle": "MP5"
+  },
+  {
+    "name": "MP5-N",
+    "rarity": "regular",
+    "category": "SMG",
+    "subtitle": "MP5"
+  },
+  {
+    "name": "PP-19",
+    "rarity": "regular",
+    "category": "SMG",
+    "subtitle": "PP-19"
+  },
+  {
+    "name": "AUG A3 Para XS",
+    "rarity": "regular",
+    "category": "SMG",
+    "subtitle": "AUG"
+  },
+  {
+    "name": "Enhanced AUG A3P",
+    "rarity": "regular",
+    "category": "SMG",
+    "subtitle": "AUG"
+  },
+  {
+    "name": "Tactical AUG A3P",
+    "rarity": "regular",
+    "category": "SMG",
+    "subtitle": "AUG"
+  },
+  {
+    "name": "Tactical AUG A3P Replica",
+    "rarity": "regular",
+    "category": "SMG",
+    "subtitle": "AUG"
+  },
+  {
+    "name": "Vector SBR .45 ACP Replica",
+    "rarity": "regular",
+    "category": "SMG",
+    "subtitle": "Vector"
+  },
+  {
+    "name": "Vector SBR 9mm",
+    "rarity": "regular",
+    "category": "SMG",
+    "subtitle": "Vector"
+  },
+  {
+    "name": "Police T821",
+    "rarity": "regular",
+    "category": "SMG",
+    "subtitle": "T821"
+  },
+  {
+    "name": "Black Market T821",
+    "rarity": "regular",
+    "category": "SMG",
+    "subtitle": "T821"
+  },
+  {
+    "name": "Black Market T821 Replica",
+    "rarity": "regular",
+    "category": "SMG",
+    "subtitle": "T821"
+  },
+  {
+    "name": "Police UMP-45",
+    "rarity": "regular",
+    "category": "SMG",
+    "subtitle": "UMP-45"
+  },
+  {
+    "name": "Tactical UMP-45 Replica",
+    "rarity": "regular",
+    "category": "SMG",
+    "subtitle": "UMP-45"
+  },
+  {
+    "name": "M1928",
+    "rarity": "regular",
+    "category": "SMG",
+    "subtitle": "Thompson"
+  },
+  {
+    "name": "P90",
+    "rarity": "regular",
+    "category": "SMG",
+    "subtitle": "P90"
+  },
+  {
+    "name": "P90 Replica",
+    "rarity": "regular",
+    "category": "SMG",
+    "subtitle": "P90"
+  },
+  {
+    "name": "Stack Broker",
+    "rarity": "regular",
+    "category": "Shotgun",
+    "subtitle": "AA12"
+  },
+  {
+    "name": "Double Barrel Shotgun",
+    "rarity": "regular",
+    "category": "Shotgun",
+    "subtitle": "Double Barrel"
+  },
+  {
+    "name": "Double Barrel Shotgun Replica",
+    "rarity": "regular",
+    "category": "Shotgun",
+    "subtitle": "Double Barrel"
+  },
+  {
+    "name": "Sawed-Off Double Barrel",
+    "rarity": "regular",
+    "category": "Shotgun",
+    "subtitle": "Sawed-Off"
+  },
+  {
+    "name": "KSG Shotgun",
+    "rarity": "regular",
+    "category": "Shotgun",
+    "subtitle": "KSG"
+  },
+  {
+    "name": "Custom M870 MCS",
+    "rarity": "regular",
+    "category": "Shotgun",
+    "subtitle": "M870"
+  },
+  {
+    "name": "Custom M870 MCS Replica",
+    "rarity": "regular",
+    "category": "Shotgun",
+    "subtitle": "M870"
+  },
+  {
+    "name": "M870 Express Replica",
+    "rarity": "regular",
+    "category": "Shotgun",
+    "subtitle": "M870"
+  },
+  {
+    "name": "Black Market SASG-12 S",
+    "rarity": "regular",
+    "category": "Shotgun",
+    "subtitle": "SASG-12"
+  },
+  {
+    "name": "Black Market SASG-12 S Replica",
+    "rarity": "regular",
+    "category": "Shotgun",
+    "subtitle": "SASG-12"
+  },
+  {
+    "name": "Tactical SASG-12 K",
+    "rarity": "regular",
+    "category": "Shotgun",
+    "subtitle": "SASG-12"
+  },
+  {
+    "name": "SPAS-12 Replica",
+    "rarity": "regular",
+    "category": "Shotgun",
+    "subtitle": "SPAS-12"
+  },
+  {
+    "name": "Marine Super 90",
+    "rarity": "regular",
+    "category": "Shotgun",
+    "subtitle": "Super 90"
+  },
+  {
+    "name": "Super 90 Replica",
+    "rarity": "regular",
+    "category": "Shotgun",
+    "subtitle": "Super 90"
+  },
+  {
+    "name": "Tactical Super 90 SBS",
+    "rarity": "regular",
+    "category": "Shotgun",
+    "subtitle": "Super 90"
+  },
+  {
+    "name": "Tactical Super 90 SBS Replica",
+    "rarity": "regular",
+    "category": "Shotgun",
+    "subtitle": "Super 90"
+  },
+  {
+    "name": "ACR SS",
+    "rarity": "regular",
+    "category": "Rifle",
+    "subtitle": "ACR"
+  },
+  {
+    "name": "UIC15 MOD2",
+    "rarity": "regular",
+    "category": "Rifle",
+    "subtitle": "AR15"
+  },
+  {
+    "name": "M16A2 Replica",
+    "rarity": "regular",
+    "category": "Rifle",
+    "subtitle": "M16"
+  },
+  {
+    "name": "Socom M1A",
+    "rarity": "regular",
+    "category": "Rifle",
+    "subtitle": "M1A"
+  },
+  {
+    "name": "M1A CQB Replica",
+    "rarity": "regular",
+    "category": "Rifle",
+    "subtitle": "M1A"
+  },
+  {
+    "name": "Lightweight M4",
+    "rarity": "regular",
+    "category": "Rifle",
+    "subtitle": "M4"
+  },
+  {
+    "name": "LVOA-C Replica",
+    "rarity": "regular",
+    "category": "Rifle",
+    "subtitle": "M4"
+  },
+  {
+    "name": "Urban MDR",
+    "rarity": "regular",
+    "category": "Rifle",
+    "subtitle": "MDR"
+  },
+  {
+    "name": "Urban MDR Replica",
+    "rarity": "regular",
+    "category": "Rifle",
+    "subtitle": "MDR"
+  },
+  {
+    "name": "Military MK17",
+    "rarity": "regular",
+    "category": "Rifle",
+    "subtitle": "Scar"
+  },
+  {
+    "name": "Police MK17",
+    "rarity": "regular",
+    "category": "Rifle",
+    "subtitle": "Scar"
+  },
+  {
+    "name": "Police MK17 Replica",
+    "rarity": "regular",
+    "category": "Rifle",
+    "subtitle": "Scar"
+  },
+  {
+    "name": "SIG 716 Replica",
+    "rarity": "regular",
+    "category": "Rifle",
+    "subtitle": "SIG"
+  },
+  {
+    "name": "SIG 716 CQB",
+    "rarity": "regular",
+    "category": "Rifle",
+    "subtitle": "SIG"
+  },
+  {
+    "name": "USC .45 ACP Replica",
+    "rarity": "regular",
+    "category": "Rifle",
+    "subtitle": "UMP"
+  },
+  {
+    "name": "SOCOM Mk20 SSR",
+    "rarity": "regular",
+    "category": "Marksman Rifle",
+    "subtitle": "SCAR"
+  },
+  {
+    "name": "SOCOM MK20 SSR Replica",
+    "rarity": "regular",
+    "category": "Marksman Rifle",
+    "subtitle": "SCAR"
+  },
+  {
+    "name": "G28",
+    "rarity": "regular",
+    "category": "Marksman Rifle",
+    "subtitle": "G28"
+  },
+  {
+    "name": "M700 Carbon Replica",
+    "rarity": "regular",
+    "category": "Marksman Rifle",
+    "subtitle": "M700"
+  },
+  {
+    "name": "M700 Tactical",
+    "rarity": "regular",
+    "category": "Marksman Rifle",
+    "subtitle": "M700"
+  },
+  {
+    "name": "Model 700 Replica",
+    "rarity": "regular",
+    "category": "Marksman Rifle",
+    "subtitle": "M700"
+  },
+  {
+    "name": "Covert SRS",
+    "rarity": "regular",
+    "category": "Marksman Rifle",
+    "subtitle": "SRS"
+  },
+  {
+    "name": "SRS A1",
+    "rarity": "regular",
+    "category": "Marksman Rifle",
+    "subtitle": "SRS"
+  },
+  {
+    "name": "SRS A1 Replica",
+    "rarity": "regular",
+    "category": "Marksman Rifle",
+    "subtitle": "SRS"
+  },
+  {
+    "name": "Classic M44 Carbine",
+    "rarity": "regular",
+    "category": "Marksman Rifle",
+    "subtitle": "M44"
+  },
+  {
+    "name": "Classic M44 Carbine Replica",
+    "rarity": "regular",
+    "category": "Marksman Rifle",
+    "subtitle": "M44"
+  },
+  {
+    "name": "Hunting M44",
+    "rarity": "regular",
+    "category": "Marksman Rifle",
+    "subtitle": "M44"
+  },
+  {
+    "name": "Custom M44 Replica",
+    "rarity": "regular",
+    "category": "Marksman Rifle",
+    "subtitle": "M44"
+  },
+  {
+    "name": "SR-1 Replica",
+    "rarity": "regular",
+    "category": "Marksman Rifle",
+    "subtitle": "DSR-1"
+  },
+  {
+    "name": "Adrestia",
+    "rarity": "regular",
+    "category": "Marksman Rifle",
+    "subtitle": "DSR-1"
+  },
+  {
+    "name": "D50",
+    "rarity": "regular",
+    "category": "Pistol",
+    "subtitle": "Desert Eagle"
+  },
+  {
+    "name": "M1911",
+    "rarity": "regular",
+    "category": "Pistol",
+    "subtitle": "M1911"
+  },
+  {
+    "name": "M45A1",
+    "rarity": "regular",
+    "category": "Pistol",
+    "subtitle": "M1911"
+  },
+  {
+    "name": "Tactical M1911",
+    "rarity": "regular",
+    "category": "Pistol",
+    "subtitle": "M1911"
+  },
+  {
+    "name": "Tactical M1911 Replica",
+    "rarity": "regular",
+    "category": "Pistol",
+    "subtitle": "M1911"
+  },
+  {
+    "name": "Military M9",
+    "rarity": "regular",
+    "category": "Pistol",
+    "subtitle": "M9"
+  },
+  {
+    "name": "Military M9 Replica",
+    "rarity": "regular",
+    "category": "Pistol",
+    "subtitle": "M9"
+  },
+  {
+    "name": "Officer's M9 A1",
+    "rarity": "regular",
+    "category": "Pistol",
+    "subtitle": "M9"
+  },
+  {
+    "name": "Custom PF45",
+    "rarity": "regular",
+    "category": "Pistol",
+    "subtitle": "PF45"
+  },
+  {
+    "name": "First Wave PF45",
+    "rarity": "regular",
+    "category": "Pistol",
+    "subtitle": "PF45"
+  },
+  {
+    "name": "Px4 Storm Type F",
+    "rarity": "regular",
+    "category": "Pistol",
+    "subtitle": "Px4"
+  },
+  {
+    "name": "Px4 Storm Type T",
+    "rarity": "regular",
+    "category": "Pistol",
+    "subtitle": "Px4"
+  },
+  {
+    "name": "Px4 Storm Type T Replica",
+    "rarity": "regular",
+    "category": "Pistol",
+    "subtitle": "Px4"
+  },
+  {
+    "name": "Diceros",
+    "rarity": "regular",
+    "category": "Pistol",
+    "subtitle": "Rhino"
+  },
+  {
+    "name": "Diceros Replica",
+    "rarity": "regular",
+    "category": "Pistol",
+    "subtitle": "Rhino"
+  },
+  {
+    "name": "Snubnosed Diceros",
+    "rarity": "regular",
+    "category": "Pistol",
+    "subtitle": "Rhino"
+  },
+  {
+    "name": "Police 686 Magnum Replica",
+    "rarity": "regular",
+    "category": "Pistol",
+    "subtitle": "Magnum"
+  },
+  {
+    "name": "X-45",
+    "rarity": "regular",
+    "category": "Pistol",
+    "subtitle": "X-45"
+  },
+  {
+    "name": "X-45 Tactical",
+    "rarity": "regular",
+    "category": "Pistol",
+    "subtitle": "X-45"
+  },
+  {
+    "name": "X-45 Tactical Replica",
+    "rarity": "regular",
+    "category": "Pistol",
+    "subtitle": "X-45"
+  },
+  {
+    "name": "5.11 Tactical Mask",
+    "rarity": "regular",
+    "category": "Mask",
+    "subtitle": "5.11 Tactical"
+  },
+  {
+    "name": "5.11 Tactical Backpack",
+    "rarity": "regular",
+    "category": "Backpack",
+    "subtitle": "5.11 Tactical"
+  },
+  {
+    "name": "5.11 Tactical Chest",
+    "rarity": "regular",
+    "category": "Chest",
+    "subtitle": "5.11 Tactical"
+  },
+  {
+    "name": "5.11 Tactical Gloves",
+    "rarity": "regular",
+    "category": "Gloves",
+    "subtitle": "5.11 Tactical"
+  },
+  {
+    "name": "5.11 Tactical Holster",
+    "rarity": "regular",
+    "category": "Holster",
+    "subtitle": "5.11 Tactical"
+  },
+  {
+    "name": "5.11 Tactical Kneepads",
+    "rarity": "regular",
+    "category": "Kneepads",
+    "subtitle": "5.11 Tactical"
+  },
+  {
+    "name": "Badger Tuff Mask",
+    "rarity": "regular",
+    "category": "Mask",
+    "subtitle": "Badger Tuff"
+  },
+  {
+    "name": "Badger Tuff Backpack",
+    "rarity": "regular",
+    "category": "Backpack",
+    "subtitle": "Badger Tuff"
+  },
+  {
+    "name": "Badger Tuff Chest",
+    "rarity": "regular",
+    "category": "Chest",
+    "subtitle": "Badger Tuff"
+  },
+  {
+    "name": "Badger Tuff Gloves",
+    "rarity": "regular",
+    "category": "Gloves",
+    "subtitle": "Badger Tuff"
+  },
+  {
+    "name": "Badger Tuff Holster",
+    "rarity": "regular",
+    "category": "Holster",
+    "subtitle": "Badger Tuff"
+  },
+  {
+    "name": "Badger Tuff Kneepads",
+    "rarity": "regular",
+    "category": "Kneepads",
+    "subtitle": "Badger Tuff"
+  },
+  {
+    "name": "Belstone Armory Mask",
+    "rarity": "regular",
+    "category": "Mask",
+    "subtitle": "Belstone Armory"
+  },
+  {
+    "name": "Belstone Armory Backpack",
+    "rarity": "regular",
+    "category": "Backpack",
+    "subtitle": "Belstone Armory"
+  },
+  {
+    "name": "Belstone Armory Chest",
+    "rarity": "regular",
+    "category": "Chest",
+    "subtitle": "Belstone Armory"
+  },
+  {
+    "name": "Belstone Armory Gloves",
+    "rarity": "regular",
+    "category": "Gloves",
+    "subtitle": "Belstone Armory"
+  },
+  {
+    "name": "Belstone Armory Holster",
+    "rarity": "regular",
+    "category": "Holster",
+    "subtitle": "Belstone Armory"
+  },
+  {
+    "name": "Belstone Armory Kneepads",
+    "rarity": "regular",
+    "category": "Kneepads",
+    "subtitle": "Belstone Armory"
+  },
+  {
+    "name": "Brazos de Arcabuz Mask",
+    "rarity": "regular",
+    "category": "Mask",
+    "subtitle": "Brazos de Arcabuz"
+  },
+  {
+    "name": "Brazos de Arcabuz Backpack",
+    "rarity": "regular",
+    "category": "Backpack",
+    "subtitle": "Brazos de Arcabuz"
+  },
+  {
+    "name": "Brazos de Arcabuz Chest",
+    "rarity": "regular",
+    "category": "Chest",
+    "subtitle": "Brazos de Arcabuz"
+  },
+  {
+    "name": "Brazos de Arcabuz Gloves",
+    "rarity": "regular",
+    "category": "Gloves",
+    "subtitle": "Brazos de Arcabuz"
+  },
+  {
+    "name": "Brazos de Arcabuz Holster",
+    "rarity": "regular",
+    "category": "Holster",
+    "subtitle": "Brazos de Arcabuz"
+  },
+  {
+    "name": "Brazos de Arcabuz Kneepads",
+    "rarity": "regular",
+    "category": "Kneepads",
+    "subtitle": "Brazos de Arcabuz"
+  },
+  {
+    "name": "Gila Guard Mask",
+    "rarity": "regular",
+    "category": "Mask",
+    "subtitle": "Gila Guard"
+  },
+  {
+    "name": "Gila Guard Backpack",
+    "rarity": "regular",
+    "category": "Backpack",
+    "subtitle": "Gila Guard"
+  },
+  {
+    "name": "Gila Guard Chest",
+    "rarity": "regular",
+    "category": "Chest",
+    "subtitle": "Gila Guard"
+  },
+  {
+    "name": "Gila Guard Gloves",
+    "rarity": "regular",
+    "category": "Gloves",
+    "subtitle": "Gila Guard"
+  },
+  {
+    "name": "Gila Guard Holster",
+    "rarity": "regular",
+    "category": "Holster",
+    "subtitle": "Gila Guard"
+  },
+  {
+    "name": "Gila Guard Kneepads",
+    "rarity": "regular",
+    "category": "Kneepads",
+    "subtitle": "Gila Guard"
+  },
+  {
+    "name": "Golan Gear Ltd Mask",
+    "rarity": "regular",
+    "category": "Mask",
+    "subtitle": "Golan Gear Ltd"
+  },
+  {
+    "name": "Golan Gear Ltd Backpack",
+    "rarity": "regular",
+    "category": "Backpack",
+    "subtitle": "Golan Gear Ltd"
+  },
+  {
+    "name": "Golan Gear Ltd Chest",
+    "rarity": "regular",
+    "category": "Chest",
+    "subtitle": "Golan Gear Ltd"
+  },
+  {
+    "name": "Golan Gear Ltd Gloves",
+    "rarity": "regular",
+    "category": "Gloves",
+    "subtitle": "Golan Gear Ltd"
+  },
+  {
+    "name": "Golan Gear Ltd Holster",
+    "rarity": "regular",
+    "category": "Holster",
+    "subtitle": "Golan Gear Ltd"
+  },
+  {
+    "name": "Golan Gear Ltd Kneepads",
+    "rarity": "regular",
+    "category": "Kneepads",
+    "subtitle": "Golan Gear Ltd"
+  },
+  {
+    "name": "Habsburg Guard Mask",
+    "rarity": "regular",
+    "category": "Mask",
+    "subtitle": "Habsburg Guard"
+  },
+  {
+    "name": "Habsburg Guard Backpack",
+    "rarity": "regular",
+    "category": "Backpack",
+    "subtitle": "Habsburg Guard"
+  },
+  {
+    "name": "Habsburg Guard Chest",
+    "rarity": "regular",
+    "category": "Chest",
+    "subtitle": "Habsburg Guard"
+  },
+  {
+    "name": "Habsburg Guard Gloves",
+    "rarity": "regular",
+    "category": "Gloves",
+    "subtitle": "Habsburg Guard"
+  },
+  {
+    "name": "Habsburg Guard Holster",
+    "rarity": "regular",
+    "category": "Holster",
+    "subtitle": "Habsburg Guard"
+  },
+  {
+    "name": "Habsburg Guard Kneepads",
+    "rarity": "regular",
+    "category": "Kneepads",
+    "subtitle": "Habsburg Guard"
+  },
+  {
+    "name": "Lengmo Mask",
+    "rarity": "regular",
+    "category": "Mask",
+    "subtitle": "Lengmo"
+  },
+  {
+    "name": "Lengmo Backpack",
+    "rarity": "regular",
+    "category": "Backpack",
+    "subtitle": "Lengmo"
+  },
+  {
+    "name": "Lengmo Chest",
+    "rarity": "regular",
+    "category": "Chest",
+    "subtitle": "Lengmo"
+  },
+  {
+    "name": "Lengmo Gloves",
+    "rarity": "regular",
+    "category": "Gloves",
+    "subtitle": "Lengmo"
+  },
+  {
+    "name": "Lengmo Holster",
+    "rarity": "regular",
+    "category": "Holster",
+    "subtitle": "Lengmo"
+  },
+  {
+    "name": "Lengmo Kneepads",
+    "rarity": "regular",
+    "category": "Kneepads",
+    "subtitle": "Lengmo"
+  },
+  {
+    "name": "Palisade Steelworks Mask",
+    "rarity": "regular",
+    "category": "Mask",
+    "subtitle": "Palisade Steelworks"
+  },
+  {
+    "name": "Palisade Steelworks Backpack",
+    "rarity": "regular",
+    "category": "Backpack",
+    "subtitle": "Palisade Steelworks"
+  },
+  {
+    "name": "Palisade Steelworks Chest",
+    "rarity": "regular",
+    "category": "Chest",
+    "subtitle": "Palisade Steelworks"
+  },
+  {
+    "name": "Palisade Steelworks Gloves",
+    "rarity": "regular",
+    "category": "Gloves",
+    "subtitle": "Palisade Steelworks"
+  },
+  {
+    "name": "Palisade Steelworks Holster",
+    "rarity": "regular",
+    "category": "Holster",
+    "subtitle": "Palisade Steelworks"
+  },
+  {
+    "name": "Palisade Steelworks Kneepads",
+    "rarity": "regular",
+    "category": "Kneepads",
+    "subtitle": "Palisade Steelworks"
+  },
+  {
+    "name": "Uzina Getica Mask",
+    "rarity": "regular",
+    "category": "Mask",
+    "subtitle": "Uzina Getica"
+  },
+  {
+    "name": "Uzina Getica Backpack",
+    "rarity": "regular",
+    "category": "Backpack",
+    "subtitle": "Uzina Getica"
+  },
+  {
+    "name": "Uzina Getica Chest",
+    "rarity": "regular",
+    "category": "Chest",
+    "subtitle": "Uzina Getica"
+  },
+  {
+    "name": "Uzina Getica Gloves",
+    "rarity": "regular",
+    "category": "Gloves",
+    "subtitle": "Uzina Getica"
+  },
+  {
+    "name": "Uzina Getica Holster",
+    "rarity": "regular",
+    "category": "Holster",
+    "subtitle": "Uzina Getica"
+  },
+  {
+    "name": "Uzina Getica Kneepads",
+    "rarity": "regular",
+    "category": "Kneepads",
+    "subtitle": "Uzina Getica"
+  },
+  {
+    "name": "Yaahl Gear Mask",
+    "rarity": "regular",
+    "category": "Mask",
+    "subtitle": "Yaahl Gear"
+  },
+  {
+    "name": "Yaahl Gear Backpack",
+    "rarity": "regular",
+    "category": "Backpack",
+    "subtitle": "Yaahl Gear"
+  },
+  {
+    "name": "Yaahl Gear Chest",
+    "rarity": "regular",
+    "category": "Chest",
+    "subtitle": "Yaahl Gear"
+  },
+  {
+    "name": "Yaahl Gear Gloves",
+    "rarity": "regular",
+    "category": "Gloves",
+    "subtitle": "Yaahl Gear"
+  },
+  {
+    "name": "Yaahl Gear Holster",
+    "rarity": "regular",
+    "category": "Holster",
+    "subtitle": "Yaahl Gear"
+  },
+  {
+    "name": "Yaahl Gear Kneepads",
+    "rarity": "regular",
+    "category": "Kneepads",
+    "subtitle": "Yaahl Gear"
+  },
+  {
+    "name": "Alps Summit Armaments Mask",
+    "rarity": "regular",
+    "category": "Mask",
+    "subtitle": "Alps Summit Armaments"
+  },
+  {
+    "name": "Alps Summit Armaments Backpack",
+    "rarity": "regular",
+    "category": "Backpack",
+    "subtitle": "Alps Summit Armaments"
+  },
+  {
+    "name": "Alps Summit Armaments Chest",
+    "rarity": "regular",
+    "category": "Chest",
+    "subtitle": "Alps Summit Armaments"
+  },
+  {
+    "name": "Alps Summit Armaments Gloves",
+    "rarity": "regular",
+    "category": "Gloves",
+    "subtitle": "Alps Summit Armaments"
+  },
+  {
+    "name": "Alps Summit Armaments Holster",
+    "rarity": "regular",
+    "category": "Holster",
+    "subtitle": "Alps Summit Armaments"
+  },
+  {
+    "name": "Alps Summit Armaments Kneepads",
+    "rarity": "regular",
+    "category": "Kneepads",
+    "subtitle": "Alps Summit Armaments"
+  },
+  {
+    "name": "China Light Industries Mask",
+    "rarity": "regular",
+    "category": "Mask",
+    "subtitle": "China Light Industries"
+  },
+  {
+    "name": "China Light Industries Backpack",
+    "rarity": "regular",
+    "category": "Backpack",
+    "subtitle": "China Light Industries"
+  },
+  {
+    "name": "China Light Industries Chest",
+    "rarity": "regular",
+    "category": "Chest",
+    "subtitle": "China Light Industries"
+  },
+  {
+    "name": "China Light Industries Gloves",
+    "rarity": "regular",
+    "category": "Gloves",
+    "subtitle": "China Light Industries"
+  },
+  {
+    "name": "China Light Industries Holster",
+    "rarity": "regular",
+    "category": "Holster",
+    "subtitle": "China Light Industries"
+  },
+  {
+    "name": "China Light Industries Kneepads",
+    "rarity": "regular",
+    "category": "Kneepads",
+    "subtitle": "China Light Industries"
+  },
+  {
+    "name": "Electrique Mask",
+    "rarity": "regular",
+    "category": "Mask",
+    "subtitle": "Electrique"
+  },
+  {
+    "name": "Electrique Backpack",
+    "rarity": "regular",
+    "category": "Backpack",
+    "subtitle": "Electrique"
+  },
+  {
+    "name": "Electrique Chest",
+    "rarity": "regular",
+    "category": "Chest",
+    "subtitle": "Electrique"
+  },
+  {
+    "name": "Electrique Gloves",
+    "rarity": "regular",
+    "category": "Gloves",
+    "subtitle": "Electrique"
+  },
+  {
+    "name": "Electrique Holster",
+    "rarity": "regular",
+    "category": "Holster",
+    "subtitle": "Electrique"
+  },
+  {
+    "name": "Electrique Kneepads",
+    "rarity": "regular",
+    "category": "Kneepads",
+    "subtitle": "Electrique"
+  },
+  {
+    "name": "Empress International Mask",
+    "rarity": "regular",
+    "category": "Mask",
+    "subtitle": "Empress International"
+  },
+  {
+    "name": "Empress International Backpack",
+    "rarity": "regular",
+    "category": "Backpack",
+    "subtitle": "Empress International"
+  },
+  {
+    "name": "Empress International Chest",
+    "rarity": "regular",
+    "category": "Chest",
+    "subtitle": "Empress International"
+  },
+  {
+    "name": "Empress International Gloves",
+    "rarity": "regular",
+    "category": "Gloves",
+    "subtitle": "Empress International"
+  },
+  {
+    "name": "Empress International Holster",
+    "rarity": "regular",
+    "category": "Holster",
+    "subtitle": "Empress International"
+  },
+  {
+    "name": "Empress International Kneepads",
+    "rarity": "regular",
+    "category": "Kneepads",
+    "subtitle": "Empress International"
+  },
+  {
+    "name": "Hana-U Corporation Mask",
+    "rarity": "regular",
+    "category": "Mask",
+    "subtitle": "Hana-U Corporation"
+  },
+  {
+    "name": "Hana-U Corporation Backpack",
+    "rarity": "regular",
+    "category": "Backpack",
+    "subtitle": "Hana-U Corporation"
+  },
+  {
+    "name": "Hana-U Corporation Chest",
+    "rarity": "regular",
+    "category": "Chest",
+    "subtitle": "Hana-U Corporation"
+  },
+  {
+    "name": "Hana-U Corporation Gloves",
+    "rarity": "regular",
+    "category": "Gloves",
+    "subtitle": "Hana-U Corporation"
+  },
+  {
+    "name": "Hana-U Corporation Holster",
+    "rarity": "regular",
+    "category": "Holster",
+    "subtitle": "Hana-U Corporation"
+  },
+  {
+    "name": "Hana-U Corporation Kneepads",
+    "rarity": "regular",
+    "category": "Kneepads",
+    "subtitle": "Hana-U Corporation"
+  },
+  {
+    "name": "Murakami Industries Mask",
+    "rarity": "regular",
+    "category": "Mask",
+    "subtitle": "Murakami Industries"
+  },
+  {
+    "name": "Murakami Industries Backpack",
+    "rarity": "regular",
+    "category": "Backpack",
+    "subtitle": "Murakami Industries"
+  },
+  {
+    "name": "Murakami Industries Chest",
+    "rarity": "regular",
+    "category": "Chest",
+    "subtitle": "Murakami Industries"
+  },
+  {
+    "name": "Murakami Industries Gloves",
+    "rarity": "regular",
+    "category": "Gloves",
+    "subtitle": "Murakami Industries"
+  },
+  {
+    "name": "Murakami Industries Holster",
+    "rarity": "regular",
+    "category": "Holster",
+    "subtitle": "Murakami Industries"
+  },
+  {
+    "name": "Murakami Industries Kneepads",
+    "rarity": "regular",
+    "category": "Kneepads",
+    "subtitle": "Murakami Industries"
+  },
+  {
+    "name": "Richter & Kaiser GmbH Mask",
+    "rarity": "regular",
+    "category": "Mask",
+    "subtitle": "Richter & Kaiser GmbH"
+  },
+  {
+    "name": "Richter & Kaiser GmbH Backpack",
+    "rarity": "regular",
+    "category": "Backpack",
+    "subtitle": "Richter & Kaiser GmbH"
+  },
+  {
+    "name": "Richter & Kaiser GmbH Chest",
+    "rarity": "regular",
+    "category": "Chest",
+    "subtitle": "Richter & Kaiser GmbH"
+  },
+  {
+    "name": "Richter & Kaiser GmbH Gloves",
+    "rarity": "regular",
+    "category": "Gloves",
+    "subtitle": "Richter & Kaiser GmbH"
+  },
+  {
+    "name": "Richter & Kaiser GmbH Holster",
+    "rarity": "regular",
+    "category": "Holster",
+    "subtitle": "Richter & Kaiser GmbH"
+  },
+  {
+    "name": "Richter & Kaiser GmbH Kneepads",
+    "rarity": "regular",
+    "category": "Kneepads",
+    "subtitle": "Richter & Kaiser GmbH"
+  },
+  {
+    "name": "Shiny Monkey Mask",
+    "rarity": "regular",
+    "category": "Mask",
+    "subtitle": "Shiny Monkey"
+  },
+  {
+    "name": "Shiny Monkey Backpack",
+    "rarity": "regular",
+    "category": "Backpack",
+    "subtitle": "Shiny Monkey"
+  },
+  {
+    "name": "Shiny Monkey Chest",
+    "rarity": "regular",
+    "category": "Chest",
+    "subtitle": "Shiny Monkey"
+  },
+  {
+    "name": "Shiny Monkey Gloves",
+    "rarity": "regular",
+    "category": "Gloves",
+    "subtitle": "Shiny Monkey"
+  },
+  {
+    "name": "Shiny Monkey Holster",
+    "rarity": "regular",
+    "category": "Holster",
+    "subtitle": "Shiny Monkey"
+  },
+  {
+    "name": "Shiny Monkey Kneepads",
+    "rarity": "regular",
+    "category": "Kneepads",
+    "subtitle": "Shiny Monkey"
+  },
+  {
+    "name": "Wyvern Wear Mask",
+    "rarity": "regular",
+    "category": "Mask",
+    "subtitle": "Wyvern Wear"
+  },
+  {
+    "name": "Wyvern Wear Backpack",
+    "rarity": "regular",
+    "category": "Backpack",
+    "subtitle": "Wyvern Wear"
+  },
+  {
+    "name": "Wyvern Wear Chest",
+    "rarity": "regular",
+    "category": "Chest",
+    "subtitle": "Wyvern Wear"
+  },
+  {
+    "name": "Wyvern Wear Gloves",
+    "rarity": "regular",
+    "category": "Gloves",
+    "subtitle": "Wyvern Wear"
+  },
+  {
+    "name": "Wyvern Wear Holster",
+    "rarity": "regular",
+    "category": "Holster",
+    "subtitle": "Wyvern Wear"
+  },
+  {
+    "name": "Wyvern Wear Kneepads",
+    "rarity": "regular",
+    "category": "Kneepads",
+    "subtitle": "Wyvern Wear"
+  },
+  {
+    "name": "Airaldi Holdings Mask",
+    "rarity": "regular",
+    "category": "Mask",
+    "subtitle": "Airaldi Holdings"
+  },
+  {
+    "name": "Airaldi Holdings Backpack",
+    "rarity": "regular",
+    "category": "Backpack",
+    "subtitle": "Airaldi Holdings"
+  },
+  {
+    "name": "Airaldi Holdings Chest",
+    "rarity": "regular",
+    "category": "Chest",
+    "subtitle": "Airaldi Holdings"
+  },
+  {
+    "name": "Airaldi Holdings Gloves",
+    "rarity": "regular",
+    "category": "Gloves",
+    "subtitle": "Airaldi Holdings"
+  },
+  {
+    "name": "Airaldi Holdings Holster",
+    "rarity": "regular",
+    "category": "Holster",
+    "subtitle": "Airaldi Holdings"
+  },
+  {
+    "name": "Airaldi Holdings Kneepads",
+    "rarity": "regular",
+    "category": "Kneepads",
+    "subtitle": "Airaldi Holdings"
+  },
+  {
+    "name": "Unit Alloys Mask",
+    "rarity": "regular",
+    "category": "Mask",
+    "subtitle": "Unit Alloys"
+  },
+  {
+    "name": "Unit Alloys Backpack",
+    "rarity": "regular",
+    "category": "Backpack",
+    "subtitle": "Unit Alloys"
+  },
+  {
+    "name": "Unit Alloys Chest",
+    "rarity": "regular",
+    "category": "Chest",
+    "subtitle": "Unit Alloys"
+  },
+  {
+    "name": "Unit Alloys Gloves",
+    "rarity": "regular",
+    "category": "Gloves",
+    "subtitle": "Unit Alloys"
+  },
+  {
+    "name": "Unit Alloys Holster",
+    "rarity": "regular",
+    "category": "Holster",
+    "subtitle": "Unit Alloys"
+  },
+  {
+    "name": "Unit Alloys Kneepads",
+    "rarity": "regular",
+    "category": "Kneepads",
+    "subtitle": "Unit Alloys"
+  },
+  {
+    "name": "Česká Výroba s.r.o. Mask",
+    "rarity": "regular",
+    "category": "Mask",
+    "subtitle": "Česká Výroba s.r.o."
+  },
+  {
+    "name": "Česká Výroba s.r.o. Backpack",
+    "rarity": "regular",
+    "category": "Backpack",
+    "subtitle": "Česká Výroba s.r.o."
+  },
+  {
+    "name": "Česká Výroba s.r.o. Chest",
+    "rarity": "regular",
+    "category": "Chest",
+    "subtitle": "Česká Výroba s.r.o."
+  },
+  {
+    "name": "Česká Výroba s.r.o. Gloves",
+    "rarity": "regular",
+    "category": "Gloves",
+    "subtitle": "Česká Výroba s.r.o."
+  },
+  {
+    "name": "Česká Výroba s.r.o. Holster",
+    "rarity": "regular",
+    "category": "Holster",
+    "subtitle": "Česká Výroba s.r.o."
+  },
+  {
+    "name": "Česká Výroba s.r.o. Kneepads",
+    "rarity": "regular",
+    "category": "Kneepads",
+    "subtitle": "Česká Výroba s.r.o."
+  },
+  {
+    "name": "Douglas & Harding Mask",
+    "rarity": "regular",
+    "category": "Mask",
+    "subtitle": "Douglas & Harding"
+  },
+  {
+    "name": "Douglas & Harding Backpack",
+    "rarity": "regular",
+    "category": "Backpack",
+    "subtitle": "Douglas & Harding"
+  },
+  {
+    "name": "Douglas & Harding Chest",
+    "rarity": "regular",
+    "category": "Chest",
+    "subtitle": "Douglas & Harding"
+  },
+  {
+    "name": "Douglas & Harding Gloves",
+    "rarity": "regular",
+    "category": "Gloves",
+    "subtitle": "Douglas & Harding"
+  },
+  {
+    "name": "Douglas & Harding Holster",
+    "rarity": "regular",
+    "category": "Holster",
+    "subtitle": "Douglas & Harding"
+  },
+  {
+    "name": "Douglas & Harding Kneepads",
+    "rarity": "regular",
+    "category": "Kneepads",
+    "subtitle": "Douglas & Harding"
+  },
+  {
+    "name": "Fenris Group AB Mask",
+    "rarity": "regular",
+    "category": "Mask",
+    "subtitle": "Fenris Group AB"
+  },
+  {
+    "name": "Fenris Group AB Backpack",
+    "rarity": "regular",
+    "category": "Backpack",
+    "subtitle": "Fenris Group AB"
+  },
+  {
+    "name": "Fenris Group AB Chest",
+    "rarity": "regular",
+    "category": "Chest",
+    "subtitle": "Fenris Group AB"
+  },
+  {
+    "name": "Fenris Group AB Gloves",
+    "rarity": "regular",
+    "category": "Gloves",
+    "subtitle": "Fenris Group AB"
+  },
+  {
+    "name": "Fenris Group AB Holster",
+    "rarity": "regular",
+    "category": "Holster",
+    "subtitle": "Fenris Group AB"
+  },
+  {
+    "name": "Fenris Group AB Kneepads",
+    "rarity": "regular",
+    "category": "Kneepads",
+    "subtitle": "Fenris Group AB"
+  },
+  {
+    "name": "Grupo Sombra S.A. Mask",
+    "rarity": "regular",
+    "category": "Mask",
+    "subtitle": "Grupo Sombra S.A."
+  },
+  {
+    "name": "Grupo Sombra S.A. Backpack",
+    "rarity": "regular",
+    "category": "Backpack",
+    "subtitle": "Grupo Sombra S.A."
+  },
+  {
+    "name": "Grupo Sombra S.A. Chest",
+    "rarity": "regular",
+    "category": "Chest",
+    "subtitle": "Grupo Sombra S.A."
+  },
+  {
+    "name": "Grupo Sombra S.A. Gloves",
+    "rarity": "regular",
+    "category": "Gloves",
+    "subtitle": "Grupo Sombra S.A."
+  },
+  {
+    "name": "Grupo Sombra S.A. Holster",
+    "rarity": "regular",
+    "category": "Holster",
+    "subtitle": "Grupo Sombra S.A."
+  },
+  {
+    "name": "Grupo Sombra S.A. Kneepads",
+    "rarity": "regular",
+    "category": "Kneepads",
+    "subtitle": "Grupo Sombra S.A."
+  },
+  {
+    "name": "Imminence Armaments Mask",
+    "rarity": "regular",
+    "category": "Mask",
+    "subtitle": "Imminence Armaments"
+  },
+  {
+    "name": "Imminence Armaments Backpack",
+    "rarity": "regular",
+    "category": "Backpack",
+    "subtitle": "Imminence Armaments"
+  },
+  {
+    "name": "Imminence Armaments Chest",
+    "rarity": "regular",
+    "category": "Chest",
+    "subtitle": "Imminence Armaments"
+  },
+  {
+    "name": "Imminence Armaments Gloves",
+    "rarity": "regular",
+    "category": "Gloves",
+    "subtitle": "Imminence Armaments"
+  },
+  {
+    "name": "Imminence Armaments Holster",
+    "rarity": "regular",
+    "category": "Holster",
+    "subtitle": "Imminence Armaments"
+  },
+  {
+    "name": "Imminence Armaments Kneepads",
+    "rarity": "regular",
+    "category": "Kneepads",
+    "subtitle": "Imminence Armaments"
+  },
+  {
+    "name": "Legatus S.p.A Mask",
+    "rarity": "regular",
+    "category": "Mask",
+    "subtitle": "Legatus S.p.A"
+  },
+  {
+    "name": "Legatus S.p.A Backpack",
+    "rarity": "regular",
+    "category": "Backpack",
+    "subtitle": "Legatus S.p.A"
+  },
+  {
+    "name": "Legatus S.p.A Chest",
+    "rarity": "regular",
+    "category": "Chest",
+    "subtitle": "Legatus S.p.A"
+  },
+  {
+    "name": "Legatus S.p.A Gloves",
+    "rarity": "regular",
+    "category": "Gloves",
+    "subtitle": "Legatus S.p.A"
+  },
+  {
+    "name": "Legatus S.p.A Holster",
+    "rarity": "regular",
+    "category": "Holster",
+    "subtitle": "Legatus S.p.A"
+  },
+  {
+    "name": "Legatus S.p.A Kneepads",
+    "rarity": "regular",
+    "category": "Kneepads",
+    "subtitle": "Legatus S.p.A"
+  },
+  {
+    "name": "Overlord Armaments Mask",
+    "rarity": "regular",
+    "category": "Mask",
+    "subtitle": "Overlord Armaments"
+  },
+  {
+    "name": "Overlord Armaments Backpack",
+    "rarity": "regular",
+    "category": "Backpack",
+    "subtitle": "Overlord Armaments"
+  },
+  {
+    "name": "Overlord Armaments Chest",
+    "rarity": "regular",
+    "category": "Chest",
+    "subtitle": "Overlord Armaments"
+  },
+  {
+    "name": "Overlord Armaments Gloves",
+    "rarity": "regular",
+    "category": "Gloves",
+    "subtitle": "Overlord Armaments"
+  },
+  {
+    "name": "Overlord Armaments Holster",
+    "rarity": "regular",
+    "category": "Holster",
+    "subtitle": "Overlord Armaments"
+  },
+  {
+    "name": "Overlord Armaments Kneepads",
+    "rarity": "regular",
+    "category": "Kneepads",
+    "subtitle": "Overlord Armaments"
+  },
+  {
+    "name": "Petrov Defense Group Mask",
+    "rarity": "regular",
+    "category": "Mask",
+    "subtitle": "Petrov Defense Group"
+  },
+  {
+    "name": "Petrov Defense Group Backpack",
+    "rarity": "regular",
+    "category": "Backpack",
+    "subtitle": "Petrov Defense Group"
+  },
+  {
+    "name": "Petrov Defense Group Chest",
+    "rarity": "regular",
+    "category": "Chest",
+    "subtitle": "Petrov Defense Group"
+  },
+  {
+    "name": "Petrov Defense Group Gloves",
+    "rarity": "regular",
+    "category": "Gloves",
+    "subtitle": "Petrov Defense Group"
+  },
+  {
+    "name": "Petrov Defense Group Holster",
+    "rarity": "regular",
+    "category": "Holster",
+    "subtitle": "Petrov Defense Group"
+  },
+  {
+    "name": "Petrov Defense Group Kneepads",
+    "rarity": "regular",
+    "category": "Kneepads",
+    "subtitle": "Petrov Defense Group"
+  },
+  {
+    "name": "Providence Defense Mask",
+    "rarity": "regular",
+    "category": "Mask",
+    "subtitle": "Providence Defense"
+  },
+  {
+    "name": "Providence Defense Backpack",
+    "rarity": "regular",
+    "category": "Backpack",
+    "subtitle": "Providence Defense"
+  },
+  {
+    "name": "Providence Defense Chest",
+    "rarity": "regular",
+    "category": "Chest",
+    "subtitle": "Providence Defense"
+  },
+  {
+    "name": "Providence Defense Gloves",
+    "rarity": "regular",
+    "category": "Gloves",
+    "subtitle": "Providence Defense"
+  },
+  {
+    "name": "Providence Defense Holster",
+    "rarity": "regular",
+    "category": "Holster",
+    "subtitle": "Providence Defense"
+  },
+  {
+    "name": "Providence Defense Kneepads",
+    "rarity": "regular",
+    "category": "Kneepads",
+    "subtitle": "Providence Defense"
+  },
+  {
+    "name": "Sokolov Concern Mask",
+    "rarity": "regular",
+    "category": "Mask",
+    "subtitle": "Sokolov Concern"
+  },
+  {
+    "name": "Sokolov Concern Backpack",
+    "rarity": "regular",
+    "category": "Backpack",
+    "subtitle": "Sokolov Concern"
+  },
+  {
+    "name": "Sokolov Concern Chest",
+    "rarity": "regular",
+    "category": "Chest",
+    "subtitle": "Sokolov Concern"
+  },
+  {
+    "name": "Sokolov Concern Gloves",
+    "rarity": "regular",
+    "category": "Gloves",
+    "subtitle": "Sokolov Concern"
+  },
+  {
+    "name": "Sokolov Concern Holster",
+    "rarity": "regular",
+    "category": "Holster",
+    "subtitle": "Sokolov Concern"
+  },
+  {
+    "name": "Sokolov Concern Kneepads",
+    "rarity": "regular",
+    "category": "Kneepads",
+    "subtitle": "Sokolov Concern"
+  },
+  {
+    "name": "Urban Lookout Mask",
+    "rarity": "regular",
+    "category": "Mask",
+    "subtitle": "Urban Lookout"
+  },
+  {
+    "name": "Urban Lookout Backpack",
+    "rarity": "regular",
+    "category": "Backpack",
+    "subtitle": "Urban Lookout"
+  },
+  {
+    "name": "Urban Lookout Chest",
+    "rarity": "regular",
+    "category": "Chest",
+    "subtitle": "Urban Lookout"
+  },
+  {
+    "name": "Urban Lookout Gloves",
+    "rarity": "regular",
+    "category": "Gloves",
+    "subtitle": "Urban Lookout"
+  },
+  {
+    "name": "Urban Lookout Holster",
+    "rarity": "regular",
+    "category": "Holster",
+    "subtitle": "Urban Lookout"
+  },
+  {
+    "name": "Urban Lookout Kneepads",
+    "rarity": "regular",
+    "category": "Kneepads",
+    "subtitle": "Urban Lookout"
+  },
+  {
+    "name": "Walker, Harris & Co. Mask",
+    "rarity": "regular",
+    "category": "Mask",
+    "subtitle": "Walker, Harris & Co."
+  },
+  {
+    "name": "Walker, Harris & Co. Backpack",
+    "rarity": "regular",
+    "category": "Backpack",
+    "subtitle": "Walker, Harris & Co."
+  },
+  {
+    "name": "Walker, Harris & Co. Chest",
+    "rarity": "regular",
+    "category": "Chest",
+    "subtitle": "Walker, Harris & Co."
+  },
+  {
+    "name": "Walker, Harris & Co. Gloves",
+    "rarity": "regular",
+    "category": "Gloves",
+    "subtitle": "Walker, Harris & Co."
+  },
+  {
+    "name": "Walker, Harris & Co. Holster",
+    "rarity": "regular",
+    "category": "Holster",
+    "subtitle": "Walker, Harris & Co."
+  },
+  {
+    "name": "Walker, Harris & Co. Kneepads",
+    "rarity": "regular",
+    "category": "Kneepads",
+    "subtitle": "Walker, Harris & Co."
+  },
+  {
+    "name": "Zwiadowka Sp. z o.o. Mask",
+    "rarity": "regular",
+    "category": "Mask",
+    "subtitle": "Zwiadowka Sp. z o.o."
+  },
+  {
+    "name": "Zwiadowka Sp. z o.o. Backpack",
+    "rarity": "regular",
+    "category": "Backpack",
+    "subtitle": "Zwiadowka Sp. z o.o."
+  },
+  {
+    "name": "Zwiadowka Sp. z o.o. Chest",
+    "rarity": "regular",
+    "category": "Chest",
+    "subtitle": "Zwiadowka Sp. z o.o."
+  },
+  {
+    "name": "Zwiadowka Sp. z o.o. Gloves",
+    "rarity": "regular",
+    "category": "Gloves",
+    "subtitle": "Zwiadowka Sp. z o.o."
+  },
+  {
+    "name": "Zwiadowka Sp. z o.o. Holster",
+    "rarity": "regular",
+    "category": "Holster",
+    "subtitle": "Zwiadowka Sp. z o.o."
+  },
+  {
+    "name": "Zwiadowka Sp. z o.o. Kneepads",
+    "rarity": "regular",
+    "category": "Kneepads",
+    "subtitle": "Zwiadowka Sp. z o.o."
+  },
+  {
+    "name": "Caretaker",
+    "rarity": "legendary",
+    "category": "Assault Rifle",
+    "subtitle": "Perfect Killer"
+  },
+  {
+    "name": "First Sight",
+    "rarity": "legendary",
+    "category": "Assault Rifle",
+    "subtitle": "+30% HSD, +50% reload speed debuff"
+  },
+  {
+    "name": "Manic",
+    "rarity": "legendary",
+    "category": "Assault Rifle",
+    "subtitle": "Perfectly Overflowing"
+  },
+  {
+    "name": "The Drill",
+    "rarity": "legendary",
+    "category": "Assault Rifle",
+    "subtitle": "Perfect Precision Strike"
+  },
+  {
+    "name": "Invisible Hand",
+    "rarity": "legendary",
+    "category": "Assault Rifle",
+    "subtitle": "Perfect Allegro"
+  },
+  {
+    "name": "Shield Splinterer",
+    "rarity": "legendary",
+    "category": "Assault Rifle",
+    "subtitle": "Perfect Optimist"
+  },
+  {
+    "name": "Goalie",
+    "rarity": "legendary",
+    "category": "Assault Rifle",
+    "subtitle": "Perfect Pressure Point"
+  },
+  {
+    "name": "Huntsman",
+    "rarity": "legendary",
+    "category": "Assault Rifle",
+    "subtitle": "Perfect Frenzy:"
+  },
+  {
+    "name": "Born Great",
+    "rarity": "legendary",
+    "category": "Assault Rifle",
+    "subtitle": "Perfect Stabilize"
+  },
+  {
+    "name": "Burn Out",
+    "rarity": "legendary",
+    "category": "Assault Rifle",
+    "subtitle": "Perfect On Empty"
+  },
+  {
+    "name": "Savage Wolverine",
+    "rarity": "legendary",
+    "category": "Assault Rifle",
+    "subtitle": "Perfectly Close & Personal"
+  },
+  {
+    "name": "Pyromaniac",
+    "rarity": "legendary",
+    "category": "Assault Rifle",
+    "subtitle": "Perfectly Ignited"
+  },
+  {
+    "name": "Glory Daze",
+    "rarity": "legendary",
+    "category": "Assault Rifle",
+    "subtitle": "Perfectly Near Sighted"
+  },
+  {
+    "name": "Mechanical Animal",
+    "rarity": "legendary",
+    "category": "Assault Rifle",
+    "subtitle": "Future Perfection"
+  },
+  {
+    "name": "Test Subject",
+    "rarity": "legendary",
+    "category": "Assault Rifle",
+    "subtitle": "Perfectly In Sync"
+  },
+  {
+    "name": "Lud",
+    "rarity": "legendary",
+    "category": "Assault Rifle",
+    "subtitle": "Perfect Streamline"
+  },
+  {
+    "name": "Kingbreaker",
+    "rarity": "legendary",
+    "category": "Assault Rifle",
+    "subtitle": "Perfect Flatline"
+  },
+  {
+    "name": "Lexington",
+    "rarity": "legendary",
+    "category": "Assault Rifle",
+    "subtitle": "+1,782 Base Damage"
+  },
+  {
+    "name": "The Railsplitter",
+    "rarity": "legendary",
+    "category": "Assault Rifle",
+    "subtitle": "Perfectly Accurate"
+  },
+  {
+    "name": "Dare",
+    "rarity": "legendary",
+    "category": "LMG",
+    "subtitle": "Perfect Flatline"
+  },
+  {
+    "name": "Tabula Rasa",
+    "rarity": "legendary",
+    "category": "LMG",
+    "subtitle": "Perfectly Steady Handed"
+  },
+  {
+    "name": "Black Friday",
+    "rarity": "legendary",
+    "category": "LMG",
+    "subtitle": "Perfectly Unhinged"
+  },
+  {
+    "name": "Good Times",
+    "rarity": "legendary",
+    "category": "LMG",
+    "subtitle": "Perfect Fast Hands"
+  },
+  {
+    "name": "The Stinger",
+    "rarity": "legendary",
+    "category": "LMG",
+    "subtitle": "Swift"
+  },
+  {
+    "name": "Sleipner",
+    "rarity": "legendary",
+    "category": "LMG",
+    "subtitle": "Perfect Frenzy"
+  },
+  {
+    "name": "Big Show",
+    "rarity": "legendary",
+    "category": "LMG",
+    "subtitle": "Perfect Thunder Strike"
+  },
+  {
+    "name": "Carnage",
+    "rarity": "legendary",
+    "category": "LMG",
+    "subtitle": "Perfect Sadist"
+  },
+  {
+    "name": "New Reliable",
+    "rarity": "legendary",
+    "category": "LMG",
+    "subtitle": "Perfectly Optimized"
+  },
+  {
+    "name": "Cricket",
+    "rarity": "legendary",
+    "category": "LMG",
+    "subtitle": "Perfect Precision Strike"
+  },
+  {
+    "name": "Rusty",
+    "rarity": "legendary",
+    "category": "LMG",
+    "subtitle": "Perfect Pressure Point"
+  },
+  {
+    "name": "Quiet Roar",
+    "rarity": "legendary",
+    "category": "LMG",
+    "subtitle": "Perfect Overwhelm"
+  },
+  {
+    "name": "The Grudge",
+    "rarity": "legendary",
+    "category": "SMG",
+    "subtitle": "Perfectly Vindictive"
+  },
+  {
+    "name": "Cabaret",
+    "rarity": "legendary",
+    "category": "SMG",
+    "subtitle": "Perfect Thunder Strike"
+  },
+  {
+    "name": "Grown Great",
+    "rarity": "legendary",
+    "category": "SMG",
+    "subtitle": "Perfect Stabilize"
+  },
+  {
+    "name": "Swap Chain",
+    "rarity": "legendary",
+    "category": "SMG",
+    "subtitle": "Perfect Unwavering"
+  },
+  {
+    "name": "Safety Distance",
+    "rarity": "legendary",
+    "category": "SMG",
+    "subtitle": "Perfect Outsider"
+  },
+  {
+    "name": "The Apartment",
+    "rarity": "legendary",
+    "category": "SMG",
+    "subtitle": "Perfectly Measured"
+  },
+  {
+    "name": "Emeline's Guard",
+    "rarity": "legendary",
+    "category": "SMG",
+    "subtitle": "Perfect Preservation"
+  },
+  {
+    "name": "Purist",
+    "rarity": "legendary",
+    "category": "SMG",
+    "subtitle": "Perfect Streamline"
+  },
+  {
+    "name": "The Sleigher",
+    "rarity": "legendary",
+    "category": "SMG",
+    "subtitle": "Hidden Rock"
+  },
+  {
+    "name": "Cold Relations",
+    "rarity": "legendary",
+    "category": "SMG",
+    "subtitle": "Perfectly Strained"
+  },
+  {
+    "name": "Slingshot",
+    "rarity": "legendary",
+    "category": "SMG",
+    "subtitle": "+45 Optimal Range (60 total)"
+  },
+  {
+    "name": "Froth",
+    "rarity": "legendary",
+    "category": "SMG",
+    "subtitle": "Perfect Immobilize"
+  },
+  {
+    "name": "Dark Winter",
+    "rarity": "legendary",
+    "category": "SMG",
+    "subtitle": "Perfect Killer"
+  },
+  {
+    "name": "Rock n' Roll",
+    "rarity": "legendary",
+    "category": "Shotgun",
+    "subtitle": "Perfectly Extra"
+  },
+  {
+    "name": "Lefty",
+    "rarity": "legendary",
+    "category": "Shotgun",
+    "subtitle": "Perfect Sledgehammer"
+  },
+  {
+    "name": "Boomstick",
+    "rarity": "legendary",
+    "category": "Shotgun",
+    "subtitle": "Perfect Pumped Up"
+  },
+  {
+    "name": "The Send-Off",
+    "rarity": "legendary",
+    "category": "Shotgun",
+    "subtitle": "Perfect Distance"
+  },
+  {
+    "name": "Cuélebre",
+    "rarity": "legendary",
+    "category": "Shotgun",
+    "subtitle": "Perfect Jazz Hands"
+  },
+  {
+    "name": "Lockdown",
+    "rarity": "legendary",
+    "category": "Shotgun",
+    "subtitle": "Perfect Immobilize"
+  },
+  {
+    "name": "Tsunami",
+    "rarity": "legendary",
+    "category": "Shotgun",
+    "subtitle": "Perfect Pummel"
+  },
+  {
+    "name": "Backup Boomstick",
+    "rarity": "legendary",
+    "category": "Shotgun",
+    "subtitle": "Core Attribute"
+  },
+  {
+    "name": "Firestarter",
+    "rarity": "legendary",
+    "category": "Shotgun",
+    "subtitle": "Primer Rounds"
+  },
+  {
+    "name": "Like Glue",
+    "rarity": "legendary",
+    "category": "Shotgun",
+    "subtitle": "Perfect Brazen"
+  },
+  {
+    "name": "Enforcer",
+    "rarity": "legendary",
+    "category": "Shotgun",
+    "subtitle": "Perfect Pummel"
+  },
+  {
+    "name": "Thorn",
+    "rarity": "legendary",
+    "category": "Shotgun",
+    "subtitle": "Perfect Brazen"
+  },
+  {
+    "name": "The Mop",
+    "rarity": "legendary",
+    "category": "Shotgun",
+    "subtitle": "Secondary Attribute"
+  },
+  {
+    "name": "The Virginian",
+    "rarity": "legendary",
+    "category": "Rifle",
+    "subtitle": "Perfect Boomerang"
+  },
+  {
+    "name": "Cooler",
+    "rarity": "legendary",
+    "category": "Rifle",
+    "subtitle": "Refreshing"
+  },
+  {
+    "name": "Baker's Dozen",
+    "rarity": "legendary",
+    "category": "Rifle",
+    "subtitle": "Perfect Lucky Shot"
+  },
+  {
+    "name": "Stage Left",
+    "rarity": "legendary",
+    "category": "Rifle",
+    "subtitle": "Perfect Sledgehammer"
+  },
+  {
+    "name": "Surge",
+    "rarity": "legendary",
+    "category": "Rifle",
+    "subtitle": "Perfect Spike"
+  },
+  {
+    "name": "Everlasting Gaze",
+    "rarity": "legendary",
+    "category": "Rifle",
+    "subtitle": "Perfect Perpetuation"
+  },
+  {
+    "name": "Harmony",
+    "rarity": "legendary",
+    "category": "Rifle",
+    "subtitle": "Perfectly In Sync:"
+  },
+  {
+    "name": "Artist's Tool",
+    "rarity": "legendary",
+    "category": "Rifle",
+    "subtitle": "Perfect Rifleman"
+  },
+  {
+    "name": "Achilles",
+    "rarity": "legendary",
+    "category": "Rifle",
+    "subtitle": "Perfect Soft Spot"
+  },
+  {
+    "name": "Whisper",
+    "rarity": "legendary",
+    "category": "Rifle",
+    "subtitle": "Perfectly Behind You"
+  },
+  {
+    "name": "The White Death",
+    "rarity": "legendary",
+    "category": "Marksman Rifle",
+    "subtitle": "137.0% Headshot Damage"
+  },
+  {
+    "name": "Oh Carol",
+    "rarity": "legendary",
+    "category": "Marksman Rifle",
+    "subtitle": "137.0% Headshot Damage & Twinkling Lights"
+  },
+  {
+    "name": "Ekim's Long Stick",
+    "rarity": "legendary",
+    "category": "Marksman Rifle",
+    "subtitle": "Perfect Ranger"
+  },
+  {
+    "name": "The Darkness",
+    "rarity": "legendary",
+    "category": "Marksman Rifle",
+    "subtitle": "Perfect Eyeless"
+  },
+  {
+    "name": "Designated Hitter",
+    "rarity": "legendary",
+    "category": "Marksman Rifle",
+    "subtitle": "Perfect Reformation"
+  },
+  {
+    "name": "Pinprick",
+    "rarity": "legendary",
+    "category": "Marksman Rifle",
+    "subtitle": "Perfect First Blood"
+  },
+  {
+    "name": "Commando",
+    "rarity": "legendary",
+    "category": "Marksman Rifle",
+    "subtitle": "Perfectly Naked"
+  },
+  {
+    "name": "Handbasket",
+    "rarity": "legendary",
+    "category": "Marksman Rifle",
+    "subtitle": "+230,326 Base damage, -200 RPM"
+  },
+  {
+    "name": "Relic",
+    "rarity": "legendary",
+    "category": "Marksman Rifle",
+    "subtitle": "Perfectly Determined"
+  },
+  {
+    "name": "Scalpel",
+    "rarity": "legendary",
+    "category": "Marksman Rifle",
+    "subtitle": "Future Perfection:"
+  },
+  {
+    "name": "Instigator",
+    "rarity": "legendary",
+    "category": "Marksman Rifle",
+    "subtitle": "Perfect Soft Spot:"
+  },
+  {
+    "name": "Brutus",
+    "rarity": "legendary",
+    "category": "Marksman Rifle",
+    "subtitle": "Perfectly Behind You"
+  },
+  {
+    "name": "Orbit",
+    "rarity": "legendary",
+    "category": "Pistol",
+    "subtitle": "Perfect Finisher"
+  },
+  {
+    "name": "Prophet",
+    "rarity": "legendary",
+    "category": "Pistol",
+    "subtitle": "Perfectly Determined"
+  },
+  {
+    "name": "Sharpshooter's 93R",
+    "rarity": "legendary",
+    "category": "Pistol",
+    "subtitle": "Perfect Unwavering"
+  },
+  {
+    "name": "Survivalist D50",
+    "rarity": "legendary",
+    "category": "Pistol",
+    "subtitle": "Perfect Sadist"
+  },
+  {
+    "name": "Mozambique Special",
+    "rarity": "legendary",
+    "category": "Pistol",
+    "subtitle": "Perfect Breadbasket"
+  },
+  {
+    "name": "Quickstep",
+    "rarity": "legendary",
+    "category": "Pistol",
+    "subtitle": "Sport Mode"
+  },
+  {
+    "name": "Maxim 9",
+    "rarity": "legendary",
+    "category": "Pistol",
+    "subtitle": "Perfect Spike"
+  },
+  {
+    "name": "P320 XCompact",
+    "rarity": "legendary",
+    "category": "Pistol",
+    "subtitle": "Perfect Preservation"
+  },
+  {
+    "name": "Lightning Rod",
+    "rarity": "legendary",
+    "category": "Pistol",
+    "subtitle": "Perfect Salvage"
+  },
+  {
+    "name": "TDI \"Kard\" Custom",
+    "rarity": "legendary",
+    "category": "Pistol",
+    "subtitle": "Secondary Attribute"
+  },
+  {
+    "name": "The Harvest",
+    "rarity": "legendary",
+    "category": "Pistol",
+    "subtitle": "+10% base damage, -7% RoF"
+  },
+  {
+    "name": "Diceros Special",
+    "rarity": "legendary",
+    "category": "Pistol",
+    "subtitle": "Perfect Optimist"
+  },
+  {
+    "name": "Lullaby",
+    "rarity": "legendary",
+    "category": "Shotgun",
+    "subtitle": "Sandman"
+  },
+  {
+    "name": "The Sheriff",
+    "rarity": "legendary",
+    "category": "Shotgun",
+    "subtitle": "Autentico +35 Weapon Damage. +100% accuracy. No Damage Drop Off. These bonus are built into the weapons base stats"
+  },
+  {
+    "name": "Ruthless",
+    "rarity": "legendary",
+    "category": "Rifle",
+    "subtitle": "Binary Trigger"
+  },
+  {
+    "name": "Bittersweet",
+    "rarity": "legendary",
+    "category": "Rifle",
+    "subtitle": "Transfusion"
+  },
+  {
+    "name": "Shroud",
+    "rarity": "legendary",
+    "category": "Marksman Rifle",
+    "subtitle": "High Priority Target"
+  },
+  {
+    "name": "Big Alejandro",
+    "rarity": "legendary",
+    "category": "LMG",
+    "subtitle": "LMG"
+  },
+  {
+    "name": "Punch Drunk",
+    "rarity": "legendary",
+    "category": "Mask",
+    "subtitle": "Douglas & Harding"
+  },
+  {
+    "name": "Nightwatcher",
+    "rarity": "legendary",
+    "category": "Mask",
+    "subtitle": "Gila Guard"
+  },
+  {
+    "name": "Chill Out",
+    "rarity": "legendary",
+    "category": "Mask",
+    "subtitle": "Gila Guard"
+  },
+  {
+    "name": "Visionario",
+    "rarity": "legendary",
+    "category": "Mask",
+    "subtitle": "Legatus S.p.A."
+  },
+  {
+    "name": "The Hollow Man",
+    "rarity": "legendary",
+    "category": "Mask",
+    "subtitle": "Yaahl Gear"
+  },
+  {
+    "name": "Liquid Engineer",
+    "rarity": "legendary",
+    "category": "Backpack",
+    "subtitle": "Perfect Bloodsucker"
+  },
+  {
+    "name": "Hermano",
+    "rarity": "legendary",
+    "category": "Backpack",
+    "subtitle": "Perfect Overclock"
+  },
+  {
+    "name": "The Courier",
+    "rarity": "legendary",
+    "category": "Backpack",
+    "subtitle": "Perfect Creeping Death"
+  },
+  {
+    "name": "Backbone",
+    "rarity": "legendary",
+    "category": "Backpack",
+    "subtitle": "Perfectly Unstoppable Force"
+  },
+  {
+    "name": "Anarchist's Cookbook",
+    "rarity": "legendary",
+    "category": "Backpack",
+    "subtitle": "Perfectly Wicked"
+  },
+  {
+    "name": "Strategic Alignment",
+    "rarity": "legendary",
+    "category": "Backpack",
+    "subtitle": "Perfect Shock and Awe"
+  },
+  {
+    "name": "Lavoisier",
+    "rarity": "legendary",
+    "category": "Backpack",
+    "subtitle": "Perfect Galvanize"
+  },
+  {
+    "name": "Matador",
+    "rarity": "legendary",
+    "category": "Backpack",
+    "subtitle": "Perfect Adrenaline Rush"
+  },
+  {
+    "name": "The Gift",
+    "rarity": "legendary",
+    "category": "Backpack",
+    "subtitle": "Perfect Vigilance"
+  },
+  {
+    "name": "Percussive Maintenance",
+    "rarity": "legendary",
+    "category": "Backpack",
+    "subtitle": "Perfect Tech Support"
+  },
+  {
+    "name": "Vigil",
+    "rarity": "legendary",
+    "category": "Backpack",
+    "subtitle": "Perfect Versatile"
+  },
+  {
+    "name": "Devil's Due",
+    "rarity": "legendary",
+    "category": "Backpack",
+    "subtitle": "Perfect Clutch"
+  },
+  {
+    "name": "Battery Pack",
+    "rarity": "legendary",
+    "category": "Backpack",
+    "subtitle": "Perfectly Calculated"
+  },
+  {
+    "name": "The Setup",
+    "rarity": "legendary",
+    "category": "Backpack",
+    "subtitle": "Perfectly Opportunistic"
+  },
+  {
+    "name": "Force Multiplier",
+    "rarity": "legendary",
+    "category": "Backpack",
+    "subtitle": "Perfect Combined Arms"
+  },
+  {
+    "name": "Proxy",
+    "rarity": "legendary",
+    "category": "Backpack",
+    "subtitle": "Perfectly Tamper Proof"
+  },
+  {
+    "name": "Axel",
+    "rarity": "legendary",
+    "category": "Backpack",
+    "subtitle": "Perfect Energize"
+  },
+  {
+    "name": "Cap'n",
+    "rarity": "legendary",
+    "category": "Backpack",
+    "subtitle": "Perfect Leadership"
+  },
+  {
+    "name": "Festive Delivery",
+    "rarity": "legendary",
+    "category": "Backpack",
+    "subtitle": "Fireworks Show"
+  },
+  {
+    "name": "Henri",
+    "rarity": "legendary",
+    "category": "Chest",
+    "subtitle": "Perfect Companion"
+  },
+  {
+    "name": "Hunter-Killer",
+    "rarity": "legendary",
+    "category": "Chest",
+    "subtitle": "Perfect intimidate"
+  },
+  {
+    "name": "Everyday Carrier",
+    "rarity": "legendary",
+    "category": "Chest",
+    "subtitle": "Perfectly Efficient"
+  },
+  {
+    "name": "Chainkiller",
+    "rarity": "legendary",
+    "category": "Chest",
+    "subtitle": "Perfect Headhunter"
+  },
+  {
+    "name": "Pointman",
+    "rarity": "legendary",
+    "category": "Chest",
+    "subtitle": "Perfect Vanguard"
+  },
+  {
+    "name": "Vedmedytsya Vest",
+    "rarity": "legendary",
+    "category": "Chest",
+    "subtitle": "Perfect Braced"
+  },
+  {
+    "name": "The Sacrifice",
+    "rarity": "legendary",
+    "category": "Chest",
+    "subtitle": "Perfect Glass Cannon"
+  },
+  {
+    "name": "Zero F’s",
+    "rarity": "legendary",
+    "category": "Chest",
+    "subtitle": "Perfect Unbreakable"
+  },
+  {
+    "name": "Ferocious Calm",
+    "rarity": "legendary",
+    "category": "Chest",
+    "subtitle": "Perfect Overwatch"
+  },
+  {
+    "name": "Door-Kicker’s Knock",
+    "rarity": "legendary",
+    "category": "Chest",
+    "subtitle": "Perfect Spark"
+  },
+  {
+    "name": "Caesar's Guard",
+    "rarity": "legendary",
+    "category": "Chest",
+    "subtitle": "Perfectly Skilled"
+  },
+  {
+    "name": "Closer",
+    "rarity": "legendary",
+    "category": "Chest",
+    "subtitle": "Perfect Spotter"
+  },
+  {
+    "name": "Cherished",
+    "rarity": "legendary",
+    "category": "Chest",
+    "subtitle": "Perfect Trauma"
+  },
+  {
+    "name": "Carpenter",
+    "rarity": "legendary",
+    "category": "Chest",
+    "subtitle": "Perfectly Mad Bomber"
+  },
+  {
+    "name": "Bober",
+    "rarity": "legendary",
+    "category": "Chest",
+    "subtitle": "Perfect Entrench"
+  },
+  {
+    "name": "Pristine Example",
+    "rarity": "legendary",
+    "category": "Chest",
+    "subtitle": "Perfect Focus"
+  },
+  {
+    "name": "Sleight",
+    "rarity": "legendary",
+    "category": "Chest",
+    "subtitle": "Perfect Protected Reload"
+  },
+  {
+    "name": "Combustor",
+    "rarity": "legendary",
+    "category": "Chest",
+    "subtitle": "Perfectly Explosive Delivey"
+  },
+  {
+    "name": "Equalizer",
+    "rarity": "legendary",
+    "category": "Chest",
+    "subtitle": "Perfect Obliterate"
+  },
+  {
+    "name": "Deathgrips",
+    "rarity": "legendary",
+    "category": "Gloves",
+    "subtitle": "5.11 Tactical"
+  },
+  {
+    "name": "Contractor’s Gloves",
+    "rarity": "legendary",
+    "category": "Gloves",
+    "subtitle": "Petrov"
+  },
+  {
+    "name": "Motherly Love",
+    "rarity": "legendary",
+    "category": "Gloves",
+    "subtitle": "Alps Summit \nArmament"
+  },
+  {
+    "name": "Eagles Grasp",
+    "rarity": "legendary",
+    "category": "Gloves",
+    "subtitle": "Zwiadowka Sp. z o.o."
+  },
+  {
+    "name": "Firm Handshake",
+    "rarity": "legendary",
+    "category": "Gloves",
+    "subtitle": "Sokolov Concern"
+  },
+  {
+    "name": "Forge",
+    "rarity": "legendary",
+    "category": "Holster",
+    "subtitle": "Richter & Kaiser"
+  },
+  {
+    "name": "Ammo Dump",
+    "rarity": "legendary",
+    "category": "Holster",
+    "subtitle": "Badger Tuff"
+  },
+  {
+    "name": "Picaros Holster",
+    "rarity": "legendary",
+    "category": "Holster",
+    "subtitle": "Brazos de Arcabuz"
+  },
+  {
+    "name": "Spot-On",
+    "rarity": "legendary",
+    "category": "Holster",
+    "subtitle": "Urban Lookout"
+  },
+  {
+    "name": "Salvo",
+    "rarity": "legendary",
+    "category": "Holster",
+    "subtitle": "Unit Alloys"
+  },
+  {
+    "name": "Claws Out",
+    "rarity": "legendary",
+    "category": "Holster",
+    "subtitle": "Wyvern Wear"
+  },
+  {
+    "name": "Fox’s Prayer",
+    "rarity": "legendary",
+    "category": "Kneepads",
+    "subtitle": "Overlord Armaments"
+  },
+  {
+    "name": "Snow Machine",
+    "rarity": "legendary",
+    "category": "Kneepads",
+    "subtitle": "Flurry"
+  },
+  {
+    "name": "Turmoil",
+    "rarity": "legendary",
+    "category": "Kneepads",
+    "subtitle": "Bewildered"
+  },
+  {
+    "name": "Emperor’s Guard",
+    "rarity": "legendary",
+    "category": "Kneepads",
+    "subtitle": "Murakami Industries"
+  },
+  {
+    "name": "Grease",
+    "rarity": "legendary",
+    "category": "Kneepads",
+    "subtitle": "Shiny Monkey"
+  },
+  {
+    "name": "Cloak",
+    "rarity": "legendary",
+    "category": "Kneepads",
+    "subtitle": "Imminence Armaments"
+  },
+  {
+    "name": "Aces & Eights Mask",
+    "rarity": "gearset",
+    "category": "Mask",
+    "subtitle": "Aces & Eights"
+  },
+  {
+    "name": "Aces & Eights Backpack",
+    "rarity": "gearset",
+    "category": "Backpack",
+    "subtitle": "Aces & Eights"
+  },
+  {
+    "name": "Aces & Eights Chest",
+    "rarity": "gearset",
+    "category": "Chest",
+    "subtitle": "Aces & Eights"
+  },
+  {
+    "name": "Aces & Eights Gloves",
+    "rarity": "gearset",
+    "category": "Gloves",
+    "subtitle": "Aces & Eights"
+  },
+  {
+    "name": "Aces & Eights Holster",
+    "rarity": "gearset",
+    "category": "Holster",
+    "subtitle": "Aces & Eights"
+  },
+  {
+    "name": "Aces & Eights Kneepads",
+    "rarity": "gearset",
+    "category": "Kneepads",
+    "subtitle": "Aces & Eights"
+  },
+  {
+    "name": "Aegis Mask",
+    "rarity": "gearset",
+    "category": "Mask",
+    "subtitle": "Aegis"
+  },
+  {
+    "name": "Aegis Backpack",
+    "rarity": "gearset",
+    "category": "Backpack",
+    "subtitle": "Aegis"
+  },
+  {
+    "name": "Aegis Chest",
+    "rarity": "gearset",
+    "category": "Chest",
+    "subtitle": "Aegis"
+  },
+  {
+    "name": "Aegis Gloves",
+    "rarity": "gearset",
+    "category": "Gloves",
+    "subtitle": "Aegis"
+  },
+  {
+    "name": "Aegis Holster",
+    "rarity": "gearset",
+    "category": "Holster",
+    "subtitle": "Aegis"
+  },
+  {
+    "name": "Aegis Kneepads",
+    "rarity": "gearset",
+    "category": "Kneepads",
+    "subtitle": "Aegis"
+  },
+  {
+    "name": "Breaking Point Mask",
+    "rarity": "gearset",
+    "category": "Mask",
+    "subtitle": "Breaking Point"
+  },
+  {
+    "name": "Breaking Point Backpack",
+    "rarity": "gearset",
+    "category": "Backpack",
+    "subtitle": "Breaking Point"
+  },
+  {
+    "name": "Breaking Point Chest",
+    "rarity": "gearset",
+    "category": "Chest",
+    "subtitle": "Breaking Point"
+  },
+  {
+    "name": "Breaking Point Gloves",
+    "rarity": "gearset",
+    "category": "Gloves",
+    "subtitle": "Breaking Point"
+  },
+  {
+    "name": "Breaking Point Holster",
+    "rarity": "gearset",
+    "category": "Holster",
+    "subtitle": "Breaking Point"
+  },
+  {
+    "name": "Breaking Point Kneepads",
+    "rarity": "gearset",
+    "category": "Kneepads",
+    "subtitle": "Breaking Point"
+  },
+  {
+    "name": "Cavalier Mask",
+    "rarity": "gearset",
+    "category": "Mask",
+    "subtitle": "Cavalier"
+  },
+  {
+    "name": "Cavalier Backpack",
+    "rarity": "gearset",
+    "category": "Backpack",
+    "subtitle": "Cavalier"
+  },
+  {
+    "name": "Cavalier Chest",
+    "rarity": "gearset",
+    "category": "Chest",
+    "subtitle": "Cavalier"
+  },
+  {
+    "name": "Cavalier Gloves",
+    "rarity": "gearset",
+    "category": "Gloves",
+    "subtitle": "Cavalier"
+  },
+  {
+    "name": "Cavalier Holster",
+    "rarity": "gearset",
+    "category": "Holster",
+    "subtitle": "Cavalier"
+  },
+  {
+    "name": "Cavalier Kneepads",
+    "rarity": "gearset",
+    "category": "Kneepads",
+    "subtitle": "Cavalier"
+  },
+  {
+    "name": "Concentrated Company Mask",
+    "rarity": "gearset",
+    "category": "Mask",
+    "subtitle": "Concentrated Company"
+  },
+  {
+    "name": "Concentrated Company Backpack",
+    "rarity": "gearset",
+    "category": "Backpack",
+    "subtitle": "Concentrated Company"
+  },
+  {
+    "name": "Concentrated Company Chest",
+    "rarity": "gearset",
+    "category": "Chest",
+    "subtitle": "Concentrated Company"
+  },
+  {
+    "name": "Concentrated Company Gloves",
+    "rarity": "gearset",
+    "category": "Gloves",
+    "subtitle": "Concentrated Company"
+  },
+  {
+    "name": "Concentrated Company Holster",
+    "rarity": "gearset",
+    "category": "Holster",
+    "subtitle": "Concentrated Company"
+  },
+  {
+    "name": "Concentrated Company Kneepads",
+    "rarity": "gearset",
+    "category": "Kneepads",
+    "subtitle": "Concentrated Company"
+  },
+  {
+    "name": "Eclipse Protocol Mask",
+    "rarity": "gearset",
+    "category": "Mask",
+    "subtitle": "Eclipse Protocol"
+  },
+  {
+    "name": "Eclipse Protocol Backpack",
+    "rarity": "gearset",
+    "category": "Backpack",
+    "subtitle": "Eclipse Protocol"
+  },
+  {
+    "name": "Eclipse Protocol Chest",
+    "rarity": "gearset",
+    "category": "Chest",
+    "subtitle": "Eclipse Protocol"
+  },
+  {
+    "name": "Eclipse Protocol Gloves",
+    "rarity": "gearset",
+    "category": "Gloves",
+    "subtitle": "Eclipse Protocol"
+  },
+  {
+    "name": "Eclipse Protocol Holster",
+    "rarity": "gearset",
+    "category": "Holster",
+    "subtitle": "Eclipse Protocol"
+  },
+  {
+    "name": "Eclipse Protocol Kneepads",
+    "rarity": "gearset",
+    "category": "Kneepads",
+    "subtitle": "Eclipse Protocol"
+  },
+  {
+    "name": "Foundry Bulwark Mask",
+    "rarity": "gearset",
+    "category": "Mask",
+    "subtitle": "Foundry Bulwark"
+  },
+  {
+    "name": "Foundry Bulwark Backpack",
+    "rarity": "gearset",
+    "category": "Backpack",
+    "subtitle": "Foundry Bulwark"
+  },
+  {
+    "name": "Foundry Bulwark Chest",
+    "rarity": "gearset",
+    "category": "Chest",
+    "subtitle": "Foundry Bulwark"
+  },
+  {
+    "name": "Foundry Bulwark Gloves",
+    "rarity": "gearset",
+    "category": "Gloves",
+    "subtitle": "Foundry Bulwark"
+  },
+  {
+    "name": "Foundry Bulwark Holster",
+    "rarity": "gearset",
+    "category": "Holster",
+    "subtitle": "Foundry Bulwark"
+  },
+  {
+    "name": "Foundry Bulwark Kneepads",
+    "rarity": "gearset",
+    "category": "Kneepads",
+    "subtitle": "Foundry Bulwark"
+  },
+  {
+    "name": "Future Initiative Mask",
+    "rarity": "gearset",
+    "category": "Mask",
+    "subtitle": "Future Initiative"
+  },
+  {
+    "name": "Future Initiative Backpack",
+    "rarity": "gearset",
+    "category": "Backpack",
+    "subtitle": "Future Initiative"
+  },
+  {
+    "name": "Future Initiative Chest",
+    "rarity": "gearset",
+    "category": "Chest",
+    "subtitle": "Future Initiative"
+  },
+  {
+    "name": "Future Initiative Gloves",
+    "rarity": "gearset",
+    "category": "Gloves",
+    "subtitle": "Future Initiative"
+  },
+  {
+    "name": "Future Initiative Holster",
+    "rarity": "gearset",
+    "category": "Holster",
+    "subtitle": "Future Initiative"
+  },
+  {
+    "name": "Future Initiative Kneepads",
+    "rarity": "gearset",
+    "category": "Kneepads",
+    "subtitle": "Future Initiative"
+  },
+  {
+    "name": "Hard Wired Mask",
+    "rarity": "gearset",
+    "category": "Mask",
+    "subtitle": "Hard Wired"
+  },
+  {
+    "name": "Hard Wired Backpack",
+    "rarity": "gearset",
+    "category": "Backpack",
+    "subtitle": "Hard Wired"
+  },
+  {
+    "name": "Hard Wired Chest",
+    "rarity": "gearset",
+    "category": "Chest",
+    "subtitle": "Hard Wired"
+  },
+  {
+    "name": "Hard Wired Gloves",
+    "rarity": "gearset",
+    "category": "Gloves",
+    "subtitle": "Hard Wired"
+  },
+  {
+    "name": "Hard Wired Holster",
+    "rarity": "gearset",
+    "category": "Holster",
+    "subtitle": "Hard Wired"
+  },
+  {
+    "name": "Hard Wired Kneepads",
+    "rarity": "gearset",
+    "category": "Kneepads",
+    "subtitle": "Hard Wired"
+  },
+  {
+    "name": "Heartbreaker Mask",
+    "rarity": "gearset",
+    "category": "Mask",
+    "subtitle": "Heartbreaker"
+  },
+  {
+    "name": "Heartbreaker Backpack",
+    "rarity": "gearset",
+    "category": "Backpack",
+    "subtitle": "Heartbreaker"
+  },
+  {
+    "name": "Heartbreaker Chest",
+    "rarity": "gearset",
+    "category": "Chest",
+    "subtitle": "Heartbreaker"
+  },
+  {
+    "name": "Heartbreaker Gloves",
+    "rarity": "gearset",
+    "category": "Gloves",
+    "subtitle": "Heartbreaker"
+  },
+  {
+    "name": "Heartbreaker Holster",
+    "rarity": "gearset",
+    "category": "Holster",
+    "subtitle": "Heartbreaker"
+  },
+  {
+    "name": "Heartbreaker Kneepads",
+    "rarity": "gearset",
+    "category": "Kneepads",
+    "subtitle": "Heartbreaker"
+  },
+  {
+    "name": "Hotshot Mask",
+    "rarity": "gearset",
+    "category": "Mask",
+    "subtitle": "Hotshot"
+  },
+  {
+    "name": "Hotshot Backpack",
+    "rarity": "gearset",
+    "category": "Backpack",
+    "subtitle": "Hotshot"
+  },
+  {
+    "name": "Hotshot Chest",
+    "rarity": "gearset",
+    "category": "Chest",
+    "subtitle": "Hotshot"
+  },
+  {
+    "name": "Hotshot Gloves",
+    "rarity": "gearset",
+    "category": "Gloves",
+    "subtitle": "Hotshot"
+  },
+  {
+    "name": "Hotshot Holster",
+    "rarity": "gearset",
+    "category": "Holster",
+    "subtitle": "Hotshot"
+  },
+  {
+    "name": "Hotshot Kneepads",
+    "rarity": "gearset",
+    "category": "Kneepads",
+    "subtitle": "Hotshot"
+  },
+  {
+    "name": "Hunter's Fury Mask",
+    "rarity": "gearset",
+    "category": "Mask",
+    "subtitle": "Hunter's Fury"
+  },
+  {
+    "name": "Hunter's Fury Backpack",
+    "rarity": "gearset",
+    "category": "Backpack",
+    "subtitle": "Hunter's Fury"
+  },
+  {
+    "name": "Hunter's Fury Chest",
+    "rarity": "gearset",
+    "category": "Chest",
+    "subtitle": "Hunter's Fury"
+  },
+  {
+    "name": "Hunter's Fury Gloves",
+    "rarity": "gearset",
+    "category": "Gloves",
+    "subtitle": "Hunter's Fury"
+  },
+  {
+    "name": "Hunter's Fury Holster",
+    "rarity": "gearset",
+    "category": "Holster",
+    "subtitle": "Hunter's Fury"
+  },
+  {
+    "name": "Hunter's Fury Kneepads",
+    "rarity": "gearset",
+    "category": "Kneepads",
+    "subtitle": "Hunter's Fury"
+  },
+  {
+    "name": "Measured Assembly Mask",
+    "rarity": "gearset",
+    "category": "Mask",
+    "subtitle": "Measured Assembly"
+  },
+  {
+    "name": "Measured Assembly Backpack",
+    "rarity": "gearset",
+    "category": "Backpack",
+    "subtitle": "Measured Assembly"
+  },
+  {
+    "name": "Measured Assembly Chest",
+    "rarity": "gearset",
+    "category": "Chest",
+    "subtitle": "Measured Assembly"
+  },
+  {
+    "name": "Measured Assembly Gloves",
+    "rarity": "gearset",
+    "category": "Gloves",
+    "subtitle": "Measured Assembly"
+  },
+  {
+    "name": "Measured Assembly Holster",
+    "rarity": "gearset",
+    "category": "Holster",
+    "subtitle": "Measured Assembly"
+  },
+  {
+    "name": "Measured Assembly Kneepads",
+    "rarity": "gearset",
+    "category": "Kneepads",
+    "subtitle": "Measured Assembly"
+  },
+  {
+    "name": "Negotiator's Dilemma Mask",
+    "rarity": "gearset",
+    "category": "Mask",
+    "subtitle": "Negotiator's Dilemma"
+  },
+  {
+    "name": "Negotiator's Dilemma Backpack",
+    "rarity": "gearset",
+    "category": "Backpack",
+    "subtitle": "Negotiator's Dilemma"
+  },
+  {
+    "name": "Negotiator's Dilemma Chest",
+    "rarity": "gearset",
+    "category": "Chest",
+    "subtitle": "Negotiator's Dilemma"
+  },
+  {
+    "name": "Negotiator's Dilemma Gloves",
+    "rarity": "gearset",
+    "category": "Gloves",
+    "subtitle": "Negotiator's Dilemma"
+  },
+  {
+    "name": "Negotiator's Dilemma Holster",
+    "rarity": "gearset",
+    "category": "Holster",
+    "subtitle": "Negotiator's Dilemma"
+  },
+  {
+    "name": "Negotiator's Dilemma Kneepads",
+    "rarity": "gearset",
+    "category": "Kneepads",
+    "subtitle": "Negotiator's Dilemma"
+  },
+  {
+    "name": "Ongoing Directive Mask",
+    "rarity": "gearset",
+    "category": "Mask",
+    "subtitle": "Ongoing Directive"
+  },
+  {
+    "name": "Ongoing Directive Backpack",
+    "rarity": "gearset",
+    "category": "Backpack",
+    "subtitle": "Ongoing Directive"
+  },
+  {
+    "name": "Ongoing Directive Chest",
+    "rarity": "gearset",
+    "category": "Chest",
+    "subtitle": "Ongoing Directive"
+  },
+  {
+    "name": "Ongoing Directive Gloves",
+    "rarity": "gearset",
+    "category": "Gloves",
+    "subtitle": "Ongoing Directive"
+  },
+  {
+    "name": "Ongoing Directive Holster",
+    "rarity": "gearset",
+    "category": "Holster",
+    "subtitle": "Ongoing Directive"
+  },
+  {
+    "name": "Ongoing Directive Kneepads",
+    "rarity": "gearset",
+    "category": "Kneepads",
+    "subtitle": "Ongoing Directive"
+  },
+  {
+    "name": "Ortiz: Exuro Mask",
+    "rarity": "gearset",
+    "category": "Mask",
+    "subtitle": "Ortiz: Exuro"
+  },
+  {
+    "name": "Ortiz: Exuro Backpack",
+    "rarity": "gearset",
+    "category": "Backpack",
+    "subtitle": "Ortiz: Exuro"
+  },
+  {
+    "name": "Ortiz: Exuro Chest",
+    "rarity": "gearset",
+    "category": "Chest",
+    "subtitle": "Ortiz: Exuro"
+  },
+  {
+    "name": "Ortiz: Exuro Gloves",
+    "rarity": "gearset",
+    "category": "Gloves",
+    "subtitle": "Ortiz: Exuro"
+  },
+  {
+    "name": "Ortiz: Exuro Holster",
+    "rarity": "gearset",
+    "category": "Holster",
+    "subtitle": "Ortiz: Exuro"
+  },
+  {
+    "name": "Ortiz: Exuro Kneepads",
+    "rarity": "gearset",
+    "category": "Kneepads",
+    "subtitle": "Ortiz: Exuro"
+  },
+  {
+    "name": "Refactor Mask",
+    "rarity": "gearset",
+    "category": "Mask",
+    "subtitle": "Refactor"
+  },
+  {
+    "name": "Refactor Backpack",
+    "rarity": "gearset",
+    "category": "Backpack",
+    "subtitle": "Refactor"
+  },
+  {
+    "name": "Refactor Chest",
+    "rarity": "gearset",
+    "category": "Chest",
+    "subtitle": "Refactor"
+  },
+  {
+    "name": "Refactor Gloves",
+    "rarity": "gearset",
+    "category": "Gloves",
+    "subtitle": "Refactor"
+  },
+  {
+    "name": "Refactor Holster",
+    "rarity": "gearset",
+    "category": "Holster",
+    "subtitle": "Refactor"
+  },
+  {
+    "name": "Refactor Kneepads",
+    "rarity": "gearset",
+    "category": "Kneepads",
+    "subtitle": "Refactor"
+  },
+  {
+    "name": "Rigger Mask",
+    "rarity": "gearset",
+    "category": "Mask",
+    "subtitle": "Rigger"
+  },
+  {
+    "name": "Rigger Backpack",
+    "rarity": "gearset",
+    "category": "Backpack",
+    "subtitle": "Rigger"
+  },
+  {
+    "name": "Rigger Chest",
+    "rarity": "gearset",
+    "category": "Chest",
+    "subtitle": "Rigger"
+  },
+  {
+    "name": "Rigger Gloves",
+    "rarity": "gearset",
+    "category": "Gloves",
+    "subtitle": "Rigger"
+  },
+  {
+    "name": "Rigger Holster",
+    "rarity": "gearset",
+    "category": "Holster",
+    "subtitle": "Rigger"
+  },
+  {
+    "name": "Rigger Kneepads",
+    "rarity": "gearset",
+    "category": "Kneepads",
+    "subtitle": "Rigger"
+  },
+  {
+    "name": "Striker's Battlegear Mask",
+    "rarity": "gearset",
+    "category": "Mask",
+    "subtitle": "Striker's Battlegear"
+  },
+  {
+    "name": "Striker's Battlegear Backpack",
+    "rarity": "gearset",
+    "category": "Backpack",
+    "subtitle": "Striker's Battlegear"
+  },
+  {
+    "name": "Striker's Battlegear Chest",
+    "rarity": "gearset",
+    "category": "Chest",
+    "subtitle": "Striker's Battlegear"
+  },
+  {
+    "name": "Striker's Battlegear Gloves",
+    "rarity": "gearset",
+    "category": "Gloves",
+    "subtitle": "Striker's Battlegear"
+  },
+  {
+    "name": "Striker's Battlegear Holster",
+    "rarity": "gearset",
+    "category": "Holster",
+    "subtitle": "Striker's Battlegear"
+  },
+  {
+    "name": "Striker's Battlegear Kneepads",
+    "rarity": "gearset",
+    "category": "Kneepads",
+    "subtitle": "Striker's Battlegear"
+  },
+  {
+    "name": "System Corruption\n(Dark Zone Exclusive) Mask",
+    "rarity": "gearset",
+    "category": "Mask",
+    "subtitle": "System Corruption\n(Dark Zone Exclusive)"
+  },
+  {
+    "name": "System Corruption\n(Dark Zone Exclusive) Backpack",
+    "rarity": "gearset",
+    "category": "Backpack",
+    "subtitle": "System Corruption\n(Dark Zone Exclusive)"
+  },
+  {
+    "name": "System Corruption\n(Dark Zone Exclusive) Chest",
+    "rarity": "gearset",
+    "category": "Chest",
+    "subtitle": "System Corruption\n(Dark Zone Exclusive)"
+  },
+  {
+    "name": "System Corruption\n(Dark Zone Exclusive) Gloves",
+    "rarity": "gearset",
+    "category": "Gloves",
+    "subtitle": "System Corruption\n(Dark Zone Exclusive)"
+  },
+  {
+    "name": "System Corruption\n(Dark Zone Exclusive) Holster",
+    "rarity": "gearset",
+    "category": "Holster",
+    "subtitle": "System Corruption\n(Dark Zone Exclusive)"
+  },
+  {
+    "name": "System Corruption\n(Dark Zone Exclusive) Kneepads",
+    "rarity": "gearset",
+    "category": "Kneepads",
+    "subtitle": "System Corruption\n(Dark Zone Exclusive)"
+  },
+  {
+    "name": "Tip of the Spear Mask",
+    "rarity": "gearset",
+    "category": "Mask",
+    "subtitle": "Tip of the Spear"
+  },
+  {
+    "name": "Tip of the Spear Backpack",
+    "rarity": "gearset",
+    "category": "Backpack",
+    "subtitle": "Tip of the Spear"
+  },
+  {
+    "name": "Tip of the Spear Chest",
+    "rarity": "gearset",
+    "category": "Chest",
+    "subtitle": "Tip of the Spear"
+  },
+  {
+    "name": "Tip of the Spear Gloves",
+    "rarity": "gearset",
+    "category": "Gloves",
+    "subtitle": "Tip of the Spear"
+  },
+  {
+    "name": "Tip of the Spear Holster",
+    "rarity": "gearset",
+    "category": "Holster",
+    "subtitle": "Tip of the Spear"
+  },
+  {
+    "name": "Tip of the Spear Kneepads",
+    "rarity": "gearset",
+    "category": "Kneepads",
+    "subtitle": "Tip of the Spear"
+  },
+  {
+    "name": "Tipping Scales Mask",
+    "rarity": "gearset",
+    "category": "Mask",
+    "subtitle": "Tipping Scales"
+  },
+  {
+    "name": "Tipping Scales Backpack",
+    "rarity": "gearset",
+    "category": "Backpack",
+    "subtitle": "Tipping Scales"
+  },
+  {
+    "name": "Tipping Scales Chest",
+    "rarity": "gearset",
+    "category": "Chest",
+    "subtitle": "Tipping Scales"
+  },
+  {
+    "name": "Tipping Scales Gloves",
+    "rarity": "gearset",
+    "category": "Gloves",
+    "subtitle": "Tipping Scales"
+  },
+  {
+    "name": "Tipping Scales Holster",
+    "rarity": "gearset",
+    "category": "Holster",
+    "subtitle": "Tipping Scales"
+  },
+  {
+    "name": "Tipping Scales Kneepads",
+    "rarity": "gearset",
+    "category": "Kneepads",
+    "subtitle": "Tipping Scales"
+  },
+  {
+    "name": "True Patriot Mask",
+    "rarity": "gearset",
+    "category": "Mask",
+    "subtitle": "True Patriot"
+  },
+  {
+    "name": "True Patriot Backpack",
+    "rarity": "gearset",
+    "category": "Backpack",
+    "subtitle": "True Patriot"
+  },
+  {
+    "name": "True Patriot Chest",
+    "rarity": "gearset",
+    "category": "Chest",
+    "subtitle": "True Patriot"
+  },
+  {
+    "name": "True Patriot Gloves",
+    "rarity": "gearset",
+    "category": "Gloves",
+    "subtitle": "True Patriot"
+  },
+  {
+    "name": "True Patriot Holster",
+    "rarity": "gearset",
+    "category": "Holster",
+    "subtitle": "True Patriot"
+  },
+  {
+    "name": "True Patriot Kneepads",
+    "rarity": "gearset",
+    "category": "Kneepads",
+    "subtitle": "True Patriot"
+  },
+  {
+    "name": "Umbra Initiative Mask",
+    "rarity": "gearset",
+    "category": "Mask",
+    "subtitle": "Umbra Initiative"
+  },
+  {
+    "name": "Umbra Initiative Backpack",
+    "rarity": "gearset",
+    "category": "Backpack",
+    "subtitle": "Umbra Initiative"
+  },
+  {
+    "name": "Umbra Initiative Chest",
+    "rarity": "gearset",
+    "category": "Chest",
+    "subtitle": "Umbra Initiative"
+  },
+  {
+    "name": "Umbra Initiative Gloves",
+    "rarity": "gearset",
+    "category": "Gloves",
+    "subtitle": "Umbra Initiative"
+  },
+  {
+    "name": "Umbra Initiative Holster",
+    "rarity": "gearset",
+    "category": "Holster",
+    "subtitle": "Umbra Initiative"
+  },
+  {
+    "name": "Umbra Initiative Kneepads",
+    "rarity": "gearset",
+    "category": "Kneepads",
+    "subtitle": "Umbra Initiative"
+  },
+  {
+    "name": "Virtuoso Mask",
+    "rarity": "gearset",
+    "category": "Mask",
+    "subtitle": "Virtuoso"
+  },
+  {
+    "name": "Virtuoso Backpack",
+    "rarity": "gearset",
+    "category": "Backpack",
+    "subtitle": "Virtuoso"
+  },
+  {
+    "name": "Virtuoso Chest",
+    "rarity": "gearset",
+    "category": "Chest",
+    "subtitle": "Virtuoso"
+  },
+  {
+    "name": "Virtuoso Gloves",
+    "rarity": "gearset",
+    "category": "Gloves",
+    "subtitle": "Virtuoso"
+  },
+  {
+    "name": "Virtuoso Holster",
+    "rarity": "gearset",
+    "category": "Holster",
+    "subtitle": "Virtuoso"
+  },
+  {
+    "name": "Virtuoso Kneepads",
+    "rarity": "gearset",
+    "category": "Kneepads",
+    "subtitle": "Virtuoso"
+  },
+  {
+    "name": "Chameleon",
+    "rarity": "exotic",
+    "category": "Assault Rifle",
+    "subtitle": "Adaptive Instincts"
+  },
+  {
+    "name": "Eagle Bearer",
+    "rarity": "exotic",
+    "category": "Assault Rifle",
+    "subtitle": "Eagle Strike"
+  },
+  {
+    "name": "St. Elmo's Engine",
+    "rarity": "exotic",
+    "category": "Assault Rifle",
+    "subtitle": "Actum Est"
+  },
+  {
+    "name": "The Bighorn",
+    "rarity": "exotic",
+    "category": "Assault Rifle",
+    "subtitle": "Big Game Hunter"
+  },
+  {
+    "name": "Strega",
+    "rarity": "exotic",
+    "category": "Assault Rifle",
+    "subtitle": "Talent Unnerve"
+  },
+  {
+    "name": "Capacitor",
+    "rarity": "exotic",
+    "category": "Assault Rifle",
+    "subtitle": "Capacitance"
+  },
+  {
+    "name": "Bullet King",
+    "rarity": "exotic",
+    "category": "LMG",
+    "subtitle": "Bullet Hell"
+  },
+  {
+    "name": "Bluescreen",
+    "rarity": "exotic",
+    "category": "LMG",
+    "subtitle": "Disruptor Rounds"
+  },
+  {
+    "name": "Iron Lung",
+    "rarity": "exotic",
+    "category": "LMG",
+    "subtitle": "Ardent"
+  },
+  {
+    "name": "Pakhan",
+    "rarity": "exotic",
+    "category": "LMG",
+    "subtitle": "Pakhan"
+  },
+  {
+    "name": "Pestilence",
+    "rarity": "exotic",
+    "category": "LMG",
+    "subtitle": "Plague of the Outcasts"
+  },
+  {
+    "name": "Backfire",
+    "rarity": "exotic",
+    "category": "SMG",
+    "subtitle": "Payment in kind"
+  },
+  {
+    "name": "The Chatterbox",
+    "rarity": "exotic",
+    "category": "SMG",
+    "subtitle": "Incessant Chatter"
+  },
+  {
+    "name": "Lady Death",
+    "rarity": "exotic",
+    "category": "SMG",
+    "subtitle": "Breathe Free"
+  },
+  {
+    "name": "Ouroboros",
+    "rarity": "exotic",
+    "category": "SMG",
+    "subtitle": "Rule them all"
+  },
+  {
+    "name": "Oxpecker",
+    "rarity": "exotic",
+    "category": "SMG",
+    "subtitle": "Symbiosis"
+  },
+  {
+    "name": "Sweet Dreams",
+    "rarity": "exotic",
+    "category": "Shotgun",
+    "subtitle": "Sandman"
+  },
+  {
+    "name": "Overlord",
+    "rarity": "exotic",
+    "category": "Shotgun",
+    "subtitle": "Capitulate"
+  },
+  {
+    "name": "Scorpio",
+    "rarity": "exotic",
+    "category": "Shotgun",
+    "subtitle": "Septic Shock"
+  },
+  {
+    "name": "Merciless",
+    "rarity": "exotic",
+    "category": "Rifle",
+    "subtitle": "Binary Trigger"
+  },
+  {
+    "name": "Diamondback",
+    "rarity": "exotic",
+    "category": "Rifle",
+    "subtitle": "Agonizing Bite"
+  },
+  {
+    "name": "Doctor Home",
+    "rarity": "exotic",
+    "category": "Rifle",
+    "subtitle": "Doctor Home"
+  },
+  {
+    "name": "The Ravenous",
+    "rarity": "exotic",
+    "category": "Rifle",
+    "subtitle": "Geri and Freki"
+  },
+  {
+    "name": "Vindicator",
+    "rarity": "exotic",
+    "category": "Rifle",
+    "subtitle": "Ortiz Assault Interface"
+  },
+  {
+    "name": "Sacrum Imperium",
+    "rarity": "exotic",
+    "category": "Marksman Rifle",
+    "subtitle": "The Trap"
+  },
+  {
+    "name": "Dread Edict",
+    "rarity": "exotic",
+    "category": "Marksman Rifle",
+    "subtitle": "Full Stop"
+  },
+  {
+    "name": "Nemesis",
+    "rarity": "exotic",
+    "category": "Marksman Rifle",
+    "subtitle": "Electromagnetic Accelerator"
+  },
+  {
+    "name": "Mantis",
+    "rarity": "exotic",
+    "category": "Marksman Rifle",
+    "subtitle": "In Plain Sight"
+  },
+  {
+    "name": "Liberty",
+    "rarity": "exotic",
+    "category": "Pistol",
+    "subtitle": "Liberty or Death"
+  },
+  {
+    "name": "Busy Little Bee",
+    "rarity": "exotic",
+    "category": "Pistol",
+    "subtitle": "Busy Little Bee"
+  },
+  {
+    "name": "Regulus",
+    "rarity": "exotic",
+    "category": "Pistol",
+    "subtitle": "Regicide"
+  },
+  {
+    "name": "Tempest",
+    "rarity": "exotic",
+    "category": "Pistol",
+    "subtitle": "Restrained:"
+  },
+  {
+    "name": "Mosquito",
+    "rarity": "exotic",
+    "category": "Pistol",
+    "subtitle": "Mosquito Song"
+  },
+  {
+    "name": "Vile",
+    "rarity": "exotic",
+    "category": "Mask",
+    "subtitle": "Toxic Delivery"
+  },
+  {
+    "name": "Catharsis",
+    "rarity": "exotic",
+    "category": "Mask",
+    "subtitle": "Vicious Cycle"
+  },
+  {
+    "name": "Coyote’s Mask",
+    "rarity": "exotic",
+    "category": "Mask",
+    "subtitle": "Pack Instincts"
+  },
+  {
+    "name": "Catalyst",
+    "rarity": "exotic",
+    "category": "Mask",
+    "subtitle": "Chemical Agent"
+  },
+  {
+    "name": "Tinkerer",
+    "rarity": "exotic",
+    "category": "Mask",
+    "subtitle": "Abridged"
+  },
+  {
+    "name": "Acosta's Go-Bag",
+    "rarity": "exotic",
+    "category": "Backpack",
+    "subtitle": "One in the Hand..."
+  },
+  {
+    "name": "Birdie's Quick Fix Pack",
+    "rarity": "exotic",
+    "category": "Backpack",
+    "subtitle": "Combat Medic"
+  },
+  {
+    "name": "Memento",
+    "rarity": "exotic",
+    "category": "Backpack",
+    "subtitle": "Kill Confirmed"
+  },
+  {
+    "name": "NinjaBike Messenger Backpack",
+    "rarity": "exotic",
+    "category": "Backpack",
+    "subtitle": "Resourceful"
+  },
+  {
+    "name": "Collector",
+    "rarity": "exotic",
+    "category": "Chest",
+    "subtitle": "Hoarder"
+  },
+  {
+    "name": "Provocator",
+    "rarity": "exotic",
+    "category": "Chest",
+    "subtitle": "Challenger"
+  },
+  {
+    "name": "Beacon",
+    "rarity": "exotic",
+    "category": "Chest",
+    "subtitle": "Bond"
+  },
+  {
+    "name": "Tardigrade Armor System",
+    "rarity": "exotic",
+    "category": "Chest",
+    "subtitle": "Ablative Nano-Plating"
+  },
+  {
+    "name": "Ridgeway's Pride",
+    "rarity": "exotic",
+    "category": "Chest",
+    "subtitle": "Bleeding Edge"
+  },
+  {
+    "name": "Bloody Knuckles",
+    "rarity": "exotic",
+    "category": "Gloves",
+    "subtitle": "Over the top"
+  },
+  {
+    "name": "BTSU Datagloves",
+    "rarity": "exotic",
+    "category": "Gloves",
+    "subtitle": "Transference Overclock"
+  },
+  {
+    "name": "Exodus Gloves",
+    "rarity": "exotic",
+    "category": "Gloves",
+    "subtitle": "Smoke Screen"
+  },
+  {
+    "name": "Overdogs",
+    "rarity": "exotic",
+    "category": "Gloves",
+    "subtitle": "Weakest Link"
+  },
+  {
+    "name": "Rugged Gauntlets",
+    "rarity": "exotic",
+    "category": "Gloves",
+    "subtitle": "Iron Grip"
+  },
+  {
+    "name": "Centurion Scabbard",
+    "rarity": "exotic",
+    "category": "Holster",
+    "subtitle": "Counter"
+  },
+  {
+    "name": "Dodge City Gunslinger's Holster",
+    "rarity": "exotic",
+    "category": "Holster",
+    "subtitle": "Ouick Draw"
+  },
+  {
+    "name": "Imperial Dynasty",
+    "rarity": "exotic",
+    "category": "Holster",
+    "subtitle": "Dragon's Glare"
+  },
+  {
+    "name": "Shocker Punch",
+    "rarity": "exotic",
+    "category": "Holster",
+    "subtitle": "Defibrillator"
+  },
+  {
+    "name": "Waveform",
+    "rarity": "exotic",
+    "category": "Holster",
+    "subtitle": "Alternating Current"
+  },
+  {
+    "name": "Nimble Holster",
+    "rarity": "exotic",
+    "category": "Holster",
+    "subtitle": "Bob and Weave"
+  },
+  {
+    "name": "Sawyer's Kneepads",
+    "rarity": "exotic",
+    "category": "Kneepads",
+    "subtitle": "Stand Your Ground"
+  },
+  {
+    "name": "Acosta Kneepads",
+    "rarity": "exotic",
+    "category": "Kneepads",
+    "subtitle": "Escape Plan"
+  },
+  {
+    "name": "Blacklisters",
+    "rarity": "exotic",
+    "category": "Kneepads",
+    "subtitle": "Ostracize"
+  },
+  {
+    "name": "NinjaBike Messenger Kneepads",
+    "rarity": "exotic",
+    "category": "Kneepads",
+    "subtitle": "Parkour!"
+  }
+]
