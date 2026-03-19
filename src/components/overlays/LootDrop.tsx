@@ -266,6 +266,14 @@ function DropInstance({
   // Total lifetime = dropSpeed (impact) + beamDuration
   const totalDuration = dropSpeed + beamDuration
 
+  // Shift label anchor near edges so text doesn't clip outside the container
+  // -50 = centered. Near left edge → 0 (left-aligned), near right edge → -100 (right-aligned)
+  const labelTranslateX = drop.x < 15
+    ? -50 * (drop.x / 15)
+    : drop.x > 85
+      ? -50 - 50 * ((drop.x - 85) / 15)
+      : -50
+
   // Pulse timing for disc layers (used via motion animate)
   const pulseDuration = 2
 
@@ -473,8 +481,10 @@ function DropInstance({
 
       {/* ── Rarity label + item info ── */}
       <motion.div
-        className="absolute left-1/2 -translate-x-1/2 whitespace-nowrap text-center"
+        className="absolute whitespace-nowrap text-center"
         style={{
+          left: '50%',
+          x: `${labelTranslateX}%`,
           top: `calc(50% + ${orbSize * 1.5}px)`,
           padding: contained ? '3px 10px' : '6px 16px',
           background: `radial-gradient(ellipse at 50% 30%, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.45) 60%, transparent 100%)`,
