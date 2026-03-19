@@ -283,7 +283,8 @@ function DropInstance({
       style={{
         left: `${drop.x}%`,
         top: `${drop.y}%`,
-        transform: 'translate(-50%, -50%)',
+        x: '-50%',
+        y: '-50%',
       }}
       initial={{ opacity: 1 }}
       animate={{ opacity: 0 }}
@@ -384,7 +385,7 @@ function DropInstance({
         className="absolute left-1/2"
         style={{
           width: beamWidth * 1.8,
-          transform: 'translateX(-50%)',
+          x: '-50%',
           bottom: '50%',
           background: `linear-gradient(to top, ${color}44 0%, ${color}18 25%, ${color}08 60%, transparent 100%)`,
           filter: `blur(${beamWidth * 0.4}px)`,
@@ -401,7 +402,7 @@ function DropInstance({
         className="absolute left-1/2"
         style={{
           width: beamWidth,
-          transform: 'translateX(-50%)',
+          x: '-50%',
           bottom: '50%',
           background: `linear-gradient(to top, ${color}cc 0%, ${color}66 15%, ${color}33 40%, ${color}11 70%, transparent 100%)`,
           boxShadow: `0 0 ${beamWidth}px ${color}33`,
@@ -418,7 +419,7 @@ function DropInstance({
         className="absolute left-1/2"
         style={{
           width: beamWidthInner,
-          transform: 'translateX(-50%)',
+          x: '-50%',
           bottom: '50%',
           background: `linear-gradient(to top, #ffffffaa 0%, ${color}aa 10%, ${color}44 35%, transparent 70%)`,
         }}
