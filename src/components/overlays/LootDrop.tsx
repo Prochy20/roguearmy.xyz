@@ -168,6 +168,7 @@ export function LootDrop({
   return (
     <div
       className={`${contained ? 'absolute' : 'fixed'} inset-0 overflow-hidden pointer-events-none`}
+      style={{ containerType: 'size' }}
     >
       <AnimatePresence>
         {drops.map((drop) => (
@@ -381,7 +382,7 @@ function DropInstance({
           filter: `blur(${beamWidth * 0.4}px)`,
         }}
         initial={{ height: 0, opacity: 0 }}
-        animate={{ height: `${beamH}vh`, opacity: [0, 0.8, 0.8, 0.4] }}
+        animate={{ height: `${beamH}${contained ? 'cqh' : 'vh'}`, opacity: [0, 0.8, 0.8, 0.4] }}
         transition={{
           height: { duration: dropSpeed * 0.4, ease: 'easeOut' },
           opacity: { duration: totalDuration, times: [0, 0.1, 0.6, 1] },
@@ -398,7 +399,7 @@ function DropInstance({
           boxShadow: `0 0 ${beamWidth}px ${color}33`,
         }}
         initial={{ height: 0, opacity: 0 }}
-        animate={{ height: `${beamH}vh`, opacity: [0, 1, 1, 0.6] }}
+        animate={{ height: `${beamH}${contained ? 'cqh' : 'vh'}`, opacity: [0, 1, 1, 0.6] }}
         transition={{
           height: { duration: dropSpeed * 0.4, ease: 'easeOut' },
           opacity: { duration: totalDuration, times: [0, 0.1, 0.6, 1] },
@@ -414,7 +415,7 @@ function DropInstance({
           background: `linear-gradient(to top, #ffffffaa 0%, ${color}aa 10%, ${color}44 35%, transparent 70%)`,
         }}
         initial={{ height: 0, opacity: 0 }}
-        animate={{ height: `${beamH * 0.7}vh`, opacity: [0, 1, 0.8, 0.3] }}
+        animate={{ height: `${beamH * 0.7}${contained ? 'cqh' : 'vh'}`, opacity: [0, 1, 0.8, 0.3] }}
         transition={{
           height: { duration: dropSpeed * 0.35, ease: 'easeOut' },
           opacity: { duration: totalDuration, times: [0, 0.08, 0.5, 1] },
