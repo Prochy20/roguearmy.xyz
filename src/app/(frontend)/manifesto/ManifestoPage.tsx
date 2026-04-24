@@ -5,7 +5,6 @@ import { useTOC } from '@/components/toc/useTOC'
 import type { ManifestoDocument, ManifestoDocKey } from './types'
 import { DOC_ORDER } from './types'
 import {
-  useScrollProgress,
   useReadProgress,
   useKeyboardShortcuts,
   getDocKeyFromHash,
@@ -31,9 +30,6 @@ export function ManifestoPage({ docs, singleDoc }: ManifestoPageProps) {
   const doc = docs[activeKey]
   const searchInputRef = useRef<HTMLInputElement>(null)
   const [searchQuery, setSearchQuery] = useState('')
-
-  // Scroll progress
-  const scrollProgress = useScrollProgress()
 
   // Heading IDs for keyboard navigation + read tracking
   const headingIds = useMemo(
@@ -80,7 +76,7 @@ export function ManifestoPage({ docs, singleDoc }: ManifestoPageProps) {
   return (
     <div className="relative min-h-screen">
       {/* Fixed top progress bar */}
-      <ManifestoProgress progress={scrollProgress} />
+      <ManifestoProgress />
 
       {/* Header */}
       <ManifestoHeader doc={doc} />
@@ -114,7 +110,6 @@ export function ManifestoPage({ docs, singleDoc }: ManifestoPageProps) {
         {/* Right: Meta rail */}
         <ManifestoMeta
           doc={doc}
-          progress={scrollProgress}
           readCount={readCount}
           totalSections={doc.headings.length}
           enableDocSwitch={!singleDoc}

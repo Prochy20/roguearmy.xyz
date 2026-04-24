@@ -1,10 +1,10 @@
 'use client'
 
+import { useEffect, useRef } from 'react'
 import type { ManifestoDocument } from './types'
 
 interface ManifestoMetaProps {
   doc: ManifestoDocument
-  progress: number
   readCount: number
   totalSections: number
   enableDocSwitch?: boolean
@@ -42,12 +42,28 @@ function ShortcutRow({ keys, label }: { keys: string[]; label: string }) {
 
 export function ManifestoMeta({
   doc,
-  progress,
   readCount,
   totalSections,
   enableDocSwitch = true,
 }: ManifestoMetaProps) {
-  const pct = Math.round(progress * 100)
+  const barRef = useRef<HTMLDivElement>(null)
+  const pctRef = useRef<HTMLSpanElement>(null)
+
+  useEffect(() => {
+    let raf = 0
+    const update = () => {
+      const el = document.documentElement
+      const max = el.scrollHeight - el.clientHeight
+      const pct = max > 0 ? Math.round(Math.min(1, el.scrollTop / max) * 100) : 0
+      if (barRef.current) barRef.current.style.transform = `scaleX(${pct / 100})`
+      if (pctRef.current) pctRef.current.textContent = `${pct}% SCROLLED`
+    }
+    const onScroll = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(update) }
+    update()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll, { passive: true })
+    return () => { cancelAnimationFrame(raf); window.removeEventListener('scroll', onScroll); window.removeEventListener('resize', onScroll) }
+  }, [])
 
   return (
     <aside className="hidden lg:flex sticky top-7 self-start flex-col gap-5 font-mono">
@@ -83,19 +99,20 @@ export function ManifestoMeta({
         {/* Progress bar */}
         <div className="h-1 bg-rga-green/[0.12] relative overflow-hidden mb-2.5">
           <div
-            className="absolute inset-y-0 left-0"
+            ref={barRef}
+            className="absolute inset-0"
             style={{
-              right: `${100 - pct}%`,
+              transformOrigin: 'left',
+              transform: 'scaleX(0)',
               background: 'linear-gradient(90deg, #00FF41, #00FFFF)',
               boxShadow: '0 0 10px #00FF41',
-              transition: 'right 0.35s ease-out',
             }}
           />
         </div>
 
-        <div className="text-[10px] text-text-muted tracking-[0.2em]">
-          {pct}% SCROLLED
-        </div>
+        <span ref={pctRef} className="text-[10px] text-text-muted tracking-[0.2em]">
+          0% SCROLLED
+        </span>
 
       </div>
 

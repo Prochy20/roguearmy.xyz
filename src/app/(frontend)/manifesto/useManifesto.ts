@@ -4,30 +4,6 @@ import { useState, useEffect, useRef } from 'react'
 import type { ManifestoDocKey } from './types'
 import { DOC_ORDER } from './types'
 
-/**
- * Tracks scroll progress as a 0-1 ratio.
- */
-export function useScrollProgress() {
-  const [progress, setProgress] = useState(0)
-
-  useEffect(() => {
-    const compute = () => {
-      const doc = document.documentElement
-      const scrolled = doc.scrollTop
-      const max = doc.scrollHeight - doc.clientHeight
-      setProgress(max > 0 ? Math.min(1, scrolled / max) : 0)
-    }
-    compute()
-    window.addEventListener('scroll', compute, { passive: true })
-    window.addEventListener('resize', compute, { passive: true })
-    return () => {
-      window.removeEventListener('scroll', compute)
-      window.removeEventListener('resize', compute)
-    }
-  }, [])
-
-  return progress
-}
 
 /**
  * Auto-tracks which sections have been scrolled past.
