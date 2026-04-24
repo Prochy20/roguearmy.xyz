@@ -15,7 +15,7 @@ const DISCORD_INVITE = "https://dc.roguearmy.xyz"
  */
 export function FinalCTA() {
   return (
-    <section className="relative py-24 md:py-32 overflow-hidden">
+    <section className="relative pt-24 pb-12 md:pt-32 md:pb-16 overflow-hidden">
       {/* Glitch transition from AshleyTerminal */}
       <SectionGlitch
         intensity="medium"
@@ -85,7 +85,7 @@ export function FinalCTA() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.5 }}
-          className="mb-20"
+          className="mb-8"
         >
           <a href={DISCORD_INVITE} target="_blank" rel="noopener noreferrer">
             <GlowButton
@@ -100,18 +100,6 @@ export function FinalCTA() {
           </a>
         </motion.div>
 
-        {/* Footer */}
-        <footer className="text-center">
-          <p className="text-text-muted font-mono text-sm mb-4">
-            © {new Date().getFullYear()} Rogue Army Gaming Community
-          </p>
-          <p className="text-text-muted/50 text-xs font-mono">
-            Built with{" "}
-            <span className="text-rga-green">&lt;/&gt;</span>
-            {" "}and{" "}
-            <span className="text-rga-magenta">♥</span>
-          </p>
-        </footer>
       </div>
     </section>
   )
