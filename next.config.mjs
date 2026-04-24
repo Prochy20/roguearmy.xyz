@@ -1,7 +1,16 @@
+import { execFileSync } from 'node:child_process'
 import { withPayload } from '@payloadcms/next/withPayload'
+
+const commitSha = (() => {
+  try { return execFileSync('git', ['rev-parse', '--short', 'HEAD']).toString().trim() }
+  catch { return 'unknown' }
+})()
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  env: {
+    NEXT_PUBLIC_COMMIT_SHA: commitSha,
+  },
   // Required for sharp to work correctly in Vercel serverless functions
   serverExternalPackages: ['sharp'],
 
