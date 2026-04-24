@@ -4,6 +4,7 @@ import Script from 'next/script'
 import { Analytics } from '@vercel/analytics/react'
 import '@/app/globals.css'
 import { ScanlineOverlay } from '@/components/effects/ScanlineOverlay'
+import { Footer } from '@/components/shared/Footer'
 import { AuthProvider } from '@/components/auth/AuthProvider'
 import { getJwtSession } from '@/lib/auth/session.server'
 
@@ -124,6 +125,7 @@ export default async function FrontendLayout(props: { children: React.ReactNode 
       </Script>
       <ScanlineOverlay intensity="low" />
       <main>{children}</main>
+      <Footer />
       <Analytics />
     </AuthProvider>
   )
