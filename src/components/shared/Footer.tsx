@@ -25,14 +25,14 @@ const LINK_GROUPS: FooterGroup[] = [
     label: "community",
     items: [
       { cmd: "./join-discord", href: DISCORD_URL, external: true, primary: true },
-      { cmd: "./rules", href: "/rules" },
+      { cmd: "./rules", href: "/manifesto#rules" },
     ],
   },
   {
     label: "system",
     items: [
-      { cmd: "man privacy", href: "/privacy" },
-      { cmd: "man terms", href: "/terms" },
+      { cmd: "man privacy", href: "/manifesto#privacy" },
+      { cmd: "man terms", href: "/manifesto#terms" },
     ],
   },
 ]
