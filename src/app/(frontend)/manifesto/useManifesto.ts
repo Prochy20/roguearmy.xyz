@@ -19,7 +19,7 @@ export function useScrollProgress() {
     }
     compute()
     window.addEventListener('scroll', compute, { passive: true })
-    window.addEventListener('resize', compute)
+    window.addEventListener('resize', compute, { passive: true })
     return () => {
       window.removeEventListener('scroll', compute)
       window.removeEventListener('resize', compute)
