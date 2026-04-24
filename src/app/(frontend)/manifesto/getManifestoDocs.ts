@@ -53,9 +53,13 @@ export async function getManifestoDocs(): Promise<Record<ManifestoDocKey, Manife
   const payload = await getPayload({ config })
   const manifesto = await payload.findGlobal({ slug: 'manifesto' })
 
+  const transformed = await Promise.all(
+    DOC_ORDER.map((key) => transformDocument(key, manifesto[key])),
+  )
+
   const docs = {} as Record<ManifestoDocKey, ManifestoDocument>
-  for (const key of DOC_ORDER) {
-    docs[key] = await transformDocument(key, manifesto[key])
+  for (let i = 0; i < DOC_ORDER.length; i++) {
+    docs[DOC_ORDER[i]] = transformed[i]
   }
 
   return docs
