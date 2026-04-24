@@ -105,9 +105,11 @@ export interface Config {
   fallbackLocale: null;
   globals: {
     homepage: Homepage;
+    manifesto: Manifesto;
   };
   globalsSelect: {
     homepage: HomepageSelect<false> | HomepageSelect<true>;
+    manifesto: ManifestoSelect<false> | ManifestoSelect<true>;
   };
   locale: null;
   user: User & {
@@ -762,11 +764,209 @@ export interface Homepage {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "manifesto".
+ */
+export interface Manifesto {
+  id: string;
+  rules: {
+    /**
+     * Document code identifier (e.g. DOC_01)
+     */
+    code: string;
+    /**
+     * Small text above the title (e.g. "House rules")
+     */
+    kicker?: string | null;
+    /**
+     * Main display title
+     */
+    title: string;
+    /**
+     * Paragraph below the title explaining the document
+     */
+    subtitle?: string | null;
+    /**
+     * Document version (e.g. 4.2)
+     */
+    version?: string | null;
+    /**
+     * Choose where the document content comes from
+     */
+    contentSource?: ('payload' | 'wiki') | null;
+    /**
+     * Use headings (H2) to create numbered sections
+     */
+    content?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    /**
+     * Select a published document from the Outline wiki
+     */
+    outlineDocumentId?: string | null;
+  };
+  privacy: {
+    /**
+     * Document code identifier (e.g. DOC_01)
+     */
+    code: string;
+    /**
+     * Small text above the title (e.g. "House rules")
+     */
+    kicker?: string | null;
+    /**
+     * Main display title
+     */
+    title: string;
+    /**
+     * Paragraph below the title explaining the document
+     */
+    subtitle?: string | null;
+    /**
+     * Document version (e.g. 4.2)
+     */
+    version?: string | null;
+    /**
+     * Choose where the document content comes from
+     */
+    contentSource?: ('payload' | 'wiki') | null;
+    /**
+     * Use headings (H2) to create numbered sections
+     */
+    content?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    /**
+     * Select a published document from the Outline wiki
+     */
+    outlineDocumentId?: string | null;
+  };
+  terms: {
+    /**
+     * Document code identifier (e.g. DOC_01)
+     */
+    code: string;
+    /**
+     * Small text above the title (e.g. "House rules")
+     */
+    kicker?: string | null;
+    /**
+     * Main display title
+     */
+    title: string;
+    /**
+     * Paragraph below the title explaining the document
+     */
+    subtitle?: string | null;
+    /**
+     * Document version (e.g. 4.2)
+     */
+    version?: string | null;
+    /**
+     * Choose where the document content comes from
+     */
+    contentSource?: ('payload' | 'wiki') | null;
+    /**
+     * Use headings (H2) to create numbered sections
+     */
+    content?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    /**
+     * Select a published document from the Outline wiki
+     */
+    outlineDocumentId?: string | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "homepage_select".
  */
 export interface HomepageSelect<T extends boolean = true> {
   claim?: T;
   games?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "manifesto_select".
+ */
+export interface ManifestoSelect<T extends boolean = true> {
+  rules?:
+    | T
+    | {
+        code?: T;
+        kicker?: T;
+        title?: T;
+        subtitle?: T;
+        version?: T;
+        contentSource?: T;
+        content?: T;
+        outlineDocumentId?: T;
+      };
+  privacy?:
+    | T
+    | {
+        code?: T;
+        kicker?: T;
+        title?: T;
+        subtitle?: T;
+        version?: T;
+        contentSource?: T;
+        content?: T;
+        outlineDocumentId?: T;
+      };
+  terms?:
+    | T
+    | {
+        code?: T;
+        kicker?: T;
+        title?: T;
+        subtitle?: T;
+        version?: T;
+        contentSource?: T;
+        content?: T;
+        outlineDocumentId?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

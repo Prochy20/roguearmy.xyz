@@ -17,6 +17,7 @@ import { Articles } from './collections/Articles'
 import { ReadProgress } from './collections/ReadProgress'
 import { Bookmarks } from './collections/Bookmarks'
 import { Homepage } from './globals/Homepage'
+import { Manifesto } from './globals/Manifesto'
 import { CalloutBlock, CodeBlock, MermaidBlock, SocialEmbedBlock, TrelloCardBlock, VideoEmbedBlock } from './blocks'
 
 const filename = fileURLToPath(import.meta.url)
@@ -62,7 +63,7 @@ export default buildConfig({
 
   // Order determines admin menu group ordering: Content, Taxonomies, Assets, Users
   collections: [Articles, Series, Games, Topics, ContentTypes, Media, Users, Members, ReadProgress, Bookmarks],
-  globals: [Homepage],
+  globals: [Homepage, Manifesto],
   editor: lexicalEditor({
     features: ({ defaultFeatures }) => [
       ...defaultFeatures,
