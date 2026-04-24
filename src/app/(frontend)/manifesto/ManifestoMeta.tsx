@@ -1,0 +1,114 @@
+'use client'
+
+import type { ManifestoDocument } from './types'
+
+interface ManifestoMetaProps {
+  doc: ManifestoDocument
+  progress: number
+  readCount: number
+  totalSections: number
+  enableDocSwitch?: boolean
+}
+
+function MetaRow({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
+  return (
+    <div className="flex justify-between py-1.5 text-[11.5px]">
+      <span className="text-text-muted tracking-[0.18em] uppercase">{label}</span>
+      <span className={`text-white ${mono ? 'font-mono' : ''}`}>{value}</span>
+    </div>
+  )
+}
+
+function Kbd({ children }: { children: string }) {
+  return (
+    <span className="font-mono text-[10px] px-1.5 py-0.5 border border-rga-green/[0.12] text-text-secondary tracking-[0.12em] uppercase rounded-sm">
+      {children}
+    </span>
+  )
+}
+
+function ShortcutRow({ keys, label }: { keys: string[]; label: string }) {
+  return (
+    <div className="flex items-center gap-2.5 py-1.5 text-[11px]">
+      <span className="inline-flex gap-1">
+        {keys.map((k) => (
+          <Kbd key={k}>{k}</Kbd>
+        ))}
+      </span>
+      <span className="text-text-muted">{label}</span>
+    </div>
+  )
+}
+
+export function ManifestoMeta({
+  doc,
+  progress,
+  readCount,
+  totalSections,
+  enableDocSwitch = true,
+}: ManifestoMetaProps) {
+  const pct = Math.round(progress * 100)
+
+  return (
+    <aside className="hidden lg:flex sticky top-7 self-start flex-col gap-5 font-mono">
+      {/* Document info card */}
+      <div className="border border-rga-green/[0.12] bg-black/40 p-4">
+        <div className="text-[10px] tracking-[0.35em] text-rga-green mb-3">
+          // DOCUMENT
+        </div>
+        <MetaRow label="Code" value={doc.code} mono />
+        <MetaRow label="Version" value={`v${doc.version}`} mono />
+        {doc.updatedAt && (
+          <MetaRow
+            label="Updated"
+            value={new Date(doc.updatedAt).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+            })}
+          />
+        )}
+        <MetaRow label="Sections" value={String(totalSections).padStart(2, '0')} mono />
+      </div>
+
+      {/* Progress card */}
+      <div className="border border-rga-green/[0.12] bg-black/40 p-4">
+        <div className="flex justify-between items-baseline mb-2.5">
+          <span className="text-[10px] tracking-[0.35em] text-rga-green">// PROGRESS</span>
+          <span className="text-[10px] text-text-muted tracking-[0.15em]">
+            {readCount}/{totalSections} READ
+          </span>
+        </div>
+
+        {/* Progress bar */}
+        <div className="h-1 bg-rga-green/[0.12] relative overflow-hidden mb-2.5">
+          <div
+            className="absolute inset-y-0 left-0"
+            style={{
+              right: `${100 - pct}%`,
+              background: 'linear-gradient(90deg, #00FF41, #00FFFF)',
+              boxShadow: '0 0 10px #00FF41',
+              transition: 'right 0.35s ease-out',
+            }}
+          />
+        </div>
+
+        <div className="text-[10px] text-text-muted tracking-[0.2em]">
+          {pct}% SCROLLED
+        </div>
+
+      </div>
+
+      {/* Shortcuts card */}
+      <div className="border border-rga-green/[0.12] bg-black/40 p-4">
+        <div className="text-[10px] tracking-[0.35em] text-rga-green mb-3">
+          // SHORTCUTS
+        </div>
+        <ShortcutRow keys={['J', 'K']} label="Next / prev section" />
+        {enableDocSwitch && <ShortcutRow keys={['1', '2', '3']} label="Switch document" />}
+        <ShortcutRow keys={['/']} label="Focus search" />
+        <ShortcutRow keys={['P']} label="Print document" />
+      </div>
+    </aside>
+  )
+}
