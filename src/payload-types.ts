@@ -815,6 +815,32 @@ export interface Manifesto {
      * Select a published document from the Outline wiki
      */
     outlineDocumentId?: string | null;
+    /**
+     * Content source for the simplified (CASUAL) version of the rules
+     */
+    simplifiedContentSource?: ('payload' | 'wiki') | null;
+    /**
+     * Simplified rules shown in CASUAL mode. Use H2 headings for sections.
+     */
+    simplifiedContent?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    /**
+     * Outline wiki document for simplified rules
+     */
+    simplifiedOutlineDocumentId?: string | null;
   };
   privacy: {
     /**
@@ -942,6 +968,9 @@ export interface ManifestoSelect<T extends boolean = true> {
         contentSource?: T;
         content?: T;
         outlineDocumentId?: T;
+        simplifiedContentSource?: T;
+        simplifiedContent?: T;
+        simplifiedOutlineDocumentId?: T;
       };
   privacy?:
     | T

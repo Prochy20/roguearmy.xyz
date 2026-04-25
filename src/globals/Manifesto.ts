@@ -93,7 +93,48 @@ export const Manifesto: GlobalConfig = {
         {
           name: 'rules',
           label: 'Rules',
-          fields: createDocumentFields(),
+          fields: [
+            ...createDocumentFields(),
+            {
+              type: 'collapsible',
+              label: 'Simplified Rules (CASUAL Mode)',
+              admin: { initCollapsed: true },
+              fields: [
+                {
+                  name: 'simplifiedContentSource',
+                  type: 'radio',
+                  defaultValue: 'payload',
+                  options: [
+                    { label: 'Payload Content', value: 'payload' },
+                    { label: 'Wiki Link', value: 'wiki' },
+                  ],
+                  admin: {
+                    description: 'Content source for the simplified (CASUAL) version of the rules',
+                    layout: 'horizontal',
+                  },
+                },
+                {
+                  name: 'simplifiedContent',
+                  type: 'richText',
+                  admin: {
+                    condition: (_, siblingData) => siblingData?.simplifiedContentSource !== 'wiki',
+                    description: 'Simplified rules shown in CASUAL mode. Use H2 headings for sections.',
+                  },
+                },
+                {
+                  name: 'simplifiedOutlineDocumentId',
+                  type: 'text',
+                  admin: {
+                    condition: (_, siblingData) => siblingData?.simplifiedContentSource === 'wiki',
+                    description: 'Outline wiki document for simplified rules',
+                    components: {
+                      Field: '@/components/admin/OutlineDocumentSelector',
+                    },
+                  },
+                },
+              ],
+            },
+          ],
         },
         {
           name: 'privacy',

@@ -34,6 +34,30 @@ async function transformDocument(
     }
   }
 
+  // Process simplified content for rules
+  let simplifiedContentSource: 'payload' | 'wiki' | undefined
+  let simplifiedContent: ManifestoDocument['simplifiedContent']
+  let simplifiedMarkdownContent: string | undefined
+  let simplifiedHeadings: ManifestoDocument['simplifiedHeadings']
+
+  if (key === 'rules') {
+    const rulesTab = tab as Manifesto['rules']
+    simplifiedContentSource = rulesTab.simplifiedContentSource ?? undefined
+
+    if (rulesTab.simplifiedContentSource === 'wiki' && rulesTab.simplifiedOutlineDocumentId) {
+      try {
+        const simpDoc = await getDocumentContent(rulesTab.simplifiedOutlineDocumentId)
+        simplifiedMarkdownContent = simpDoc.text
+        simplifiedHeadings = extractHeadingsFromMarkdown(simplifiedMarkdownContent)
+      } catch {
+        // Outline unavailable — no simplified content
+      }
+    } else if (rulesTab.simplifiedContent) {
+      simplifiedContent = rulesTab.simplifiedContent as ManifestoDocument['simplifiedContent']
+      simplifiedHeadings = extractHeadingsFromLexical(rulesTab.simplifiedContent)
+    }
+  }
+
   return {
     key,
     code: tab.code,
@@ -46,6 +70,10 @@ async function transformDocument(
     content: tab.contentSource !== 'wiki' ? (tab.content ?? undefined) : undefined,
     markdownContent,
     headings,
+    simplifiedContentSource,
+    simplifiedContent,
+    simplifiedMarkdownContent,
+    simplifiedHeadings,
   }
 }
 
