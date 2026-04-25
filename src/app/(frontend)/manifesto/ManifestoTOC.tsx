@@ -37,9 +37,11 @@ export function ManifestoTOC({
     const containerRect = container.getBoundingClientRect()
     const activeRect = activeEl.getBoundingClientRect()
 
-    // Only scroll if the active item is outside the visible area
+    // Only scroll the TOC container if the active item is outside the visible area.
+    // Use container.scrollTo instead of scrollIntoView to avoid scrolling the page.
     if (activeRect.top < containerRect.top || activeRect.bottom > containerRect.bottom) {
-      activeEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+      const scrollOffset = activeRect.top - containerRect.top + container.scrollTop
+      container.scrollTo({ top: scrollOffset - container.clientHeight / 2 + activeEl.clientHeight / 2 })
     }
   }, [activeId])
 
