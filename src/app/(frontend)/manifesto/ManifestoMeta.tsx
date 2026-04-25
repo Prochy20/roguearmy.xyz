@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { memo, useEffect, useRef } from 'react'
 import type { ManifestoDocument, DifficultyMode } from './types'
 import { DifficultyToggle } from './DifficultyToggle'
 
@@ -44,7 +44,7 @@ function ShortcutRow({ keys, label }: { keys: string[]; label: string }) {
   )
 }
 
-export function ManifestoMeta({
+export const ManifestoMeta = memo(function ManifestoMeta({
   doc,
   readCount,
   totalSections,
@@ -141,4 +141,4 @@ export function ManifestoMeta({
       </div>
     </aside>
   )
-}
+})

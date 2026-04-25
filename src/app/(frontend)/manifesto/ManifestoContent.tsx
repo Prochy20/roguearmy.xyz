@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useEffect, useCallback } from 'react'
+import { memo, useRef, useEffect, useCallback } from 'react'
 import { RichTextRenderer } from '@/components/richtext/RichTextRenderer'
 import { MarkdownRenderer } from '@/components/markdown/MarkdownRenderer'
 import type { ManifestoDocument } from './types'
@@ -20,7 +20,7 @@ function generateSlices(count: number, power: number): number[] {
   return Array.from({ length: count }, () => (Math.random() - 0.5) * power)
 }
 
-export function ManifestoContent({ doc, glitchPhase = 'idle' }: ManifestoContentProps) {
+export const ManifestoContent = memo(function ManifestoContent({ doc, glitchPhase = 'idle' }: ManifestoContentProps) {
   const updatedDate = doc.version ? `v${doc.version}` : ''
 
   // Refs to glitch overlay layers — avoids re-renders during animation
@@ -282,4 +282,4 @@ export function ManifestoContent({ doc, glitchPhase = 'idle' }: ManifestoContent
       `}</style>
     </div>
   )
-}
+})
