@@ -250,7 +250,6 @@ export function Footer({ className }: { className?: string }) {
             <span>ROGUE_ARMY</span>
             <span className="text-text-muted/50">//</span>
             <span className="text-rga-green">ONLINE</span>
-            <span className="inline-block w-1.5 h-3 bg-rga-green opacity-60 shadow-[0_0_6px_rgba(0,255,65,0.6)] animate-blink" />
           </div>
           <div className="flex items-center gap-4">
             <span>&copy; {year} ROGUE ARMY</span>
