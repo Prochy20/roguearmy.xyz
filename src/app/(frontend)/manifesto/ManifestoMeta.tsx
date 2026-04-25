@@ -1,13 +1,17 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import type { ManifestoDocument } from './types'
+import type { ManifestoDocument, DifficultyMode } from './types'
+import { DifficultyToggle } from './DifficultyToggle'
 
 interface ManifestoMetaProps {
   doc: ManifestoDocument
   readCount: number
   totalSections: number
   enableDocSwitch?: boolean
+  difficulty?: DifficultyMode
+  onToggleDifficulty?: () => void
+  showDifficultyToggle?: boolean
 }
 
 function MetaRow({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
@@ -45,6 +49,9 @@ export function ManifestoMeta({
   readCount,
   totalSections,
   enableDocSwitch = true,
+  difficulty,
+  onToggleDifficulty,
+  showDifficultyToggle,
 }: ManifestoMetaProps) {
   const barRef = useRef<HTMLDivElement>(null)
   const pctRef = useRef<HTMLSpanElement>(null)
@@ -87,6 +94,11 @@ export function ManifestoMeta({
         <MetaRow label="Sections" value={String(totalSections).padStart(2, '0')} mono />
       </div>
 
+      {/* Difficulty toggle (rules only) */}
+      {showDifficultyToggle && difficulty && onToggleDifficulty && (
+        <DifficultyToggle mode={difficulty} onToggle={onToggleDifficulty} />
+      )}
+
       {/* Progress card */}
       <div className="border border-rga-green/[0.12] bg-black/40 p-4">
         <div className="flex justify-between items-baseline mb-2.5">
@@ -123,6 +135,7 @@ export function ManifestoMeta({
         </div>
         <ShortcutRow keys={['J', 'K']} label="Next / prev section" />
         {enableDocSwitch && <ShortcutRow keys={['1', '2', '3']} label="Switch document" />}
+        {showDifficultyToggle && <ShortcutRow keys={['D']} label="Toggle difficulty" />}
         <ShortcutRow keys={['/']} label="Focus search" />
         <ShortcutRow keys={['P']} label="Print document" />
       </div>

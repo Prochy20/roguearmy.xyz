@@ -58,12 +58,14 @@ export function useKeyboardShortcuts({
   onSwitchDoc,
   searchInputRef,
   enableDocSwitch = true,
+  onToggleDifficulty,
 }: {
   headingIds: string[]
   activeSection: string | null
   onSwitchDoc?: (key: ManifestoDocKey) => void
   searchInputRef: React.RefObject<HTMLInputElement | null>
   enableDocSwitch?: boolean
+  onToggleDifficulty?: () => void
 }) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -74,6 +76,12 @@ export function useKeyboardShortcuts({
         if (e.key === '1') { onSwitchDoc('rules'); return }
         if (e.key === '2') { onSwitchDoc('privacy'); return }
         if (e.key === '3') { onSwitchDoc('terms'); return }
+      }
+
+      if (e.key.toLowerCase() === 'd' && onToggleDifficulty) {
+        e.preventDefault()
+        onToggleDifficulty()
+        return
       }
 
       if (e.key.toLowerCase() === 'j' || e.key.toLowerCase() === 'k') {
@@ -95,7 +103,7 @@ export function useKeyboardShortcuts({
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [headingIds, activeSection, onSwitchDoc, searchInputRef, enableDocSwitch])
+  }, [headingIds, activeSection, onSwitchDoc, searchInputRef, enableDocSwitch, onToggleDifficulty])
 }
 
 /**
