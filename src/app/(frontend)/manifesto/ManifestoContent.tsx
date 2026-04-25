@@ -141,7 +141,7 @@ export const ManifestoContent = memo(function ManifestoContent({ doc, glitchPhas
     if (!container) return
     const els = container.querySelectorAll('[id]')
     els.forEach((el) => el.removeAttribute('id'))
-  })
+  }, [doc])
 
   const content = (
     <>
