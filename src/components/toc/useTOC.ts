@@ -28,10 +28,18 @@ export function useTOC({
   rootMargin = '-80px 0px -70% 0px',
 }: UseTOCOptions): UseTOCReturn {
   const [activeId, setActiveId] = useState<string | null>(null)
+  const activeIdRef = useRef<string | null>(null)
   const observerRef = useRef<IntersectionObserver | null>(null)
   const headingElementsRef = useRef<Map<string, IntersectionObserverEntry>>(
     new Map()
   )
+
+  const updateActiveId = useCallback((id: string) => {
+    if (id !== activeIdRef.current) {
+      activeIdRef.current = id
+      setActiveId(id)
+    }
+  }, [])
 
   // Initialize with first heading if available
   useEffect(() => {
@@ -61,7 +69,7 @@ export function useTOC({
       })
 
       if (visibleHeadings.length > 0) {
-        setActiveId(visibleHeadings[0].id)
+        updateActiveId(visibleHeadings[0].id)
       } else {
         // If no headings are visible, find the one closest above viewport
         // by looking at which headings we've scrolled past
@@ -87,7 +95,7 @@ export function useTOC({
         }
 
         if (closestHeading) {
-          setActiveId(closestHeading.id)
+          updateActiveId(closestHeading.id)
         }
       }
     }
