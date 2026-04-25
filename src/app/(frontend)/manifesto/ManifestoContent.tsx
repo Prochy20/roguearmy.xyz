@@ -133,6 +133,16 @@ export function ManifestoContent({ doc, glitchPhase = 'idle' }: ManifestoContent
     if (isGlitching) runGlitch()
   }, [isGlitching, runGlitch])
 
+  // Strip IDs from overlay layers so scrollspy/IntersectionObserver
+  // only find headings in the main content layer
+  const overlayContainerRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const container = overlayContainerRef.current
+    if (!container) return
+    const els = container.querySelectorAll('[id]')
+    els.forEach((el) => el.removeAttribute('id'))
+  })
+
   const content = (
     <>
       {/* Document meta line */}
@@ -184,55 +194,56 @@ export function ManifestoContent({ doc, glitchPhase = 'idle' }: ManifestoContent
         style={{ display: 'none', opacity: 0 }}
       />
 
-      {/* ── RGB split — cyan layer ────────────────────────── */}
-      <div
-        ref={cyanRef}
-        aria-hidden="true"
-        className="absolute inset-0 pointer-events-none z-30"
-        style={{
-          display: 'none',
-          color: '#00ffff',
-          mixBlendMode: 'screen',
-        }}
-      >
-        {content}
-      </div>
-
-      {/* ── RGB split — magenta layer ─────────────────────── */}
-      <div
-        ref={magentaRef}
-        aria-hidden="true"
-        className="absolute inset-0 pointer-events-none z-30"
-        style={{
-          display: 'none',
-          color: '#ff00ff',
-          mixBlendMode: 'screen',
-        }}
-      >
-        {content}
-      </div>
-
-      {/* ── Horizontal slice displacement ─────────────────── */}
-      {Array.from({ length: 5 }, (_, i) => (
+      {/* Overlay container — IDs stripped after mount so scrollspy only
+           finds headings in the main content layer below */}
+      <div ref={overlayContainerRef} aria-hidden="true">
+        {/* ── RGB split — cyan layer ────────────────────────── */}
         <div
-          key={`slice-${i}`}
-          ref={(el) => { sliceRefs.current[i] = el }}
-          aria-hidden="true"
-          className="absolute inset-0 pointer-events-none z-20"
+          ref={cyanRef}
+          className="absolute inset-0 pointer-events-none z-30"
           style={{
             display: 'none',
-            clipPath: `polygon(
-              0% ${i * 20}%,
-              100% ${i * 20}%,
-              100% ${(i + 1) * 20}%,
-              0% ${(i + 1) * 20}%
-            )`,
-            opacity: 0.9,
+            color: '#00ffff',
+            mixBlendMode: 'screen',
           }}
         >
           {content}
         </div>
-      ))}
+
+        {/* ── RGB split — magenta layer ─────────────────────── */}
+        <div
+          ref={magentaRef}
+          className="absolute inset-0 pointer-events-none z-30"
+          style={{
+            display: 'none',
+            color: '#ff00ff',
+            mixBlendMode: 'screen',
+          }}
+        >
+          {content}
+        </div>
+
+        {/* ── Horizontal slice displacement ─────────────────── */}
+        {Array.from({ length: 5 }, (_, i) => (
+          <div
+            key={`slice-${i}`}
+            ref={(el) => { sliceRefs.current[i] = el }}
+            className="absolute inset-0 pointer-events-none z-20"
+            style={{
+              display: 'none',
+              clipPath: `polygon(
+                0% ${i * 20}%,
+                100% ${i * 20}%,
+                100% ${(i + 1) * 20}%,
+                0% ${(i + 1) * 20}%
+              )`,
+              opacity: 0.9,
+            }}
+          >
+            {content}
+          </div>
+        ))}
+      </div>
 
       {/* ── Noise grain overlay ────────────────────────────── */}
       <div
