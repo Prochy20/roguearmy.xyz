@@ -100,10 +100,16 @@ export function ManifestoPage({ docs, singleDoc }: ManifestoPageProps) {
     }
   }, [doc, activeKey, difficulty])
 
+  // Only show H1 and H2 in the TOC, scrollspy, and read tracking
+  const tocHeadings = useMemo(
+    () => effectiveDoc.headings.filter((h) => h.level <= 2),
+    [effectiveDoc.headings],
+  )
+
   // Heading IDs for keyboard navigation + read tracking
   const headingIds = useMemo(
-    () => effectiveDoc.headings.map((h) => h.id),
-    [effectiveDoc.headings],
+    () => tocHeadings.map((h) => h.id),
+    [tocHeadings],
   )
 
   // Auto-tracks sections scrolled past (session only, not persisted)
@@ -111,7 +117,7 @@ export function ManifestoPage({ docs, singleDoc }: ManifestoPageProps) {
 
   // Scrollspy
   const { activeId, scrollToHeading } = useTOC({
-    headings: effectiveDoc.headings,
+    headings: tocHeadings,
     rootMargin: '-120px 0px -70% 0px',
   })
 
@@ -138,9 +144,8 @@ export function ManifestoPage({ docs, singleDoc }: ManifestoPageProps) {
   })
 
   const readCount = useMemo(
-    () =>
-      effectiveDoc.headings.filter((h) => readSet.has(h.id)).length,
-    [effectiveDoc.headings, readSet],
+    () => tocHeadings.filter((h) => readSet.has(h.id)).length,
+    [tocHeadings, readSet],
   )
 
   return (
@@ -162,7 +167,7 @@ export function ManifestoPage({ docs, singleDoc }: ManifestoPageProps) {
       <div className="max-w-[1480px] mx-auto px-6 md:px-12 lg:px-16 py-10 lg:grid lg:grid-cols-[220px_1fr_260px] lg:gap-12 items-start">
         {/* Left: TOC */}
         <ManifestoTOC
-          headings={effectiveDoc.headings}
+          headings={tocHeadings}
           activeId={activeId}
           readSet={readSet}
           searchQuery={searchQuery}
@@ -187,7 +192,7 @@ export function ManifestoPage({ docs, singleDoc }: ManifestoPageProps) {
         <ManifestoMeta
           doc={effectiveDoc}
           readCount={readCount}
-          totalSections={effectiveDoc.headings.length}
+          totalSections={tocHeadings.length}
           enableDocSwitch={!singleDoc}
           difficulty={difficulty}
           onToggleDifficulty={toggleDifficulty}
