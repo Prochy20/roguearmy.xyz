@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useMemo, useCallback } from 'react'
+import { useState, useRef, useMemo, useCallback, useEffect } from 'react'
 import { useTOC } from '@/components/toc/useTOC'
 import type { ManifestoDocument, ManifestoDocKey, DifficultyMode } from './types'
 import { DOC_ORDER } from './types'
@@ -31,6 +31,41 @@ export function ManifestoPage({ docs, singleDoc }: ManifestoPageProps) {
   const doc = docs[activeKey]
   const searchInputRef = useRef<HTMLInputElement>(null)
   const [searchQuery, setSearchQuery] = useState('')
+
+  // Resync on same-page nav: 'manifesto:switch' for footer clicks, 'hashchange' for back/forward.
+  const activeKeyRef = useRef(activeKey)
+  activeKeyRef.current = activeKey
+
+  useEffect(() => {
+    if (singleDoc) return
+
+    const initial = getDocKeyFromHash()
+    if (initial !== activeKeyRef.current) {
+      setActiveKey(initial)
+    }
+
+    const apply = (key: ManifestoDocKey) => {
+      if (activeKeyRef.current === key) return
+      setActiveKey(key)
+      setSearchQuery('')
+      window.scrollTo({ top: 0, behavior: 'auto' })
+    }
+
+    const onHashChange = () => apply(getDocKeyFromHash())
+    const onSwitch = (e: Event) => {
+      const detail = (e as CustomEvent<{ key: string }>).detail
+      if (DOC_ORDER.includes(detail?.key as ManifestoDocKey)) {
+        apply(detail.key as ManifestoDocKey)
+      }
+    }
+
+    window.addEventListener('hashchange', onHashChange)
+    window.addEventListener('manifesto:switch', onSwitch)
+    return () => {
+      window.removeEventListener('hashchange', onHashChange)
+      window.removeEventListener('manifesto:switch', onSwitch)
+    }
+  }, [singleDoc])
 
   // Difficulty mode (rules only) — read initial mode from URL
   const [difficulty, setDifficulty] = useState<DifficultyMode>(() => {

@@ -20,6 +20,15 @@ interface FooterGroup {
   items: FooterLink[]
 }
 
+// Pass the key directly — Next.js Link's pushState may lag the click, so reading location.hash races.
+function syncManifestoHash(href: string) {
+  if (typeof window === 'undefined') return
+  if (!href.startsWith('/manifesto#')) return
+  if (window.location.pathname !== '/manifesto') return
+  const key = href.slice('/manifesto#'.length)
+  window.dispatchEvent(new CustomEvent('manifesto:switch', { detail: { key } }))
+}
+
 const LINK_GROUPS: FooterGroup[] = [
   {
     label: "community",
@@ -230,6 +239,7 @@ export function Footer({ className }: { className?: string }) {
                       ) : (
                         <Link
                           href={item.href}
+                          onClick={() => syncManifestoHash(item.href)}
                           className="text-text-secondary no-underline transition-colors duration-200 hover:text-rga-green hover:[text-shadow:0_0_8px_rgba(0,255,65,0.4)]"
                         >
                           {inner}
