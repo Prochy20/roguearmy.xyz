@@ -25,9 +25,3 @@ export interface ManifestoDocument {
 }
 
 export const DOC_ORDER: ManifestoDocKey[] = ['rules', 'privacy', 'terms']
-
-export const DOC_LABELS: Record<ManifestoDocKey, string> = {
-  rules: 'Rules',
-  privacy: 'Privacy Policy',
-  terms: 'Terms of Use',
-}

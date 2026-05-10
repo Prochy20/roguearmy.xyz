@@ -48,18 +48,3 @@ export const NAV: readonly NavItem[] = [
     ],
   },
 ] as const
-
-export interface SocialLink {
-  label: string
-  href: string
-}
-
-// TODO: replace placeholder URLs with real channels.
-export const SOCIALS: readonly SocialLink[] = [
-  { label: 'DISCORD', href: 'https://dc.roguearmy.xyz' },
-  { label: 'TWITCH', href: 'https://www.twitch.tv/roguearmygg' },
-  { label: 'YOUTUBE', href: 'https://www.youtube.com/@roguearmygg' },
-  { label: 'TWITTER', href: 'https://twitter.com/roguearmygg' },
-] as const
-
-export const DISCORD_INVITE_URL = 'https://dc.roguearmy.xyz'

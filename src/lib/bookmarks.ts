@@ -33,12 +33,6 @@ export interface BookmarkWithArticle {
   createdAt: string
 }
 
-export interface BookmarksState {
-  bookmarks: BookmarkWithArticle[]
-  bookmarkedIds: Set<string>
-  isLoading: boolean
-}
-
 /**
  * Transform a BookmarkArticle to the Article type used by ArticleCard
  */
