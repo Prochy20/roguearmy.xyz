@@ -356,7 +356,7 @@ export interface Member {
      */
     nickname?: string | null;
     /**
-     * Array of Discord role IDs
+     * Array of raw Discord role snowflake IDs
      */
     roles?:
       | {
@@ -367,6 +367,26 @@ export interface Member {
       | number
       | boolean
       | null;
+    /**
+     * Ashley-resolved symbolic role list (DISCORD_ROLE_*). Drives badges and quarantine. Refreshed on a TTL via getMemberAuth.
+     */
+    symbolicRoles?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+    /**
+     * Last successful symbolic-role sync from Ashley.
+     */
+    rolesSyncedAt?: string | null;
+    /**
+     * Last failed sync attempt — drives short retry backoff after Ashley outages.
+     */
+    rolesSyncFailedAt?: string | null;
     /**
      * When they joined the Discord server
      */
@@ -381,7 +401,7 @@ export interface Member {
    */
   lastLogin: string;
   /**
-   * Set to Banned to revoke access
+   * Auto-managed by role sync: DISCORD_ROLE_QUARANTINE → Banned; role removed → Active. Manual edits will be overwritten on the next page load.
    */
   status: 'active' | 'banned' | 'left_server';
   updatedAt: string;
@@ -672,6 +692,9 @@ export interface MembersSelect<T extends boolean = true> {
     | {
         nickname?: T;
         roles?: T;
+        symbolicRoles?: T;
+        rolesSyncedAt?: T;
+        rolesSyncFailedAt?: T;
         joinedDiscordAt?: T;
       };
   joinedAt?: T;

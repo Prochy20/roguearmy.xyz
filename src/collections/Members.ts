@@ -93,7 +93,33 @@ export const Members: CollectionConfig = {
           type: 'json',
           admin: {
             readOnly: true,
-            description: 'Array of Discord role IDs',
+            description: 'Array of raw Discord role snowflake IDs',
+          },
+        },
+        {
+          name: 'symbolicRoles',
+          type: 'json',
+          admin: {
+            readOnly: true,
+            description:
+              'Ashley-resolved symbolic role list (DISCORD_ROLE_*). Drives badges and quarantine. Refreshed on a TTL via getMemberAuth.',
+          },
+        },
+        {
+          name: 'rolesSyncedAt',
+          type: 'date',
+          admin: {
+            readOnly: true,
+            description: 'Last successful symbolic-role sync from Ashley.',
+          },
+        },
+        {
+          name: 'rolesSyncFailedAt',
+          type: 'date',
+          admin: {
+            readOnly: true,
+            description:
+              'Last failed sync attempt — drives short retry backoff after Ashley outages.',
           },
         },
         {
@@ -135,11 +161,12 @@ export const Members: CollectionConfig = {
       defaultValue: 'active',
       options: [
         { label: 'Active', value: 'active' },
-        { label: 'Banned', value: 'banned' },
+        { label: 'Banned (auto-managed)', value: 'banned' },
         { label: 'Left Server', value: 'left_server' },
       ],
       admin: {
-        description: 'Set to Banned to revoke access',
+        description:
+          'Auto-managed by role sync: DISCORD_ROLE_QUARANTINE → Banned; role removed → Active. Manual edits will be overwritten on the next page load.',
       },
     },
   ],
