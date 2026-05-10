@@ -498,3 +498,69 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   12. NAVIGATION OVERLAY (RGA Centered Nav)
+   Open/close transitions on Radix [data-state], staggered link reveals,
+   and chromatic-aberration glitch on link hover.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@keyframes rga-nav-row-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.rga-nav-overlay[data-state='open'] {
+  animation: rga-overlay-in 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.rga-nav-overlay[data-state='closed'] {
+  animation: rga-overlay-out 180ms cubic-bezier(0.4, 0, 1, 1);
+}
+
+@keyframes rga-overlay-in {
+  from {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes rga-overlay-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.99);
+  }
+}
+
+.rga-nav-row.group:hover .rga-nav-label,
+.rga-nav-row.group:focus-within .rga-nav-label {
+  text-shadow:
+    0 0 24px rgba(0, 255, 65, 0.5),
+    -2px 0 rgba(0, 255, 255, 0.5),
+    2px 0 rgba(255, 0, 255, 0.4);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rga-nav-row.group:hover .rga-nav-label,
+  .rga-nav-row.group:focus-within .rga-nav-label {
+    text-shadow: none;
+  }
+
+  .rga-nav-row {
+    animation: none !important;
+  }
+}

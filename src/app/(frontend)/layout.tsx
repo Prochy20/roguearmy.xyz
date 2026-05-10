@@ -5,6 +5,8 @@ import { Analytics } from '@vercel/analytics/react'
 import '@/app/globals.css'
 import { ScanlineOverlay } from '@/components/effects/ScanlineOverlay'
 import { Footer } from '@/components/shared/Footer'
+import { Header } from '@/components/shared/header/Header'
+import { MenuProvider } from '@/components/shared/header/MenuContext'
 import { AuthProvider } from '@/components/auth/AuthProvider'
 import { getJwtSession } from '@/lib/auth/session.server'
 
@@ -116,17 +118,20 @@ export default async function FrontendLayout(props: { children: React.ReactNode 
 
   return (
     <AuthProvider initialState={initialAuthState}>
-      <Script
-        id="json-ld"
-        type="application/ld+json"
-        strategy="afterInteractive"
-      >
-        {JSON.stringify(jsonLd)}
-      </Script>
-      <ScanlineOverlay intensity="low" />
-      <main>{children}</main>
-      <Footer />
-      <Analytics />
+      <MenuProvider>
+        <Script
+          id="json-ld"
+          type="application/ld+json"
+          strategy="afterInteractive"
+        >
+          {JSON.stringify(jsonLd)}
+        </Script>
+        <ScanlineOverlay intensity="low" />
+        <Header />
+        <main>{children}</main>
+        <Footer />
+        <Analytics />
+      </MenuProvider>
     </AuthProvider>
   )
 }
