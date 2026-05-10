@@ -11,7 +11,9 @@ import {
   signMemberToken,
   getReturnToCookie,
   clearReturnToCookie,
+  setAshleyTokens,
 } from '@/lib/auth'
+import { getAshleyServiceClient } from '@/lib/api/client'
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
@@ -144,6 +146,25 @@ export async function GET(request: NextRequest) {
 
     // Set session cookie
     await setSessionCookie(token)
+
+    // Sidecar: best-effort exchange the Discord access token for an Ashley
+    // session. Soft-fail by design — local login already succeeded, and
+    // failing here would block the entire site over an Ashley outage. Users
+    // who land here with no Ashley cookies must re-login once Ashley is up
+    // (we don't have a Discord refresh token to retry later).
+    try {
+      const ashley = getAshleyServiceClient()
+      const { data: ashleyTokens } = await ashley.POST('/api/auth/login', {
+        body: { discordAccessToken: accessToken },
+      })
+      if (ashleyTokens) {
+        await setAshleyTokens(ashleyTokens.accessToken, ashleyTokens.refreshToken)
+      } else {
+        console.warn('Ashley login returned no tokens — continuing without Ashley session')
+      }
+    } catch (ashleyError) {
+      console.warn('Ashley login failed during Discord callback:', ashleyError)
+    }
 
     // Get returnTo URL and clear cookie
     const returnTo = await getReturnToCookie()
