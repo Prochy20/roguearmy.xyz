@@ -61,6 +61,8 @@ interface CyberButtonBaseProps {
 
 interface CyberButtonAsLink extends CyberButtonBaseProps {
   href: string
+  /** Open in a new tab via target="_blank" rel="noopener noreferrer". For external/Discord links. */
+  external?: boolean
   onClick?: never
 }
 
@@ -165,6 +167,19 @@ export const CyberButton = forwardRef<
   )
 
   if ('href' in props && props.href) {
+    if (props.external) {
+      return (
+        <a
+          ref={ref as React.Ref<HTMLAnchorElement>}
+          href={props.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={baseClasses}
+        >
+          {content}
+        </a>
+      )
+    }
     return (
       <Link
         ref={ref as React.Ref<HTMLAnchorElement>}
