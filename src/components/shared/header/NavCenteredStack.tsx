@@ -51,7 +51,7 @@ function NavRow({ item, index, onNavigate }: NavRowProps) {
         <span
           className="
             hidden sm:inline font-mono uppercase
-            text-white/30 group-hover:text-rga-cyan/80 group-focus-within:text-rga-cyan/80
+            text-white/30 group-hover:text-rga-green/70 group-focus-within:text-rga-green/70
             transition-colors duration-200
           "
           style={{ fontSize: 11, letterSpacing: '0.18em' }}
@@ -119,11 +119,11 @@ function SubLinkRow({ sub, onNavigate }: SubLinkRowProps) {
         rga-nav-sublinks
         flex flex-wrap items-center justify-center
         max-h-0 opacity-0
-        group-hover:max-h-20 group-hover:opacity-100
-        group-focus-within:max-h-20 group-focus-within:opacity-100
+        group-hover:max-h-32 group-hover:opacity-100
+        group-focus-within:max-h-32 group-focus-within:opacity-100
         transition-all duration-300 ease-out
         overflow-hidden
-        mt-[6px] pl-[50px]
+        mt-[14px] pb-[16px] pl-[50px]
       "
       style={{ gap: 18 }}
     >
@@ -134,11 +134,11 @@ function SubLinkRow({ sub, onNavigate }: SubLinkRowProps) {
               href={s.href}
               onClick={onNavigate}
               className="
-                font-mono uppercase text-white/55 hover:text-white
+                font-mono uppercase text-rga-cyan/85 hover:text-white
                 transition-colors duration-150
-                border-b border-white/15 pb-[2px]
+                px-5 py-[10px]
               "
-              style={{ fontSize: 11, letterSpacing: '0.15em' }}
+              style={{ fontSize: 12, letterSpacing: '0.18em' }}
             >
               {s.label}
             </Link>
@@ -149,11 +149,11 @@ function SubLinkRow({ sub, onNavigate }: SubLinkRowProps) {
               aria-disabled="true"
               className="
                 font-mono uppercase text-white/30 cursor-not-allowed
-                border-b border-white/10 pb-[2px]
+                px-5 py-[10px]
               "
-              style={{ fontSize: 11, letterSpacing: '0.15em' }}
+              style={{ fontSize: 12, letterSpacing: '0.18em' }}
             >
-              {s.label} <span className="text-white/30">[soon]</span>
+              {s.label} [soon]
             </span>
           </li>
         ),
