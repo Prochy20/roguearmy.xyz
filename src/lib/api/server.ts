@@ -77,6 +77,30 @@ export async function safeAshleyCall<T>(
   return { ok: false, error: classifyAshleyError(result.status, result.body) }
 }
 
+/**
+ * Server-component-safe Ashley call using the service-identity client
+ * (X-API-Key only, no user context). Use this for endpoints that don't
+ * require a logged-in user — community stats, role list, leveling
+ * leaderboard, etc.
+ *
+ * Unlike safeAshleyCall, this does NOT read cookies or attempt token
+ * refresh, so it's safe inside server components. The result shape
+ * matches safeAshleyCall for uniform failure-UI pattern matching;
+ * 'unauthenticated' and 'unauthorized' codes are never returned.
+ */
+export async function fetchAshleyService<T>(
+  fn: (client: Client<paths>) => Promise<AshleyCallResponse<T>>,
+): Promise<AshleyResult<T>> {
+  const client = getAshleyServiceClient()
+  try {
+    const { data, error, response } = await fn(client)
+    if (data !== undefined) return { ok: true, data }
+    return { ok: false, error: classifyAshleyError(response?.status ?? 0, error) }
+  } catch {
+    return { ok: false, error: { code: 'unavailable', status: 0 } }
+  }
+}
+
 type InvokeResult<T> =
   | { ok: true; value: T }
   | { ok: false; status: number; body: unknown }
