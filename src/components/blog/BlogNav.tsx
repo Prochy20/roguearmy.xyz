@@ -5,9 +5,8 @@ import { motion } from 'motion/react'
 import { BlogNavLinks } from './BlogNavLinks'
 import { BlogNavSearch } from './BlogNavSearch'
 import { BlogNavUserMenu } from './BlogNavUserMenu'
-import { BlogNavLoginButton } from './BlogNavLoginButton'
-import { BlogMobileNav } from './BlogMobileNav'
 import { BlogBookmarksDrawer } from './BlogBookmarksDrawer'
+import { BlogNavMenuTrigger } from './BlogNavMenuTrigger'
 import { useScrollVisibility } from './useScrollVisibility'
 import { useBlogAuth } from '@/contexts/BlogAuthContext'
 
@@ -30,7 +29,7 @@ export function BlogNav({ hideOnScroll = false }: BlogNavProps) {
         opacity: isVisible ? 1 : 0,
       }}
       transition={{ duration: 0.2 }}
-      className="sticky top-0 z-50 border-b border-rga-green/20 bg-void/90 backdrop-blur-md"
+      className="sticky top-0 z-40 border-b border-rga-green/20 bg-void/90 backdrop-blur-md"
     >
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between gap-4">
@@ -50,9 +49,9 @@ export function BlogNav({ hideOnScroll = false }: BlogNavProps) {
           {/* Center: Search */}
           <BlogNavSearch />
 
-          {/* Right: Bookmarks drawer + User menu (desktop) + Mobile hamburger */}
+          {/* Right: Bookmarks drawer + User menu (desktop) + Site menu trigger */}
           <div className="flex items-center gap-2">
-            {isAuthenticated ? (
+            {isAuthenticated && (
               <>
                 {/* Show bookmarks drawer for authenticated users */}
                 <BlogBookmarksDrawer />
@@ -60,12 +59,8 @@ export function BlogNav({ hideOnScroll = false }: BlogNavProps) {
                   <BlogNavUserMenu />
                 </div>
               </>
-            ) : (
-              <div className="hidden sm:block">
-                <BlogNavLoginButton />
-              </div>
             )}
-            <BlogMobileNav isAuthenticated={isAuthenticated} />
+            <BlogNavMenuTrigger />
           </div>
         </div>
       </div>
