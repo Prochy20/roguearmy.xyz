@@ -9,6 +9,8 @@ export interface NavItem {
   href: string
   blurb: string
   available: boolean
+  /** When true, hide this entry for visitors who aren't signed in. */
+  requiresAuth?: boolean
   sub: readonly NavSubLink[]
 }
 
@@ -33,6 +35,17 @@ export const NAV: readonly NavItem[] = [
       { label: 'Beyond random lobbies', href: '/community#sec-02', available: true },
       { label: 'Why this exists', href: '/community#sec-03', available: true },
       { label: 'Stand the watch', href: '/community#sec-04', available: true },
+    ],
+  },
+  {
+    label: 'LEADERBOARD',
+    href: '/leaderboard',
+    blurb: 'Live XP standings · members only',
+    available: true,
+    requiresAuth: true,
+    sub: [
+      { label: 'Top 20', href: '/leaderboard', available: true },
+      { label: 'Your rank', href: '/leaderboard', available: true },
     ],
   },
 ] as const

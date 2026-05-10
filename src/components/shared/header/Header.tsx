@@ -72,7 +72,7 @@ export function Header() {
           </div>
 
           <div className="relative z-[1] flex flex-col flex-1 px-7 pb-7 overflow-y-auto">
-            <NavCenteredStack onNavigate={close} />
+            <NavCenteredStack onNavigate={close} isLoggedIn={Boolean(member)} />
             <div className="flex-1" />
             <BottomRail member={member} onLogout={logout} />
           </div>

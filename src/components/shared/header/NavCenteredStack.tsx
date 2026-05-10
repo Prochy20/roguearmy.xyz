@@ -6,13 +6,15 @@ import { NAV, type NavItem, type NavSubLink } from './nav-data'
 
 interface NavCenteredStackProps {
   onNavigate: () => void
+  isLoggedIn: boolean
 }
 
-export function NavCenteredStack({ onNavigate }: NavCenteredStackProps) {
+export function NavCenteredStack({ onNavigate, isLoggedIn }: NavCenteredStackProps) {
+  const items = NAV.filter((item) => !item.requiresAuth || isLoggedIn)
   return (
     <div className="flex flex-col items-center px-8 md:px-20 pt-12 pb-6">
       <ul className="flex flex-col items-center" style={{ gap: 6 }}>
-        {NAV.map((item, i) => (
+        {items.map((item, i) => (
           <NavRow key={item.label} item={item} index={i} onNavigate={onNavigate} />
         ))}
       </ul>
