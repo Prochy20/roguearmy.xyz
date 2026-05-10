@@ -7,7 +7,7 @@ import { getAshleyAccessCookie } from '@/lib/auth/cookies'
 import { getDiscordAvatarUrl } from '@/lib/auth/discord'
 import { createAshleyUserClient } from '@/lib/api/client'
 import { CyberCorners, CyberTag } from '@/components/ui/CyberCorners'
-import { CountUp } from './CountUp'
+import { CountUp } from '@/components/shared/CountUp'
 import type { PrimaryBadge } from '@/lib/auth/badges'
 
 export const metadata = {
