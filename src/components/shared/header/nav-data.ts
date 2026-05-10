@@ -20,31 +20,7 @@ export const NAV: readonly NavItem[] = [
     available: true,
     sub: [
       { label: 'Hero', href: '/', available: true },
-      { label: 'Community', href: '/#community', available: true },
       { label: 'Games we play', href: '/#games', available: true },
-    ],
-  },
-  {
-    label: 'BLOG',
-    href: '/blog',
-    blurb: 'Field reports & deep dives',
-    available: true,
-    sub: [
-      { label: 'Latest articles', href: '/blog', available: true },
-      { label: 'Series', href: '/blog/series', available: true },
-      { label: 'Bookmarks', href: '/blog/bookmarks', available: true },
-      { label: 'Reading history', href: '/blog/history', available: true },
-    ],
-  },
-  {
-    label: 'MEMBERS',
-    href: '/members',
-    blurb: 'Operatives & ops',
-    available: false,
-    sub: [
-      { label: 'Roster', href: '/members', available: false },
-      { label: 'Manifesto', href: '/manifesto', available: true },
-      { label: 'Twitch hub', href: '/twitch', available: false },
     ],
   },
 ] as const

@@ -7,6 +7,7 @@ import { StatsTicker } from "@/components/home/StatsTicker"
 import { CommunityValues } from "@/components/home/CommunityValues"
 import { AshleyTerminal } from "@/components/home/AshleyTerminal"
 import { FinalCTA } from "@/components/home/FinalCTA"
+import { HashScrollHandler } from "@/components/home/HashScrollHandler"
 
 export default async function HomePage() {
   const payload = await getPayload({ config })
@@ -15,6 +16,7 @@ export default async function HomePage() {
 
   return (
     <>
+      <HashScrollHandler />
       <Hero />
       <GamesShowcase games={games} />
       <StatsTicker />

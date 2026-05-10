@@ -70,7 +70,7 @@ export function GamesShowcase({ games }: GamesShowcaseProps) {
   }
 
   return (
-    <section className="relative py-20 overflow-hidden">
+    <section id="games" className="relative py-20 overflow-hidden scroll-mt-24">
       {/* Glitch transition from Hero */}
       <SectionGlitch
         intensity="medium"

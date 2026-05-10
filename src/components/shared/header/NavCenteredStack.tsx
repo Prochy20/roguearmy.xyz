@@ -113,6 +113,25 @@ interface SubLinkRowProps {
 }
 
 function SubLinkRow({ sub, onNavigate }: SubLinkRowProps) {
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    onNavigate()
+    if (typeof window === 'undefined' || window.location.pathname !== '/') return
+
+    if (href.startsWith('/#')) {
+      e.preventDefault()
+      const id = decodeURIComponent(href.slice(2))
+      window.history.replaceState(null, '', href)
+      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      return
+    }
+
+    if (href === '/') {
+      e.preventDefault()
+      if (window.location.hash) window.history.replaceState(null, '', '/')
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+  }
+
   return (
     <ul
       className="
@@ -132,7 +151,7 @@ function SubLinkRow({ sub, onNavigate }: SubLinkRowProps) {
           <li key={s.label}>
             <Link
               href={s.href}
-              onClick={onNavigate}
+              onClick={(e) => handleClick(e, s.href)}
               className="
                 font-mono uppercase text-rga-cyan/85 hover:text-white
                 transition-colors duration-150
