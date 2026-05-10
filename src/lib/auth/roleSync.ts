@@ -1,5 +1,6 @@
 import 'server-only'
 
+import { after } from 'next/server'
 import type { Payload } from 'payload'
 import { createAshleyUserClient } from '@/lib/api/client'
 import {
@@ -97,46 +98,54 @@ export async function syncMemberRoles(args: {
   }
 
   if (fetched === null) {
-    // Record the failure so the next read knows we're in backoff. Don't
-    // touch symbolicRoles or status — last-known-good wins during outages.
-    await payload
-      .update({
-        collection: 'members',
-        id: memberId,
-        data: { guildMember: { rolesSyncFailedAt: new Date().toISOString() } },
-      })
-      .catch((err) => {
-        // Non-fatal for this request, but persistent failures here mean we'll
-        // retry Ashley on every page load (no backoff persisted) — surface it.
-        console.warn('Role sync: failed to record sync-failure timestamp', err)
-      })
+    // Record the failure so the next read knows we're in backoff. Defer via
+    // after() so the auth result returns without waiting on the write — the
+    // backoff timestamp is purely for the *next* request anyway.
+    after(() =>
+      payload
+        .update({
+          collection: 'members',
+          id: memberId,
+          data: { guildMember: { rolesSyncFailedAt: new Date().toISOString() } },
+        })
+        .catch((err) => {
+          // Non-fatal for this request, but persistent failures here mean we'll
+          // retry Ashley on every page load (no backoff persisted) — surface it.
+          console.warn('Role sync: failed to record sync-failure timestamp', err)
+        }),
+    )
     return { kind: 'failed' }
   }
 
   const statusOverride = computeStatusOverride(fetched, snapshot.status)
   const now = new Date().toISOString()
 
-  await payload
-    .update({
-      collection: 'members',
-      id: memberId,
-      data: {
-        guildMember: {
-          symbolicRoles: fetched,
-          rolesSyncedAt: now,
-          rolesSyncFailedAt: null,
+  // Defer the writeback so it doesn't block the response. The current request
+  // already serves the freshly-fetched roles + status from memory (below); the
+  // DB write is purely to advance the TTL gate for *future* requests.
+  after(() =>
+    payload
+      .update({
+        collection: 'members',
+        id: memberId,
+        data: {
+          guildMember: {
+            symbolicRoles: fetched,
+            rolesSyncedAt: now,
+            rolesSyncFailedAt: null,
+          },
+          ...(statusOverride && statusOverride !== snapshot.status
+            ? { status: statusOverride }
+            : {}),
         },
-        ...(statusOverride && statusOverride !== snapshot.status
-          ? { status: statusOverride }
-          : {}),
-      },
-    })
-    .catch((err) => {
-      // Non-fatal for this request — in-memory result is authoritative — but
-      // a persistent write failure means TTL never advances and we'll re-call
-      // Ashley on every request. Surface it.
-      console.warn('Role sync: failed to persist refreshed snapshot', err)
-    })
+      })
+      .catch((err) => {
+        // Non-fatal for this request — in-memory result is authoritative — but
+        // a persistent write failure means TTL never advances and we'll re-call
+        // Ashley on every request. Surface it.
+        console.warn('Role sync: failed to persist refreshed snapshot', err)
+      }),
+  )
 
   return { kind: 'fresh', roles: fetched, statusOverride }
 }
