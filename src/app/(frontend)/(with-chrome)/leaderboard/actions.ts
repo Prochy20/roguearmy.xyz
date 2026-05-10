@@ -13,6 +13,9 @@ type LeaderboardEntry = components['schemas']['LeaderboardEntryDto']
  * get a full window starting at the top of the board.
  */
 export async function getAroundMe(myRank: number): Promise<AshleyResult<LeaderboardEntry[]>> {
+  if (!Number.isInteger(myRank) || myRank < 1) {
+    return { ok: false, error: { code: 'invalid' } }
+  }
   const offset = Math.max(0, myRank - 3)
   const result = await safeAshleyCall<components['schemas']['LeaderboardResponseDto']>((c) =>
     c.GET('/api/leveling/leaderboard', {
