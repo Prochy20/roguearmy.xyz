@@ -3,6 +3,7 @@ import type { components } from '@/lib/api/schema'
 import { Hero } from '@/components/community/Hero'
 import { PullStrip } from '@/components/community/PullStrip'
 import { StatsSection } from '@/components/community/StatsSection'
+import { LeaderboardTeaser } from '@/components/community/LeaderboardTeaser'
 import { BeyondLobbies } from '@/components/community/BeyondLobbies'
 import { LoreSection } from '@/components/community/LoreSection'
 import { JoinCTA } from '@/components/community/JoinCTA'
@@ -30,6 +31,7 @@ export default async function CommunityPage() {
       <Hero stats={stats} />
       <PullStrip />
       <StatsSection stats={stats} />
+      <LeaderboardTeaser />
       <BeyondLobbies />
       <LoreSection />
       <JoinCTA />
