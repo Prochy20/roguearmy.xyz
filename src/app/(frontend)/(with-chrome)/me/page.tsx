@@ -1,0 +1,519 @@
+import { redirect } from 'next/navigation'
+import Image from 'next/image'
+import { getPayload } from 'payload'
+import config from '@payload-config'
+import { getMemberAuth } from '@/lib/auth/session.server'
+import { getAshleyAccessCookie } from '@/lib/auth/cookies'
+import { getDiscordAvatarUrl } from '@/lib/auth/discord'
+import { createAshleyUserClient } from '@/lib/api/client'
+import { CyberCorners, CyberTag } from '@/components/ui/CyberCorners'
+import { CountUp } from './CountUp'
+import type { PrimaryBadge } from '@/lib/auth/badges'
+
+export const metadata = {
+  title: 'Operative File | Rogue Army',
+  description: 'Your personal RGA operative dossier.',
+}
+
+type AshleyMe = {
+  user: {
+    discordId: string
+    avatarUrls: { '64': string; '128': string; '256': string; '512': string } | null
+    serverAvatarUrls: { '64': string; '128': string; '256': string; '512': string } | null
+    discordRoles: Array<{ id: string; name: string; color: string | null; managed: boolean }>
+    joinedAt: string | null
+  }
+}
+
+type AshleyLevel = {
+  level: number
+  xp: number
+  progress: number
+  nextLevel?: { level: number; xpRequired: number } | null
+  xpToNextLevel?: unknown
+}
+
+type Fetched<T> =
+  | { kind: 'ok'; data: T }
+  | { kind: 'unauthenticated' } // no Ashley cookie at all
+  | { kind: 'unauthorized' } // had a cookie, Ashley rejected it (expired/invalid)
+  | { kind: 'unavailable'; status: number } // 5xx / network
+  | { kind: 'error'; status: number } // other 4xx
+
+export default async function MePage() {
+  const auth = await getMemberAuth()
+  if (!auth.authenticated || !auth.member) {
+    redirect('/auth/login?returnTo=/me')
+  }
+
+  const accessToken = await getAshleyAccessCookie()
+  const [ashleyMe, ashleyLevel, localMember] = await Promise.all([
+    fetchAshley<AshleyMe>(accessToken, (c) => c.GET('/api/auth/me')),
+    fetchAshley<AshleyLevel>(accessToken, (c) => c.GET('/api/leveling/me')),
+    // Local member fallback for fields Ashley owns (e.g. joinedAt) so the
+    // identity block stays meaningful even when /api/auth/me 500s.
+    fetchLocalMember(auth.memberId),
+  ])
+
+  const displayName = (auth.member.globalName ?? auth.member.username).toUpperCase()
+  const avatarUrl =
+    ashleyMe.kind === 'ok' && (ashleyMe.data.user.serverAvatarUrls?.['256'] ?? ashleyMe.data.user.avatarUrls?.['256'])
+      ? (ashleyMe.data.user.serverAvatarUrls?.['256'] ?? ashleyMe.data.user.avatarUrls!['256'])
+      : getDiscordAvatarUrl(auth.member.discordId, auth.member.avatar)
+
+  const ashleyOnline = ashleyMe.kind === 'ok' || ashleyLevel.kind === 'ok'
+
+  return (
+    <main className="relative z-10 mx-auto w-full max-w-[1480px] px-4 py-10 sm:px-8 sm:py-16 lg:px-16 lg:py-28">
+      {/* SEC_01 — IDENTITY + PROGRESSION */}
+      <section className="me-fade me-fade--01">
+        <SectionHeader
+          num="01"
+          eyebrow="PERSONNEL FILE"
+          kicker={
+            ashleyOnline
+              ? '// active operative — clearance verified'
+              : '// upstream offline — auxiliary data only'
+          }
+          title={displayName}
+        />
+
+        <div className="grid grid-cols-1 gap-6 sm:gap-8 lg:grid-cols-[256px_1fr] lg:gap-14">
+          <Avatar src={avatarUrl} alt={displayName} />
+          <div className="flex flex-col gap-6 sm:gap-8 lg:gap-10">
+            <ClearanceInsignia badge={auth.primaryBadge} booster={auth.isBooster} />
+            <MetaGrid
+              rows={[
+                ['DISCORD_ID', auth.member.discordId],
+                ['MEMBER_SINCE', formatJoined(ashleyMe, localMember)],
+                ['STATUS', auth.status === 'active' ? 'ACTIVE' : (auth.status ?? 'UNKNOWN')],
+                ['CODENAME', auth.member.username],
+              ]}
+              statusActive={auth.status === 'active'}
+            />
+            <ProgressionBand level={ashleyLevel} />
+          </div>
+        </div>
+      </section>
+
+      {/* SEC_02 — ROLE LATTICE */}
+      <section className="me-fade me-fade--02 mt-14 sm:mt-24 lg:mt-40">
+        <SectionHeader
+          num="02"
+          eyebrow="ROLE LATTICE"
+          kicker={
+            ashleyMe.kind === 'ok'
+              ? '// resolved from upstream'
+              : ashleyMe.kind === 'unauthenticated'
+                ? '// session not established'
+                : '// resolution failed'
+          }
+          title="ASSIGNMENTS"
+        />
+        <RoleStrip ashleyMe={ashleyMe} />
+      </section>
+
+      {/* CSS-only motion. Keeps the whole page a server component. */}
+      <style>{ME_STYLES}</style>
+    </main>
+  )
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// SectionHeader — direct port of design_handoff/component-library.jsx:140
+// ─────────────────────────────────────────────────────────────────────────
+
+function SectionHeader({
+  num,
+  eyebrow,
+  kicker,
+  title,
+}: {
+  num: string
+  eyebrow: string
+  kicker: string
+  title: string
+}) {
+  return (
+    <header className="mb-7 flex flex-col gap-4 border-b border-[rgba(255,255,255,0.08)] pb-6 sm:mb-9 sm:grid sm:grid-cols-[120px_1fr] sm:items-baseline sm:gap-8 sm:pb-7">
+      <div className="flex items-baseline gap-3 sm:block">
+        <div className="font-mono text-[11px] tracking-[0.35em] text-rga-green">SEC_{num}</div>
+        <div className="font-mono text-[10px] tracking-[0.25em] text-text-muted sm:mt-2.5">
+          {eyebrow}
+        </div>
+      </div>
+      <div className="min-w-0">
+        <div className="mb-3 font-mono text-[12px] uppercase tracking-[0.3em] text-text-secondary">
+          {kicker}
+        </div>
+        <h2 className="font-display text-[clamp(28px,7vw,88px)] uppercase leading-[0.92] tracking-[0.005em] text-balance break-words">
+          {title}
+        </h2>
+      </div>
+    </header>
+  )
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Clearance insignia — promoted-rank visual; treats badge as primary identity
+// rather than a metadata row. BOOSTER decorator only renders when there's a
+// competing functional badge (DEV/STAFF), per pickPrimaryBadge precedence.
+// ─────────────────────────────────────────────────────────────────────────
+
+const BADGE_THEME: Record<
+  PrimaryBadge,
+  { color: string; glow: string; eyebrow: string }
+> = {
+  DEVELOPER: { color: '#00FFFF', glow: 'rgba(0,255,255,0.55)', eyebrow: 'TIER · CORE ENGINEERING' },
+  STAFF: { color: '#00FF41', glow: 'rgba(0,255,65,0.55)', eyebrow: 'TIER · COMMAND' },
+  BOOSTER: { color: '#FF00FF', glow: 'rgba(255,0,255,0.55)', eyebrow: 'TIER · PATRON' },
+  MEMBER: { color: '#9aa3a6', glow: 'rgba(154,163,166,0.4)', eyebrow: 'TIER · OPERATIVE' },
+}
+
+function ClearanceInsignia({ badge, booster }: { badge: PrimaryBadge; booster: boolean }) {
+  const theme = BADGE_THEME[badge] ?? BADGE_THEME.MEMBER
+  return (
+    <div className="flex flex-wrap items-center gap-x-5 gap-y-3 border-b border-[rgba(255,255,255,0.08)] pb-5">
+      <div className="flex min-w-0 flex-col gap-1">
+        <span className="font-mono text-[10px] tracking-[0.3em] text-text-muted">CLEARANCE</span>
+        <span
+          className="font-display uppercase leading-none break-words"
+          style={{
+            fontSize: 'clamp(22px,5vw,52px)',
+            letterSpacing: '0.05em',
+            color: theme.color,
+            textShadow: `0 0 18px ${theme.glow}`,
+          }}
+        >
+          [ {badge} ]
+        </span>
+        <span
+          className="font-mono uppercase mt-1 break-words"
+          style={{ fontSize: 10, letterSpacing: '0.3em', color: 'rgba(255,255,255,0.45)' }}
+        >
+          // {theme.eyebrow}
+        </span>
+      </div>
+
+      {booster && (
+        <div className="flex items-center gap-2 border border-rga-magenta/40 bg-[rgba(255,0,255,0.05)] px-3 py-2">
+          <span
+            aria-hidden
+            className="inline-block h-2 w-2 rounded-[1px]"
+            style={{
+              background: '#FF00FF',
+              boxShadow: '0 0 8px #FF00FF',
+            }}
+          />
+          <span
+            className="font-mono uppercase"
+            style={{ fontSize: 10, letterSpacing: '0.25em', color: '#FF00FF' }}
+          >
+            BOOSTER · ACTIVE
+          </span>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Identity block primitives
+// ─────────────────────────────────────────────────────────────────────────
+
+function Avatar({ src, alt }: { src: string; alt: string }) {
+  return (
+    <div className="w-full max-w-[256px]">
+      <CyberCorners color="green" size="lg" glow>
+        <div className="relative aspect-square w-full overflow-hidden border border-rga-green/30 shadow-[0_0_24px_rgba(0,255,65,0.18)]">
+          <Image
+            src={src}
+            alt={alt}
+            width={256}
+            height={256}
+            className="h-full w-full object-cover"
+            unoptimized
+          />
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_70%_at_50%_50%,rgba(0,255,65,0.06)_0%,transparent_60%)]" />
+        </div>
+      </CyberCorners>
+    </div>
+  )
+}
+
+function MetaGrid({
+  rows,
+  statusActive,
+}: {
+  rows: ReadonlyArray<readonly [string, string]>
+  statusActive: boolean
+}) {
+  return (
+    <dl className="grid grid-cols-1 gap-x-8 gap-y-5 sm:grid-cols-2">
+      {rows.map(([label, value]) => (
+        <div key={label} className="flex flex-col gap-1.5">
+          <dt className="font-mono text-[10px] tracking-[0.3em] text-text-muted">{label}</dt>
+          <dd className="flex items-center gap-2 font-mono text-sm text-text-primary">
+            {label === 'STATUS' && (
+              <span
+                aria-hidden
+                className="inline-block h-2 w-2 rounded-[1px]"
+                style={{
+                  background: statusActive ? '#00FF41' : '#FF00FF',
+                  boxShadow: `0 0 8px ${statusActive ? '#00FF41' : '#FF00FF'}`,
+                  animation: statusActive ? 'me-dot-pulse 2s ease-in-out infinite' : 'none',
+                }}
+              />
+            )}
+            <span className={label === 'STATUS' && !statusActive ? 'text-rga-magenta' : ''}>
+              {value}
+            </span>
+          </dd>
+        </div>
+      ))}
+    </dl>
+  )
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Progression band (XP / level) — fail-state aware
+// ─────────────────────────────────────────────────────────────────────────
+
+function ProgressionBand({ level }: { level: Fetched<AshleyLevel> }) {
+  if (level.kind !== 'ok') {
+    return (
+      <div className="flex flex-col gap-3 border-t border-[rgba(255,255,255,0.08)] pt-8">
+        <div className="font-mono text-[10px] tracking-[0.3em] text-text-muted">PROGRESSION</div>
+        <FailRow kind={level.kind} status={statusOf(level)} />
+      </div>
+    )
+  }
+
+  const data = level.data
+  const progressPct = Math.max(0, Math.min(1, data.progress)) * 100
+  const xpToNext =
+    typeof data.xpToNextLevel === 'number'
+      ? data.xpToNextLevel
+      : typeof data.xpToNextLevel === 'object' && data.xpToNextLevel !== null && 'value' in data.xpToNextLevel
+        ? Number((data.xpToNextLevel as { value: unknown }).value)
+        : null
+
+  return (
+    <div className="flex flex-col gap-5 border-t border-[rgba(255,255,255,0.08)] pt-8">
+      <div className="flex items-end justify-between gap-6">
+        <div>
+          <div className="font-mono text-[10px] tracking-[0.3em] text-text-muted">CURRENT LEVEL</div>
+          <div className="mt-1 font-display text-[clamp(48px,7vw,96px)] leading-none tabular-nums text-rga-cyan [text-shadow:0_0_24px_rgba(0,255,255,0.35)]">
+            <CountUp value={data.level} duration={900} delay={250} padZeros={4} reveal="glitch" />
+          </div>
+        </div>
+        <div className="text-right">
+          <div className="font-mono text-[10px] tracking-[0.3em] text-text-muted">TOTAL XP</div>
+          <div className="mt-1 font-mono text-2xl tabular-nums text-text-primary">
+            <CountUp value={data.xp} duration={1100} delay={250} locale reveal="glitch" />
+          </div>
+        </div>
+      </div>
+
+      <div className="me-xpbar relative h-3 w-full overflow-hidden border border-[rgba(0,255,65,0.25)] bg-black/60">
+        <div
+          className="me-xpbar__fill absolute inset-y-0 left-0 bg-linear-to-r from-rga-green via-rga-green to-rga-cyan shadow-[0_0_16px_rgba(0,255,65,0.55)]"
+          style={{ '--me-xp': `${progressPct}%` } as React.CSSProperties}
+        />
+      </div>
+
+      <div className="flex items-center justify-between font-mono text-[11px] tracking-[0.25em]">
+        <span className="text-text-muted">// PROGRESS {progressPct.toFixed(1)}%</span>
+        <span className="text-text-secondary">
+          {data.nextLevel
+            ? `${xpToNext != null ? xpToNext.toLocaleString() : '?'} XP TO LEVEL ${String(data.nextLevel.level).padStart(4, '0')}`
+            : 'MAX LEVEL — TERMINAL CLEARANCE'}
+        </span>
+      </div>
+    </div>
+  )
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Role strip — fail-state aware
+// ─────────────────────────────────────────────────────────────────────────
+
+function RoleStrip({ ashleyMe }: { ashleyMe: Fetched<AshleyMe> }) {
+  if (ashleyMe.kind !== 'ok') {
+    return <FailRow kind={ashleyMe.kind} status={statusOf(ashleyMe)} />
+  }
+
+  const roles = ashleyMe.data.user.discordRoles
+    .filter((r) => r.name !== '@everyone')
+    .slice(0, 24)
+
+  if (roles.length === 0) {
+    return (
+      <div className="font-mono text-[12px] tracking-[0.25em] text-text-muted">
+        // NO ASSIGNMENTS ON RECORD
+      </div>
+    )
+  }
+
+  return (
+    <ul className="flex flex-wrap gap-3">
+      {roles.map((role) => (
+        <li key={role.id}>
+          <CyberTag color={pickRoleAccent(role.color)}>
+            <span className="flex items-center gap-2">
+              <span>{role.name}</span>
+              {role.managed && (
+                <span className="text-[9px] tracking-[0.3em] opacity-60">SYS</span>
+              )}
+            </span>
+          </CyberTag>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+type FailKind = Exclude<Fetched<unknown>['kind'], 'ok'>
+
+function FailRow({ kind, status }: { kind: FailKind; status?: number }) {
+  let message: string
+  let action: { href: string; label: string } | null = null
+
+  switch (kind) {
+    case 'unauthenticated':
+      message = 'ASHLEY SESSION NOT ESTABLISHED'
+      action = { href: '/auth/login?returnTo=/me', label: 'RE-LOGIN' }
+      break
+    case 'unauthorized':
+      message = 'SESSION EXPIRED — TOKENS NEED A REFRESH'
+      action = { href: '/auth/login?returnTo=/me', label: 'RE-LOGIN' }
+      break
+    case 'unavailable':
+      message = `UPSTREAM UNREACHABLE${status ? ` — CODE ${status}` : ''} — RETRY MOMENTARILY`
+      break
+    case 'error':
+      message = `REQUEST REJECTED — CODE ${status ?? '?'}`
+      break
+  }
+
+  return (
+    <div className="flex flex-wrap items-center gap-3 border border-[rgba(255,0,255,0.25)] bg-[rgba(255,0,255,0.03)] px-4 py-3 font-mono text-[11px] uppercase tracking-[0.25em] text-rga-magenta">
+      <span aria-hidden className="inline-block h-2 w-2 rounded-[1px] bg-rga-magenta shadow-[0_0_8px_#FF00FF]" />
+      <span>// {message}</span>
+      {action && (
+        <a href={action.href} className="ml-auto underline underline-offset-4 transition-colors hover:text-text-primary">
+          {action.label} →
+        </a>
+      )}
+    </div>
+  )
+}
+
+function statusOf(f: Fetched<unknown>): number | undefined {
+  return 'status' in f ? f.status : undefined
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Helpers
+// ─────────────────────────────────────────────────────────────────────────
+
+async function fetchAshley<T>(
+  accessToken: string | undefined,
+  call: (client: ReturnType<typeof createAshleyUserClient>) => Promise<{ data?: T; response?: Response }>,
+): Promise<Fetched<T>> {
+  if (!accessToken) return { kind: 'unauthenticated' }
+  try {
+    const client = createAshleyUserClient(accessToken)
+    const { data, response } = await call(client)
+    if (data) return { kind: 'ok', data }
+    const status = response?.status ?? 0
+    if (status === 401) return { kind: 'unauthorized' }
+    if (status === 0 || status >= 500) return { kind: 'unavailable', status }
+    return { kind: 'error', status }
+  } catch {
+    return { kind: 'unavailable', status: 0 }
+  }
+}
+
+type LocalMemberSnapshot = {
+  joinedDiscordAt: string | null
+  joinedAt: string | null
+} | null
+
+async function fetchLocalMember(memberId: string | null): Promise<LocalMemberSnapshot> {
+  if (!memberId) return null
+  try {
+    const payload = await getPayload({ config })
+    const m = await payload.findByID({ collection: 'members', id: memberId })
+    return {
+      joinedDiscordAt: (m.guildMember?.joinedDiscordAt ?? null) as string | null,
+      joinedAt: m.joinedAt ?? null,
+    }
+  } catch {
+    return null
+  }
+}
+
+// Prefer Ashley's freshly-resolved guild join date when available; fall back
+// to the local Payload mirror so MEMBER_SINCE still shows real data when
+// /api/auth/me 500s.
+function formatJoined(ashleyMe: Fetched<AshleyMe>, local: LocalMemberSnapshot): string {
+  const iso =
+    (ashleyMe.kind === 'ok' ? ashleyMe.data.user.joinedAt : null) ??
+    local?.joinedDiscordAt ??
+    local?.joinedAt ??
+    null
+  if (!iso) return '— · ——'
+  const d = new Date(iso)
+  if (isNaN(d.getTime())) return '— · ——'
+  return d.toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase()
+}
+
+// Map an arbitrary Discord role color to one of CyberTag's six accent buckets,
+// so role chips stay in voice (gradient + brackets + glow) while still hinting
+// at the role's identity. Roles without a color or near-grey collapse to gray.
+type CyberTagColor = 'green' | 'cyan' | 'magenta' | 'orange' | 'red' | 'gray'
+
+function pickRoleAccent(hex: string | null): CyberTagColor {
+  if (!hex || hex === '#000000') return 'green'
+  const m = hex.replace('#', '')
+  if (m.length !== 6) return 'green'
+  const r = parseInt(m.slice(0, 2), 16)
+  const g = parseInt(m.slice(2, 4), 16)
+  const b = parseInt(m.slice(4, 6), 16)
+  if (Math.max(r, g, b) - Math.min(r, g, b) < 30) return 'gray'
+  if (g > r && g > b) return 'green'
+  if (b > r && b > g) return 'cyan'
+  if (r >= g && r >= b && b > g) return 'magenta'
+  if (r >= g && r >= b && g >= b) return r > 200 && g < 120 ? 'red' : 'orange'
+  return 'green'
+}
+
+const ME_STYLES = `
+  @keyframes me-fade-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes me-xp-fill {
+    from { width: 0%; }
+    to   { width: var(--me-xp); }
+  }
+  @keyframes me-dot-pulse {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.4; }
+  }
+  .me-fade {
+    opacity: 0;
+    animation: me-fade-in 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+  }
+  .me-fade--01 { animation-delay: 0.05s; }
+  .me-fade--02 { animation-delay: 0.20s; }
+  .me-xpbar__fill {
+    width: var(--me-xp);
+    animation: me-xp-fill 0.95s cubic-bezier(0.2, 0.7, 0.2, 1) 0.25s both;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .me-fade,
+    .me-xpbar__fill { animation: none !important; opacity: 1 !important; }
+  }
+`
