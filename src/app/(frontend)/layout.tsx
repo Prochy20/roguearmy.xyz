@@ -4,8 +4,6 @@ import Script from 'next/script'
 import { Analytics } from '@vercel/analytics/react'
 import '@/app/globals.css'
 import { ScanlineOverlay } from '@/components/effects/ScanlineOverlay'
-import { Footer } from '@/components/shared/Footer'
-import { Header } from '@/components/shared/header/Header'
 import { MenuProvider } from '@/components/shared/header/MenuContext'
 import { AuthProvider } from '@/components/auth/AuthProvider'
 import { getJwtSession } from '@/lib/auth/session.server'
@@ -106,7 +104,9 @@ export default async function FrontendLayout(props: { children: React.ReactNode 
   const { children } = props
 
   // Get JWT session from server (cached, no DB hit)
-  // This provides initial auth state to AuthProvider, eliminating the client-side fetch
+  // This provides initial auth state to AuthProvider, eliminating the client-side fetch.
+  // Badge fields ride along on the JWT — refreshed on login, stale until re-login,
+  // which is fine for chrome rendering. The profile page reads fresh values via getMemberAuth.
   const session = await getJwtSession()
 
   const initialAuthState = session
@@ -116,20 +116,16 @@ export default async function FrontendLayout(props: { children: React.ReactNode 
       }
     : undefined
 
+  // Chrome (Header / Footer) lives in (with-chrome)/layout.tsx so error,
+  // not-found, and auth pages render without it.
   return (
     <AuthProvider initialState={initialAuthState}>
       <MenuProvider>
-        <Script
-          id="json-ld"
-          type="application/ld+json"
-          strategy="afterInteractive"
-        >
+        <Script id="json-ld" type="application/ld+json" strategy="afterInteractive">
           {JSON.stringify(jsonLd)}
         </Script>
         <ScanlineOverlay intensity="low" />
-        <Header />
-        <main>{children}</main>
-        <Footer />
+        {children}
         <Analytics />
       </MenuProvider>
     </AuthProvider>
