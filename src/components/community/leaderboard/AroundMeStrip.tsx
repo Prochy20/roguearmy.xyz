@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { leaderboardAvatarSrc } from './avatar'
 import { getAroundMe } from '@/app/(frontend)/(with-chrome)/leaderboard/actions'
@@ -12,33 +12,44 @@ type LeaderboardEntry = components['schemas']['LeaderboardEntryDto']
 interface AroundMeStripProps {
   myRank: number
   myDiscordId: string
+  /** Whether the strip is currently visible — fetch is gated to first activation so toggling expand/collapse doesn't refetch. */
+  active: boolean
 }
 
 type State =
+  | { kind: 'idle' }
   | { kind: 'loading' }
   | { kind: 'ok'; entries: LeaderboardEntry[] }
   | { kind: 'fail'; error: AshleyError }
 
 /**
- * Mini-table of ranks `myRank-2 .. myRank+2`, fetched lazily on first mount.
- * Used inside the expanded sticky rank bar to give off-list users their
- * competitive cohort.
+ * Mini-table of ranks `myRank-2 .. myRank+2`, fetched lazily on first activation.
+ * Stays mounted across expand/collapse so the cohort fetch fires once per page
+ * view rather than on every toggle.
  */
-export function AroundMeStrip({ myRank, myDiscordId }: AroundMeStripProps) {
-  const [state, setState] = useState<State>({ kind: 'loading' })
+export function AroundMeStrip({ myRank, myDiscordId, active }: AroundMeStripProps) {
+  const [state, setState] = useState<State>({ kind: 'idle' })
+  // Track which rank we've already kicked off a fetch for, so toggling
+  // `active` on/off doesn't re-fire the server action. Using a ref keeps
+  // this out of the effect deps — putting state in the deps would let
+  // React's cleanup cancel the fetch right after we triggered it.
+  const fetchedForRank = useRef<number | null>(null)
 
   useEffect(() => {
-    let cancelled = false
+    if (!active) return
+    if (fetchedForRank.current === myRank) return
+    fetchedForRank.current = myRank
+    setState({ kind: 'loading' })
     void (async () => {
       const result = await getAroundMe(myRank)
-      if (cancelled) return
+      // Stale guard: if rank changed mid-flight, drop the old result.
+      if (fetchedForRank.current !== myRank) return
       if (result.ok) setState({ kind: 'ok', entries: result.data })
       else setState({ kind: 'fail', error: result.error })
     })()
-    return () => {
-      cancelled = true
-    }
-  }, [myRank])
+  }, [active, myRank])
+
+  if (state.kind === 'idle') return null
 
   if (state.kind === 'loading') {
     return (

@@ -71,7 +71,7 @@ export function StickyRankBar({ me, levelLabel, nextLevelLabel, fail }: StickyRa
           <div className="border-b border-[rgba(0,255,65,0.15)] bg-[rgba(0,255,65,0.04)] px-4 py-2.5 font-mono text-[9px] tracking-[0.4em] uppercase text-rga-green sm:px-6">
             // COHORT · 5-ROW WINDOW
           </div>
-          {expanded && <AroundMeStrip myRank={me.rank} myDiscordId={me.discordId} />}
+          <AroundMeStrip myRank={me.rank} myDiscordId={me.discordId} active={expanded} />
         </div>
 
         {/* Collapsed handle / always visible */}
