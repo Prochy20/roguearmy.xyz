@@ -5,18 +5,21 @@ import { DiscordIcon } from '@/components/shared/DiscordIcon'
 import { Avatar } from './Avatar'
 import { BracketButton } from './BracketButton'
 import type { MemberSession } from '@/lib/auth/types'
+import type { PrimaryBadge } from '@/lib/auth/badges'
 
 interface BottomRailProps {
   member: MemberSession | null
-  rank?: string
   onLogout: () => void
 }
 
-export function BottomRail({
-  member,
-  rank = 'RANK · RECRUIT · — OPS',
-  onLogout,
-}: BottomRailProps) {
+const BADGE_ACCENT: Record<PrimaryBadge, { color: string; glow: string }> = {
+  DEVELOPER: { color: '#00FFFF', glow: 'rgba(0,255,255,0.55)' },
+  STAFF: { color: '#00FF41', glow: 'rgba(0,255,65,0.55)' },
+  BOOSTER: { color: '#FF00FF', glow: 'rgba(255,0,255,0.55)' },
+  MEMBER: { color: '#9aa3a6', glow: 'rgba(154,163,166,0.4)' },
+}
+
+export function BottomRail({ member, onLogout }: BottomRailProps) {
   return (
     <div
       className="
@@ -36,7 +39,7 @@ export function BottomRail({
           <div className="flex items-center gap-3 flex-wrap justify-end">
             <div className="flex items-center gap-4 mr-1 order-2 md:order-1">
               <Link
-                href="/members/me"
+                href="/me"
                 className="font-mono uppercase text-rga-cyan hover:text-white transition-colors"
                 style={{ fontSize: 10, letterSpacing: '0.2em' }}
               >
@@ -58,15 +61,10 @@ export function BottomRail({
               >
                 {(member.globalName ?? member.username).toUpperCase()}
               </div>
-              <div
-                className="font-mono uppercase text-rga-green/70"
-                style={{ fontSize: 9, letterSpacing: '0.2em' }}
-              >
-                {rank}
-              </div>
+              <BadgeLine badge={member.primaryBadge} />
             </div>
             <div className="order-1 md:order-3">
-              <Avatar member={member} size={36} />
+              <Avatar member={member} size={36} booster={member.isBooster} />
             </div>
           </div>
         ) : (
@@ -83,6 +81,23 @@ export function BottomRail({
           </BracketButton>
         )}
       </div>
+    </div>
+  )
+}
+
+function BadgeLine({ badge }: { badge: PrimaryBadge }) {
+  const accent = BADGE_ACCENT[badge] ?? BADGE_ACCENT.MEMBER
+  return (
+    <div
+      className="font-mono uppercase mt-[2px]"
+      style={{
+        fontSize: 9,
+        letterSpacing: '0.25em',
+        color: accent.color,
+        textShadow: `0 0 8px ${accent.glow}`,
+      }}
+    >
+      [ {badge} ]
     </div>
   )
 }

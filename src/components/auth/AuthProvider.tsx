@@ -61,11 +61,10 @@ export function AuthProvider({ children, initialState }: AuthProviderProps) {
 
   const logout = async () => {
     await fetch('/api/auth/logout', { method: 'POST' })
-    setState({
-      isAuthenticated: false,
-      isLoading: false,
-      member: null,
-    })
+    // Hard navigate so any cached client state tied to the now-defunct
+    // session is discarded. Server components on the homepage will also
+    // re-render with the cleared cookies.
+    window.location.href = '/'
   }
 
   const refresh = async () => {
