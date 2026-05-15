@@ -2,6 +2,7 @@ import type { AshleyResult } from '@/lib/api/server'
 import type { components } from '@/lib/api/schema'
 import { CyberButton } from '@/components/members/CyberButton'
 import { DiscordIcon } from '@/components/shared/DiscordIcon'
+import { StatRibbon } from '@/components/shared/StatRibbon'
 
 type CommunityStats = components['schemas']['CommunityStatsDto']
 
@@ -95,59 +96,15 @@ function SnapshotRibbon({ stats }: { stats: AshleyResult<CommunityStats> }) {
   const generatedAt = stats.ok ? stats.data.generatedAt : null
 
   return (
-    <div className="flex flex-wrap items-center gap-x-6 gap-y-3 border border-[rgba(255,255,255,0.08)] bg-[rgba(0,0,0,0.4)] px-5 py-3 font-mono text-[10px] uppercase tracking-[0.3em] text-text-muted backdrop-blur-sm">
-      <span className="text-text-secondary">// SNAPSHOT</span>
-      <span className="h-3 w-px bg-[rgba(255,255,255,0.1)]" aria-hidden />
-      <RibbonField label="MEMBERS" value={formatNumber(totalMembers)} accent="green" />
-      <span className="h-3 w-px bg-[rgba(255,255,255,0.1)]" aria-hidden />
-      <RibbonField label="JOINED · 14D" value={formatNumber(joinedLast14d)} accent="cyan" />
-      <span className="h-3 w-px bg-[rgba(255,255,255,0.1)]" aria-hidden />
-      <RibbonField label="TAKEN" value={formatTime(generatedAt)} />
-      <span className="ml-auto" />
-      <StatusPill ok={stats.ok} />
-    </div>
-  )
-}
-
-function RibbonField({
-  label,
-  value,
-  accent,
-}: {
-  label: string
-  value: string
-  accent?: 'green' | 'cyan'
-}) {
-  const colorClass =
-    accent === 'green'
-      ? 'text-rga-green [text-shadow:0_0_10px_rgba(0,255,65,0.5)]'
-      : accent === 'cyan'
-        ? 'text-rga-cyan [text-shadow:0_0_10px_rgba(0,255,255,0.5)]'
-        : 'text-text-primary'
-
-  return (
-    <span className="inline-flex items-baseline gap-2">
-      <span className="text-text-muted">{label}</span>
-      <span className={`tabular-nums ${colorClass}`}>{value}</span>
-    </span>
-  )
-}
-
-function StatusPill({ ok }: { ok: boolean }) {
-  return (
-    <span
-      className={`inline-flex items-center gap-2 ${ok ? 'text-rga-green' : 'text-rga-magenta'}`}
-    >
-      <span
-        aria-hidden
-        className={`inline-block h-2 w-2 rounded-[1px] ${
-          ok
-            ? 'bg-rga-green shadow-[0_0_8px_#00FF41] animate-pulse'
-            : 'bg-rga-magenta shadow-[0_0_8px_#FF00FF]'
-        }`}
-      />
-      {ok ? 'LIVE' : 'OFFLINE'}
-    </span>
+    <StatRibbon
+      prefix="// SNAPSHOT"
+      fields={[
+        { label: 'MEMBERS', value: formatNumber(totalMembers), accent: 'green' },
+        { label: 'JOINED · 14D', value: formatNumber(joinedLast14d), accent: 'cyan' },
+        { label: 'TAKEN', value: formatTime(generatedAt) },
+      ]}
+      pill={{ text: stats.ok ? 'LIVE' : 'OFFLINE', ok: stats.ok }}
+    />
   )
 }
 
