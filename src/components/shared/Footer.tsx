@@ -48,10 +48,16 @@ const LINK_GROUPS: FooterGroup[] = [
 
 function useSessionInfo() {
   const startTime = useRef(Date.now())
-  const [sessionHash] = useState(() =>
-    Array.from({ length: 4 }, () => "0123456789abcdef"[Math.floor(Math.random() * 16)]).join("")
-  )
+  // Math.random() in a useState initializer runs on both server and client during SSR,
+  // producing different values and breaking hydration. Generate the hash post-mount.
+  const [sessionHash, setSessionHash] = useState("----")
   const [elapsed, setElapsed] = useState("00m 00s")
+
+  useEffect(() => {
+    setSessionHash(
+      Array.from({ length: 4 }, () => "0123456789abcdef"[Math.floor(Math.random() * 16)]).join("")
+    )
+  }, [])
 
   useEffect(() => {
     const tick = () => {
