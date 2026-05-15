@@ -1,13 +1,17 @@
 'use client'
 
 import Link from 'next/link'
+import { StatRibbon } from '@/components/shared/StatRibbon'
 import type { ManifestoDocument } from './types'
+import { DOC_ORDER } from './types'
 
 interface ManifestoHeaderProps {
   doc: ManifestoDocument
 }
 
 export function ManifestoHeader({ doc }: ManifestoHeaderProps) {
+  const docPosition = DOC_ORDER.indexOf(doc.key) + 1
+
   return (
     <header className="relative px-6 md:px-12 lg:px-16 pt-16 md:pt-20 pb-8 max-w-[1480px] mx-auto">
       {/* Ambient radial glow */}
@@ -21,23 +25,25 @@ export function ManifestoHeader({ doc }: ManifestoHeaderProps) {
       />
 
       <div className="relative">
-        {/* Breadcrumb path */}
-        <div className="flex items-center gap-3 font-mono text-[11px] tracking-[0.35em] uppercase text-text-muted mb-4">
-          <span
-            className="inline-block w-2 h-2 rounded-sm bg-rga-green"
-            style={{ boxShadow: '0 0 8px #00FF41' }}
-            aria-hidden="true"
-          />
-          <Link href="/" className="text-rga-green no-underline hover:text-glow-green transition-colors">ROGUE_ARMY</Link>
-          <span>/</span>
-          <Link href="/manifesto" className="text-text-secondary no-underline hover:text-white transition-colors">MANIFESTO</Link>
-          <span>/</span>
-          <span className="text-white">{doc.code}</span>
-          <span
-            className="flex-1 max-w-80 h-px"
-            style={{
-              background: 'linear-gradient(90deg, rgba(0,255,65,0.33), transparent)',
-            }}
+        <div className="mb-6">
+          <StatRibbon
+            prefix="// CHARTER"
+            fields={[
+              {
+                label: '',
+                value: (
+                  <Link
+                    href="/manifesto"
+                    className="text-rga-green hover:text-white transition-colors no-underline [text-shadow:0_0_10px_rgba(0,255,65,0.5)]"
+                  >
+                    {doc.code}
+                  </Link>
+                ),
+              },
+              { label: 'VERSION', value: doc.version, accent: 'green' },
+              { label: 'DOC', value: `${docPosition} OF ${DOC_ORDER.length}` },
+            ]}
+            pill={{ text: 'RATIFIED', ok: true }}
           />
         </div>
 
