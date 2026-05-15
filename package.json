@@ -10,7 +10,7 @@
     "devsafe": "rm -rf .next && cross-env NODE_OPTIONS=--no-deprecation next dev",
     "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
     "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
-    "generate:api": "pnpm generate:api:fetch && pnpm generate:api:types",
+    "generate:api": "pnpm generate:api:fetch",
     "generate:api:fetch": "node scripts/fetch-api-schema.mjs",
     "generate:api:types": "openapi-typescript src/lib/api/openapi.json -o src/lib/api/schema.d.ts",
     "lint": "cross-env NODE_OPTIONS=--no-deprecation next lint",
