@@ -27,6 +27,8 @@ import { SuperscriptFeatureClient as SuperscriptFeatureClient_e70f5e05f09f93e00b
 import { SubscriptFeatureClient as SubscriptFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { StrikethroughFeatureClient as StrikethroughFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { default as default_5b4643007477f71784124a52d3ae7b35 } from '@/components/admin/OutlineDocumentSelector'
+import { GameRolesCell as GameRolesCell_51bee13a5b0866c16aa7d486058aa404 } from '@/components/admin/GameRolesCell'
+import { GameRolesPicker as GameRolesPicker_1ecb6fc78ea51a071a04d4d703061341 } from '@/components/admin/GameRolesPicker'
 import { UsernameCell as UsernameCell_cacc0ac1d0190fc1e788131aa388c80c } from '@/components/admin/DiscordAvatarCell'
 import { DiscordAvatarCell as DiscordAvatarCell_cacc0ac1d0190fc1e788131aa388c80c } from '@/components/admin/DiscordAvatarCell'
 import { DiscordAvatarField as DiscordAvatarField_456f1805df0d0e9e8e88de026b4623c3 } from '@/components/admin/DiscordAvatarField'
@@ -63,6 +65,8 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#SubscriptFeatureClient": SubscriptFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#StrikethroughFeatureClient": StrikethroughFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@/components/admin/OutlineDocumentSelector#default": default_5b4643007477f71784124a52d3ae7b35,
+  "@/components/admin/GameRolesCell#GameRolesCell": GameRolesCell_51bee13a5b0866c16aa7d486058aa404,
+  "@/components/admin/GameRolesPicker#GameRolesPicker": GameRolesPicker_1ecb6fc78ea51a071a04d4d703061341,
   "@/components/admin/DiscordAvatarCell#UsernameCell": UsernameCell_cacc0ac1d0190fc1e788131aa388c80c,
   "@/components/admin/DiscordAvatarCell#DiscordAvatarCell": DiscordAvatarCell_cacc0ac1d0190fc1e788131aa388c80c,
   "@/components/admin/DiscordAvatarField#DiscordAvatarField": DiscordAvatarField_456f1805df0d0e9e8e88de026b4623c3,
