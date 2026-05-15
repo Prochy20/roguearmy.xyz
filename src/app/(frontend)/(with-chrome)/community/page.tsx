@@ -1,4 +1,5 @@
 import { fetchAshleyService } from '@/lib/api/server'
+import { getMemberAuth } from '@/lib/auth/session.server'
 import type { components } from '@/lib/api/schema'
 import { Hero } from '@/components/community/Hero'
 import { PullStrip } from '@/components/community/PullStrip'
@@ -22,16 +23,17 @@ export const metadata = {
 export const dynamic = 'force-dynamic'
 
 export default async function CommunityPage() {
-  const stats = await fetchAshleyService<CommunityStats>((c) =>
-    c.GET('/api/community/stats'),
-  )
+  const [stats, auth] = await Promise.all([
+    fetchAshleyService<CommunityStats>((c) => c.GET('/api/community/stats')),
+    getMemberAuth(),
+  ])
 
   return (
     <>
       <Hero stats={stats} />
       <PullStrip />
       <StatsSection stats={stats} />
-      <LeaderboardTeaser />
+      {auth.status === 'active' && <LeaderboardTeaser />}
       <BeyondLobbies />
       <LoreSection />
       <JoinCTA />
