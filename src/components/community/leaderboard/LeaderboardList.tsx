@@ -10,21 +10,45 @@ interface LeaderboardListProps {
   startRank: number
   /** Logged-in user's rank — highlights their row if it appears in this slice. */
   myRank: number | null
+  /** Logged-in user's XP — drives the DST column (omitted when null). */
+  myXp?: number | null
   /** Configured level label for the caller — shown on their own row when present. */
   myLevelLabel: string | null
 }
 
-export function LeaderboardList({ entries, startRank, myRank, myLevelLabel }: LeaderboardListProps) {
+export function LeaderboardList({
+  entries,
+  startRank,
+  myRank,
+  myXp,
+  myLevelLabel,
+}: LeaderboardListProps) {
+  const showDst = typeof myXp === 'number'
+
+  // Header and body grids are separate containers — each computes track
+  // widths from its own content. Auto columns produce misalignment because
+  // header text ("LV") is much narrower than body content ("09"+label).
+  // Fixed widths anchor both grids to the same template.
+  const gridCols = showDst
+    ? 'grid-cols-[52px_1fr_72px_84px] sm:grid-cols-[72px_1fr_92px_92px_92px]'
+    : 'grid-cols-[52px_1fr_72px_84px] sm:grid-cols-[72px_1fr_92px_96px]'
+
   return (
     <section
       aria-label="leaderboard roster"
       className="overflow-hidden border border-[rgba(255,255,255,0.08)] bg-[rgba(0,0,0,0.35)]"
     >
-      <div className="grid grid-cols-[64px_1fr_auto_auto] gap-4 border-b border-[rgba(255,255,255,0.08)] px-5 py-3 font-mono text-[10px] tracking-[0.35em] uppercase text-text-muted sm:grid-cols-[80px_1fr_auto_auto] sm:gap-6 sm:px-8">
+      <div
+        className={
+          'grid items-baseline gap-3 border-b border-[rgba(255,255,255,0.08)] px-5 py-2.5 font-mono text-[10px] tracking-[0.35em] uppercase text-text-muted sm:gap-5 sm:px-8 sm:py-3 ' +
+          gridCols
+        }
+      >
         <div>// RANK</div>
         <div>OPERATIVE</div>
         <div className="text-right">LV</div>
         <div className="text-right">XP</div>
+        {showDst && <div className="hidden text-right sm:block">DST</div>}
       </div>
 
       <ul>
@@ -32,11 +56,14 @@ export function LeaderboardList({ entries, startRank, myRank, myLevelLabel }: Le
           const rank = entry.rank ?? startRank + i
           const isMe = myRank === rank
           const label = isMe ? myLevelLabel : null
+          const dst = showDst && !isMe ? entry.xp - (myXp as number) : null
           return (
             <li
               key={entry.discordId}
               className={
-                'group/row relative grid grid-cols-[64px_1fr_auto_auto] items-center gap-4 px-5 py-3 transition-colors sm:grid-cols-[80px_1fr_auto_auto] sm:gap-6 sm:px-8 sm:py-4 ' +
+                'group/row relative grid items-center gap-3 px-5 py-2.5 transition-colors sm:gap-5 sm:px-8 sm:py-3 ' +
+                gridCols +
+                ' ' +
                 (i < entries.length - 1
                   ? 'border-b border-[rgba(255,255,255,0.05)] '
                   : '') +
@@ -62,7 +89,7 @@ export function LeaderboardList({ entries, startRank, myRank, myLevelLabel }: Le
                   (isMe ? 'text-rga-green' : 'text-text-secondary')
                 }
               >
-                {`#${String(rank).padStart(2, '0')}`}
+                {`#${String(rank).padStart(3, '0')}`}
               </div>
 
               <div className="flex min-w-0 items-center gap-3 sm:gap-4">
@@ -100,7 +127,7 @@ export function LeaderboardList({ entries, startRank, myRank, myLevelLabel }: Le
                 {label && (
                   <span
                     className={
-                      'mt-1 max-w-[160px] truncate font-mono text-[9px] tracking-[0.3em] uppercase ' +
+                      'mt-1 max-w-full truncate font-mono text-[9px] tracking-[0.3em] uppercase ' +
                       (isMe ? 'text-rga-green/80' : 'text-rga-cyan/65')
                     }
                   >
@@ -117,6 +144,10 @@ export function LeaderboardList({ entries, startRank, myRank, myLevelLabel }: Le
               >
                 {entry.xp.toLocaleString()}
               </div>
+
+              {showDst && (
+                <DstCell dst={dst} isMe={isMe} />
+              )}
             </li>
           )
         })}
@@ -136,6 +167,36 @@ function RowAvatar({ entry }: { entry: LeaderboardEntry }) {
         className="h-full w-full object-cover"
         unoptimized
       />
+    </div>
+  )
+}
+
+/**
+ * Signed XP distance from caller. Positive (green) = operative is ahead;
+ * negative (magenta) = operative is behind. Hidden on mobile to keep the
+ * row legible at narrow widths. Caller's own row shows an em-dash.
+ */
+function DstCell({ dst, isMe }: { dst: number | null; isMe: boolean }) {
+  if (isMe) {
+    return (
+      <div className="hidden text-right font-mono text-sm text-text-muted/50 sm:block">
+        —
+      </div>
+    )
+  }
+  if (dst == null) return <div className="hidden sm:block" />
+  const sign = dst > 0 ? '+' : dst < 0 ? '−' : '±'
+  const abs = Math.abs(dst).toLocaleString()
+  const tone =
+    dst > 0
+      ? 'text-rga-green [text-shadow:0_0_8px_rgba(0,255,65,0.35)]'
+      : dst < 0
+        ? 'text-rga-magenta [text-shadow:0_0_8px_rgba(255,0,255,0.3)]'
+        : 'text-text-muted'
+  return (
+    <div className={'hidden text-right font-mono tabular-nums text-sm sm:block ' + tone}>
+      {sign}
+      {abs}
     </div>
   )
 }

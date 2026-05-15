@@ -124,6 +124,7 @@ function renderList(
         entries={rest}
         startRank={4}
         myRank={me?.rank ?? null}
+        myXp={me?.xp ?? null}
         myLevelLabel={myLevelLabel}
       />
     </div>

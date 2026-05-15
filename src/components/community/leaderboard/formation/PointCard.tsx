@@ -397,7 +397,7 @@ function StandardCard({
           </div>
 
           {/* Closing distance — the headline */}
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-4 sm:gap-5">
             <div className="flex items-center justify-between gap-3 font-mono text-[10px] tracking-[0.4em] uppercase">
               <span className="text-rga-green/80">// CLOSING DISTANCE</span>
               <span className="text-text-muted">VECTOR · CONVERGING</span>
@@ -406,7 +406,7 @@ function StandardCard({
             <div className="flex items-baseline gap-4 sm:gap-6">
               <div
                 className="font-display tabular-nums leading-[0.85] text-rga-green [text-shadow:0_0_28px_rgba(0,255,65,0.55),0_0_56px_rgba(0,255,65,0.25)]"
-                style={{ fontSize: 'clamp(72px, 11vw, 168px)' }}
+                style={{ fontSize: pickGapFontSize(gap.toLocaleString().length) }}
               >
                 {gap.toLocaleString()}
               </div>
@@ -462,6 +462,22 @@ function Sep() {
       ◢
     </span>
   )
+}
+
+/**
+ * Pick a clamp() font-size for the closing-distance headline based on the
+ * formatted gap's character count (digits + thousand separators).
+ *
+ * Display-font digits are ~0.65× their font size in width. A static peak
+ * sized for "9 999" (5 chars) overflows the column once the gap reaches
+ * "999 999" (7) or "9 999 999" (9) chars. Stepping the cap down by digit
+ * bracket preserves drama for typical values and keeps extreme values legible.
+ */
+function pickGapFontSize(charLen: number): string {
+  if (charLen <= 6) return 'clamp(72px, 11vw, 168px)' // up to "99 999"
+  if (charLen <= 7) return 'clamp(64px, 9.5vw, 144px)' // up to "999 999"
+  if (charLen <= 9) return 'clamp(56px, 8vw, 120px)' // up to "9 999 999"
+  return 'clamp(48px, 6.5vw, 96px)' // 10M+ XP gaps
 }
 
 function BriefSection({ eyebrow, children }: { eyebrow: string; children: React.ReactNode }) {
