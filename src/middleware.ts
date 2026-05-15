@@ -54,7 +54,9 @@ async function maybeRefreshAshley(
   if (!baseUrl || !apiKey) return
 
   try {
-    const refreshRes = await fetch(`${baseUrl}/api/auth/refresh`, {
+    // baseUrl already includes the deployment-specific API mount prefix
+    // (".../api" in dev, ".../api-ashley" in prod). Don't re-add "/api/".
+    const refreshRes = await fetch(`${baseUrl}/auth/refresh`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
