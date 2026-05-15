@@ -10,6 +10,18 @@ export const Games: CollectionConfig = {
   access: {
     read: () => true,
   },
+  hooks: {
+    afterDelete: [
+      async ({ id, req }) => {
+        await req.payload.delete({
+          collection: 'game-roles',
+          where: { game: { equals: id } },
+          req,
+          overrideAccess: false,
+        })
+      },
+    ],
+  },
   fields: [
     {
       name: 'name',
