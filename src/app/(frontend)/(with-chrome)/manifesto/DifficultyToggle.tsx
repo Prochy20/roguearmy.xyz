@@ -26,7 +26,7 @@ export function DifficultyToggle({ mode, onToggle }: DifficultyToggleProps) {
           return (
             <button
               key={value}
-              onClick={onToggle}
+              onClick={isActive ? undefined : onToggle}
               aria-pressed={isActive}
               className={cn(
                 'relative flex-1 py-2.5 font-mono text-[11px] tracking-[0.25em] uppercase transition-all duration-200 rounded-sm cursor-pointer',
