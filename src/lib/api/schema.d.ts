@@ -998,6 +998,24 @@ export interface components {
              */
             name: string;
         };
+        EscalationLootTypeRefDto: {
+            /**
+             * @description URL-friendly slug derived from the loot-type name (weapon class or gear slot).
+             * @example holster
+             */
+            slug: string;
+            /**
+             * @description Human-readable loot-type name.
+             * @example Holster
+             */
+            name: string;
+        };
+        EscalationPrototypeCacheDto: {
+            /** @description The gear slot sold as a prototype gear cache by the escalation vendor on this day, or null when upstream did not publish the value. */
+            gear: components["schemas"]["EscalationLootTypeRefDto"] | null;
+            /** @description The weapon class sold as a prototype weapon cache by the escalation vendor on this day, or null when upstream did not publish the value. */
+            weapon: components["schemas"]["EscalationLootTypeRefDto"] | null;
+        };
         EscalationDailySummaryDto: {
             /**
              * @description The calendar day this targeted-loot rotation applies to (UTC).
@@ -1011,6 +1029,8 @@ export interface components {
             fetchedAt: string;
             /** @description Targeted-loot items for this day, sorted by `position` ASC. item[position] drops from the parent week's mission at the same `position`. */
             items: components["schemas"]["EscalationLootItemDto"][];
+            /** @description Prototype caches sold by the escalation vendor on this day — one gear slot and one weapon class, independent of the mission/loot pairing on `items`. Either side is null when upstream did not publish that value. */
+            prototypeCaches: components["schemas"]["EscalationPrototypeCacheDto"];
         };
         EscalationWeekDetailDto: {
             /**
@@ -1049,6 +1069,8 @@ export interface components {
              * @example 4
              */
             itemCount: number;
+            /** @description Prototype caches sold by the escalation vendor on this day — one gear slot and one weapon class. Either side is null when upstream did not publish that value. */
+            prototypeCaches: components["schemas"]["EscalationPrototypeCacheDto"];
         };
         EscalationDailyListDto: {
             items: components["schemas"]["EscalationDailyListItemDto"][];
@@ -1086,6 +1108,8 @@ export interface components {
             fetchedAt: string;
             /** @description Targeted-loot items for this day, sorted by `position` ASC. item[position] drops from `week.missions[position]`. */
             items: components["schemas"]["EscalationLootItemDto"][];
+            /** @description Prototype caches sold by the escalation vendor on this day — one gear slot and one weapon class, independent of the mission/loot pairing on `items`. Either side is null when upstream did not publish that value. */
+            prototypeCaches: components["schemas"]["EscalationPrototypeCacheDto"];
             /** @description Summary of the week this day belongs to. */
             week: components["schemas"]["EscalationWeekSummaryDto"];
         };
@@ -1127,6 +1151,8 @@ export interface components {
             daysIngested: number;
             /** @description Number of daily-loot rows newly inserted on this run. */
             newDaysIngested: number;
+            /** @description Number of prototype-cache rows attached to *already-existing* daily-loot rows on this run. Counts the backfill of legacy days that were ingested before caches existed; excludes caches saved as part of brand-new daily rows. */
+            prototypeCachesBackfilled: number;
             /**
              * @description The most recent upstream day seen, in YYYY-MM-DD form. Null when nothing was seen.
              * @example 2026-05-10

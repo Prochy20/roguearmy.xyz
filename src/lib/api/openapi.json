@@ -1932,7 +1932,7 @@
   "info": {
     "title": "RGA Discord Bot API",
     "description": "REST API for the RGA Discord Bot",
-    "version": "1.7.1",
+    "version": "1.8.0",
     "contact": {}
   },
   "tags": [],
@@ -3013,6 +3013,52 @@
           "name"
         ]
       },
+      "EscalationLootTypeRefDto": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string",
+            "description": "URL-friendly slug derived from the loot-type name (weapon class or gear slot).",
+            "example": "holster"
+          },
+          "name": {
+            "type": "string",
+            "description": "Human-readable loot-type name.",
+            "example": "Holster"
+          }
+        },
+        "required": [
+          "slug",
+          "name"
+        ]
+      },
+      "EscalationPrototypeCacheDto": {
+        "type": "object",
+        "properties": {
+          "gear": {
+            "nullable": true,
+            "description": "The gear slot sold as a prototype gear cache by the escalation vendor on this day, or null when upstream did not publish the value.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EscalationLootTypeRefDto"
+              }
+            ]
+          },
+          "weapon": {
+            "nullable": true,
+            "description": "The weapon class sold as a prototype weapon cache by the escalation vendor on this day, or null when upstream did not publish the value.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EscalationLootTypeRefDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "gear",
+          "weapon"
+        ]
+      },
       "EscalationDailySummaryDto": {
         "type": "object",
         "properties": {
@@ -3032,12 +3078,21 @@
             "items": {
               "$ref": "#/components/schemas/EscalationLootItemDto"
             }
+          },
+          "prototypeCaches": {
+            "description": "Prototype caches sold by the escalation vendor on this day — one gear slot and one weapon class, independent of the mission/loot pairing on `items`. Either side is null when upstream did not publish that value.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EscalationPrototypeCacheDto"
+              }
+            ]
           }
         },
         "required": [
           "day",
           "fetchedAt",
-          "items"
+          "items",
+          "prototypeCaches"
         ]
       },
       "EscalationWeekDetailDto": {
@@ -3097,13 +3152,22 @@
             "type": "number",
             "description": "Number of targeted-loot items in this day.",
             "example": 4
+          },
+          "prototypeCaches": {
+            "description": "Prototype caches sold by the escalation vendor on this day — one gear slot and one weapon class. Either side is null when upstream did not publish that value.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EscalationPrototypeCacheDto"
+              }
+            ]
           }
         },
         "required": [
           "day",
           "weekStart",
           "fetchedAt",
-          "itemCount"
+          "itemCount",
+          "prototypeCaches"
         ]
       },
       "EscalationDailyListDto": {
@@ -3182,6 +3246,14 @@
               "$ref": "#/components/schemas/EscalationLootItemDto"
             }
           },
+          "prototypeCaches": {
+            "description": "Prototype caches sold by the escalation vendor on this day — one gear slot and one weapon class, independent of the mission/loot pairing on `items`. Either side is null when upstream did not publish that value.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EscalationPrototypeCacheDto"
+              }
+            ]
+          },
           "week": {
             "description": "Summary of the week this day belongs to.",
             "allOf": [
@@ -3195,6 +3267,7 @@
           "day",
           "fetchedAt",
           "items",
+          "prototypeCaches",
           "week"
         ]
       },
@@ -3262,6 +3335,10 @@
             "type": "number",
             "description": "Number of daily-loot rows newly inserted on this run."
           },
+          "prototypeCachesBackfilled": {
+            "type": "number",
+            "description": "Number of prototype-cache rows attached to *already-existing* daily-loot rows on this run. Counts the backfill of legacy days that were ingested before caches existed; excludes caches saved as part of brand-new daily rows."
+          },
           "latestDay": {
             "type": "object",
             "description": "The most recent upstream day seen, in YYYY-MM-DD form. Null when nothing was seen.",
@@ -3288,6 +3365,7 @@
           "weeksProcessed",
           "daysIngested",
           "newDaysIngested",
+          "prototypeCachesBackfilled",
           "latestDay",
           "todayDailyIngested",
           "forceClearedRows",
