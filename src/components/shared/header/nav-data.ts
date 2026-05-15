@@ -48,4 +48,15 @@ export const NAV: readonly NavItem[] = [
       { label: 'Your rank', href: '/leaderboard', available: true },
     ],
   },
+  {
+    label: 'MANIFESTO',
+    href: '/manifesto',
+    blurb: 'Charter, rules, privacy, terms · how this place runs',
+    available: true,
+    sub: [
+      { label: 'Rules', href: '/manifesto#rules', available: true },
+      { label: 'Privacy', href: '/manifesto#privacy', available: true },
+      { label: 'Terms', href: '/manifesto#terms', available: true },
+    ],
+  },
 ] as const
