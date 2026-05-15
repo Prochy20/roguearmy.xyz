@@ -8,6 +8,7 @@ import { getDiscordAvatarUrl } from '@/lib/auth/discord'
 import { createAshleyUserClient } from '@/lib/api/client'
 import { CyberCorners, CyberTag } from '@/components/ui/CyberCorners'
 import { CountUp } from '@/components/shared/CountUp'
+import { TierBand } from '@/components/community/leaderboard/formation/TierBand'
 import type { PrimaryBadge } from '@/lib/auth/badges'
 
 export const metadata = {
@@ -27,9 +28,16 @@ type AshleyMe = {
 
 type AshleyLevel = {
   level: number
+  /** Optional configured label for the current level (e.g. "VETERAN"). */
+  levelLabel?: unknown
   xp: number
   progress: number
-  nextLevel?: { level: number; xpRequired: number } | null
+  nextLevel?: {
+    level: number
+    xpRequired: number
+    /** Optional configured label for the next level (e.g. "ELITE"). */
+    label?: unknown
+  } | null
   xpToNextLevel?: unknown
 }
 
@@ -290,13 +298,9 @@ function ProgressionBand({ level }: { level: Fetched<AshleyLevel> }) {
   }
 
   const data = level.data
-  const progressPct = Math.max(0, Math.min(1, data.progress)) * 100
-  const xpToNext =
-    typeof data.xpToNextLevel === 'number'
-      ? data.xpToNextLevel
-      : typeof data.xpToNextLevel === 'object' && data.xpToNextLevel !== null && 'value' in data.xpToNextLevel
-        ? Number((data.xpToNextLevel as { value: unknown }).value)
-        : null
+  const xpToNext = extractXpToNext(data.xpToNextLevel)
+  const levelLabel = normalizeLabel(data.levelLabel)
+  const nextLevelLabel = normalizeLabel(data.nextLevel?.label)
 
   return (
     <div className="flex flex-col gap-5 border-t border-[rgba(255,255,255,0.08)] pt-8">
@@ -315,23 +319,33 @@ function ProgressionBand({ level }: { level: Fetched<AshleyLevel> }) {
         </div>
       </div>
 
-      <div className="me-xpbar relative h-3 w-full overflow-hidden border border-[rgba(0,255,65,0.25)] bg-black/60">
-        <div
-          className="me-xpbar__fill absolute inset-y-0 left-0 bg-linear-to-r from-rga-green via-rga-green to-rga-cyan shadow-[0_0_16px_rgba(0,255,65,0.55)]"
-          style={{ '--me-xp': `${progressPct}%` } as React.CSSProperties}
-        />
-      </div>
-
-      <div className="flex items-center justify-between font-mono text-[11px] tracking-[0.25em]">
-        <span className="text-text-muted">// PROGRESS {progressPct.toFixed(1)}%</span>
-        <span className="text-text-secondary">
-          {data.nextLevel
-            ? `${xpToNext != null ? xpToNext.toLocaleString() : '?'} XP TO LEVEL ${String(data.nextLevel.level).padStart(4, '0')}`
-            : 'MAX LEVEL — TERMINAL CLEARANCE'}
-        </span>
-      </div>
+      <TierBand
+        compact
+        level={data.level}
+        levelLabel={levelLabel}
+        progress={data.progress}
+        xpToNextLevel={xpToNext}
+        nextLevel={data.nextLevel?.level ?? null}
+        nextLevelLabel={nextLevelLabel}
+      />
     </div>
   )
+}
+
+// xpToNextLevel arrives as either a raw number or a boxed { value } object —
+// the schema is opaque (Record<string, never>) so we accept both shapes.
+function extractXpToNext(value: unknown): number | null {
+  if (typeof value === 'number' && Number.isFinite(value)) return value
+  if (typeof value === 'object' && value !== null && 'value' in value) {
+    const n = Number((value as { value: unknown }).value)
+    return Number.isFinite(n) ? n : null
+  }
+  return null
+}
+
+function normalizeLabel(value: unknown): string | null {
+  if (typeof value === 'string' && value.trim().length > 0) return value.trim()
+  return null
 }
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -494,10 +508,6 @@ const ME_STYLES = `
     from { opacity: 0; transform: translateY(8px); }
     to   { opacity: 1; transform: translateY(0); }
   }
-  @keyframes me-xp-fill {
-    from { width: 0%; }
-    to   { width: var(--me-xp); }
-  }
   @keyframes me-dot-pulse {
     0%, 100% { opacity: 1; }
     50%      { opacity: 0.4; }
@@ -508,12 +518,7 @@ const ME_STYLES = `
   }
   .me-fade--01 { animation-delay: 0.05s; }
   .me-fade--02 { animation-delay: 0.20s; }
-  .me-xpbar__fill {
-    width: var(--me-xp);
-    animation: me-xp-fill 0.95s cubic-bezier(0.2, 0.7, 0.2, 1) 0.25s both;
-  }
   @media (prefers-reduced-motion: reduce) {
-    .me-fade,
-    .me-xpbar__fill { animation: none !important; opacity: 1 !important; }
+    .me-fade { animation: none !important; opacity: 1 !important; }
   }
 `
