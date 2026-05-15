@@ -70,6 +70,7 @@ export interface Config {
     articles: Article;
     series: Series;
     games: Game;
+    'game-roles': GameRole;
     topics: Topic;
     'content-types': ContentType;
     media: Media;
@@ -87,6 +88,7 @@ export interface Config {
     articles: ArticlesSelect<false> | ArticlesSelect<true>;
     series: SeriesSelect<false> | SeriesSelect<true>;
     games: GamesSelect<false> | GamesSelect<true>;
+    'game-roles': GameRolesSelect<false> | GameRolesSelect<true>;
     topics: TopicsSelect<false> | TopicsSelect<true>;
     'content-types': ContentTypesSelect<false> | ContentTypesSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
@@ -296,6 +298,33 @@ export interface Series {
   createdAt: string;
 }
 /**
+ * Pair Discord roles with games. Members holding any paired role count as playing that game.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "game-roles".
+ */
+export interface GameRole {
+  id: string;
+  /**
+   * One GameRoles entry per game.
+   */
+  game: string | Game;
+  /**
+   * Discord roles paired with this game. Snapshot of {id, name, color} taken at save.
+   */
+  roles:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
@@ -490,6 +519,10 @@ export interface PayloadLockedDocument {
         value: string | Game;
       } | null)
     | ({
+        relationTo: 'game-roles';
+        value: string | GameRole;
+      } | null)
+    | ({
         relationTo: 'topics';
         value: string | Topic;
       } | null)
@@ -613,6 +646,16 @@ export interface GamesSelect<T extends boolean = true> {
   description?: T;
   color?: T;
   featured?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "game-roles_select".
+ */
+export interface GameRolesSelect<T extends boolean = true> {
+  game?: T;
+  roles?: T;
   updatedAt?: T;
   createdAt?: T;
 }

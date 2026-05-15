@@ -9,6 +9,7 @@ import sharp from 'sharp'
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
 import { Games } from './collections/Games'
+import { GameRoles } from './collections/GameRoles'
 import { Members } from './collections/Members'
 import { Topics } from './collections/Topics'
 import { ContentTypes } from './collections/ContentTypes'
@@ -62,7 +63,7 @@ export default buildConfig({
   cors: [process.env.NEXT_PUBLIC_SERVER_URL || ''].filter(Boolean),
 
   // Order determines admin menu group ordering: Content, Taxonomies, Assets, Users
-  collections: [Articles, Series, Games, Topics, ContentTypes, Media, Users, Members, ReadProgress, Bookmarks],
+  collections: [Articles, Series, Games, GameRoles, Topics, ContentTypes, Media, Users, Members, ReadProgress, Bookmarks],
   globals: [Homepage, Manifesto],
   editor: lexicalEditor({
     features: ({ defaultFeatures }) => [
