@@ -3,6 +3,7 @@ import type { components } from '@/lib/api/schema'
 import { CyberButton } from '@/components/members/CyberButton'
 import { DiscordIcon } from '@/components/shared/DiscordIcon'
 import { StatRibbon } from '@/components/shared/StatRibbon'
+import { HeroGlitch } from '@/components/effects/HeroGlitch'
 
 type CommunityStats = components['schemas']['CommunityStatsDto']
 
@@ -53,14 +54,41 @@ export function Hero({ stats }: HeroProps) {
             className="font-display uppercase leading-[0.85] tracking-[0.005em] text-balance break-words"
             style={{ fontSize: 'clamp(48px, 9vw, 144px)' }}
           >
-            <span className="block text-text-primary">{COPY.preLine}</span>
-            <span
-              className="block text-rga-green"
-              style={{ textShadow: '0 0 36px rgba(0,255,65,0.45), 0 0 80px rgba(0,255,65,0.18)' }}
+            <HeroGlitch
+              className="block"
+              minInterval={4}
+              maxInterval={10}
+              intensity={8}
+              dataCorruption
+              scanlines
             >
-              {stats.ok ? stats.data.totalMembers.toLocaleString() : COPY.fallbackCount}
-            </span>
-            <span className="block text-text-primary">{COPY.postLine}</span>
+              <span className="text-text-primary">{COPY.preLine}</span>
+            </HeroGlitch>
+            <HeroGlitch
+              className="block"
+              minInterval={5}
+              maxInterval={12}
+              intensity={6}
+              dataCorruption={false}
+              colors={['#00ff41', '#00ffff']}
+            >
+              <span
+                className="text-rga-green"
+                style={{ textShadow: '0 0 36px rgba(0,255,65,0.45), 0 0 80px rgba(0,255,65,0.18)' }}
+              >
+                {stats.ok ? stats.data.totalMembers.toLocaleString() : COPY.fallbackCount}
+              </span>
+            </HeroGlitch>
+            <HeroGlitch
+              className="block"
+              minInterval={6}
+              maxInterval={14}
+              intensity={7}
+              dataCorruption
+              scanlines
+            >
+              <span className="text-text-primary">{COPY.postLine}</span>
+            </HeroGlitch>
           </h1>
 
           <p className="max-w-2xl text-base leading-relaxed text-text-secondary sm:text-lg">
