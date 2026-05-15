@@ -12,7 +12,7 @@ interface StatsSectionProps {
 
 const STAT_LABELS = {
   members: 'OPERATIVES',
-  joined14d: 'JOINED · 14D',
+  joined14d: 'JOINED · LAST 14 DAYS',
   voice: 'MINUTES IN VOICE',
   messages: 'MESSAGES LOGGED',
 } as const
@@ -58,25 +58,25 @@ export function StatsSection({ stats }: StatsSectionProps) {
               label={STAT_LABELS.members}
               value={stats.data.totalMembers}
               tone="green"
-              locale
+              compact
             />
             <StatCell
               label={STAT_LABELS.joined14d}
               value={stats.data.joinedLast14d}
               tone="cyan"
-              locale
+              compact
             />
             <StatCell
               label={STAT_LABELS.voice}
               value={stats.data.totalVoiceMinutes}
               tone="green"
-              locale
+              compact
             />
             <StatCell
               label={STAT_LABELS.messages}
               value={stats.data.totalMessages}
               tone="magenta"
-              locale
+              compact
             />
           </div>
         )}
@@ -106,19 +106,21 @@ function StatCell({
   value,
   tone,
   locale,
+  compact,
 }: {
   label: string
   value: number
   tone: 'green' | 'cyan' | 'magenta'
   locale?: boolean
+  compact?: boolean
 }) {
   return (
     <div className="flex flex-col gap-3 border-l border-[rgba(255,255,255,0.08)] pl-5 sm:pl-6">
       <div
-        className={`font-display tabular-nums leading-none ${CELL_TONE[tone]}`}
-        style={{ fontSize: 'clamp(40px, 5.5vw, 88px)' }}
+        className={`font-display tabular-nums leading-none tracking-tight ${CELL_TONE[tone]}`}
+        style={{ fontSize: 'clamp(32px, 4.2vw, 64px)' }}
       >
-        <StatCounter value={value} locale={locale} />
+        <StatCounter value={value} locale={locale} compact={compact} />
       </div>
       <div className="font-mono text-[10px] tracking-[0.35em] text-text-muted uppercase">
         {label}

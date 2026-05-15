@@ -12,6 +12,8 @@ interface CountUpProps {
   padZeros?: number
   /** Format the number with grouping separators via toLocaleString(). */
   locale?: boolean
+  /** Format with compact notation (894812 → "894.8K"). Takes precedence over `locale`. */
+  compact?: boolean
   /**
    * Reveal style:
    *   'count' (default) — ease-out count from 0 to value
@@ -34,9 +36,10 @@ export function CountUp({
   delay = 0,
   padZeros,
   locale = false,
+  compact = false,
   reveal = 'count',
 }: CountUpProps) {
-  const finalDisplay = formatNumber(value, padZeros, locale)
+  const finalDisplay = formatNumber(value, padZeros, locale, compact)
   // Initial state must be deterministic — useState's initializer runs on the
   // server during SSR *and* on the client during hydration, so anything random
   // (Math.random, Date.now) here causes a hydration mismatch. We zero-fill the
@@ -71,7 +74,7 @@ export function CountUp({
         setDisplay(progressiveLock(finalDisplay, progress))
       } else {
         const eased = 1 - Math.pow(1 - progress, 3)
-        setDisplay(formatNumber(Math.round(value * eased), padZeros, locale))
+        setDisplay(formatNumber(Math.round(value * eased), padZeros, locale, compact))
       }
 
       if (progress < 1) raf = requestAnimationFrame(tick)
@@ -85,15 +88,36 @@ export function CountUp({
       window.clearTimeout(startTimer)
       cancelAnimationFrame(raf)
     }
-  }, [value, duration, delay, finalDisplay, reveal, padZeros, locale])
+  }, [value, duration, delay, finalDisplay, reveal, padZeros, locale, compact])
 
   return <>{display}</>
 }
 
-function formatNumber(n: number, padZeros: number | undefined, locale: boolean): string {
+function formatNumber(
+  n: number,
+  padZeros: number | undefined,
+  locale: boolean,
+  compact: boolean,
+): string {
   if (padZeros && padZeros > 0) return String(n).padStart(padZeros, '0')
+  if (compact) return formatCompact(n)
   if (locale) return n.toLocaleString()
   return String(n)
+}
+
+const compactFormatter = new Intl.NumberFormat('en', {
+  notation: 'compact',
+  maximumFractionDigits: 1,
+})
+
+/**
+ * Compact human-readable formatting: 894812 → "894.8K", 1_400_000 → "1.4M".
+ * Below 1000 the suffix is dropped (349 → "349"), so call sites can use this
+ * uniformly without branching on magnitude. Module-scoped formatter instance
+ * avoids re-allocating Intl on every render / tween tick.
+ */
+export function formatCompact(n: number): string {
+  return compactFormatter.format(n)
 }
 
 // Deterministic zero-fill of the final template. Used as the SSR / first-paint
