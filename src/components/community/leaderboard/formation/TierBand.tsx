@@ -11,6 +11,13 @@ interface TierBandProps {
   nextLevelLabel: string | null
   /** Next level number, or null when at the cap. */
   nextLevel: number | null
+  /**
+   * Compact mode strips the announcement chrome (eyebrow row + big tier
+   * label). Use when the surrounding page already declares the level —
+   * e.g. on /me where a large CURRENT LEVEL display sits above. Leaves
+   * the segmented bar + XP-to-next cell intact.
+   */
+  compact?: boolean
 }
 
 const SEGMENTS = 32
@@ -30,6 +37,7 @@ export function TierBand({
   xpToNextLevel,
   nextLevelLabel,
   nextLevel,
+  compact = false,
 }: TierBandProps) {
   const atCap = nextLevel == null
   const clamped = Math.max(0, Math.min(1, atCap ? 1 : progress))
@@ -51,54 +59,62 @@ export function TierBand({
       role="group"
       aria-label="tier progress"
     >
-      {/* Eyebrow row */}
-      <div className="mb-2.5 flex items-center justify-between gap-3 font-mono text-[10px] tracking-[0.4em] uppercase">
-        <div className="flex items-center gap-2">
-          <span className={atCap ? 'text-rga-magenta' : 'text-rga-green/80'} aria-hidden>
-            ◢
-          </span>
-          <span className={atCap ? 'text-rga-magenta' : 'text-rga-green/80'}>TIER</span>
-          <span className="text-text-muted">·</span>
-          <span className="text-text-secondary">
-            LV {String(level).padStart(2, '0')}
-            {levelLabel ? ` · ${levelLabel}` : ''}
-          </span>
-        </div>
-        <div className="flex items-center gap-2 text-text-muted">
-          {atCap ? (
-            <span className="text-rga-magenta [text-shadow:0_0_10px_rgba(255,0,255,0.5)]">
-              MAX BAND · 100%
+      {/* Eyebrow row — suppressed in compact mode (parent announces the level). */}
+      {!compact && (
+        <div className="mb-2.5 flex items-center justify-between gap-3 font-mono text-[10px] tracking-[0.4em] uppercase">
+          <div className="flex items-center gap-2">
+            <span className={atCap ? 'text-rga-magenta' : 'text-rga-green/80'} aria-hidden>
+              ◢
             </span>
-          ) : (
-            <>
-              <span className="tabular-nums text-text-secondary">{pct}%</span>
-              <span aria-hidden>→</span>
-              {nextLevelLabel ? (
-                <span className="text-rga-cyan/80">{nextLevelLabel}</span>
-              ) : (
-                <span className="text-rga-cyan/80">LV {String(nextLevel).padStart(2, '0')}</span>
-              )}
-            </>
-          )}
+            <span className={atCap ? 'text-rga-magenta' : 'text-rga-green/80'}>TIER</span>
+            <span className="text-text-muted">·</span>
+            <span className="text-text-secondary">
+              LV {String(level).padStart(2, '0')}
+              {levelLabel ? ` · ${levelLabel}` : ''}
+            </span>
+          </div>
+          <div className="flex items-center gap-2 text-text-muted">
+            {atCap ? (
+              <span className="text-rga-magenta [text-shadow:0_0_10px_rgba(255,0,255,0.5)]">
+                MAX BAND · 100%
+              </span>
+            ) : (
+              <>
+                <span className="tabular-nums text-text-secondary">{pct}%</span>
+                <span aria-hidden>→</span>
+                {nextLevelLabel ? (
+                  <span className="text-rga-cyan/80">{nextLevelLabel}</span>
+                ) : (
+                  <span className="text-rga-cyan/80">LV {String(nextLevel).padStart(2, '0')}</span>
+                )}
+              </>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* Main row: large tier label | segmented bar | XP-to-next readout */}
-      <div className="grid grid-cols-1 items-center gap-3 sm:grid-cols-[auto_1fr_auto] sm:gap-5">
-        {/* Tier display */}
-        <div className="flex items-baseline gap-3">
-          <span
-            className={
-              'font-display uppercase leading-none tracking-[0.005em] ' +
-              (atCap
-                ? 'text-rga-magenta [text-shadow:0_0_18px_rgba(255,0,255,0.55)]'
-                : 'text-rga-green [text-shadow:0_0_18px_rgba(0,255,65,0.45)]')
-            }
-            style={{ fontSize: 'clamp(20px, 2.4vw, 32px)' }}
-          >
-            {levelLabel ?? `LV ${String(level).padStart(2, '0')}`}
-          </span>
-        </div>
+      {/* Main row. Compact drops the big tier-label cell and widens the bar. */}
+      <div
+        className={
+          'grid grid-cols-1 items-center gap-3 sm:gap-5 ' +
+          (compact ? 'sm:grid-cols-[1fr_auto]' : 'sm:grid-cols-[auto_1fr_auto]')
+        }
+      >
+        {!compact && (
+          <div className="flex items-baseline gap-3">
+            <span
+              className={
+                'font-display uppercase leading-none tracking-[0.005em] ' +
+                (atCap
+                  ? 'text-rga-magenta [text-shadow:0_0_18px_rgba(255,0,255,0.55)]'
+                  : 'text-rga-green [text-shadow:0_0_18px_rgba(0,255,65,0.45)]')
+              }
+              style={{ fontSize: 'clamp(20px, 2.4vw, 32px)' }}
+            >
+              {levelLabel ?? `LV ${String(level).padStart(2, '0')}`}
+            </span>
+          </div>
+        )}
 
         {/* Segmented bar */}
         <div
