@@ -1111,11 +1111,11 @@
         ],
         "responses": {
           "200": {
-            "description": "Digest details.",
+            "description": "Digest details with hydrated articles.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContentDigestDto"
+                  "$ref": "#/components/schemas/ContentDigestDetailDto"
                 }
               }
             }
@@ -1132,7 +1132,7 @@
             "X-API-Key": []
           }
         ],
-        "summary": "Get a single content digest by UUID",
+        "summary": "Get a single content digest by UUID, with cited articles hydrated",
         "tags": [
           "Content / Digest"
         ]
@@ -2635,6 +2635,135 @@
           "total",
           "limit",
           "offset"
+        ]
+      },
+      "ContentDigestArticleDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Internal entity UUID. Matches the (ref:UUID) markers in digest content."
+          },
+          "title": {
+            "type": "string",
+            "description": "Article headline."
+          },
+          "source": {
+            "type": "string",
+            "description": "Source system (e.g. UBISOFT, REDDIT)."
+          },
+          "url": {
+            "type": "object",
+            "description": "URL to the article on the source website."
+          },
+          "publishedAt": {
+            "type": "string",
+            "description": "Publication date (ISO 8601).",
+            "example": "2026-04-01T12:34:56.000Z"
+          },
+          "thumbnailUrl": {
+            "type": "object",
+            "description": "Thumbnail image URL."
+          },
+          "authors": {
+            "type": "object",
+            "description": "Article author(s)."
+          },
+          "aiSummary": {
+            "type": "object",
+            "description": "AI-generated 200-char summary, suitable for citation card subtitle."
+          },
+          "contentType": {
+            "type": "object",
+            "description": "AI-classified content type (e.g. news, guide, discussion)."
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "source",
+          "publishedAt"
+        ]
+      },
+      "ContentDigestDetailDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Internal entity UUID."
+          },
+          "topic": {
+            "type": "string",
+            "description": "Topic / game this digest covers."
+          },
+          "frequency": {
+            "type": "string",
+            "description": "Digest frequency (daily or weekly)."
+          },
+          "periodStart": {
+            "type": "string",
+            "description": "Period start date (ISO 8601)."
+          },
+          "periodEnd": {
+            "type": "string",
+            "description": "Period end date (ISO 8601)."
+          },
+          "title": {
+            "type": "string",
+            "description": "AI-generated digest title."
+          },
+          "perex": {
+            "type": "string",
+            "description": "AI-generated short summary."
+          },
+          "highlights": {
+            "description": "AI-generated key takeaway bullet points.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "content": {
+            "type": "string",
+            "description": "AI-generated full digest body in Markdown format."
+          },
+          "thumbnailUrl": {
+            "type": "object",
+            "description": "AI-selected thumbnail URL from source articles."
+          },
+          "articleCount": {
+            "type": "number",
+            "description": "Number of articles included in this digest."
+          },
+          "articles": {
+            "description": "Hydrated articles cited by (ref:UUID) markers in `content`, ordered by relevance desc.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ContentDigestArticleDto"
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "When the digest was created (ISO 8601)."
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "When the digest was last updated (ISO 8601)."
+          }
+        },
+        "required": [
+          "id",
+          "topic",
+          "frequency",
+          "periodStart",
+          "periodEnd",
+          "title",
+          "perex",
+          "content",
+          "articleCount",
+          "articles",
+          "createdAt",
+          "updatedAt"
         ]
       },
       "GenerateDigestBodyDto": {

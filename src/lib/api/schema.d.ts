@@ -338,7 +338,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get a single content digest by UUID */
+        /** Get a single content digest by UUID, with cited articles hydrated */
         get: operations["ContentDigestController_getOne"];
         put?: never;
         post?: never;
@@ -837,6 +837,59 @@ export interface components {
             limit: number;
             /** @description Offset echoed back from the request. */
             offset: number;
+        };
+        ContentDigestArticleDto: {
+            /** @description Internal entity UUID. Matches the (ref:UUID) markers in digest content. */
+            id: string;
+            /** @description Article headline. */
+            title: string;
+            /** @description Source system (e.g. UBISOFT, REDDIT). */
+            source: string;
+            /** @description URL to the article on the source website. */
+            url?: Record<string, never>;
+            /**
+             * @description Publication date (ISO 8601).
+             * @example 2026-04-01T12:34:56.000Z
+             */
+            publishedAt: string;
+            /** @description Thumbnail image URL. */
+            thumbnailUrl?: Record<string, never>;
+            /** @description Article author(s). */
+            authors?: Record<string, never>;
+            /** @description AI-generated 200-char summary, suitable for citation card subtitle. */
+            aiSummary?: Record<string, never>;
+            /** @description AI-classified content type (e.g. news, guide, discussion). */
+            contentType?: Record<string, never>;
+        };
+        ContentDigestDetailDto: {
+            /** @description Internal entity UUID. */
+            id: string;
+            /** @description Topic / game this digest covers. */
+            topic: string;
+            /** @description Digest frequency (daily or weekly). */
+            frequency: string;
+            /** @description Period start date (ISO 8601). */
+            periodStart: string;
+            /** @description Period end date (ISO 8601). */
+            periodEnd: string;
+            /** @description AI-generated digest title. */
+            title: string;
+            /** @description AI-generated short summary. */
+            perex: string;
+            /** @description AI-generated key takeaway bullet points. */
+            highlights?: string[];
+            /** @description AI-generated full digest body in Markdown format. */
+            content: string;
+            /** @description AI-selected thumbnail URL from source articles. */
+            thumbnailUrl?: Record<string, never>;
+            /** @description Number of articles included in this digest. */
+            articleCount: number;
+            /** @description Hydrated articles cited by (ref:UUID) markers in `content`, ordered by relevance desc. */
+            articles: components["schemas"]["ContentDigestArticleDto"][];
+            /** @description When the digest was created (ISO 8601). */
+            createdAt: string;
+            /** @description When the digest was last updated (ISO 8601). */
+            updatedAt: string;
         };
         GenerateDigestBodyDto: {
             /** @description Topic to generate digest for. Omit to generate for all topics. */
@@ -2000,13 +2053,13 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Digest details. */
+            /** @description Digest details with hydrated articles. */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ContentDigestDto"];
+                    "application/json": components["schemas"]["ContentDigestDetailDto"];
                 };
             };
             /** @description Missing or invalid API token. */
