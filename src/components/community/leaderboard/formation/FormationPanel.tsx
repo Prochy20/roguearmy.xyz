@@ -1,14 +1,24 @@
 'use client'
 
+import dynamic from 'next/dynamic'
 import { useEffect, useMemo, useState } from 'react'
 import { FormationBlock } from './FormationBlock'
 import { FormationDossier } from './FormationDossier'
 import { PointCard, type PointCardState } from './PointCard'
 import { TierBand } from './TierBand'
 import { ProgressStrip } from './ProgressStrip'
-import { BootOverlay } from './BootOverlay'
-import { RosterModal } from './RosterModal'
 import { useFormationStorage } from './useFormationStorage'
+
+// Both are conditionally rendered (BootOverlay: first visit only; RosterModal:
+// click-to-open). Splitting them out of the initial bundle reduces leaderboard
+// JS for returning visitors without changing render semantics — both are pure
+// client components and never SSR.
+const BootOverlay = dynamic(() =>
+  import('./BootOverlay').then((m) => ({ default: m.BootOverlay })),
+)
+const RosterModal = dynamic(() =>
+  import('./RosterModal').then((m) => ({ default: m.RosterModal })),
+)
 import { setBootSeenCookieClient } from '@/lib/formation/cookies'
 import {
   computeWindowDelta,
@@ -215,17 +225,19 @@ export function FormationPanel({
         )}
       </FormationBlock>
 
-      <RosterModal
-        open={rosterOpen}
-        entries={rosterEntries}
-        callerXp={myEntry?.xp ?? 0}
-        callerRank={myEntry?.rank ?? null}
-        hasMore={hasMoreRoster}
-        isLoading={rosterLoading}
-        onClose={() => setRosterOpen(false)}
-        onDesignate={handleDesignateFromRoster}
-        onLoadMore={handleLoadMoreRoster}
-      />
+      {rosterOpen && (
+        <RosterModal
+          open={rosterOpen}
+          entries={rosterEntries}
+          callerXp={myEntry?.xp ?? 0}
+          callerRank={myEntry?.rank ?? null}
+          hasMore={hasMoreRoster}
+          isLoading={rosterLoading}
+          onClose={() => setRosterOpen(false)}
+          onDesignate={handleDesignateFromRoster}
+          onLoadMore={handleLoadMoreRoster}
+        />
+      )}
 
       {showBoot && !bootDismissed && (
         <BootOverlay
