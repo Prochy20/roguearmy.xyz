@@ -1,42 +1,45 @@
 import type { CollectionConfig } from 'payload'
+import { APIError } from 'payload'
+import type { AvatarBundle } from '@/lib/discord/avatar'
 
 /**
  * Fetch a slim member DTO by discordId and write it into `data` so the
  * cached_* fields stay aligned with Discord. Used by the beforeChange hook
- * when a row is created or the discordId is changed. Fail-open: if Ashley
- * is unreachable we leave the cached fields untouched and let the lazy TTL
- * refresh on page render retry later.
+ * when a row is created or the discordId is changed.
  *
- * The Ashley client is dynamically imported inside the hook because
- * `@/lib/api/server` is marked `server-only`; eager-importing it at the
- * top of this collection file breaks the Payload importmap generator,
- * which loads collection configs outside a server-component context.
+ * Returns a discriminated outcome so the hook can decide whether to fail
+ * the save (new row / changed id — we need a valid Ashley member to back
+ * this row) or warn and continue (same id, just a manual re-save to
+ * refresh the cache — the lazy TTL on /community/staff will retry).
+ *
+ * The Ashley client + avatar helper are dynamically imported because
+ * `@/lib/api/server` and `@/lib/discord/avatar` are marked `server-only`;
+ * eager-importing them at the top of this collection file breaks the
+ * Payload importmap generator, which loads collection configs outside a
+ * server-component context.
  */
-type AvatarBundle = { 64: string; 128: string; 256: string; 512: string } | null | undefined
-
-/**
- * Pick the largest Discord-provided variant (512px) from the server-specific
- * avatar first (guild-level override), then the global avatar. Cards render
- * the avatar at ~340px wide on desktop, so 512 gives crisp 1.5× DPR coverage
- * without upscaling artefacts. Returns null when neither is set.
- */
-function pickBestAvatar(server: AvatarBundle, global: AvatarBundle): string | null {
-  return server?.[512] ?? global?.[512] ?? null
-}
+type RefreshOutcome =
+  | { kind: 'ok' }
+  | { kind: 'ashley_down' }
+  | { kind: 'member_not_found' }
 
 async function refreshCacheFromAshley(
   data: Record<string, unknown>,
   discordId: string,
-): Promise<void> {
-  const { fetchAshleyService } = await import('@/lib/api/server')
+): Promise<RefreshOutcome> {
+  const [{ fetchAshleyService }, { pickBestAvatar }] = await Promise.all([
+    import('@/lib/api/server'),
+    import('@/lib/discord/avatar'),
+  ])
   const result = await fetchAshleyService((client) =>
     client.GET('/api/community/members/lookup', {
       params: { query: { ids: discordId } },
     }),
   )
-  if (!result.ok) return
+  if (!result.ok) return { kind: 'ashley_down' }
   const member = result.data?.[0]
-  if (!member) return
+  if (!member) return { kind: 'member_not_found' }
+
   data.cached_username = (member.username ?? null) as string | null
   data.cached_displayName = member.displayName
   data.cached_avatarUrl = pickBestAvatar(
@@ -46,6 +49,7 @@ async function refreshCacheFromAshley(
   data.cached_joinedAt = member.joinedAt ?? null
   data.cached_accountCreatedAt = member.accountCreatedAt ?? null
   data.cached_at = new Date().toISOString()
+  return { kind: 'ok' }
 }
 
 /**
@@ -77,13 +81,42 @@ export const StaffProfiles: CollectionConfig = {
     beforeChange: [
       // Every save refreshes the Discord cache. Cheap (one Ashley call per
       // save, the staff cohort is tiny) and gives editors a manual refresh
-      // affordance: re-saving the record forces a re-sync, which is useful
-      // when someone changes their nickname/avatar and the editor wants to
-      // see it on the page without waiting for the 24h TTL.
-      async ({ data }) => {
+      // affordance: re-saving the record forces a re-sync.
+      //
+      // Failure policy is asymmetric:
+      //   - create / changed discordId → throw, because we cannot
+      //     responsibly persist a row whose cached_* fields don't match
+      //     the new id. Editor sees the Ashley failure and can retry.
+      //   - unchanged discordId         → log + continue. The cached_*
+      //     fields stay as-is and the page's lazy TTL refresh will retry
+      //     on next render. Failing here would block routine edits
+      //     (changing roleTitle / bio / order) whenever Ashley is down.
+      async ({ data, operation, originalDoc }) => {
         const newId = (data?.discordId as string | undefined)?.trim()
         if (!newId) return data
-        await refreshCacheFromAshley(data, newId)
+
+        const idChanged =
+          operation === 'create' || originalDoc?.discordId !== newId
+
+        const outcome = await refreshCacheFromAshley(data, newId)
+        if (outcome.kind === 'ok') return data
+
+        if (idChanged) {
+          if (outcome.kind === 'member_not_found') {
+            throw new APIError(
+              `No Discord member found for ID ${newId}. Pick a different operative or check Ashley.`,
+              400,
+            )
+          }
+          throw new APIError(
+            'Could not verify operative against Ashley (upstream unreachable). Try again in a moment.',
+            503,
+          )
+        }
+
+        console.warn(
+          `StaffProfiles refresh skipped for ${newId}: ${outcome.kind}. Cached fields left as-is; lazy TTL will retry on next render.`,
+        )
         return data
       },
     ],

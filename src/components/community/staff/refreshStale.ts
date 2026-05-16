@@ -1,14 +1,9 @@
 import type { BasePayload } from 'payload'
 import { fetchAshleyService } from '@/lib/api/server'
+import { pickBestAvatar, type AvatarBundle } from '@/lib/discord/avatar'
 import type { StaffProfile as PayloadStaffProfile } from '@/payload-types'
 
 const TTL_MS = 24 * 60 * 60 * 1000
-
-type AvatarBundle = { 64: string; 128: string; 256: string; 512: string } | null | undefined
-
-function pickBestAvatar(server: AvatarBundle, global: AvatarBundle): string | null {
-  return server?.[512] ?? global?.[512] ?? null
-}
 
 /**
  * Walk the profile list, find rows whose Discord cache is older than the
