@@ -11,8 +11,7 @@ const DISCORD_URL = "https://dc.roguearmy.xyz"
 interface FooterLink {
   cmd: string
   href: string
-  external?: boolean
-  primary?: boolean
+  parent?: boolean
 }
 
 interface FooterGroup {
@@ -33,15 +32,15 @@ const LINK_GROUPS: FooterGroup[] = [
   {
     label: "community",
     items: [
-      { cmd: "./join-discord", href: DISCORD_URL, external: true, primary: true },
-      { cmd: "./rules", href: "/manifesto#rules" },
+      { cmd: "cd ~/community", href: "/community", parent: true },
+      { cmd: "cat ./staff.md", href: "/community/staff" },
     ],
   },
   {
-    label: "system",
+    label: "manifesto",
     items: [
-      { cmd: "man privacy", href: "/manifesto#privacy" },
-      { cmd: "man terms", href: "/manifesto#terms" },
+      { cmd: "cd ~/manifesto", href: "/manifesto", parent: true },
+      { cmd: "man rules", href: "/manifesto#rules" },
     ],
   },
 ]
