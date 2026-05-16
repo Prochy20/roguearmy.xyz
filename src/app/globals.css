@@ -595,3 +595,40 @@
     animation: none !important;
   }
 }
+
+/* Staff hero radar — decorative sweep + blip pulse. */
+.rga-radar-sweep {
+  transform-box: view-box;
+  transform-origin: center;
+  animation: rga-radar-spin 11s linear infinite;
+}
+
+.rga-radar-blip {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: rga-radar-pulse 3.2s ease-in-out infinite;
+}
+
+@keyframes rga-radar-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes rga-radar-pulse {
+  0%, 100% {
+    opacity: 0.15;
+    transform: scale(0.7);
+  }
+  50% {
+    opacity: 0.55;
+    transform: scale(1.5);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rga-radar-sweep,
+  .rga-radar-blip {
+    animation: none !important;
+  }
+}
