@@ -980,6 +980,68 @@ export interface StaffPage {
      * Kicker shown to signed-in members above the roster.
      */
     kickerMember?: string | null;
+    /**
+     * Wide closing card rendered below the roster grid — communicates that the dossiers above are not the only people contributing.
+     */
+    tailBanner?: {
+      /**
+       * Toggle the banner without losing its copy.
+       */
+      enabled?: boolean | null;
+      /**
+       * Mono kicker above the headline.
+       */
+      kicker?: string | null;
+      /**
+       * Display title — keep short, all-caps reads best.
+       */
+      title?: string | null;
+      /**
+       * Editorial paragraph. Keep it short — 2-3 sentences.
+       */
+      body?: string | null;
+      /**
+       * Right-side "redacted manifest fragment" — a mono-styled console readout listing a few role-groups with two redacted rows underneath. Conveys "there are more, names withheld" in the page's dossier vocabulary. Leave entries empty to hide the panel entirely.
+       */
+      fragment?: {
+        /**
+         * Header label at the top of the readout (e.g. a fake filename).
+         */
+        label?: string | null;
+        /**
+         * Visible rows in the fragment. Each row reads "NN  LABEL  ::  NOTE" — keep labels and notes UPPER_SNAKE_CASE for the console look. Two redacted rows render below automatically.
+         */
+        entries?:
+          | {
+              /**
+               * Color of the status note.
+               */
+              tone: 'cyan' | 'green' | 'magenta';
+              /**
+               * Role-group name (e.g. REGULARS).
+               */
+              label: string;
+              /**
+               * Short status word (ACTIVE, STANDBY, ROTATING).
+               */
+              note: string;
+              id?: string | null;
+            }[]
+          | null;
+        /**
+         * Footer line below the redacted rows. The "+ N" count is editorial — set it to whatever feels right for the size of your unnamed crew.
+         */
+        redactedLine?: string | null;
+      };
+      /**
+       * CTA pill label. Leave the href blank to hide the pill entirely; the label alone does not render a button.
+       */
+      ctaLabel?: string | null;
+      /**
+       * Where the CTA points. Discord invite, /community, etc. Leave blank to hide the button.
+       */
+      ctaHref?: string | null;
+    };
   };
   protocol?: {
     /**
@@ -1349,6 +1411,30 @@ export interface StaffPageSelect<T extends boolean = true> {
         sectionTitle?: T;
         kickerPublic?: T;
         kickerMember?: T;
+        tailBanner?:
+          | T
+          | {
+              enabled?: T;
+              kicker?: T;
+              title?: T;
+              body?: T;
+              fragment?:
+                | T
+                | {
+                    label?: T;
+                    entries?:
+                      | T
+                      | {
+                          tone?: T;
+                          label?: T;
+                          note?: T;
+                          id?: T;
+                        };
+                    redactedLine?: T;
+                  };
+              ctaLabel?: T;
+              ctaHref?: T;
+            };
       };
   protocol?:
     | T

@@ -157,6 +157,144 @@ export const StaffPage: GlobalConfig = {
               defaultValue: '// CLEARANCE GRANTED · DIRECT LINES VISIBLE',
               admin: { description: 'Kicker shown to signed-in members above the roster.' },
             },
+            {
+              name: 'tailBanner',
+              type: 'group',
+              admin: {
+                description:
+                  'Wide closing card rendered below the roster grid — communicates that the dossiers above are not the only people contributing.',
+              },
+              fields: [
+                {
+                  name: 'enabled',
+                  type: 'checkbox',
+                  defaultValue: true,
+                  admin: { description: 'Toggle the banner without losing its copy.' },
+                },
+                {
+                  name: 'kicker',
+                  type: 'text',
+                  defaultValue: '// AND MANY MORE · WEARING THE SAME COLORS',
+                  admin: { description: 'Mono kicker above the headline.' },
+                },
+                {
+                  name: 'title',
+                  type: 'text',
+                  defaultValue: 'THE REST OF THE LINE',
+                  admin: { description: 'Display title — keep short, all-caps reads best.' },
+                },
+                {
+                  name: 'body',
+                  type: 'textarea',
+                  defaultValue:
+                    'The dossiers above are the active duty roster. Behind them sits a wider crew — regulars who help moderate, contributors who build tooling, the people you see in voice every weekend. No card on this page, same colors.',
+                  admin: { description: 'Editorial paragraph. Keep it short — 2-3 sentences.' },
+                },
+                {
+                  name: 'fragment',
+                  type: 'group',
+                  admin: {
+                    description:
+                      'Right-side "redacted manifest fragment" — a mono-styled console readout listing a few role-groups with two redacted rows underneath. Conveys "there are more, names withheld" in the page\'s dossier vocabulary. Leave entries empty to hide the panel entirely.',
+                  },
+                  fields: [
+                    {
+                      name: 'label',
+                      type: 'text',
+                      defaultValue: 'OFF_MANIFEST.LOG',
+                      admin: { description: 'Header label at the top of the readout (e.g. a fake filename).' },
+                    },
+                    {
+                      name: 'entries',
+                      type: 'array',
+                      minRows: 0,
+                      maxRows: 6,
+                      defaultValue: [
+                        { tone: 'green', label: 'REGULARS', note: 'ACTIVE' },
+                        { tone: 'cyan', label: 'EVENT_CREW', note: 'ROTATING' },
+                        { tone: 'green', label: 'TOOL_BUILDERS', note: 'FREELANCE' },
+                        { tone: 'magenta', label: 'VOICE_RESIDENTS', note: 'NIGHT_SHIFT' },
+                      ],
+                      admin: {
+                        description:
+                          'Visible rows in the fragment. Each row reads "NN  LABEL  ::  NOTE" — keep labels and notes UPPER_SNAKE_CASE for the console look. Two redacted rows render below automatically.',
+                        initCollapsed: false,
+                      },
+                      fields: [
+                        {
+                          type: 'row',
+                          fields: [
+                            {
+                              name: 'tone',
+                              type: 'select',
+                              required: true,
+                              defaultValue: 'green',
+                              options: [...TONE_OPTIONS],
+                              admin: {
+                                width: '25%',
+                                description: 'Color of the status note.',
+                              },
+                            },
+                            {
+                              name: 'label',
+                              type: 'text',
+                              required: true,
+                              admin: {
+                                width: '40%',
+                                description: 'Role-group name (e.g. REGULARS).',
+                              },
+                            },
+                            {
+                              name: 'note',
+                              type: 'text',
+                              required: true,
+                              defaultValue: 'ACTIVE',
+                              admin: {
+                                width: '35%',
+                                description: 'Short status word (ACTIVE, STANDBY, ROTATING).',
+                              },
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                    {
+                      name: 'redactedLine',
+                      type: 'text',
+                      defaultValue: '+ 14 OPERATIVES :: REDACTED',
+                      admin: {
+                        description:
+                          'Footer line below the redacted rows. The "+ N" count is editorial — set it to whatever feels right for the size of your unnamed crew.',
+                      },
+                    },
+                  ],
+                },
+                {
+                  type: 'row',
+                  fields: [
+                    {
+                      name: 'ctaLabel',
+                      type: 'text',
+                      defaultValue: 'JOIN THE LINE',
+                      admin: {
+                        width: '40%',
+                        description:
+                          'CTA pill label. Leave the href blank to hide the pill entirely; the label alone does not render a button.',
+                      },
+                    },
+                    {
+                      name: 'ctaHref',
+                      type: 'text',
+                      admin: {
+                        width: '60%',
+                        description:
+                          'Where the CTA points. Discord invite, /community, etc. Leave blank to hide the button.',
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
           ],
         },
 
