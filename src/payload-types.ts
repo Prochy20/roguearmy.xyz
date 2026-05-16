@@ -367,9 +367,9 @@ export interface StaffProfile {
    */
   isPublic?: boolean | null;
   /**
-   * Card accent color. Leave "Auto" for hash-derived variety across the roster, or pick a specific color to override.
+   * Card accent color. Leave "Auto" for hash-derived variety across the roster, or pick a specific color (the three role tints map to the brand role colors).
    */
-  accent?: ('auto' | 'green' | 'cyan' | 'magenta') | null;
+  accent?: ('auto' | 'green' | 'cyan' | 'magenta' | 'dev' | 'admin' | 'mod') | null;
   /**
    * Display sort, ascending. Lower numbers appear first. Leave gaps (10, 20, 30…) so reordering is cheap.
    */

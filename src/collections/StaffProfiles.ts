@@ -136,10 +136,13 @@ export const StaffProfiles: CollectionConfig = {
         { label: 'Green', value: 'green' },
         { label: 'Cyan', value: 'cyan' },
         { label: 'Magenta', value: 'magenta' },
+        { label: 'Developer · Lime', value: 'dev' },
+        { label: 'Community Admin · Pink', value: 'admin' },
+        { label: 'Community Mod · Orange', value: 'mod' },
       ],
       admin: {
         description:
-          'Card accent color. Leave "Auto" for hash-derived variety across the roster, or pick a specific color to override.',
+          'Card accent color. Leave "Auto" for hash-derived variety across the roster, or pick a specific color (the three role tints map to the brand role colors).',
       },
     },
     {
