@@ -5,13 +5,15 @@ interface StaffRadarProps {
   className?: string
 }
 
+const SWEEP_PERIOD_S = 11
+
 const BLIP_SLOTS = [
-  { angle: 38, radius: 64, delay: 0 },
-  { angle: 158, radius: 78, delay: 1.1 },
-  { angle: 248, radius: 52, delay: 2.3 },
-  { angle: 322, radius: 70, delay: 0.6 },
-  { angle: 95, radius: 40, delay: 1.7 },
-  { angle: 205, radius: 86, delay: 2.9 },
+  { angle: 38, radius: 64 },
+  { angle: 158, radius: 78 },
+  { angle: 248, radius: 52 },
+  { angle: 322, radius: 70 },
+  { angle: 95, radius: 40 },
+  { angle: 205, radius: 86 },
 ] as const
 
 export function StaffRadar({ blipCount = 4, className }: StaffRadarProps) {
@@ -19,7 +21,9 @@ export function StaffRadar({ blipCount = 4, className }: StaffRadarProps) {
   const blips = BLIP_SLOTS.slice(0, count).map((b) => ({
     x: +(Math.cos((b.angle * Math.PI) / 180) * b.radius).toFixed(2),
     y: +(Math.sin((b.angle * Math.PI) / 180) * b.radius).toFixed(2),
-    delay: b.delay,
+    // Sweep starts at 3 o'clock (angle 0) and rotates clockwise over SWEEP_PERIOD_S.
+    // The sweep crosses this blip's angle at t = (angle / 360) * period.
+    delay: +((b.angle / 360) * SWEEP_PERIOD_S).toFixed(2),
   }))
 
   return (
@@ -72,14 +76,18 @@ export function StaffRadar({ blipCount = 4, className }: StaffRadarProps) {
               cx={b.x}
               cy={b.y}
               r="4"
-              fill="rgba(0,255,65,0.12)"
-              className="rga-radar-blip"
-              style={{
-                animationDelay: `${b.delay}s`,
-                transformOrigin: `${b.x}px ${b.y}px`,
-              }}
+              fill="rgba(0,255,65,0.22)"
+              className="rga-radar-blip-halo"
+              style={{ animationDelay: `${b.delay}s` }}
             />
-            <circle cx={b.x} cy={b.y} r="1.3" fill="rgba(0,255,65,0.55)" />
+            <circle
+              cx={b.x}
+              cy={b.y}
+              r="1.6"
+              fill="rgba(0,255,65,0.85)"
+              className="rga-radar-blip-dot"
+              style={{ animationDelay: `${b.delay}s` }}
+            />
           </g>
         ))}
 
