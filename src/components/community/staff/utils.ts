@@ -39,6 +39,32 @@ export function operativeIdAt(index: number): string {
   return `OP_${String(index + 1).padStart(3, '0')}`
 }
 
+/**
+ * Format an ISO timestamp to a tactical "MMM YYYY" string (e.g. "MAR 2019").
+ * Used on the card's tenure data band — readable at small mono sizes, fits
+ * the dossier register.
+ */
+export function formatMonthYear(iso: string | null): string {
+  if (!iso) return '—'
+  const d = new Date(iso)
+  if (isNaN(d.getTime())) return '—'
+  const months = [
+    'JAN',
+    'FEB',
+    'MAR',
+    'APR',
+    'MAY',
+    'JUN',
+    'JUL',
+    'AUG',
+    'SEP',
+    'OCT',
+    'NOV',
+    'DEC',
+  ]
+  return `${months[d.getUTCMonth()]} ${d.getUTCFullYear()}`
+}
+
 /** Format an ISO timestamp to a tactical "HH:MM UTC · DD MMM" string. */
 export function formatSyncStamp(iso: string | null): string {
   if (!iso) return '— · —'

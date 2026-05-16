@@ -4,7 +4,7 @@ import { CyberCorners } from '@/components/ui/CyberCorners'
 import { DiscordIcon } from '@/components/shared/DiscordIcon'
 import { StaffPortrait } from './StaffPortrait'
 import type { StaffAccent, StaffProfile } from './types'
-import { accentFor, operativeIdAt } from './utils'
+import { accentFor, formatMonthYear, operativeIdAt } from './utils'
 
 interface StaffCardProps {
   profile: StaffProfile
@@ -46,7 +46,9 @@ const ACCENT_TAPE_TEXT: Record<StaffAccent, string> = {
 }
 
 export function StaffCard({ profile, index, showMemberSurface }: StaffCardProps) {
-  const accent = accentFor(profile.discordId)
+  // Editorial accent wins; null falls back to the hash-derived default so
+  // 'auto' rows still get visual variety across the roster.
+  const accent = profile.accent ?? accentFor(profile.discordId)
   const operativeId = operativeIdAt(index)
   const discordUrl = `https://discord.com/users/${profile.discordId}`
 
@@ -118,38 +120,53 @@ export function StaffCard({ profile, index, showMemberSurface }: StaffCardProps)
             )}
           />
 
-          {/* Portrait */}
-          <div className="p-4 pb-3">
-            <StaffPortrait
-              displayName={profile.cached_displayName}
-              avatarUrl={profile.cached_avatarUrl}
-              accent={accent}
-            />
+          {/* Header band: avatar badge + name + role */}
+          <div className="flex items-start gap-4 p-4 pb-3">
+            <div className="w-24 shrink-0">
+              <StaffPortrait
+                displayName={profile.cached_displayName}
+                avatarUrl={profile.cached_avatarUrl}
+                accent={accent}
+                size="badge"
+              />
+            </div>
+            <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+              <h3
+                className="font-display leading-[0.95] tracking-[0.01em] text-text-primary uppercase"
+                style={{ fontSize: 'clamp(22px, 1.8vw, 28px)' }}
+              >
+                {profile.cached_displayName}
+              </h3>
+              <div
+                className={cn(
+                  'font-mono text-[10px] tracking-[0.3em] uppercase',
+                  ACCENT_TEXT[accent],
+                )}
+              >
+                // {profile.roleTitle}
+              </div>
+            </div>
           </div>
 
-          {/* Info block */}
+          {/* Separator + tenure data band */}
+          <div className="mx-4 mb-3 border-t border-dashed border-white/10" />
+          <ul
+            className={cn(
+              'mx-4 mb-4 flex flex-wrap gap-x-5 gap-y-2 font-mono text-[10px] tracking-[0.25em] uppercase',
+            )}
+          >
+            <DataStat label="ENLISTED" value={formatMonthYear(profile.cached_joinedAt)} accent={accent} />
+            <DataStat
+              label="ON RECORD"
+              value={formatMonthYear(profile.cached_accountCreatedAt)}
+              accent={accent}
+            />
+          </ul>
+
+          {/* Bio */}
           <div className="flex flex-1 flex-col gap-3 px-4 pb-4">
-            {/* Display name */}
-            <h3
-              className="font-display leading-[0.95] tracking-[0.01em] text-text-primary uppercase"
-              style={{ fontSize: 'clamp(22px, 1.8vw, 28px)' }}
-            >
-              {profile.cached_displayName}
-            </h3>
-
-            {/* Role title */}
-            <div
-              className={cn(
-                'font-mono text-[10px] tracking-[0.3em] uppercase',
-                ACCENT_TEXT[accent],
-              )}
-            >
-              // {profile.roleTitle}
-            </div>
-
-            {/* Bio — line-clamped to 3 so cards stay rhythmic */}
             {profile.bio ? (
-              <p className="line-clamp-3 text-sm leading-relaxed text-text-secondary">
+              <p className="line-clamp-4 text-sm leading-relaxed text-text-secondary">
                 {profile.bio}
               </p>
             ) : (
@@ -208,5 +225,25 @@ export function StaffCard({ profile, index, showMemberSurface }: StaffCardProps)
         </div>
       </CyberCorners>
     </article>
+  )
+}
+
+interface DataStatProps {
+  label: string
+  value: string
+  accent: StaffAccent
+}
+
+/**
+ * One row of the tenure data band: muted label + accent-colored value. Keeps
+ * the cards' mono-label vocabulary (// PILL · VALUE) but pares it down to
+ * scannable label/value pairs that read as personnel-record telemetry.
+ */
+function DataStat({ label, value, accent }: DataStatProps) {
+  return (
+    <li className="inline-flex items-baseline gap-2">
+      <span className="text-text-muted">{label}</span>
+      <span className={cn('text-text-primary', ACCENT_TEXT[accent])}>{value}</span>
+    </li>
   )
 }

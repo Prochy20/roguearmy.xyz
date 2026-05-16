@@ -58,12 +58,16 @@ export async function refreshStaleStaffCaches(
         member.serverAvatarUrls as AvatarBundle,
         member.avatarUrls as AvatarBundle,
       )
+      const joinedAt = member.joinedAt ?? null
+      const accountCreatedAt = member.accountCreatedAt ?? null
 
       profiles[i] = {
         ...p,
         cached_username: username,
         cached_displayName: displayName,
         cached_avatarUrl: avatarUrl,
+        cached_joinedAt: joinedAt,
+        cached_accountCreatedAt: accountCreatedAt,
         cached_at: cachedAt,
       }
 
@@ -75,6 +79,8 @@ export async function refreshStaleStaffCaches(
             cached_username: username,
             cached_displayName: displayName,
             cached_avatarUrl: avatarUrl,
+            cached_joinedAt: joinedAt,
+            cached_accountCreatedAt: accountCreatedAt,
             cached_at: cachedAt,
           },
         })

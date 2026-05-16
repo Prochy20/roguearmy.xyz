@@ -7,6 +7,12 @@ interface StaffPortraitProps {
   avatarUrl: string | null
   accent: StaffAccent
   className?: string
+  /**
+   * 'full' (default) renders for the historic edge-to-edge card. 'badge'
+   * tunes initials, crosshair, and ID-tag for the new ~96px badge slot in
+   * the dossier header layout.
+   */
+  size?: 'full' | 'badge'
 }
 
 const ACCENT_GRADIENT: Record<StaffAccent, string> = {
@@ -36,8 +42,15 @@ const ACCENT_BORDER: Record<StaffAccent, string> = {
  * grid + crosshair + scanline overlay are pure CSS so the portrait reads as
  * a designed surface rather than a missing-asset placeholder.
  */
-export function StaffPortrait({ displayName, avatarUrl, accent, className }: StaffPortraitProps) {
+export function StaffPortrait({
+  displayName,
+  avatarUrl,
+  accent,
+  className,
+  size = 'full',
+}: StaffPortraitProps) {
   const initials = initialsOf(displayName)
+  const isBadge = size === 'badge'
 
   return (
     <div
@@ -78,7 +91,7 @@ export function StaffPortrait({ displayName, avatarUrl, accent, className }: Sta
 
           {/* Crosshair reticle, centered */}
           <div aria-hidden className="absolute inset-0 flex items-center justify-center">
-            <div className="relative h-24 w-24">
+            <div className={cn('relative', isBadge ? 'h-10 w-10' : 'h-24 w-24')}>
               <span className="absolute top-1/2 left-0 h-px w-full bg-white/10" />
               <span className="absolute top-0 left-1/2 h-full w-px bg-white/10" />
             </div>
@@ -92,7 +105,7 @@ export function StaffPortrait({ displayName, avatarUrl, accent, className }: Sta
                 ACCENT_TEXT[accent],
               )}
               style={{
-                fontSize: 'clamp(56px, 9vw, 96px)',
+                fontSize: isBadge ? 'clamp(24px, 3vw, 32px)' : 'clamp(56px, 9vw, 96px)',
                 letterSpacing: '0.04em',
               }}
             >
@@ -127,21 +140,6 @@ export function StaffPortrait({ displayName, avatarUrl, accent, className }: Sta
         }}
       />
 
-      {/* Corner ID tag — top-left */}
-      <div className="absolute top-0 left-0 flex items-center gap-1.5 border-r border-b border-white/10 bg-black/70 px-2 py-1 font-mono text-[9px] tracking-[0.3em] text-white/55 uppercase backdrop-blur-sm">
-        <span
-          aria-hidden
-          className={cn(
-            'inline-block h-1.5 w-1.5',
-            accent === 'green'
-              ? 'bg-rga-green shadow-[0_0_6px_#00FF41]'
-              : accent === 'cyan'
-                ? 'bg-rga-cyan shadow-[0_0_6px_#00FFFF]'
-                : 'bg-rga-magenta shadow-[0_0_6px_#FF00FF]',
-          )}
-        />
-        <span>ID</span>
-      </div>
     </div>
   )
 }
