@@ -84,18 +84,15 @@ export function ManifestoPage({ docs, singleDoc }: ManifestoPageProps) {
     const fireGlitch = () => {
       setGlitchPhase('out')
       setTimeout(() => {
-        setDifficulty((prev) => {
-          const nextMode = prev === 'casual' ? 'hardcore' : 'casual'
-          // Update URL with mode
-          const url = new URL(window.location.href)
-          if (nextMode === 'hardcore') {
-            url.searchParams.set('mode', 'hardcore')
-          } else {
-            url.searchParams.delete('mode')
-          }
-          history.replaceState(null, '', url.toString())
-          return nextMode
-        })
+        const nextMode: DifficultyMode = difficulty === 'casual' ? 'hardcore' : 'casual'
+        const url = new URL(window.location.href)
+        if (nextMode === 'hardcore') {
+          url.searchParams.set('mode', 'hardcore')
+        } else {
+          url.searchParams.delete('mode')
+        }
+        history.replaceState(null, '', url.toString())
+        setDifficulty(nextMode)
         setGlitchPhase('in')
         setTimeout(() => setGlitchPhase('idle'), 200)
       }, 180)
@@ -120,7 +117,7 @@ export function ManifestoPage({ docs, singleDoc }: ManifestoPageProps) {
     raf = requestAnimationFrame(check)
     // Safety timeout — fire anyway after 2s in case scroll gets stuck
     setTimeout(() => { cancelAnimationFrame(raf); if (window.scrollY >= 10) fireGlitch() }, 2000)
-  }, [glitchPhase])
+  }, [glitchPhase, difficulty])
 
   // Compute effective document based on difficulty mode
   const effectiveDoc = useMemo(() => {
