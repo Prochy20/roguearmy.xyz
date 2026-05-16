@@ -19,7 +19,7 @@ export function StaffManifestHeader({
 }: StaffManifestHeaderProps) {
   return (
     <section
-      className="relative overflow-hidden border-b border-[rgba(255,255,255,0.06)] px-4 pt-20 pb-16 sm:px-8 sm:pt-24 sm:pb-20 lg:px-16 lg:pt-28 lg:pb-24"
+      className="relative overflow-hidden border-b border-[rgba(255,255,255,0.06)] px-4 pt-20 pb-16 sm:px-8 sm:pt-24 sm:pb-20 lg:px-16 lg:pt-28 lg:pb-24 [--radar-shove:132px] xl:[--radar-shove:168px] 2xl:[--radar-shove:204px]"
       aria-labelledby="staff-manifest-headline"
     >
       <div
