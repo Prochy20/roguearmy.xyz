@@ -337,7 +337,7 @@ export interface GameRole {
 export interface StaffProfile {
   id: string;
   /**
-   * Discord snowflake ID for this operative. Used to render the DM link and (once Ashley sync is wired) populate the cached display name + avatar.
+   * Search Discord members by name and pick one. The display name and avatar are hydrated from Ashley on save and refreshed lazily on page render.
    */
   discordId: string;
   /**
@@ -370,6 +370,10 @@ export interface StaffProfile {
    * Display sort, ascending. Lower numbers appear first. Leave gaps (10, 20, 30…) so reordering is cheap.
    */
   order?: number | null;
+  /**
+   * Latest known Discord username (the @handle, not the display name). Refreshed lazily on page render past TTL.
+   */
+  cached_username?: string | null;
   /**
    * Latest known display name from Discord. Refreshed lazily on page render past TTL.
    */
@@ -755,6 +759,7 @@ export interface StaffProfilesSelect<T extends boolean = true> {
   bio?: T;
   isPublic?: T;
   order?: T;
+  cached_username?: T;
   cached_displayName?: T;
   cached_avatarUrl?: T;
   cached_at?: T;
