@@ -3,30 +3,45 @@
 import { useEffect, useRef, useState } from 'react'
 import { cn } from '@/lib/utils'
 
+interface RadarContact {
+  name: string
+  /** "r,g,b" — slotted into `rgba(...,a)` for the dot, halo, and label fills. */
+  color: string
+}
+
 interface StaffRadarProps {
   blipCount?: number
+  contacts?: RadarContact[]
   className?: string
 }
 
 const SWEEP_PERIOD_S = 11
 const BLIP_LIFETIME_S = 3.2
+const DEFAULT_COLOR = '0,255,65'
 
 interface Blip {
   id: number
   x: number
   y: number
   delay: number
+  name: string
+  color: string
 }
 
-export function StaffRadar({ blipCount = 4, className }: StaffRadarProps) {
+export function StaffRadar({ blipCount = 4, contacts, className }: StaffRadarProps) {
   const [blips, setBlips] = useState<Blip[]>([])
   const sweepStartRef = useRef(0)
   const nextIdRef = useRef(0)
   const blipCountRef = useRef(blipCount)
+  const contactsRef = useRef<RadarContact[]>(contacts ?? [])
 
   useEffect(() => {
     blipCountRef.current = blipCount
   }, [blipCount])
+
+  useEffect(() => {
+    contactsRef.current = contacts ?? []
+  }, [contacts])
 
   useEffect(() => {
     sweepStartRef.current = performance.now()
@@ -37,7 +52,7 @@ export function StaffRadar({ blipCount = 4, className }: StaffRadarProps) {
       if (!alive) return
 
       const angle = Math.random() * 360
-      const radius = 22 + Math.random() * 72
+      const radius = 22 + Math.random() * 68
 
       const elapsed = (performance.now() - sweepStartRef.current) / 1000
       const sweepAngle = ((elapsed / SWEEP_PERIOD_S) * 360) % 360
@@ -49,7 +64,13 @@ export function StaffRadar({ blipCount = 4, className }: StaffRadarProps) {
       const x = +(Math.cos(rad) * radius).toFixed(2)
       const y = +(Math.sin(rad) * radius).toFixed(2)
 
-      setBlips((prev) => [...prev, { id, x, y, delay }])
+      const pool = contactsRef.current
+      const contact =
+        pool.length > 0 ? pool[Math.floor(Math.random() * pool.length)]! : null
+      const name = contact ? contact.name.toUpperCase().slice(0, 14) : ''
+      const color = contact ? contact.color : DEFAULT_COLOR
+
+      setBlips((prev) => [...prev, { id, x, y, delay, name, color }])
 
       setTimeout(() => {
         if (!alive) return
@@ -120,26 +141,45 @@ export function StaffRadar({ blipCount = 4, className }: StaffRadarProps) {
         <line x1="-100" y1="0" x2="100" y2="0" stroke="rgba(0,255,255,0.05)" strokeWidth="0.3" />
         <line x1="0" y1="-100" x2="0" y2="100" stroke="rgba(0,255,255,0.05)" strokeWidth="0.3" />
 
-        {blips.map((b) => (
-          <g key={b.id}>
-            <circle
-              cx={b.x}
-              cy={b.y}
-              r="4"
-              fill="rgba(0,255,65,0.22)"
-              className="rga-radar-blip-halo"
-              style={{ animationDelay: `${b.delay}s` }}
-            />
-            <circle
-              cx={b.x}
-              cy={b.y}
-              r="1.6"
-              fill="rgba(0,255,65,0.85)"
-              className="rga-radar-blip-dot"
-              style={{ animationDelay: `${b.delay}s` }}
-            />
-          </g>
-        ))}
+        {blips.map((b) => {
+          const labelOnLeft = b.x > 0
+          return (
+            <g key={b.id}>
+              <circle
+                cx={b.x}
+                cy={b.y}
+                r="4"
+                fill={`rgba(${b.color},0.22)`}
+                className="rga-radar-blip-halo"
+                style={{ animationDelay: `${b.delay}s` }}
+              />
+              <circle
+                cx={b.x}
+                cy={b.y}
+                r="1.6"
+                fill={`rgba(${b.color},0.9)`}
+                className="rga-radar-blip-dot"
+                style={{ animationDelay: `${b.delay}s` }}
+              />
+              {b.name && (
+                <text
+                  x={labelOnLeft ? b.x - 4 : b.x + 4}
+                  y={b.y}
+                  dominantBaseline="middle"
+                  textAnchor={labelOnLeft ? 'end' : 'start'}
+                  fontSize="5"
+                  fontFamily="ui-monospace, SFMono-Regular, Menlo, monospace"
+                  letterSpacing="0.3"
+                  fill={`rgba(${b.color},0.95)`}
+                  className="rga-radar-blip-dot"
+                  style={{ animationDelay: `${b.delay}s` }}
+                >
+                  {b.name}
+                </text>
+              )}
+            </g>
+          )
+        })}
 
         <circle r="1.2" fill="rgba(0,255,255,0.5)" />
       </svg>
