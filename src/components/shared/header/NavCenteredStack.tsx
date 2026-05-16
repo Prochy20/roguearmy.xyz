@@ -140,19 +140,22 @@ function SubLinkRow({ sub, onNavigate }: SubLinkRowProps) {
     <div
       className="
         rga-nav-sublinks
-        w-full overflow-hidden
-        max-h-32 opacity-100
-        sm:max-h-0 sm:opacity-0
-        sm:group-hover:max-h-32 sm:group-hover:opacity-100
-        sm:group-focus-within:max-h-32 sm:group-focus-within:opacity-100
-        transition-all duration-300 ease-out
+        grid w-full
+        grid-rows-[minmax(0,1fr)] opacity-100
+        sm:grid-rows-[minmax(0,0fr)] sm:opacity-0
+        sm:group-hover:grid-rows-[minmax(0,1fr)] sm:group-hover:opacity-100
+        sm:group-focus-within:grid-rows-[minmax(0,1fr)] sm:group-focus-within:opacity-100
+        transition-[grid-template-rows,opacity] duration-[420ms]
+        ease-[cubic-bezier(0.2,0.8,0.2,1)]
       "
     >
     <ul
       className="
-        flex flex-col items-center
+        flex flex-col items-center min-h-0 overflow-hidden
         sm:flex-row sm:flex-wrap sm:justify-center
         pt-[14px] pb-[16px] sm:pl-[50px]
+        transition-transform duration-[420ms] ease-[cubic-bezier(0.2,0.8,0.2,1)]
+        sm:-translate-y-1 sm:group-hover:translate-y-0 sm:group-focus-within:translate-y-0
       "
       style={{ gap: 18 }}
     >
