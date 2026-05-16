@@ -1,6 +1,7 @@
 import { SectionHeader } from '@/components/community/SectionHeader'
 import type { StaffPage } from '@/payload-types'
 import { StaffCard } from './StaffCard'
+import { StaffRosterBanner } from './StaffRosterBanner'
 import { StaffRosterEmpty } from './StaffRosterEmpty'
 import type { StaffProfile } from './types'
 
@@ -47,20 +48,23 @@ export function StaffRoster({
         {profiles.length === 0 ? (
           <StaffRosterEmpty content={emptyState} />
         ) : (
-          <ul
-            className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-7 lg:grid-cols-3 lg:gap-8"
-            role="list"
-          >
-            {profiles.map((profile, index) => (
-              <li key={profile.discordId} className="flex">
-                <StaffCard
-                  profile={profile}
-                  index={index}
-                  showMemberSurface={showMemberSurface}
-                />
-              </li>
-            ))}
-          </ul>
+          <>
+            <ul
+              className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-7 lg:grid-cols-3 lg:gap-8"
+              role="list"
+            >
+              {profiles.map((profile, index) => (
+                <li key={profile.discordId} className="flex">
+                  <StaffCard
+                    profile={profile}
+                    index={index}
+                    showMemberSurface={showMemberSurface}
+                  />
+                </li>
+              ))}
+            </ul>
+            <StaffRosterBanner content={content?.tailBanner} />
+          </>
         )}
       </div>
     </section>
