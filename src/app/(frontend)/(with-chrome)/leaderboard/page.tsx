@@ -1,8 +1,7 @@
 import { redirect } from 'next/navigation'
 import { getMemberAuth } from '@/lib/auth/session.server'
 import { getAshleyAccessCookie } from '@/lib/auth/cookies'
-import { createAshleyUserClient } from '@/lib/api/client'
-import type { AshleyResult, AshleyError } from '@/lib/api/server'
+import { fetchAshleyUser, type AshleyResult } from '@/lib/api/server'
 import type { components } from '@/lib/api/schema'
 import { SectionHeader } from '@/components/community/SectionHeader'
 import { LeaderboardList } from '@/components/community/leaderboard/LeaderboardList'
@@ -181,46 +180,21 @@ async function resolveCloseAbove(
 // One user-context fetch returns both the top-N list AND the caller's own
 // rank (`me`) in a single response. Ashley's leveling endpoints require dual
 // auth (X-API-Key + Bearer), so service-identity won't work here.
-async function fetchLeaderboard(
+function fetchLeaderboard(
   accessToken: string | undefined,
   limit: number,
   offset: number,
 ): Promise<AshleyResult<LeaderboardResponse>> {
-  if (!accessToken) return { ok: false, error: { code: 'unauthenticated' } }
-  try {
-    const client = createAshleyUserClient(accessToken)
-    const { data, response } = await client.GET('/api/leveling/leaderboard', {
-      params: { query: { limit, offset } },
-    })
-    if (data) return { ok: true, data }
-    return { ok: false, error: classifyHttpStatus(response?.status ?? 0) }
-  } catch {
-    return { ok: false, error: { code: 'unavailable', status: 0 } }
-  }
+  return fetchAshleyUser<LeaderboardResponse>(accessToken, (c) =>
+    c.GET('/api/leveling/leaderboard', { params: { query: { limit, offset } } }),
+  )
 }
 
 // Caller's own level details — needed for the level *label* (e.g. "VETERAN")
 // which the leaderboard endpoint omits. Failure here is non-fatal; we just
 // show the level number without a label.
-async function fetchMyLevel(
+function fetchMyLevel(
   accessToken: string | undefined,
 ): Promise<AshleyResult<OwnLevel>> {
-  if (!accessToken) return { ok: false, error: { code: 'unauthenticated' } }
-  try {
-    const client = createAshleyUserClient(accessToken)
-    const { data, response } = await client.GET('/api/leveling/me')
-    if (data) return { ok: true, data }
-    return { ok: false, error: classifyHttpStatus(response?.status ?? 0) }
-  } catch {
-    return { ok: false, error: { code: 'unavailable', status: 0 } }
-  }
-}
-
-function classifyHttpStatus(status: number): AshleyError {
-  if (status === 401) return { code: 'unauthorized', status }
-  if (status === 403) return { code: 'forbidden', status }
-  if (status === 404) return { code: 'not_found', status }
-  if (status >= 400 && status < 500) return { code: 'invalid', status }
-  if (status >= 500 || status === 0) return { code: 'unavailable', status }
-  return { code: 'unknown', status }
+  return fetchAshleyUser<OwnLevel>(accessToken, (c) => c.GET('/api/leveling/me'))
 }

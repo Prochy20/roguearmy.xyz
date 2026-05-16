@@ -101,6 +101,32 @@ export async function fetchAshleyService<T>(
   }
 }
 
+/**
+ * Server-component-safe Ashley call using the user-context client (bearer
+ * + X-API-Key). The access token must be passed in by the caller — server
+ * components cannot trigger a cookie-writing refresh, so this helper
+ * deliberately omits the reactive 401 retry that `safeAshleyCall`
+ * performs in route handlers / server actions.
+ *
+ * Returns the same AshleyResult shape as the other helpers so server
+ * components, route handlers, and server actions share one error
+ * vocabulary across the codebase.
+ */
+export async function fetchAshleyUser<T>(
+  accessToken: string | undefined,
+  fn: (client: Client<paths>) => Promise<AshleyCallResponse<T>>,
+): Promise<AshleyResult<T>> {
+  if (!accessToken) return { ok: false, error: { code: 'unauthenticated' } }
+  try {
+    const client = createAshleyUserClient(accessToken)
+    const { data, error, response } = await fn(client)
+    if (data !== undefined) return { ok: true, data }
+    return { ok: false, error: classifyAshleyError(response?.status ?? 0, error) }
+  } catch {
+    return { ok: false, error: { code: 'unavailable', status: 0 } }
+  }
+}
+
 type InvokeResult<T> =
   | { ok: true; value: T }
   | { ok: false; status: number; body: unknown }
