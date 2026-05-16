@@ -138,7 +138,7 @@ export function LeaderboardList({
 
               <div
                 className={
-                  'font-mono tabular-nums text-sm sm:text-base ' +
+                  'text-right font-mono tabular-nums text-sm sm:text-base ' +
                   (isMe ? 'text-text-primary' : 'text-text-secondary')
                 }
               >
