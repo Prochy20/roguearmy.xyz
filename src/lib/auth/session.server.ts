@@ -31,6 +31,10 @@ export interface MemberAuthResult {
     avatar: string | null
     username: string
     globalName: string | null
+    /** When the user joined the Discord guild (mirrored from Ashley). */
+    joinedDiscordAt: string | null
+    /** When the user first logged into this site. */
+    joinedAt: string | null
   } | null
   /** Symbolic roles (post-sync if a refresh just happened, else last-known). */
   symbolicRoles: SymbolicRole[]
@@ -172,6 +176,8 @@ export const getMemberAuth = cache(async (): Promise<MemberAuthResult> => {
         avatar: member.avatar ?? null,
         username: member.username,
         globalName: member.globalName ?? null,
+        joinedDiscordAt: (member.guildMember?.joinedDiscordAt ?? null) as string | null,
+        joinedAt: member.joinedAt ?? null,
       },
       symbolicRoles,
       primaryBadge,

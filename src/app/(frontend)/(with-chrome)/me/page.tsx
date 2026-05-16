@@ -1,11 +1,9 @@
 import { redirect } from 'next/navigation'
 import Image from 'next/image'
-import { getPayload } from 'payload'
-import config from '@payload-config'
 import { getMemberAuth } from '@/lib/auth/session.server'
 import { getAshleyAccessCookie } from '@/lib/auth/cookies'
 import { getDiscordAvatarUrl } from '@/lib/auth/discord'
-import { createAshleyUserClient } from '@/lib/api/client'
+import { fetchAshleyUser, type AshleyResult, type AshleyErrorCode } from '@/lib/api/server'
 import { CyberCorners, CyberTag } from '@/components/ui/CyberCorners'
 import { CountUp } from '@/components/shared/CountUp'
 import { TierBand } from '@/components/community/leaderboard/formation/TierBand'
@@ -41,13 +39,6 @@ type AshleyLevel = {
   xpToNextLevel?: unknown
 }
 
-type Fetched<T> =
-  | { kind: 'ok'; data: T }
-  | { kind: 'unauthenticated' } // no Ashley cookie at all
-  | { kind: 'unauthorized' } // had a cookie, Ashley rejected it (expired/invalid)
-  | { kind: 'unavailable'; status: number } // 5xx / network
-  | { kind: 'error'; status: number } // other 4xx
-
 export default async function MePage() {
   const auth = await getMemberAuth()
   if (!auth.authenticated || !auth.member) {
@@ -55,21 +46,20 @@ export default async function MePage() {
   }
 
   const accessToken = await getAshleyAccessCookie()
-  const [ashleyMe, ashleyLevel, localMember] = await Promise.all([
-    fetchAshley<AshleyMe>(accessToken, (c) => c.GET('/api/auth/me')),
-    fetchAshley<AshleyLevel>(accessToken, (c) => c.GET('/api/leveling/me')),
-    // Local member fallback for fields Ashley owns (e.g. joinedAt) so the
-    // identity block stays meaningful even when /api/auth/me 500s.
-    fetchLocalMember(auth.memberId),
+  // Local member fields (joinedDiscordAt, joinedAt) ride along on `auth.member`
+  // from getMemberAuth — no second findByID needed for the MEMBER_SINCE fallback.
+  const [ashleyMe, ashleyLevel] = await Promise.all([
+    fetchAshleyUser<AshleyMe>(accessToken, (c) => c.GET('/api/auth/me')),
+    fetchAshleyUser<AshleyLevel>(accessToken, (c) => c.GET('/api/leveling/me')),
   ])
 
   const displayName = (auth.member.globalName ?? auth.member.username).toUpperCase()
   const avatarUrl =
-    ashleyMe.kind === 'ok' && (ashleyMe.data.user.serverAvatarUrls?.['256'] ?? ashleyMe.data.user.avatarUrls?.['256'])
+    ashleyMe.ok && (ashleyMe.data.user.serverAvatarUrls?.['256'] ?? ashleyMe.data.user.avatarUrls?.['256'])
       ? (ashleyMe.data.user.serverAvatarUrls?.['256'] ?? ashleyMe.data.user.avatarUrls!['256'])
       : getDiscordAvatarUrl(auth.member.discordId, auth.member.avatar)
 
-  const ashleyOnline = ashleyMe.kind === 'ok' || ashleyLevel.kind === 'ok'
+  const ashleyOnline = ashleyMe.ok || ashleyLevel.ok
 
   return (
     <main className="relative z-10 mx-auto w-full max-w-[1480px] px-4 py-10 sm:px-8 sm:py-16 lg:px-16 lg:py-28">
@@ -93,7 +83,7 @@ export default async function MePage() {
             <MetaGrid
               rows={[
                 ['DISCORD_ID', auth.member.discordId],
-                ['MEMBER_SINCE', formatJoined(ashleyMe, localMember)],
+                ['MEMBER_SINCE', formatJoined(ashleyMe, auth.member)],
                 ['STATUS', auth.status === 'active' ? 'ACTIVE' : (auth.status ?? 'UNKNOWN')],
                 ['CODENAME', auth.member.username],
               ]}
@@ -110,9 +100,9 @@ export default async function MePage() {
           num="02"
           eyebrow="ROLE LATTICE"
           kicker={
-            ashleyMe.kind === 'ok'
+            ashleyMe.ok
               ? '// resolved from upstream'
-              : ashleyMe.kind === 'unauthenticated'
+              : ashleyMe.error.code === 'unauthenticated'
                 ? '// session not established'
                 : '// resolution failed'
           }
@@ -287,12 +277,12 @@ function MetaGrid({
 // Progression band (XP / level) — fail-state aware
 // ─────────────────────────────────────────────────────────────────────────
 
-function ProgressionBand({ level }: { level: Fetched<AshleyLevel> }) {
-  if (level.kind !== 'ok') {
+function ProgressionBand({ level }: { level: AshleyResult<AshleyLevel> }) {
+  if (!level.ok) {
     return (
       <div className="flex flex-col gap-3 border-t border-[rgba(255,255,255,0.08)] pt-8">
         <div className="font-mono text-[10px] tracking-[0.3em] text-text-muted">PROGRESSION</div>
-        <FailRow kind={level.kind} status={statusOf(level)} />
+        <FailRow code={level.error.code} status={level.error.status} />
       </div>
     )
   }
@@ -352,9 +342,9 @@ function normalizeLabel(value: unknown): string | null {
 // Role strip — fail-state aware
 // ─────────────────────────────────────────────────────────────────────────
 
-function RoleStrip({ ashleyMe }: { ashleyMe: Fetched<AshleyMe> }) {
-  if (ashleyMe.kind !== 'ok') {
-    return <FailRow kind={ashleyMe.kind} status={statusOf(ashleyMe)} />
+function RoleStrip({ ashleyMe }: { ashleyMe: AshleyResult<AshleyMe> }) {
+  if (!ashleyMe.ok) {
+    return <FailRow code={ashleyMe.error.code} status={ashleyMe.error.status} />
   }
 
   const roles = ashleyMe.data.user.discordRoles
@@ -387,13 +377,11 @@ function RoleStrip({ ashleyMe }: { ashleyMe: Fetched<AshleyMe> }) {
   )
 }
 
-type FailKind = Exclude<Fetched<unknown>['kind'], 'ok'>
-
-function FailRow({ kind, status }: { kind: FailKind; status?: number }) {
+function FailRow({ code, status }: { code: AshleyErrorCode; status?: number }) {
   let message: string
   let action: { href: string; label: string } | null = null
 
-  switch (kind) {
+  switch (code) {
     case 'unauthenticated':
       message = 'ASHLEY SESSION NOT ESTABLISHED'
       action = { href: '/auth/login?returnTo=/me', label: 'RE-LOGIN' }
@@ -405,7 +393,7 @@ function FailRow({ kind, status }: { kind: FailKind; status?: number }) {
     case 'unavailable':
       message = `UPSTREAM UNREACHABLE${status ? ` — CODE ${status}` : ''} — RETRY MOMENTARILY`
       break
-    case 'error':
+    default:
       message = `REQUEST REJECTED — CODE ${status ?? '?'}`
       break
   }
@@ -423,59 +411,21 @@ function FailRow({ kind, status }: { kind: FailKind; status?: number }) {
   )
 }
 
-function statusOf(f: Fetched<unknown>): number | undefined {
-  return 'status' in f ? f.status : undefined
-}
-
 // ─────────────────────────────────────────────────────────────────────────
 // Helpers
 // ─────────────────────────────────────────────────────────────────────────
 
-async function fetchAshley<T>(
-  accessToken: string | undefined,
-  call: (client: ReturnType<typeof createAshleyUserClient>) => Promise<{ data?: T; response?: Response }>,
-): Promise<Fetched<T>> {
-  if (!accessToken) return { kind: 'unauthenticated' }
-  try {
-    const client = createAshleyUserClient(accessToken)
-    const { data, response } = await call(client)
-    if (data) return { kind: 'ok', data }
-    const status = response?.status ?? 0
-    if (status === 401) return { kind: 'unauthorized' }
-    if (status === 0 || status >= 500) return { kind: 'unavailable', status }
-    return { kind: 'error', status }
-  } catch {
-    return { kind: 'unavailable', status: 0 }
-  }
-}
-
-type LocalMemberSnapshot = {
-  joinedDiscordAt: string | null
-  joinedAt: string | null
-} | null
-
-async function fetchLocalMember(memberId: string | null): Promise<LocalMemberSnapshot> {
-  if (!memberId) return null
-  try {
-    const payload = await getPayload({ config })
-    const m = await payload.findByID({ collection: 'members', id: memberId })
-    return {
-      joinedDiscordAt: (m.guildMember?.joinedDiscordAt ?? null) as string | null,
-      joinedAt: m.joinedAt ?? null,
-    }
-  } catch {
-    return null
-  }
-}
-
 // Prefer Ashley's freshly-resolved guild join date when available; fall back
-// to the local Payload mirror so MEMBER_SINCE still shows real data when
-// /api/auth/me 500s.
-function formatJoined(ashleyMe: Fetched<AshleyMe>, local: LocalMemberSnapshot): string {
+// to the local Payload mirror (already loaded by getMemberAuth) so
+// MEMBER_SINCE still shows real data when /api/auth/me 500s.
+function formatJoined(
+  ashleyMe: AshleyResult<AshleyMe>,
+  member: { joinedDiscordAt: string | null; joinedAt: string | null },
+): string {
   const iso =
-    (ashleyMe.kind === 'ok' ? ashleyMe.data.user.joinedAt : null) ??
-    local?.joinedDiscordAt ??
-    local?.joinedAt ??
+    (ashleyMe.ok ? ashleyMe.data.user.joinedAt : null) ??
+    member.joinedDiscordAt ??
+    member.joinedAt ??
     null
   if (!iso) return '— · ——'
   const d = new Date(iso)
