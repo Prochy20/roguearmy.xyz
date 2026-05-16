@@ -12,11 +12,17 @@ export const Members: CollectionConfig = {
     description: 'Discord members who have authenticated via OAuth',
     defaultColumns: ['avatar', 'username', 'status', 'lastLogin'],
   },
+  // Member rows hold PII (Discord email, symbolic-role snapshot) and the
+  // status field that drives quarantine. The OAuth callback and roleSync
+  // both use Local API via `getPayload()` without a `user`, which bypasses
+  // access control by default — so locking these down to admin-only does
+  // not break the auth flow. Without these locks, the Payload REST mount
+  // at /api/payload/members would let anyone read PII or flip status.
   access: {
-    read: () => true,
-    create: () => true,
-    update: () => true,
-    delete: ({ req: { user } }) => Boolean(user), // Only admins can delete
+    read: ({ req: { user } }) => Boolean(user),
+    create: ({ req: { user } }) => Boolean(user),
+    update: ({ req: { user } }) => Boolean(user),
+    delete: ({ req: { user } }) => Boolean(user),
   },
   fields: [
     // Discord Identity
