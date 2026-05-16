@@ -5,8 +5,9 @@ import { StaffManifestHeader } from '@/components/community/staff/StaffManifestH
 import { StaffRoster } from '@/components/community/staff/StaffRoster'
 import { StaffEngagementProtocol } from '@/components/community/staff/StaffEngagementProtocol'
 import { StaffEndStrip } from '@/components/community/staff/StaffEndStrip'
-import { freshestSync, lexicalToPlainText } from '@/components/community/staff/utils'
+import { freshestSync } from '@/components/community/staff/utils'
 import { refreshStaleStaffCaches } from '@/components/community/staff/refreshStale'
+import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
 import type { StaffProfile as PayloadStaffProfile } from '@/payload-types'
 import type { StaffProfile } from '@/components/community/staff/types'
 
@@ -26,7 +27,7 @@ function toComponentProfile(p: PayloadStaffProfile): StaffProfile {
   return {
     discordId: p.discordId,
     roleTitle: p.roleTitle,
-    bio: lexicalToPlainText(p.bio),
+    bio: (p.bio ?? null) as SerializedEditorState | null,
     isPublic: p.isPublic ?? true,
     order: p.order ?? 100,
     accent,

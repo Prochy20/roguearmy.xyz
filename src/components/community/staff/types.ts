@@ -1,7 +1,10 @@
+import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
+
 export interface StaffProfile {
   discordId: string
   roleTitle: string
-  bio: string | null
+  /** Lexical richText document, or null when the editor left it empty. */
+  bio: SerializedEditorState | null
   isPublic: boolean
   order: number
   /** Editorial accent. null = use the deterministic hash-based default. */

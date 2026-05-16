@@ -2,6 +2,7 @@ import { MessageSquare } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { CyberCorners } from '@/components/ui/CyberCorners'
 import { DiscordIcon } from '@/components/shared/DiscordIcon'
+import { RichTextRenderer } from '@/components/richtext/RichTextRenderer'
 import { StaffPortrait } from './StaffPortrait'
 import type { StaffAccent, StaffProfile } from './types'
 import { accentFor, formatMonthYear, operativeIdAt } from './utils'
@@ -207,12 +208,14 @@ export function StaffCard({ profile, index, showMemberSurface }: StaffCardProps)
             />
           </ul>
 
-          {/* Bio */}
+          {/* Bio — Lexical richText. Descendant selectors apply card-level
+              typography so links/lists/bold/italic render in the HUD palette. */}
           <div className="flex flex-1 flex-col gap-3 px-4 pb-4">
             {profile.bio ? (
-              <p className="line-clamp-4 text-sm leading-relaxed text-text-secondary">
-                {profile.bio}
-              </p>
+              <RichTextRenderer
+                data={profile.bio}
+                className="text-sm leading-relaxed text-text-secondary [&_a]:text-rga-cyan [&_a]:underline [&_a]:underline-offset-2 hover:[&_a]:text-rga-cyan/80 [&_strong]:text-text-primary [&_strong]:font-semibold [&_em]:italic [&_code]:rounded-sm [&_code]:bg-white/5 [&_code]:px-1 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-xs [&_code]:text-rga-cyan [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:my-0.5 [&_p+p]:mt-2 [&_p]:m-0"
+              />
             ) : (
               <p className="font-mono text-[10px] tracking-[0.3em] text-text-muted uppercase">
                 // dossier pending
