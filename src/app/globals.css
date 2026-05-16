@@ -603,18 +603,19 @@
   animation: rga-radar-spin 11s linear infinite;
 }
 
-/* Blip core dot — invisible until the sweep crosses, then flashes + fades. */
+/* Blip core dot — one-shot. Hidden until animationDelay elapses (set per-blip
+   in JS so the ping fires the instant the sweep crosses), then fades over 3s. */
 .rga-radar-blip-dot {
   opacity: 0;
-  animation: rga-radar-ping-dot 11s linear infinite;
+  animation: rga-radar-ping-dot 3s linear forwards;
 }
 
-/* Blip halo — sonar-style ring that expands at the moment of the ping. */
+/* Blip halo — quick sonar ring that expands at the ping moment. */
 .rga-radar-blip-halo {
   opacity: 0;
   transform-box: fill-box;
   transform-origin: center;
-  animation: rga-radar-ping-halo 11s ease-out infinite;
+  animation: rga-radar-ping-halo 1.6s ease-out forwards;
 }
 
 @keyframes rga-radar-spin {
@@ -625,15 +626,13 @@
 
 @keyframes rga-radar-ping-dot {
   0%   { opacity: 1; }
-  4%   { opacity: 0.9; }
-  35%  { opacity: 0.18; }
+  20%  { opacity: 0.7; }
   100% { opacity: 0; }
 }
 
 @keyframes rga-radar-ping-halo {
   0%   { opacity: 0.55; transform: scale(0.4); }
-  25%  { opacity: 0; transform: scale(2.4); }
-  100% { opacity: 0; transform: scale(2.4); }
+  100% { opacity: 0; transform: scale(2.8); }
 }
 
 @media (prefers-reduced-motion: reduce) {

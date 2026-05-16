@@ -1,3 +1,6 @@
+'use client'
+
+import { useEffect, useRef, useState } from 'react'
 import { cn } from '@/lib/utils'
 
 interface StaffRadarProps {
@@ -6,25 +9,72 @@ interface StaffRadarProps {
 }
 
 const SWEEP_PERIOD_S = 11
+const BLIP_LIFETIME_S = 3.2
 
-const BLIP_SLOTS = [
-  { angle: 38, radius: 64 },
-  { angle: 158, radius: 78 },
-  { angle: 248, radius: 52 },
-  { angle: 322, radius: 70 },
-  { angle: 95, radius: 40 },
-  { angle: 205, radius: 86 },
-] as const
+interface Blip {
+  id: number
+  x: number
+  y: number
+  delay: number
+}
 
 export function StaffRadar({ blipCount = 4, className }: StaffRadarProps) {
-  const count = Math.min(Math.max(blipCount, 0), BLIP_SLOTS.length)
-  const blips = BLIP_SLOTS.slice(0, count).map((b) => ({
-    x: +(Math.cos((b.angle * Math.PI) / 180) * b.radius).toFixed(2),
-    y: +(Math.sin((b.angle * Math.PI) / 180) * b.radius).toFixed(2),
-    // Sweep starts at 3 o'clock (angle 0) and rotates clockwise over SWEEP_PERIOD_S.
-    // The sweep crosses this blip's angle at t = (angle / 360) * period.
-    delay: +((b.angle / 360) * SWEEP_PERIOD_S).toFixed(2),
-  }))
+  const [blips, setBlips] = useState<Blip[]>([])
+  const sweepStartRef = useRef(0)
+  const nextIdRef = useRef(0)
+  const blipCountRef = useRef(blipCount)
+
+  useEffect(() => {
+    blipCountRef.current = blipCount
+  }, [blipCount])
+
+  useEffect(() => {
+    sweepStartRef.current = performance.now()
+    let alive = true
+    let scheduleTimer: ReturnType<typeof setTimeout> | undefined
+
+    const spawnBlip = () => {
+      if (!alive) return
+
+      const angle = Math.random() * 360
+      const radius = 22 + Math.random() * 72
+
+      const elapsed = (performance.now() - sweepStartRef.current) / 1000
+      const sweepAngle = ((elapsed / SWEEP_PERIOD_S) * 360) % 360
+      const angleToGo = (angle - sweepAngle + 360) % 360
+      const delay = (angleToGo / 360) * SWEEP_PERIOD_S
+
+      const id = nextIdRef.current++
+      const rad = (angle * Math.PI) / 180
+      const x = +(Math.cos(rad) * radius).toFixed(2)
+      const y = +(Math.sin(rad) * radius).toFixed(2)
+
+      setBlips((prev) => [...prev, { id, x, y, delay }])
+
+      setTimeout(() => {
+        if (!alive) return
+        setBlips((prev) => prev.filter((b) => b.id !== id))
+      }, (delay + BLIP_LIFETIME_S + 0.2) * 1000)
+    }
+
+    const scheduleNext = () => {
+      const base = (SWEEP_PERIOD_S * 1000) / Math.max(blipCountRef.current, 1)
+      const interval = base * (0.35 + Math.random() * 1.3)
+      scheduleTimer = setTimeout(() => {
+        spawnBlip()
+        scheduleNext()
+      }, interval)
+    }
+
+    spawnBlip()
+    spawnBlip()
+    scheduleNext()
+
+    return () => {
+      alive = false
+      if (scheduleTimer) clearTimeout(scheduleTimer)
+    }
+  }, [])
 
   return (
     <div
@@ -70,8 +120,8 @@ export function StaffRadar({ blipCount = 4, className }: StaffRadarProps) {
         <line x1="-100" y1="0" x2="100" y2="0" stroke="rgba(0,255,255,0.05)" strokeWidth="0.3" />
         <line x1="0" y1="-100" x2="0" y2="100" stroke="rgba(0,255,255,0.05)" strokeWidth="0.3" />
 
-        {blips.map((b, i) => (
-          <g key={i}>
+        {blips.map((b) => (
+          <g key={b.id}>
             <circle
               cx={b.x}
               cy={b.y}
