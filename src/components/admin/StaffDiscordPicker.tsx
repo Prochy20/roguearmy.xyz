@@ -39,9 +39,11 @@ const StaffDiscordPicker: TextFieldClientComponent = ({ path, field }) => {
 
   // Hydrate the currently-stored discordId on mount so we can show the
   // selected member's name/avatar instead of just the snowflake. Skipped
-  // when the field is empty (new row).
+  // when the field is empty (new row) or when the chip is already showing
+  // the correct member (re-running on every render would loop).
+  const selectedDiscordId = selected?.discordId ?? null
   useEffect(() => {
-    if (!value || selected?.discordId === value) return
+    if (!value || selectedDiscordId === value) return
     setHydrating(true)
     const ac = new AbortController()
     fetch(`/api/admin/staff-members-autocomplete?ids=${encodeURIComponent(value)}&limit=1`, {
@@ -58,8 +60,7 @@ const StaffDiscordPicker: TextFieldClientComponent = ({ path, field }) => {
       })
       .finally(() => setHydrating(false))
     return () => ac.abort()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value])
+  }, [value, selectedDiscordId])
 
   // Debounced search whenever the query changes.
   useEffect(() => {
