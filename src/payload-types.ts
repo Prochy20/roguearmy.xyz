@@ -73,6 +73,7 @@ export interface Config {
     'game-roles': GameRole;
     topics: Topic;
     'content-types': ContentType;
+    'staff-profiles': StaffProfile;
     media: Media;
     users: User;
     members: Member;
@@ -91,6 +92,7 @@ export interface Config {
     'game-roles': GameRolesSelect<false> | GameRolesSelect<true>;
     topics: TopicsSelect<false> | TopicsSelect<true>;
     'content-types': ContentTypesSelect<false> | ContentTypesSelect<true>;
+    'staff-profiles': StaffProfilesSelect<false> | StaffProfilesSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     members: MembersSelect<false> | MembersSelect<true>;
@@ -107,10 +109,12 @@ export interface Config {
   fallbackLocale: null;
   globals: {
     homepage: Homepage;
+    'staff-page': StaffPage;
     manifesto: Manifesto;
   };
   globalsSelect: {
     homepage: HomepageSelect<false> | HomepageSelect<true>;
+    'staff-page': StaffPageSelect<false> | StaffPageSelect<true>;
     manifesto: ManifestoSelect<false> | ManifestoSelect<true>;
   };
   locale: null;
@@ -325,6 +329,63 @@ export interface GameRole {
   createdAt: string;
 }
 /**
+ * Operatives shown on /community/staff. Order ascending.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "staff-profiles".
+ */
+export interface StaffProfile {
+  id: string;
+  /**
+   * Discord snowflake ID for this operative. Used to render the DM link and (once Ashley sync is wired) populate the cached display name + avatar.
+   */
+  discordId: string;
+  /**
+   * Human-readable title shown under the operative name (e.g. "Community Lead").
+   */
+  roleTitle: string;
+  /**
+   * Optional dossier text. Line-clamped to three lines on the card; click-through reveals the full bio on the future operative detail page.
+   */
+  bio?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * When off, this operative only appears for signed-in members.
+   */
+  isPublic?: boolean | null;
+  /**
+   * Display sort, ascending. Lower numbers appear first. Leave gaps (10, 20, 30…) so reordering is cheap.
+   */
+  order?: number | null;
+  /**
+   * Latest known display name from Discord. Refreshed lazily on page render past TTL.
+   */
+  cached_displayName?: string | null;
+  /**
+   * Latest known Discord avatar URL. Falls back to the tactical ID-portrait when empty.
+   */
+  cached_avatarUrl?: string | null;
+  /**
+   * When the cached fields were last refreshed from Ashley.
+   */
+  cached_at?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
@@ -531,6 +592,10 @@ export interface PayloadLockedDocument {
         value: string | ContentType;
       } | null)
     | ({
+        relationTo: 'staff-profiles';
+        value: string | StaffProfile;
+      } | null)
+    | ({
         relationTo: 'media';
         value: string | Media;
       } | null)
@@ -682,6 +747,22 @@ export interface ContentTypesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "staff-profiles_select".
+ */
+export interface StaffProfilesSelect<T extends boolean = true> {
+  discordId?: T;
+  roleTitle?: T;
+  bio?: T;
+  isPublic?: T;
+  order?: T;
+  cached_displayName?: T;
+  cached_avatarUrl?: T;
+  cached_at?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media_select".
  */
 export interface MediaSelect<T extends boolean = true> {
@@ -825,6 +906,214 @@ export interface Homepage {
    * Drag to reorder games on the homepage
    */
   games?: (string | Game)[] | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * All copy + content for the /community/staff page. Roster operatives live in the Staff Profiles collection.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "staff-page".
+ */
+export interface StaffPage {
+  id: string;
+  manifest?: {
+    /**
+     * Small mono kicker above the headline.
+     */
+    kicker?: string | null;
+    /**
+     * First word of the three-stanza headline.
+     */
+    preLine?: string | null;
+    /**
+     * Middle word of the headline — rendered in cyan with extra glow.
+     */
+    midLine?: string | null;
+    /**
+     * Last line of the headline.
+     */
+    postLine?: string | null;
+    /**
+     * Intro paragraph shown to everyone, under the headline.
+     */
+    sublineLead?: string | null;
+    /**
+     * Additional paragraph shown only to signed-in members.
+     */
+    sublineMember?: string | null;
+  };
+  roster?: {
+    /**
+     * Mono label next to the SEC_01 marker.
+     */
+    sectionEyebrow?: string | null;
+    /**
+     * Display title of the roster section.
+     */
+    sectionTitle?: string | null;
+    /**
+     * Kicker shown to public visitors above the roster.
+     */
+    kickerPublic?: string | null;
+    /**
+     * Kicker shown to signed-in members above the roster.
+     */
+    kickerMember?: string | null;
+  };
+  protocol?: {
+    /**
+     * Mono label next to the SEC_02 marker.
+     */
+    sectionEyebrow?: string | null;
+    /**
+     * Kicker under the section eyebrow.
+     */
+    sectionKicker?: string | null;
+    /**
+     * Display title of the protocol section.
+     */
+    sectionTitle?: string | null;
+    /**
+     * Intro paragraph above the three lanes panel.
+     */
+    intro?: string | null;
+    /**
+     * Mono label above the lane cards grid.
+     */
+    lanesEyebrow?: string | null;
+    /**
+     * Contact lanes shown side-by-side. Three by default — Tickets / DM / Tag. Add more if you grow new channels.
+     */
+    lanes?:
+      | {
+          tone: 'cyan' | 'green' | 'magenta';
+          /**
+           * Icon shown in the lane card.
+           */
+          iconKey: 'ticket' | 'message-circle' | 'at-sign' | 'mail' | 'globe' | 'phone';
+          /**
+           * Mono label at the top of the card (e.g. "FORMAL").
+           */
+          toneLabel: string;
+          /**
+           * Display title (e.g. "TICKETS").
+           */
+          title: string;
+          /**
+           * Short mono channel reference (e.g. "#open-a-ticket", "@handle").
+           */
+          hint: string;
+          /**
+           * Body paragraph explaining when to use this lane.
+           */
+          body: string;
+          /**
+           * Optional outbound URL. When set, the lane gets an "OPEN CHANNEL" CTA pill at the bottom.
+           */
+          href?: string | null;
+          /**
+           * CTA pill label. Defaults to "OPEN CHANNEL" if blank.
+           */
+          ctaLabel?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  faq?: {
+    /**
+     * Mono heading above the FAQ grid.
+     */
+    heading?: string | null;
+    /**
+     * FAQ entries rendered as a 2-column grid of cards. Reorder with the drag handle; ordering controls render order.
+     */
+    entries?:
+      | {
+          /**
+           * Colour-codes the severity dot + label.
+           */
+          severity: 'urgent' | 'formal' | 'casual' | 'social';
+          /**
+           * The question, phrased in the visitor’s voice.
+           */
+          question: string;
+          /**
+           * Substantive answer. Uses the project rich text editor — bold, italic, links, lists, etc.
+           */
+          answer: {
+            root: {
+              type: string;
+              children: {
+                type: any;
+                version: number;
+                [k: string]: unknown;
+              }[];
+              direction: ('ltr' | 'rtl') | null;
+              format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+              indent: number;
+              version: number;
+            };
+            [k: string]: unknown;
+          };
+          /**
+           * Channel description (e.g. "Open a ticket").
+           */
+          channel: string;
+          /**
+           * Mono channel reference (e.g. "#help").
+           */
+          channelHint: string;
+          /**
+           * Optional outbound URL. When set, the channel pill renders as a clickable button with hover/external-link affordances. When blank, it renders as a read-only chip preceded by the leading arrow.
+           */
+          href?: string | null;
+          /**
+           * Response time expectation (e.g. "Minutes", "Hours · paper trail").
+           */
+          response: string;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Mono label next to the warning icon in the ground rules strip below the FAQ.
+     */
+    groundRulesLabel?: string | null;
+    /**
+     * Short pills shown below the FAQ grid, closing out the protocol section.
+     */
+    groundRules?:
+      | {
+          tone: 'cyan' | 'green' | 'magenta';
+          label: string;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  endStrip?: {
+    /**
+     * Label on the back-link to /community.
+     */
+    backLinkLabel?: string | null;
+    /**
+     * Mono closing tag in the end strip.
+     */
+    endLabel?: string | null;
+    /**
+     * Prefix before the compiled timestamp (e.g. "COMPILED · 14:32 UTC · 16 MAY").
+     */
+    compiledLabel?: string | null;
+  };
+  emptyState?: {
+    pill?: string | null;
+    heading?: string | null;
+    body?: string | null;
+    hint?: string | null;
+  };
+  seo?: {
+    title?: string | null;
+    description?: string | null;
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1014,6 +1303,101 @@ export interface Manifesto {
 export interface HomepageSelect<T extends boolean = true> {
   claim?: T;
   games?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "staff-page_select".
+ */
+export interface StaffPageSelect<T extends boolean = true> {
+  manifest?:
+    | T
+    | {
+        kicker?: T;
+        preLine?: T;
+        midLine?: T;
+        postLine?: T;
+        sublineLead?: T;
+        sublineMember?: T;
+      };
+  roster?:
+    | T
+    | {
+        sectionEyebrow?: T;
+        sectionTitle?: T;
+        kickerPublic?: T;
+        kickerMember?: T;
+      };
+  protocol?:
+    | T
+    | {
+        sectionEyebrow?: T;
+        sectionKicker?: T;
+        sectionTitle?: T;
+        intro?: T;
+        lanesEyebrow?: T;
+        lanes?:
+          | T
+          | {
+              tone?: T;
+              iconKey?: T;
+              toneLabel?: T;
+              title?: T;
+              hint?: T;
+              body?: T;
+              href?: T;
+              ctaLabel?: T;
+              id?: T;
+            };
+      };
+  faq?:
+    | T
+    | {
+        heading?: T;
+        entries?:
+          | T
+          | {
+              severity?: T;
+              question?: T;
+              answer?: T;
+              channel?: T;
+              channelHint?: T;
+              href?: T;
+              response?: T;
+              id?: T;
+            };
+        groundRulesLabel?: T;
+        groundRules?:
+          | T
+          | {
+              tone?: T;
+              label?: T;
+              id?: T;
+            };
+      };
+  endStrip?:
+    | T
+    | {
+        backLinkLabel?: T;
+        endLabel?: T;
+        compiledLabel?: T;
+      };
+  emptyState?:
+    | T
+    | {
+        pill?: T;
+        heading?: T;
+        body?: T;
+        hint?: T;
+      };
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

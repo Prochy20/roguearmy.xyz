@@ -17,8 +17,10 @@ import { Series } from './collections/Series'
 import { Articles } from './collections/Articles'
 import { ReadProgress } from './collections/ReadProgress'
 import { Bookmarks } from './collections/Bookmarks'
+import { StaffProfiles } from './collections/StaffProfiles'
 import { Homepage } from './globals/Homepage'
 import { Manifesto } from './globals/Manifesto'
+import { StaffPage } from './globals/StaffPage'
 import { CalloutBlock, CodeBlock, MermaidBlock, SocialEmbedBlock, TrelloCardBlock, VideoEmbedBlock } from './blocks'
 
 const filename = fileURLToPath(import.meta.url)
@@ -62,9 +64,12 @@ export default buildConfig({
   // CORS configuration - add your production domains here
   cors: [process.env.NEXT_PUBLIC_SERVER_URL || ''].filter(Boolean),
 
-  // Order determines admin menu group ordering: Content, Taxonomies, Assets, Users
-  collections: [Articles, Series, Games, GameRoles, Topics, ContentTypes, Media, Users, Members, ReadProgress, Bookmarks],
-  globals: [Homepage, Manifesto],
+  // Order determines admin menu group ordering: Content, Taxonomies, Assets, Users.
+  // Within a group Payload lists collections first then globals, so StaffPage is
+  // ordered before Manifesto so it sits right next to its sibling collection
+  // (Staff Profiles) in the admin sidebar.
+  collections: [Articles, Series, Games, GameRoles, Topics, ContentTypes, StaffProfiles, Media, Users, Members, ReadProgress, Bookmarks],
+  globals: [Homepage, StaffPage, Manifesto],
   editor: lexicalEditor({
     features: ({ defaultFeatures }) => [
       ...defaultFeatures,
