@@ -80,7 +80,7 @@ function RowLabel({ item, onNavigate }: RowLabelProps) {
       : 'text-rga-gray/60 cursor-not-allowed',
   )
   const labelStyle = {
-    fontSize: 'clamp(40px, 7.2vw, 64px)',
+    fontSize: 'clamp(32px, 7.2vw, 64px)',
     letterSpacing: '0.04em',
   } as const
 
@@ -115,6 +115,8 @@ interface SubLinkRowProps {
 }
 
 function SubLinkRow({ sub, onNavigate }: SubLinkRowProps) {
+  if (sub.length === 0) return null
+
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     onNavigate()
     if (typeof window === 'undefined' || window.location.pathname !== '/') return
@@ -135,16 +137,22 @@ function SubLinkRow({ sub, onNavigate }: SubLinkRowProps) {
   }
 
   return (
-    <ul
+    <div
       className="
         rga-nav-sublinks
-        flex flex-wrap items-center justify-center
-        max-h-0 opacity-0
-        group-hover:max-h-32 group-hover:opacity-100
-        group-focus-within:max-h-32 group-focus-within:opacity-100
+        w-full overflow-hidden
+        max-h-32 opacity-100
+        sm:max-h-0 sm:opacity-0
+        sm:group-hover:max-h-32 sm:group-hover:opacity-100
+        sm:group-focus-within:max-h-32 sm:group-focus-within:opacity-100
         transition-all duration-300 ease-out
-        overflow-hidden
-        mt-[14px] pb-[16px] pl-[50px]
+      "
+    >
+    <ul
+      className="
+        flex flex-col items-center
+        sm:flex-row sm:flex-wrap sm:justify-center
+        pt-[14px] pb-[16px] sm:pl-[50px]
       "
       style={{ gap: 18 }}
     >
@@ -180,5 +188,6 @@ function SubLinkRow({ sub, onNavigate }: SubLinkRowProps) {
         ),
       )}
     </ul>
+    </div>
   )
 }

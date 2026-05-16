@@ -42,8 +42,8 @@ export const BracketButton = forwardRef<HTMLButtonElement, BracketButtonProps>(
         className={cn(
           'group relative inline-flex items-center gap-2 px-4 py-2',
           'font-mono text-xs uppercase tracking-[0.2em] font-medium',
-          'backdrop-blur-sm transition-colors duration-300',
-          active ? 'bg-white text-void' : 'bg-void/80 text-white',
+          'transition-colors duration-300',
+          active ? 'bg-white text-void' : 'bg-black/40 text-white backdrop-blur-md',
           className,
         )}
       >
