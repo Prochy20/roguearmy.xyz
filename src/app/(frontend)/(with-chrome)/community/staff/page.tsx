@@ -16,15 +16,23 @@ import type { StaffProfile } from '@/components/community/staff/types'
 export const dynamic = 'force-dynamic'
 
 function toComponentProfile(p: PayloadStaffProfile): StaffProfile {
+  // 'auto' (or any value not in the StaffAccent set) defers to the
+  // hash-based default in StaffCard. Explicit picks pass through.
+  const a = p.accent
+  const accent = a === 'green' || a === 'cyan' || a === 'magenta' ? a : null
+
   return {
     discordId: p.discordId,
     roleTitle: p.roleTitle,
     bio: lexicalToPlainText(p.bio),
     isPublic: p.isPublic ?? true,
     order: p.order ?? 100,
+    accent,
     cached_username: p.cached_username ?? null,
     cached_displayName: p.cached_displayName ?? p.discordId,
     cached_avatarUrl: p.cached_avatarUrl ?? null,
+    cached_joinedAt: p.cached_joinedAt ?? null,
+    cached_accountCreatedAt: p.cached_accountCreatedAt ?? null,
     cached_at: p.cached_at ?? new Date().toISOString(),
   }
 }

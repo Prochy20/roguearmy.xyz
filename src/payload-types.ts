@@ -367,6 +367,10 @@ export interface StaffProfile {
    */
   isPublic?: boolean | null;
   /**
+   * Card accent color. Leave "Auto" for hash-derived variety across the roster, or pick a specific color to override.
+   */
+  accent?: ('auto' | 'green' | 'cyan' | 'magenta') | null;
+  /**
    * Display sort, ascending. Lower numbers appear first. Leave gaps (10, 20, 30…) so reordering is cheap.
    */
   order?: number | null;
@@ -382,6 +386,14 @@ export interface StaffProfile {
    * Latest known Discord avatar URL. Falls back to the tactical ID-portrait when empty.
    */
   cached_avatarUrl?: string | null;
+  /**
+   * When this operative joined the Discord guild (surfaced as "ENLISTED" on the card).
+   */
+  cached_joinedAt?: string | null;
+  /**
+   * When this operative's Discord account was created (surfaced as "ON RECORD" on the card).
+   */
+  cached_accountCreatedAt?: string | null;
   /**
    * When the cached fields were last refreshed from Ashley.
    */
@@ -758,10 +770,13 @@ export interface StaffProfilesSelect<T extends boolean = true> {
   roleTitle?: T;
   bio?: T;
   isPublic?: T;
+  accent?: T;
   order?: T;
   cached_username?: T;
   cached_displayName?: T;
   cached_avatarUrl?: T;
+  cached_joinedAt?: T;
+  cached_accountCreatedAt?: T;
   cached_at?: T;
   updatedAt?: T;
   createdAt?: T;

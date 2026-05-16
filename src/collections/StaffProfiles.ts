@@ -43,6 +43,8 @@ async function refreshCacheFromAshley(
     member.serverAvatarUrls as AvatarBundle,
     member.avatarUrls as AvatarBundle,
   )
+  data.cached_joinedAt = member.joinedAt ?? null
+  data.cached_accountCreatedAt = member.accountCreatedAt ?? null
   data.cached_at = new Date().toISOString()
 }
 
@@ -126,6 +128,21 @@ export const StaffProfiles: CollectionConfig = {
       },
     },
     {
+      name: 'accent',
+      type: 'select',
+      defaultValue: 'auto',
+      options: [
+        { label: 'Auto (hash-based variety)', value: 'auto' },
+        { label: 'Green', value: 'green' },
+        { label: 'Cyan', value: 'cyan' },
+        { label: 'Magenta', value: 'magenta' },
+      ],
+      admin: {
+        description:
+          'Card accent color. Leave "Auto" for hash-derived variety across the roster, or pick a specific color to override.',
+      },
+    },
+    {
       name: 'order',
       type: 'number',
       defaultValue: 100,
@@ -165,6 +182,24 @@ export const StaffProfiles: CollectionConfig = {
             readOnly: true,
             description:
               'Latest known Discord avatar URL. Falls back to the tactical ID-portrait when empty.',
+          },
+        },
+        {
+          name: 'cached_joinedAt',
+          type: 'date',
+          admin: {
+            readOnly: true,
+            description: 'When this operative joined the Discord guild (surfaced as "ENLISTED" on the card).',
+            date: { pickerAppearance: 'dayAndTime' },
+          },
+        },
+        {
+          name: 'cached_accountCreatedAt',
+          type: 'date',
+          admin: {
+            readOnly: true,
+            description: 'When this operative\'s Discord account was created (surfaced as "ON RECORD" on the card).',
+            date: { pickerAppearance: 'dayAndTime' },
           },
         },
         {
