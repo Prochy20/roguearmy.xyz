@@ -178,10 +178,10 @@ export function StaffCard({ profile, index, showMemberSurface }: StaffCardProps)
                 <code
                   className={cn(
                     'truncate font-mono text-[11px] tracking-wide',
-                    ACCENT_TEXT[accent],
+                    profile.cached_username ? ACCENT_TEXT[accent] : 'text-text-muted',
                   )}
                 >
-                  @{profile.cached_displayName.toLowerCase()}
+                  {profile.cached_username ? `@${profile.cached_username}` : '@ — syncing'}
                 </code>
               </div>
 

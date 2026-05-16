@@ -6,6 +6,7 @@ import { StaffRoster } from '@/components/community/staff/StaffRoster'
 import { StaffEngagementProtocol } from '@/components/community/staff/StaffEngagementProtocol'
 import { StaffEndStrip } from '@/components/community/staff/StaffEndStrip'
 import { freshestSync, lexicalToPlainText } from '@/components/community/staff/utils'
+import { refreshStaleStaffCaches } from '@/components/community/staff/refreshStale'
 import type { StaffProfile as PayloadStaffProfile } from '@/payload-types'
 import type { StaffProfile } from '@/components/community/staff/types'
 
@@ -21,6 +22,7 @@ function toComponentProfile(p: PayloadStaffProfile): StaffProfile {
     bio: lexicalToPlainText(p.bio),
     isPublic: p.isPublic ?? true,
     order: p.order ?? 100,
+    cached_username: p.cached_username ?? null,
     cached_displayName: p.cached_displayName ?? p.discordId,
     cached_avatarUrl: p.cached_avatarUrl ?? null,
     cached_at: p.cached_at ?? new Date().toISOString(),
@@ -53,9 +55,9 @@ export default async function StaffPage() {
 
   const showMemberSurface = auth.status === 'active'
 
-  const profiles = profilesResult.docs
-    .filter((p) => showMemberSurface || p.isPublic)
-    .map(toComponentProfile)
+  const visibleDocs = profilesResult.docs.filter((p) => showMemberSurface || p.isPublic)
+  const freshDocs = await refreshStaleStaffCaches(payload, visibleDocs)
+  const profiles = freshDocs.map(toComponentProfile)
 
   const lastSyncedAt = freshestSync(profiles.map((p) => p.cached_at))
 
