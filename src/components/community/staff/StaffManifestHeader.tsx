@@ -1,6 +1,7 @@
 import { StatRibbon } from '@/components/shared/StatRibbon'
 import { HeroGlitch } from '@/components/effects/HeroGlitch'
 import type { StaffPage } from '@/payload-types'
+import { StaffRadar } from './StaffRadar'
 import { formatSyncStamp } from './utils'
 
 interface StaffManifestHeaderProps {
@@ -42,7 +43,12 @@ export function StaffManifestHeader({
         }}
       />
 
-      <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-8 sm:gap-10">
+      <StaffRadar
+        blipCount={rosterCount}
+        className="absolute top-36 -right-[220px] xl:top-40 xl:-right-[280px] 2xl:top-44 2xl:-right-[340px]"
+      />
+
+      <div className="relative mx-auto flex w-full max-w-[1480px] flex-col gap-8 sm:gap-10">
         <StatRibbon
           prefix="// MANIFEST"
           fields={[
