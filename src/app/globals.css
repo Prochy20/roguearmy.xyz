@@ -88,6 +88,10 @@
   --color-rga-cyan: #00FFFF;
   --color-rga-magenta: #FF00FF;
   --color-rga-gray: #888888;
+  /* Role accents — used on staff-profile cards for Developer / Admin / Mod */
+  --color-rga-dev: #ccff00;
+  --color-rga-admin: #ff0066;
+  --color-rga-mod: #ff8000;
 
   /* ─────────────────────────────────────────────────────────────────────────
      BACKGROUND COLORS

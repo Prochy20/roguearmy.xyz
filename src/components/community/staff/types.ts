@@ -14,4 +14,10 @@ export interface StaffProfile {
   cached_at: string
 }
 
-export type StaffAccent = 'green' | 'cyan' | 'magenta'
+export type StaffAccent =
+  | 'green'
+  | 'cyan'
+  | 'magenta'
+  | 'dev'
+  | 'admin'
+  | 'mod'

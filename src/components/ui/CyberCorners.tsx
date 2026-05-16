@@ -1,6 +1,15 @@
 import { cn } from '@/lib/utils'
 
-type CornerColor = 'green' | 'cyan' | 'magenta' | 'orange' | 'red' | 'gray'
+type CornerColor =
+  | 'green'
+  | 'cyan'
+  | 'magenta'
+  | 'orange'
+  | 'red'
+  | 'gray'
+  | 'dev'
+  | 'admin'
+  | 'mod'
 
 interface CyberCornersProps {
   children: React.ReactNode
@@ -39,6 +48,18 @@ const colorMap: Record<CornerColor, { line: string; glow: string }> = {
   gray: {
     line: 'bg-rga-gray/40',
     glow: '',
+  },
+  dev: {
+    line: 'bg-rga-dev',
+    glow: 'shadow-[0_0_6px_rgba(204,255,0,0.5)]',
+  },
+  admin: {
+    line: 'bg-rga-admin',
+    glow: 'shadow-[0_0_6px_rgba(255,0,102,0.5)]',
+  },
+  mod: {
+    line: 'bg-rga-mod',
+    glow: 'shadow-[0_0_6px_rgba(255,128,0,0.5)]',
   },
 }
 
@@ -184,6 +205,24 @@ const tagColorConfig: Record<
     text: 'text-rga-gray',
     glow: '',
     gradient: 'from-rga-gray/10 to-transparent',
+  },
+  dev: {
+    bg: 'bg-rga-dev',
+    text: 'text-rga-dev',
+    glow: 'shadow-[0_0_16px_rgba(204,255,0,0.5)]',
+    gradient: 'from-rga-dev/20 to-transparent',
+  },
+  admin: {
+    bg: 'bg-rga-admin',
+    text: 'text-rga-admin',
+    glow: 'shadow-[0_0_16px_rgba(255,0,102,0.5)]',
+    gradient: 'from-rga-admin/20 to-transparent',
+  },
+  mod: {
+    bg: 'bg-rga-mod',
+    text: 'text-rga-mod',
+    glow: 'shadow-[0_0_16px_rgba(255,128,0,0.5)]',
+    gradient: 'from-rga-mod/20 to-transparent',
   },
 }
 

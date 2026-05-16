@@ -15,11 +15,13 @@ import type { StaffProfile } from '@/components/community/staff/types'
 // `revalidate` with a sensible window.
 export const dynamic = 'force-dynamic'
 
+const VALID_ACCENTS = new Set<string>(['green', 'cyan', 'magenta', 'dev', 'admin', 'mod'])
+
 function toComponentProfile(p: PayloadStaffProfile): StaffProfile {
   // 'auto' (or any value not in the StaffAccent set) defers to the
   // hash-based default in StaffCard. Explicit picks pass through.
   const a = p.accent
-  const accent = a === 'green' || a === 'cyan' || a === 'magenta' ? a : null
+  const accent: StaffProfile['accent'] = a && VALID_ACCENTS.has(a) ? (a as StaffProfile['accent']) : null
 
   return {
     discordId: p.discordId,

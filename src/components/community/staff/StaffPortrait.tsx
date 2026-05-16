@@ -21,18 +21,28 @@ const ACCENT_GRADIENT: Record<StaffAccent, string> = {
   cyan: 'radial-gradient(ellipse 80% 70% at 30% 20%, rgba(0,255,255,0.32) 0%, transparent 60%), radial-gradient(ellipse 60% 50% at 75% 90%, rgba(0,255,255,0.18) 0%, transparent 55%)',
   magenta:
     'radial-gradient(ellipse 80% 70% at 30% 20%, rgba(255,0,255,0.30) 0%, transparent 60%), radial-gradient(ellipse 60% 50% at 75% 90%, rgba(255,0,255,0.18) 0%, transparent 55%)',
+  dev: 'radial-gradient(ellipse 80% 70% at 30% 20%, rgba(204,255,0,0.32) 0%, transparent 60%), radial-gradient(ellipse 60% 50% at 75% 90%, rgba(204,255,0,0.18) 0%, transparent 55%)',
+  admin:
+    'radial-gradient(ellipse 80% 70% at 30% 20%, rgba(255,0,102,0.32) 0%, transparent 60%), radial-gradient(ellipse 60% 50% at 75% 90%, rgba(255,0,102,0.18) 0%, transparent 55%)',
+  mod: 'radial-gradient(ellipse 80% 70% at 30% 20%, rgba(255,128,0,0.32) 0%, transparent 60%), radial-gradient(ellipse 60% 50% at 75% 90%, rgba(255,128,0,0.18) 0%, transparent 55%)',
 }
 
 const ACCENT_TEXT: Record<StaffAccent, string> = {
   green: 'text-rga-green [text-shadow:0_0_24px_rgba(0,255,65,0.55)]',
   cyan: 'text-rga-cyan [text-shadow:0_0_24px_rgba(0,255,255,0.55)]',
   magenta: 'text-rga-magenta [text-shadow:0_0_24px_rgba(255,0,255,0.55)]',
+  dev: 'text-rga-dev [text-shadow:0_0_24px_rgba(204,255,0,0.55)]',
+  admin: 'text-rga-admin [text-shadow:0_0_24px_rgba(255,0,102,0.55)]',
+  mod: 'text-rga-mod [text-shadow:0_0_24px_rgba(255,128,0,0.55)]',
 }
 
 const ACCENT_BORDER: Record<StaffAccent, string> = {
   green: 'border-rga-green/25',
   cyan: 'border-rga-cyan/25',
   magenta: 'border-rga-magenta/25',
+  dev: 'border-rga-dev/25',
+  admin: 'border-rga-admin/25',
+  mod: 'border-rga-mod/25',
 }
 
 /**

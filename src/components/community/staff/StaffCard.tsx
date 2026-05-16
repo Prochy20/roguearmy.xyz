@@ -17,18 +17,27 @@ const ACCENT_TEXT: Record<StaffAccent, string> = {
   green: 'text-rga-green',
   cyan: 'text-rga-cyan',
   magenta: 'text-rga-magenta',
+  dev: 'text-rga-dev',
+  admin: 'text-rga-admin',
+  mod: 'text-rga-mod',
 }
 
 const ACCENT_FRAME: Record<StaffAccent, string> = {
   green: 'border-rga-green/15 group-hover/card:border-rga-green/40',
   cyan: 'border-rga-cyan/15 group-hover/card:border-rga-cyan/40',
   magenta: 'border-rga-magenta/15 group-hover/card:border-rga-magenta/40',
+  dev: 'border-rga-dev/15 group-hover/card:border-rga-dev/40',
+  admin: 'border-rga-admin/15 group-hover/card:border-rga-admin/40',
+  mod: 'border-rga-mod/15 group-hover/card:border-rga-mod/40',
 }
 
 const ACCENT_GLOW_HOVER: Record<StaffAccent, string> = {
   green: 'group-hover/card:shadow-[0_0_40px_-12px_rgba(0,255,65,0.55)]',
   cyan: 'group-hover/card:shadow-[0_0_40px_-12px_rgba(0,255,255,0.55)]',
   magenta: 'group-hover/card:shadow-[0_0_40px_-12px_rgba(255,0,255,0.55)]',
+  dev: 'group-hover/card:shadow-[0_0_40px_-12px_rgba(204,255,0,0.55)]',
+  admin: 'group-hover/card:shadow-[0_0_40px_-12px_rgba(255,0,102,0.55)]',
+  mod: 'group-hover/card:shadow-[0_0_40px_-12px_rgba(255,128,0,0.55)]',
 }
 
 const ACCENT_TAPE_BG: Record<StaffAccent, string> = {
@@ -37,12 +46,58 @@ const ACCENT_TAPE_BG: Record<StaffAccent, string> = {
   cyan: 'bg-linear-to-b from-rga-cyan/15 via-rga-cyan/30 to-rga-cyan/15 border-rga-cyan/30',
   magenta:
     'bg-linear-to-b from-rga-magenta/15 via-rga-magenta/30 to-rga-magenta/15 border-rga-magenta/30',
+  dev: 'bg-linear-to-b from-rga-dev/15 via-rga-dev/30 to-rga-dev/15 border-rga-dev/30',
+  admin:
+    'bg-linear-to-b from-rga-admin/15 via-rga-admin/30 to-rga-admin/15 border-rga-admin/30',
+  mod: 'bg-linear-to-b from-rga-mod/15 via-rga-mod/30 to-rga-mod/15 border-rga-mod/30',
 }
 
 const ACCENT_TAPE_TEXT: Record<StaffAccent, string> = {
   green: 'text-rga-green',
   cyan: 'text-rga-cyan',
   magenta: 'text-rga-magenta',
+  dev: 'text-rga-dev',
+  admin: 'text-rga-admin',
+  mod: 'text-rga-mod',
+}
+
+const ACCENT_DOT_BG: Record<StaffAccent, string> = {
+  green: 'bg-rga-green',
+  cyan: 'bg-rga-cyan',
+  magenta: 'bg-rga-magenta',
+  dev: 'bg-rga-dev',
+  admin: 'bg-rga-admin',
+  mod: 'bg-rga-mod',
+}
+
+const ACCENT_SCAN_GRADIENT: Record<StaffAccent, string> = {
+  green: 'bg-linear-to-r from-transparent via-rga-green/80 to-transparent',
+  cyan: 'bg-linear-to-r from-transparent via-rga-cyan/80 to-transparent',
+  magenta: 'bg-linear-to-r from-transparent via-rga-magenta/80 to-transparent',
+  dev: 'bg-linear-to-r from-transparent via-rga-dev/80 to-transparent',
+  admin: 'bg-linear-to-r from-transparent via-rga-admin/80 to-transparent',
+  mod: 'bg-linear-to-r from-transparent via-rga-mod/80 to-transparent',
+}
+
+const ACCENT_DASH_BORDER: Record<StaffAccent, string> = {
+  green: 'border-rga-green/25',
+  cyan: 'border-rga-cyan/25',
+  magenta: 'border-rga-magenta/25',
+  dev: 'border-rga-dev/25',
+  admin: 'border-rga-admin/25',
+  mod: 'border-rga-mod/25',
+}
+
+const ACCENT_DM_BUTTON: Record<StaffAccent, string> = {
+  green:
+    'border-rga-green/30 text-rga-green hover:border-rga-green hover:bg-rga-green/10 hover:shadow-[0_0_16px_-4px_rgba(0,255,65,0.6)]',
+  cyan: 'border-rga-cyan/30 text-rga-cyan hover:border-rga-cyan hover:bg-rga-cyan/10 hover:shadow-[0_0_16px_-4px_rgba(0,255,255,0.6)]',
+  magenta:
+    'border-rga-magenta/30 text-rga-magenta hover:border-rga-magenta hover:bg-rga-magenta/10 hover:shadow-[0_0_16px_-4px_rgba(255,0,255,0.6)]',
+  dev: 'border-rga-dev/30 text-rga-dev hover:border-rga-dev hover:bg-rga-dev/10 hover:shadow-[0_0_16px_-4px_rgba(204,255,0,0.6)]',
+  admin:
+    'border-rga-admin/30 text-rga-admin hover:border-rga-admin hover:bg-rga-admin/10 hover:shadow-[0_0_16px_-4px_rgba(255,0,102,0.6)]',
+  mod: 'border-rga-mod/30 text-rga-mod hover:border-rga-mod hover:bg-rga-mod/10 hover:shadow-[0_0_16px_-4px_rgba(255,128,0,0.6)]',
 }
 
 export function StaffCard({ profile, index, showMemberSurface }: StaffCardProps) {
@@ -81,14 +136,7 @@ export function StaffCard({ profile, index, showMemberSurface }: StaffCardProps)
         >
           <span
             aria-hidden
-            className={cn(
-              'inline-block h-1.5 w-1.5 shrink-0',
-              accent === 'green'
-                ? 'bg-rga-green'
-                : accent === 'cyan'
-                  ? 'bg-rga-cyan'
-                  : 'bg-rga-magenta',
-            )}
+            className={cn('inline-block h-1.5 w-1.5 shrink-0', ACCENT_DOT_BG[accent])}
           />
           <span>{operativeId}</span>
           <span className="opacity-50">·</span>
@@ -112,11 +160,7 @@ export function StaffCard({ profile, index, showMemberSurface }: StaffCardProps)
             aria-hidden
             className={cn(
               'pointer-events-none absolute inset-x-0 top-0 z-10 h-px translate-y-0 opacity-0 transition-all duration-[900ms] ease-out group-hover/card:translate-y-[460px] group-hover/card:opacity-100',
-              accent === 'green'
-                ? 'bg-linear-to-r from-transparent via-rga-green/80 to-transparent'
-                : accent === 'cyan'
-                  ? 'bg-linear-to-r from-transparent via-rga-cyan/80 to-transparent'
-                  : 'bg-linear-to-r from-transparent via-rga-magenta/80 to-transparent',
+              ACCENT_SCAN_GRADIENT[accent],
             )}
           />
 
@@ -181,11 +225,7 @@ export function StaffCard({ profile, index, showMemberSurface }: StaffCardProps)
             <div
               className={cn(
                 'relative mx-4 mb-4 mt-2 flex items-center justify-between gap-3 border-t border-dashed pt-3',
-                accent === 'green'
-                  ? 'border-rga-green/25'
-                  : accent === 'cyan'
-                    ? 'border-rga-cyan/25'
-                    : 'border-rga-magenta/25',
+                ACCENT_DASH_BORDER[accent],
               )}
             >
               <div className="flex min-w-0 flex-col gap-0.5">
@@ -208,11 +248,7 @@ export function StaffCard({ profile, index, showMemberSurface }: StaffCardProps)
                 rel="noopener noreferrer"
                 className={cn(
                   'group/dm relative inline-flex items-center gap-2 border bg-black/40 px-3 py-2 font-mono text-[10px] tracking-[0.3em] uppercase backdrop-blur-md transition-all duration-200',
-                  accent === 'green'
-                    ? 'border-rga-green/30 text-rga-green hover:border-rga-green hover:bg-rga-green/10 hover:shadow-[0_0_16px_-4px_rgba(0,255,65,0.6)]'
-                    : accent === 'cyan'
-                      ? 'border-rga-cyan/30 text-rga-cyan hover:border-rga-cyan hover:bg-rga-cyan/10 hover:shadow-[0_0_16px_-4px_rgba(0,255,255,0.6)]'
-                      : 'border-rga-magenta/30 text-rga-magenta hover:border-rga-magenta hover:bg-rga-magenta/10 hover:shadow-[0_0_16px_-4px_rgba(255,0,255,0.6)]',
+                  ACCENT_DM_BUTTON[accent],
                 )}
                 aria-label={`DM ${profile.cached_displayName} on Discord`}
               >
