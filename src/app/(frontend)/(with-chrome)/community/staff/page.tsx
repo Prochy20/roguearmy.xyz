@@ -5,7 +5,7 @@ import { StaffManifestHeader } from '@/components/community/staff/StaffManifestH
 import { StaffRoster } from '@/components/community/staff/StaffRoster'
 import { StaffEngagementProtocol } from '@/components/community/staff/StaffEngagementProtocol'
 import { StaffEndStrip } from '@/components/community/staff/StaffEndStrip'
-import { freshestSync } from '@/components/community/staff/utils'
+import { ACCENT_RGB, accentFor, freshestSync } from '@/components/community/staff/utils'
 import { refreshStaleStaffCaches } from '@/components/community/staff/refreshStale'
 import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
 import type { StaffProfile as PayloadStaffProfile } from '@/payload-types'
@@ -77,6 +77,10 @@ export default async function StaffPage() {
       <StaffManifestHeader
         content={page.manifest}
         rosterCount={profiles.length}
+        rosterContacts={profiles.map((p) => ({
+          name: p.cached_displayName,
+          color: ACCENT_RGB[p.accent ?? accentFor(p.discordId)],
+        }))}
         lastSyncedAt={lastSyncedAt}
         showMemberSurface={showMemberSurface}
       />

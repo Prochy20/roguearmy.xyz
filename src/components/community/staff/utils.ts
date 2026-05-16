@@ -3,6 +3,19 @@ import type { StaffAccent } from './types'
 const ACCENTS: readonly StaffAccent[] = ['green', 'cyan', 'magenta'] as const
 
 /**
+ * Raw "r,g,b" string per accent — handy for inline `rgba(...)` fills in SVG,
+ * where Tailwind classes can't reach. Mirrors the rga-* palette used by the cards.
+ */
+export const ACCENT_RGB: Record<StaffAccent, string> = {
+  green: '0,255,65',
+  cyan: '0,255,255',
+  magenta: '255,0,255',
+  dev: '204,255,0',
+  admin: '255,0,102',
+  mod: '255,128,0',
+}
+
+/**
  * Stable accent per profile, derived from the discordId snowflake so it never
  * shifts between renders. The order field is intentionally not used because
  * editors reorder rows — keying off discordId keeps the same person the same

@@ -4,9 +4,16 @@ import type { StaffPage } from '@/payload-types'
 import { StaffRadar } from './StaffRadar'
 import { formatSyncStamp } from './utils'
 
+interface RadarContact {
+  name: string
+  /** Raw "r,g,b" string for inline rgba() fills. */
+  color: string
+}
+
 interface StaffManifestHeaderProps {
   content: StaffPage['manifest']
   rosterCount: number
+  rosterContacts?: RadarContact[]
   lastSyncedAt: string | null
   showMemberSurface: boolean
 }
@@ -14,6 +21,7 @@ interface StaffManifestHeaderProps {
 export function StaffManifestHeader({
   content,
   rosterCount,
+  rosterContacts,
   lastSyncedAt,
   showMemberSurface,
 }: StaffManifestHeaderProps) {
@@ -50,6 +58,7 @@ export function StaffManifestHeader({
 
       <StaffRadar
         blipCount={rosterCount}
+        contacts={rosterContacts}
         className="absolute top-36 -right-[220px] transition-transform duration-500 ease-out xl:top-40 xl:-right-[280px] 2xl:top-44 2xl:-right-[340px] motion-safe:[section:has(.rga-radar-hover-zone:hover)_&]:translate-x-[calc(-1*var(--radar-shove))]"
       />
 
