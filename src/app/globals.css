@@ -564,3 +564,30 @@
     animation: none !important;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   13. STAFF MANIFEST (Personnel Roster Cards)
+   Staggered card reveals on initial render; the hover scanline lives on
+   the card component as a Tailwind transition, no keyframe needed.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.rga-staff-card {
+  animation: rga-card-in 520ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes rga-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rga-staff-card {
+    animation: none !important;
+  }
+}
