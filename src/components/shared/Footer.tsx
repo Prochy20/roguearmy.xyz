@@ -216,43 +216,23 @@ export function Footer({ className }: { className?: string }) {
                 <span className="text-text-muted">]</span>
               </div>
               <ul className="list-none m-0 p-0 flex flex-col gap-2">
-                {group.items.map((item) => {
-                  const inner = (
-                    <span className="inline-flex gap-2 items-baseline text-[13px]">
-                      <span className="text-text-muted">$</span>
-                      <span>{item.cmd}</span>
-                      {item.primary && (
-                        <span className="text-rga-green">★</span>
+                {group.items.map((item) => (
+                  <li key={item.cmd}>
+                    <Link
+                      href={item.href}
+                      onClick={() => syncManifestoHash(item.href)}
+                      className={cn(
+                        "no-underline transition-colors duration-200 hover:text-rga-green hover:[text-shadow:0_0_8px_rgba(0,255,65,0.4)]",
+                        item.parent ? "text-white" : "text-text-secondary"
                       )}
-                    </span>
-                  )
-
-                  return (
-                    <li key={item.cmd}>
-                      {item.external ? (
-                        <a
-                          href={item.href}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className={cn(
-                            "no-underline transition-colors duration-200 hover:text-rga-green hover:[text-shadow:0_0_8px_rgba(0,255,65,0.4)]",
-                            item.primary ? "text-rga-green" : "text-text-secondary"
-                          )}
-                        >
-                          {inner}
-                        </a>
-                      ) : (
-                        <Link
-                          href={item.href}
-                          onClick={() => syncManifestoHash(item.href)}
-                          className="text-text-secondary no-underline transition-colors duration-200 hover:text-rga-green hover:[text-shadow:0_0_8px_rgba(0,255,65,0.4)]"
-                        >
-                          {inner}
-                        </Link>
-                      )}
-                    </li>
-                  )
-                })}
+                    >
+                      <span className="inline-flex gap-2 items-baseline text-[13px]">
+                        <span className="text-text-muted">$</span>
+                        <span>{item.cmd}</span>
+                      </span>
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </div>
           ))}
