@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import { getMemberAuth } from '@/lib/auth/session.server'
 import { getAshleyAccessCookie } from '@/lib/auth/cookies'
@@ -43,12 +44,26 @@ export default async function LeaderboardPage() {
   const myNextLevelLabel = myLevel.ok ? normalizeLabel(myLevel.data.nextLevel?.label) : null
 
   // Operatives directly above the caller for the POINT card's "closer
-  // targets" strip and for the auto-suggested designation. If the caller
-  // is inside the top-LIST_SIZE we derive from the already-fetched items;
-  // otherwise we issue a single small follow-up fetch.
-  const closeAbove = await resolveCloseAbove(accessToken, board, me)
+  // targets" strip. When the caller is inside the top-LIST_SIZE the
+  // promise resolves synchronously (no fetch); when below, it fires a
+  // small follow-up fetch. Either way we DON'T await here — the deferred
+  // wrapper below awaits inside a Suspense boundary so the podium and
+  // list can render and stream first.
+  const closeAbovePromise = resolveCloseAbove(accessToken, board, me)
 
   const operativeName = auth.member.globalName || auth.member.username || null
+
+  const myLevelData =
+    myLevel.ok
+      ? {
+          level: myLevel.data.level,
+          levelLabel: myLevelLabel,
+          progress: myLevel.data.progress,
+          xpToNextLevel: extractNumber(myLevel.data.xpToNextLevel),
+          nextLevel: myLevel.data.nextLevel?.level ?? null,
+          nextLevelLabel: myNextLevelLabel,
+        }
+      : null
 
   return (
     <>
@@ -60,27 +75,18 @@ export default async function LeaderboardPage() {
           title="OPERATIVES BY XP"
         />
 
-        <FormationPanel
-          myEntry={me}
-          myLevelData={
-            myLevel.ok
-              ? {
-                  level: myLevel.data.level,
-                  levelLabel: myLevelLabel,
-                  progress: myLevel.data.progress,
-                  xpToNextLevel: extractNumber(myLevel.data.xpToNextLevel),
-                  nextLevel: myLevel.data.nextLevel?.level ?? null,
-                  nextLevelLabel: myNextLevelLabel,
-                }
-              : null
-          }
-          topThree={board.ok ? board.data.items.slice(0, 3) : []}
-          closeAbove={closeAbove}
-          totalOps={board.ok ? board.data.total : 0}
-          rosterCountAbove={me ? Math.max(0, me.rank - 1) : 0}
-          showBoot={showBoot}
-          operativeName={operativeName}
-        />
+        <Suspense fallback={<FormationPanelSkeleton />}>
+          <FormationPanelDeferred
+            closeAbovePromise={closeAbovePromise}
+            myEntry={me}
+            myLevelData={myLevelData}
+            topThree={board.ok ? board.data.items.slice(0, 3) : []}
+            totalOps={board.ok ? board.data.total : 0}
+            rosterCountAbove={me ? Math.max(0, me.rank - 1) : 0}
+            showBoot={showBoot}
+            operativeName={operativeName}
+          />
+        </Suspense>
 
         {board.ok && board.data.items.length > 0 && (
           <div className="mt-10 sm:mt-12">
@@ -98,6 +104,33 @@ export default async function LeaderboardPage() {
         fail={board.ok ? null : board.error}
       />
     </>
+  )
+}
+
+type FormationPanelProps = React.ComponentProps<typeof FormationPanel>
+
+/**
+ * Async wrapper that awaits closeAbove inside a Suspense boundary. Renders
+ * the existing FormationPanel unchanged once the promise resolves.
+ */
+async function FormationPanelDeferred({
+  closeAbovePromise,
+  ...rest
+}: { closeAbovePromise: Promise<LeaderboardEntry[]> } & Omit<FormationPanelProps, 'closeAbove'>) {
+  const closeAbove = await closeAbovePromise
+  return <FormationPanel closeAbove={closeAbove} {...rest} />
+}
+
+/**
+ * Lightweight skeleton sized to roughly match FormationPanel so the page
+ * shell doesn't jump when the streamed panel arrives.
+ */
+function FormationPanelSkeleton() {
+  return (
+    <div
+      aria-hidden
+      className="mt-8 h-[420px] w-full animate-pulse rounded-md border border-white/5 bg-white/[0.02] sm:h-[520px]"
+    />
   )
 }
 
