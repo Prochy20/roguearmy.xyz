@@ -12,6 +12,8 @@ const CALLOUT_TYPES = new Set([
   'danger',
   'error',
   'note',
+  'quote',
+  'rule',
 ])
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -49,6 +51,7 @@ export function remarkCallouts() {
         'data-callout': calloutType,
         // Pass through any custom attributes
         ...(node.attributes?.title && { 'data-title': node.attributes.title }),
+        ...(node.attributes?.author && { 'data-author': node.attributes.author }),
       }
     })
   }

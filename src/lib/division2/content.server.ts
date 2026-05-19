@@ -3,6 +3,12 @@ import 'server-only'
 import { unstable_cache } from 'next/cache'
 import { fetchAshleyService, type AshleyResult } from '@/lib/api/server'
 import type { components } from '@/lib/api/schema'
+import {
+  coerceAuthors,
+  coerceNumber,
+  coerceString,
+  coerceUrl,
+} from './_coerce'
 
 type RawArticle = components['schemas']['ContentArticleDto']
 type RawList = components['schemas']['ContentListDto']
@@ -47,58 +53,10 @@ const VALID_MIN_RELEVANCE = new Set<number>([3, 4, 5])
 
 const VALID_SOURCES = new Set<ContentSource>(['UBISOFT', 'REDDIT', 'YOUTUBE'])
 
-/** Accepts a string, `{ value }` / `{ href }` / `{ url }` wrapper, or null. */
-function coerceUrl(value: unknown): string | null {
-  if (typeof value === 'string') return value.length > 0 ? value : null
-  if (value && typeof value === 'object') {
-    const obj = value as Record<string, unknown>
-    if (typeof obj.value === 'string') return obj.value || null
-    if (typeof obj.href === 'string') return obj.href || null
-    if (typeof obj.url === 'string') return obj.url || null
-  }
-  return null
-}
-
-function coerceString(value: unknown): string | null {
-  if (typeof value === 'string') return value.length > 0 ? value : null
-  if (value && typeof value === 'object') {
-    const obj = value as Record<string, unknown>
-    if (typeof obj.value === 'string') return obj.value || null
-    if (typeof obj.text === 'string') return obj.text || null
-  }
-  return null
-}
-
-function coerceNumber(value: unknown): number | null {
-  if (typeof value === 'number' && Number.isFinite(value)) return value
-  if (typeof value === 'string') {
-    const n = Number(value)
-    return Number.isFinite(n) ? n : null
-  }
-  return null
-}
-
 /** Cards render the raw number, so anything outside 1-5 would look broken. */
 function clampRelevance(value: number | null): number | null {
   if (value === null) return null
   return Math.max(1, Math.min(5, Math.round(value)))
-}
-
-/** Accepts a string, string[], or `{ name | username }[]`. */
-function coerceAuthors(value: unknown): string[] {
-  if (typeof value === 'string' && value.length > 0) return [value]
-  if (!Array.isArray(value)) return []
-  return value
-    .map((entry) => {
-      if (typeof entry === 'string') return entry
-      if (entry && typeof entry === 'object') {
-        const obj = entry as Record<string, unknown>
-        if (typeof obj.name === 'string') return obj.name
-        if (typeof obj.username === 'string') return obj.username
-      }
-      return null
-    })
-    .filter((n): n is string => typeof n === 'string' && n.length > 0)
 }
 
 /** Returns null when the article is unusable (no `url`, unknown source). */

@@ -53,3 +53,31 @@ export function hasBoosterDecoration(roles: readonly SymbolicRole[]): boolean {
 export function isQuarantined(roles: readonly SymbolicRole[]): boolean {
   return roles.includes('DISCORD_ROLE_QUARANTINE')
 }
+
+/**
+ * Gate for premium digest content (daily briefings) on /division-2/digest.
+ *
+ * Grants access to BOOSTER + STAFF + DEVELOPER so the team can read everything
+ * boosters can. Plain members see only weekly digests on the list page and a
+ * BOOSTER_REQUIRED dossier when navigating to a daily detail URL directly.
+ *
+ * The `devOverride: 'member'` option lets a developer running locally preview
+ * the non-booster experience. The env check lives here, not at the call site,
+ * so a stray `?as=member` in production can never demote a real booster.
+ */
+export function hasDigestAccess(
+  roles: readonly SymbolicRole[],
+  opts?: { devOverride?: 'member' | null },
+): boolean {
+  if (
+    opts?.devOverride === 'member' &&
+    process.env.NODE_ENV !== 'production'
+  ) {
+    return false
+  }
+  return (
+    roles.includes('DISCORD_ROLE_DEVELOPER') ||
+    roles.includes('DISCORD_ROLE_STAFF') ||
+    roles.includes('DISCORD_ROLE_BOOSTER')
+  )
+}
