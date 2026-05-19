@@ -14,6 +14,8 @@ interface ContentPageProps {
   initial: AshleyResult<ContentList>
   /** Active source filter (undefined = "All"). */
   source: ContentSource | undefined
+  /** Active minimum relevance score (3 / 4 / 5). */
+  minRelevance: number
   /** Page size — passed to the client feed so loadMore uses the same value. */
   limit: number
   /** Editable copy sourced from the Division 2 global. Fields fall back to

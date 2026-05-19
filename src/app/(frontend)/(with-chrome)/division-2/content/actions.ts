@@ -3,6 +3,7 @@
 import {
   fetchContentList,
   isContentSource,
+  parseMinRelevance,
   type ContentList,
 } from '@/lib/division2/content.server'
 import type { AshleyResult } from '@/lib/api/server'
@@ -17,8 +18,10 @@ export async function loadMoreContent(
   rawSource: string | undefined,
   offset: number,
   limit: number,
+  rawMin?: string,
 ): Promise<AshleyResult<ContentList>> {
   const source = isContentSource(rawSource) ? rawSource : undefined
+  const minRelevance = parseMinRelevance(rawMin)
   // Reject obviously bogus offsets early — server cache key is keyed on
   // `String(offset)` so negative or non-integer values would create junk
   // cache entries.
@@ -28,5 +31,5 @@ export async function loadMoreContent(
   if (!Number.isInteger(limit) || limit < 1 || limit > 100) {
     return { ok: false, error: { code: 'invalid', status: 400 } }
   }
-  return fetchContentList({ source, offset, limit })
+  return fetchContentList({ source, offset, limit, minRelevance })
 }

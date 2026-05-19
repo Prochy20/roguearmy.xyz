@@ -3,7 +3,9 @@ import { cachedFindGlobal } from '@/lib/payload/cached'
 import {
   fetchContentList,
   isContentSource,
+  parseMinRelevance,
   DEFAULT_LIMIT,
+  DEFAULT_MIN_RELEVANCE,
 } from '@/lib/division2/content.server'
 
 // Bypass the Next.js full-route cache: the `?source=` param controls what the
@@ -26,15 +28,16 @@ export async function generateMetadata() {
 }
 
 interface PageProps {
-  searchParams: Promise<{ source?: string }>
+  searchParams: Promise<{ source?: string; min?: string }>
 }
 
 export default async function Division2ContentPage({ searchParams }: PageProps) {
-  const { source: rawSource } = await searchParams
+  const { source: rawSource, min: rawMin } = await searchParams
   const source = isContentSource(rawSource) ? rawSource : undefined
+  const minRelevance = parseMinRelevance(rawMin) ?? DEFAULT_MIN_RELEVANCE
 
   const [initial, division2] = await Promise.all([
-    fetchContentList({ source, offset: 0, limit: DEFAULT_LIMIT }),
+    fetchContentList({ source, offset: 0, limit: DEFAULT_LIMIT, minRelevance }),
     cachedFindGlobal('division2'),
   ])
 
@@ -42,6 +45,7 @@ export default async function Division2ContentPage({ searchParams }: PageProps) 
     <ContentPage
       initial={initial}
       source={source}
+      minRelevance={minRelevance}
       limit={DEFAULT_LIMIT}
       content={division2.contentPage ?? null}
     />

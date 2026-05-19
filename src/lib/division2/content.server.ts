@@ -63,9 +63,13 @@ export interface ContentList {
 
 const HOT_TTL = 5 * 60 // offset 0 — "what's new"
 const WARM_TTL = 60 * 60 // offset > 0 — older slices
+/** Server-side floor — Ashley calls below this never happen, regardless of URL. */
 const MIN_RELEVANCE_FLOOR = 3
+/** Default applied when no `?min=` is in the URL — matches the prior bake-in. */
+const DEFAULT_MIN_RELEVANCE = 3
 const TOPIC = 'division-2'
 const DEFAULT_LIMIT = 24
+const VALID_MIN_RELEVANCE = new Set<number>([3, 4, 5])
 
 const VALID_SOURCES = new Set<ContentSource>(['UBISOFT', 'REDDIT', 'YOUTUBE'])
 
@@ -173,18 +177,23 @@ export interface FetchContentArgs {
   source?: ContentSource
   offset: number
   limit?: number
+  /** Minimum relevance score (3-5). Clamped to the server-side floor of 3. */
+  minRelevance?: number
 }
 
 /**
- * Fetch a single batch of content from Ashley, cached per `(source, offset,
- * limit)`. Topic and minRelevance are baked into the helper — neither is
- * user-controllable. Returns the *normalized* list (not the raw DTO).
+ * Fetch a single batch of content from Ashley, cached per `(source, min,
+ * offset, limit)`. Topic is baked into the helper. Returns the *normalized*
+ * list (not the raw DTO).
  */
 export function fetchContentList({
   source,
   offset,
   limit = DEFAULT_LIMIT,
+  minRelevance = DEFAULT_MIN_RELEVANCE,
 }: FetchContentArgs): Promise<AshleyResult<ContentList>> {
+  // Clamp to the server-side floor — nobody bypasses it via URL tampering.
+  const min = Math.max(MIN_RELEVANCE_FLOOR, minRelevance)
   const ttl = offset === 0 ? HOT_TTL : WARM_TTL
   const cached = unstable_cache(
     async (): Promise<AshleyResult<ContentList>> => {
@@ -193,7 +202,7 @@ export function fetchContentList({
           params: {
             query: {
               topic: TOPIC,
-              minRelevance: MIN_RELEVANCE_FLOOR,
+              minRelevance: min,
               ...(source ? { source } : {}),
               offset,
               limit,
@@ -204,7 +213,13 @@ export function fetchContentList({
       if (!result.ok) return result
       return { ok: true, data: normalizeList(result.data) }
     },
-    ['division2-content-r3-d2', source ?? 'all', String(offset), String(limit)],
+    [
+      'division2-content-d2',
+      source ?? 'all',
+      `r${min}`,
+      String(offset),
+      String(limit),
+    ],
     { revalidate: ttl, tags: ['content', 'content-list'] },
   )
   return cached()
@@ -215,4 +230,11 @@ export function isContentSource(value: unknown): value is ContentSource {
   return typeof value === 'string' && VALID_SOURCES.has(value as ContentSource)
 }
 
-export { DEFAULT_LIMIT }
+/** Parse + validate `?min=` from URL — returns undefined for absent/invalid. */
+export function parseMinRelevance(value: unknown): number | undefined {
+  if (typeof value !== 'string') return undefined
+  const n = Number.parseInt(value, 10)
+  return VALID_MIN_RELEVANCE.has(n) ? n : undefined
+}
+
+export { DEFAULT_LIMIT, DEFAULT_MIN_RELEVANCE }
