@@ -1396,6 +1396,88 @@ export interface Division2 {
      */
     role?: (string | null) | GameRole;
   };
+  landingPage?: {
+    /**
+     * Small mono kicker above the headline. The status token (STATUS · OPERATIONAL / DEGRADED / OFFLINE) is appended automatically.
+     */
+    heroKicker?: string | null;
+    /**
+     * First word of the two-line headline — rendered in white.
+     */
+    heroTitle?: string | null;
+    /**
+     * Second word of the headline — rendered in Division 2 orange with extra glow.
+     */
+    heroAccent?: string | null;
+    /**
+     * Paragraph under the headline.
+     */
+    intro?: string | null;
+    /**
+     * Mono prefix at the left of the StatRibbon. Fields (LOCAL, TOOLS, LAST SYNC) and the aggregate pill are appended automatically.
+     */
+    ribbonPrefix?: string | null;
+    /**
+     * WEEKLY RAIDS section (SEC_04). Routes operatives to Discord #events for RSVP via the Apollo bot. Every string here is admin-editable.
+     */
+    raids?: {
+      /**
+       * First word of the section headline — rendered in white.
+       */
+      headlineTitle?: string | null;
+      /**
+       * Second word of the section headline — rendered in Division 2 green with extra glow.
+       */
+      headlineAccent?: string | null;
+      /**
+       * Body paragraph shown under the WEEKLY RAIDS headline.
+       */
+      blurb?: string | null;
+      /**
+       * Mono caption above the recurring-raid list.
+       */
+      rotationLabel?: string | null;
+      /**
+       * Recurring weekly raids. Each row renders as an image-backed card — drop two hero images per raid under /public/division2/img/raids/ and reference them below. Image 1 is the resting background; Image 2 swipes in on hover.
+       */
+      schedule?:
+        | {
+            /**
+             * Day pill (e.g., SATURDAY).
+             */
+            day?: string | null;
+            /**
+             * Raid name (e.g., IRON HORSE).
+             */
+            title?: string | null;
+            /**
+             * Path to the resting hero image (e.g., /division2/img/raids/dark-hours-1.jpg). Local files only — Discord CDN links expire.
+             */
+            imagePrimary?: string | null;
+            /**
+             * Path to the hover-reveal image (e.g., /division2/img/raids/dark-hours-2.jpg). Falls back to the primary if blank.
+             */
+            imageSecondary?: string | null;
+            id?: string | null;
+          }[]
+        | null;
+      /**
+       * CTA button label.
+       */
+      ctaLabel?: string | null;
+      /**
+       * Deep link to the Discord #events channel.
+       */
+      discordUrl?: string | null;
+    };
+    /**
+     * Document title + meta description.
+     */
+    seo?: {
+      title?: string | null;
+      description?: string | null;
+    };
+  };
   contentPage?: {
     /**
      * Small mono kicker above the headline. Source-count + filter token appended automatically.
@@ -1503,6 +1585,103 @@ export interface Division2 {
        */
       channelUrl?: string | null;
     };
+    /**
+     * Document title + meta description.
+     */
+    seo?: {
+      title?: string | null;
+      description?: string | null;
+    };
+  };
+  digestPage?: {
+    /**
+     * Small mono kicker above the headline. The active week label is appended automatically.
+     */
+    heroKicker?: string | null;
+    /**
+     * First word of the headline — rendered in white.
+     */
+    heroTitle?: string | null;
+    /**
+     * Second word of the headline — rendered in Division 2 orange with extra glow.
+     */
+    heroAccent?: string | null;
+    /**
+     * Paragraph under the headline.
+     */
+    intro?: string | null;
+    /**
+     * Mono label next to SEC_01 (weekly roll-up).
+     */
+    weeklySectionLabel?: string | null;
+    /**
+     * Mono label next to SEC_02 (daily cards or perks widget).
+     */
+    dailiesSectionLabel?: string | null;
+    /**
+     * Mono label next to SEC_03 on the briefing detail page.
+     */
+    refsSectionLabel?: string | null;
+    /**
+     * SEC_02 widget shown to non-boosters in place of the daily cards. Explains the booster perk and (optionally) links to a CTA.
+     */
+    perks?: {
+      /**
+       * Toggle the widget without losing its copy.
+       */
+      enabled?: boolean | null;
+      /**
+       * Mono kicker line above the headline.
+       */
+      kicker?: string | null;
+      /**
+       * Display-font headline. Frame the perk as a thank-you, not a paywall.
+       */
+      heading?: string | null;
+      /**
+       * Body paragraph explaining the non-profit framing.
+       */
+      body?: string | null;
+      /**
+       * Left column — what every server boost actually funds for the community.
+       */
+      fundBullets?:
+        | {
+            text?: string | null;
+            id?: string | null;
+          }[]
+        | null;
+      /**
+       * Right column — what boosters get back as a thank-you.
+       */
+      bullets?:
+        | {
+            text?: string | null;
+            id?: string | null;
+          }[]
+        | null;
+      /**
+       * Optional call-to-action button. Leave both blank to hide the button entirely.
+       */
+      cta?: {
+        /**
+         * CTA button label.
+         */
+        label?: string | null;
+        /**
+         * CTA destination — Discord boost link, Patreon, or an internal /boost page. Leave blank to hide.
+         */
+        url?: string | null;
+      };
+    };
+    /**
+     * Shown when the active week has no weekly briefing in the archive.
+     */
+    emptyWeek?: string | null;
+    /**
+     * Shown when Ashley has no briefings for the topic yet.
+     */
+    emptyAll?: string | null;
     /**
      * Document title + meta description.
      */
@@ -1702,6 +1881,40 @@ export interface Division2Select<T extends boolean = true> {
     | {
         role?: T;
       };
+  landingPage?:
+    | T
+    | {
+        heroKicker?: T;
+        heroTitle?: T;
+        heroAccent?: T;
+        intro?: T;
+        ribbonPrefix?: T;
+        raids?:
+          | T
+          | {
+              headlineTitle?: T;
+              headlineAccent?: T;
+              blurb?: T;
+              rotationLabel?: T;
+              schedule?:
+                | T
+                | {
+                    day?: T;
+                    title?: T;
+                    imagePrimary?: T;
+                    imageSecondary?: T;
+                    id?: T;
+                  };
+              ctaLabel?: T;
+              discordUrl?: T;
+            };
+        seo?:
+          | T
+          | {
+              title?: T;
+              description?: T;
+            };
+      };
   contentPage?:
     | T
     | {
@@ -1742,6 +1955,51 @@ export interface Division2Select<T extends boolean = true> {
               ctaLabel?: T;
               channelUrl?: T;
             };
+        seo?:
+          | T
+          | {
+              title?: T;
+              description?: T;
+            };
+      };
+  digestPage?:
+    | T
+    | {
+        heroKicker?: T;
+        heroTitle?: T;
+        heroAccent?: T;
+        intro?: T;
+        weeklySectionLabel?: T;
+        dailiesSectionLabel?: T;
+        refsSectionLabel?: T;
+        perks?:
+          | T
+          | {
+              enabled?: T;
+              kicker?: T;
+              heading?: T;
+              body?: T;
+              fundBullets?:
+                | T
+                | {
+                    text?: T;
+                    id?: T;
+                  };
+              bullets?:
+                | T
+                | {
+                    text?: T;
+                    id?: T;
+                  };
+              cta?:
+                | T
+                | {
+                    label?: T;
+                    url?: T;
+                  };
+            };
+        emptyWeek?: T;
+        emptyAll?: T;
         seo?:
           | T
           | {

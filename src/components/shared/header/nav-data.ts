@@ -58,13 +58,14 @@ export const NAV: readonly NavItem[] = [
   },
   {
     label: 'DIVISION 2',
-    href: '/division-2/escalation',
+    href: '/division-2',
     blurb: 'Active operatives only · escalation, loot, tools',
     available: true,
     requiresAuth: true,
     requiresRole: 'division2Role',
     sub: [
       { label: 'Escalation', href: '/division-2/escalation', available: true },
+      { label: 'Briefings', href: '/division-2/digest', available: true },
       { label: 'Content', href: '/division-2/content', available: true },
     ],
   },
