@@ -3,13 +3,13 @@ import { Fragment, type ReactNode } from 'react'
 export interface StatRibbonField {
   label: string
   value: ReactNode
-  accent?: 'green' | 'cyan'
+  accent?: 'green' | 'cyan' | 'mod'
 }
 
 export interface StatRibbonProps {
   prefix: string
   fields: StatRibbonField[]
-  pill: { text: string; ok: boolean }
+  pill: { text: string; ok: boolean; accent?: 'green' | 'mod' | 'magenta' }
 }
 
 export function StatRibbon({ prefix, fields, pill }: StatRibbonProps) {
@@ -23,7 +23,7 @@ export function StatRibbon({ prefix, fields, pill }: StatRibbonProps) {
         </Fragment>
       ))}
       <span className="ml-auto" />
-      <StatusPill text={pill.text} ok={pill.ok} />
+      <StatusPill text={pill.text} ok={pill.ok} accent={pill.accent} />
     </div>
   )
 }
@@ -34,7 +34,9 @@ function RibbonField({ field }: { field: StatRibbonField }) {
       ? 'text-rga-green [text-shadow:0_0_10px_rgba(0,255,65,0.5)]'
       : field.accent === 'cyan'
         ? 'text-rga-cyan [text-shadow:0_0_10px_rgba(0,255,255,0.5)]'
-        : 'text-text-primary'
+        : field.accent === 'mod'
+          ? 'text-rga-mod [text-shadow:0_0_10px_rgba(255,128,0,0.5)]'
+          : 'text-text-primary'
 
   return (
     <span className="inline-flex items-baseline gap-2">
@@ -44,19 +46,27 @@ function RibbonField({ field }: { field: StatRibbonField }) {
   )
 }
 
-function StatusPill({ text, ok }: { text: string; ok: boolean }) {
+function StatusPill({
+  text,
+  ok,
+  accent = 'green',
+}: {
+  text: string
+  ok: boolean
+  accent?: 'green' | 'mod' | 'magenta'
+}) {
+  // Failure always renders magenta — distinguishes "we have no signal" from
+  // the section's idle accent. Success uses the section's chosen accent.
+  const okMap = {
+    green: { text: 'text-rga-green', dot: 'bg-rga-green shadow-[0_0_8px_#00FF41] animate-pulse' },
+    mod: { text: 'text-rga-mod', dot: 'bg-rga-mod shadow-[0_0_8px_#FF8000] animate-pulse' },
+    magenta: { text: 'text-rga-magenta', dot: 'bg-rga-magenta shadow-[0_0_8px_#FF00FF]' },
+  } as const
+  const failStyle = okMap.magenta
+  const style = ok ? okMap[accent] : failStyle
   return (
-    <span
-      className={`inline-flex items-center gap-2 ${ok ? 'text-rga-green' : 'text-rga-magenta'}`}
-    >
-      <span
-        aria-hidden
-        className={`inline-block h-2 w-2 rounded-[1px] ${
-          ok
-            ? 'bg-rga-green shadow-[0_0_8px_#00FF41] animate-pulse'
-            : 'bg-rga-magenta shadow-[0_0_8px_#FF00FF]'
-        }`}
-      />
+    <span className={`inline-flex items-center gap-2 ${style.text}`}>
+      <span aria-hidden className={`inline-block h-2 w-2 rounded-[1px] ${style.dot}`} />
       {text}
     </span>
   )
