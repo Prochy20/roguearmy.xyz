@@ -96,12 +96,6 @@ export const Division2: GlobalConfig = {
 
             // Section labels
             {
-              name: 'filterSectionLabel',
-              type: 'text',
-              defaultValue: '// FILTER BY SOURCE',
-              admin: { description: 'Mono label above the source filter chips.' },
-            },
-            {
               name: 'feedSectionLabel',
               type: 'text',
               defaultValue: '// LIVE FEED',

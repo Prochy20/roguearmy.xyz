@@ -37,7 +37,6 @@ const DEFAULTS = {
   heroAccent: 'FEED',
   intro:
     'Aggregated dispatches from YouTube, Reddit, and Ubisoft — AI-filtered for Division 2 relevance. Every card links straight to source.',
-  filterSectionLabel: '// FILTER BY SOURCE',
   feedSectionLabel: '// LIVE FEED',
   feedBlurb:
     'Filter the feed by source above — YouTube creator content, Reddit discussion, or Ubisoft official news — or leave it on ALL for the combined firehose. Strictness ladder: SCAN sweeps wide (★3 and up), TRACE narrows to sharper signals (★4+), LOCK targets top-tier intel only (★5).',
@@ -68,8 +67,6 @@ export function ContentPage({
   const heroTitle = content?.heroTitle?.trim() || DEFAULTS.heroTitle
   const heroAccent = content?.heroAccent?.trim() || DEFAULTS.heroAccent
   const intro = content?.intro?.trim() || DEFAULTS.intro
-  const filterSectionLabel =
-    content?.filterSectionLabel?.trim() || DEFAULTS.filterSectionLabel
   const feedSectionLabel = content?.feedSectionLabel?.trim() || DEFAULTS.feedSectionLabel
   const feedBlurb = content?.feedBlurb?.trim() || DEFAULTS.feedBlurb
   const emptyFiltered = content?.emptyFiltered?.trim() || DEFAULTS.emptyFiltered
@@ -159,11 +156,7 @@ export function ContentPage({
       */}
       <div className="sticky top-0 z-40 -mx-4 border-b border-text-muted/15 bg-void/90 px-4 backdrop-blur-md sm:-mx-8 sm:px-8 lg:-mx-16 lg:px-16">
         <div className="pr-24 sm:pr-28 lg:pr-36">
-          <ContentFilterChips
-            activeSource={source}
-            activeMin={minRelevance}
-            sectionLabel={filterSectionLabel}
-          />
+          <ContentFilterChips activeSource={source} activeMin={minRelevance} />
         </div>
       </div>
 

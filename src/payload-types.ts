@@ -1414,10 +1414,6 @@ export interface Division2 {
      */
     intro?: string | null;
     /**
-     * Mono label above the source filter chips.
-     */
-    filterSectionLabel?: string | null;
-    /**
      * Mono label above the card grid.
      */
     feedSectionLabel?: string | null;
@@ -1713,7 +1709,6 @@ export interface Division2Select<T extends boolean = true> {
         heroTitle?: T;
         heroAccent?: T;
         intro?: T;
-        filterSectionLabel?: T;
         feedSectionLabel?: T;
         feedBlurb?: T;
         emptyFiltered?: T;

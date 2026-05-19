@@ -118,9 +118,6 @@ interface ContentFilterChipsProps {
   activeSource: ContentSource | undefined
   /** The active minRelevance value (3/4/5). */
   activeMin: number
-  /** Section label — kept in props for API compatibility but no longer rendered
-   *  inside the chip bar (the chip colors do the grouping work). */
-  sectionLabel: string
 }
 
 /**
