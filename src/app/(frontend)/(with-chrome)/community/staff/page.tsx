@@ -1,20 +1,24 @@
+import { after } from 'next/server'
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import { cachedFindGlobal } from '@/lib/payload/cached'
 import { getMemberAuth } from '@/lib/auth/session.server'
 import { StaffManifestHeader } from '@/components/community/staff/StaffManifestHeader'
 import { StaffRoster } from '@/components/community/staff/StaffRoster'
 import { StaffEngagementProtocol } from '@/components/community/staff/StaffEngagementProtocol'
 import { StaffEndStrip } from '@/components/community/staff/StaffEndStrip'
 import { ACCENT_RGB, accentFor, freshestSync } from '@/components/community/staff/utils'
-import { refreshStaleStaffCaches } from '@/components/community/staff/refreshStale'
+import {
+  refreshStaleStaffCaches,
+  flushStaffCacheWrites,
+} from '@/components/community/staff/refreshStale'
 import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
 import type { StaffProfile as PayloadStaffProfile } from '@/payload-types'
 import type { StaffProfile } from '@/components/community/staff/types'
 
-// Pulls at request time — keeps the cached_at timestamp surfaced in the
-// manifest header honest. Once Ashley TTL sync is in, this can shift to
-// `revalidate` with a sensible window.
-export const dynamic = 'force-dynamic'
+// The cookie-based auth read in getMemberAuth() already opts this route out
+// of static rendering, so explicit force-dynamic is redundant. The staff
+// cache TTL (refreshStaleStaffCaches) governs data freshness.
 
 const VALID_ACCENTS = new Set<string>(['green', 'cyan', 'magenta', 'dev', 'admin', 'mod'])
 
@@ -41,8 +45,7 @@ function toComponentProfile(p: PayloadStaffProfile): StaffProfile {
 }
 
 export async function generateMetadata() {
-  const payload = await getPayload({ config })
-  const page = await payload.findGlobal({ slug: 'staff-page' })
+  const page = await cachedFindGlobal('staff-page')
   return {
     title: page.seo?.title ?? 'The Core — Personnel Manifest | Rogue Army',
     description:
@@ -56,7 +59,7 @@ export default async function StaffPage() {
 
   const [auth, page, profilesResult] = await Promise.all([
     getMemberAuth(),
-    payload.findGlobal({ slug: 'staff-page' }),
+    cachedFindGlobal('staff-page'),
     payload.find({
       collection: 'staff-profiles',
       sort: 'order',
@@ -67,7 +70,13 @@ export default async function StaffPage() {
   const showMemberSurface = auth.status === 'active'
 
   const visibleDocs = profilesResult.docs.filter((p) => showMemberSurface || p.isPublic)
-  const freshDocs = await refreshStaleStaffCaches(payload, visibleDocs)
+  const { profiles: freshDocs, pendingWrites } = await refreshStaleStaffCaches(visibleDocs)
+  // Defer DB write-back until after the response ships. The in-memory
+  // `freshDocs` already has the new values, so the render is correct; the
+  // write only matters for the *next* request's stale check.
+  if (pendingWrites.length > 0) {
+    after(() => flushStaffCacheWrites(payload, pendingWrites))
+  }
   const profiles = freshDocs.map(toComponentProfile)
 
   const lastSyncedAt = freshestSync(profiles.map((p) => p.cached_at))
