@@ -47,6 +47,119 @@ export const Division2: GlobalConfig = {
           ],
         },
 
+        // ─── CONTENT PAGE ──────────────────────────────────────────────────
+        {
+          name: 'contentPage',
+          label: 'Content Page',
+          fields: [
+            // Hero header
+            {
+              name: 'heroKicker',
+              type: 'text',
+              defaultValue: '// DIVISION 2 · CONTENT FEED · LIVE INTEL',
+              admin: {
+                description:
+                  'Small mono kicker above the headline. Source-count + filter token appended automatically.',
+              },
+            },
+            {
+              type: 'row',
+              fields: [
+                {
+                  name: 'heroTitle',
+                  type: 'text',
+                  defaultValue: 'CONTENT',
+                  admin: {
+                    width: '50%',
+                    description: 'First word of the two-line headline — rendered in white.',
+                  },
+                },
+                {
+                  name: 'heroAccent',
+                  type: 'text',
+                  defaultValue: 'FEED',
+                  admin: {
+                    width: '50%',
+                    description:
+                      'Second word of the headline — rendered in Division 2 orange with extra glow.',
+                  },
+                },
+              ],
+            },
+            {
+              name: 'intro',
+              type: 'textarea',
+              defaultValue:
+                'Aggregated dispatches from YouTube, Reddit, and Ubisoft — AI-filtered for Division 2 relevance. Every card links straight to source.',
+              admin: { description: 'Paragraph under the headline.' },
+            },
+
+            // Section labels
+            {
+              name: 'filterSectionLabel',
+              type: 'text',
+              defaultValue: '// FILTER BY SOURCE',
+              admin: { description: 'Mono label above the source filter chips.' },
+            },
+            {
+              name: 'feedSectionLabel',
+              type: 'text',
+              defaultValue: '// LIVE FEED',
+              admin: { description: 'Mono label above the card grid.' },
+            },
+
+            // Empty + end states
+            {
+              name: 'emptyFiltered',
+              type: 'text',
+              defaultValue: '// NO {SOURCE} CONTENT — TRY ANOTHER SOURCE',
+              admin: {
+                description:
+                  'Shown when a source filter is active but Ashley returns zero items. `{SOURCE}` is replaced with the active source name (YOUTUBE / REDDIT / UBISOFT).',
+              },
+            },
+            {
+              name: 'emptyAll',
+              type: 'text',
+              defaultValue: '// CONTENT FEED OFFLINE — UPSTREAM SYNC PENDING',
+              admin: {
+                description:
+                  'Shown when no filter is active and Ashley still returns zero items (sync may not have happened yet).',
+              },
+            },
+            {
+              name: 'endOfFeedLabel',
+              type: 'text',
+              defaultValue: '// END OF FEED · {COUNT} ITEMS',
+              admin: {
+                description:
+                  'Mono marker shown after the user scrolls to the last item. `{COUNT}` is replaced with the loaded-items count.',
+              },
+            },
+
+            // SEO
+            {
+              name: 'seo',
+              label: 'SEO',
+              type: 'group',
+              admin: { description: 'Document title + meta description.' },
+              fields: [
+                {
+                  name: 'title',
+                  type: 'text',
+                  defaultValue: 'Content Feed | Division 2 · Rogue Army',
+                },
+                {
+                  name: 'description',
+                  type: 'textarea',
+                  defaultValue:
+                    'Curated YouTube, Reddit, and Ubisoft dispatches for The Division 2 — filtered by AI relevance and linked straight to source.',
+                },
+              ],
+            },
+          ],
+        },
+
         // ─── ESCALATION PAGE ───────────────────────────────────────────────
         {
           name: 'escalationPage',

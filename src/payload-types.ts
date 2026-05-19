@@ -1396,6 +1396,51 @@ export interface Division2 {
      */
     role?: (string | null) | GameRole;
   };
+  contentPage?: {
+    /**
+     * Small mono kicker above the headline. Source-count + filter token appended automatically.
+     */
+    heroKicker?: string | null;
+    /**
+     * First word of the two-line headline — rendered in white.
+     */
+    heroTitle?: string | null;
+    /**
+     * Second word of the headline — rendered in Division 2 orange with extra glow.
+     */
+    heroAccent?: string | null;
+    /**
+     * Paragraph under the headline.
+     */
+    intro?: string | null;
+    /**
+     * Mono label above the source filter chips.
+     */
+    filterSectionLabel?: string | null;
+    /**
+     * Mono label above the card grid.
+     */
+    feedSectionLabel?: string | null;
+    /**
+     * Shown when a source filter is active but Ashley returns zero items. `{SOURCE}` is replaced with the active source name (YOUTUBE / REDDIT / UBISOFT).
+     */
+    emptyFiltered?: string | null;
+    /**
+     * Shown when no filter is active and Ashley still returns zero items (sync may not have happened yet).
+     */
+    emptyAll?: string | null;
+    /**
+     * Mono marker shown after the user scrolls to the last item. `{COUNT}` is replaced with the loaded-items count.
+     */
+    endOfFeedLabel?: string | null;
+    /**
+     * Document title + meta description.
+     */
+    seo?: {
+      title?: string | null;
+      description?: string | null;
+    };
+  };
   escalationPage?: {
     /**
      * Small mono kicker above the headline. The status token (TODAY / VIEWING) and date are appended automatically.
@@ -1656,6 +1701,25 @@ export interface Division2Select<T extends boolean = true> {
     | T
     | {
         role?: T;
+      };
+  contentPage?:
+    | T
+    | {
+        heroKicker?: T;
+        heroTitle?: T;
+        heroAccent?: T;
+        intro?: T;
+        filterSectionLabel?: T;
+        feedSectionLabel?: T;
+        emptyFiltered?: T;
+        emptyAll?: T;
+        endOfFeedLabel?: T;
+        seo?:
+          | T
+          | {
+              title?: T;
+              description?: T;
+            };
       };
   escalationPage?:
     | T
