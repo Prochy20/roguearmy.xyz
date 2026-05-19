@@ -2,6 +2,7 @@ import { FailRow } from '@/components/shared/FailRow'
 import { EmptyDossier } from '@/components/shared/EmptyDossier'
 import { StatRibbon } from '@/components/shared/StatRibbon'
 import { HeroGlitch } from '@/components/effects/HeroGlitch'
+import { GlitchOnChange } from '@/components/effects/GlitchOnChange'
 import { EscalationDayStepper, MissionRow } from './MissionRow'
 import { PrototypeCaches } from './PrototypeCaches'
 import { EscalationDiscordRow } from './EscalationDiscordRow'
@@ -109,29 +110,33 @@ export function EscalationPage({ daily, week, targetDay, content }: EscalationPa
   return (
     <Shell>
       <header className="flex flex-col gap-7 sm:gap-9">
-        <StatRibbon
-          prefix="// SNAPSHOT"
-          fields={[
-            {
-              label: 'DAY',
-              value: formatDayWithWeekday(resolvedDay).toUpperCase(),
-              accent: 'mod',
-            },
-            { label: 'MISSIONS', value: missions.length || '—', accent: 'mod' },
-            { label: 'SYNCED', value: syncedLabel },
-          ]}
-          pill={
-            isStale
-              ? { text: 'STALE', ok: false }
-              : { text: statusToken, ok: true, accent: 'mod' }
-          }
-        />
+        <GlitchOnChange triggerKey={resolvedDay}>
+          <StatRibbon
+            prefix="// SNAPSHOT"
+            fields={[
+              {
+                label: 'DAY',
+                value: formatDayWithWeekday(resolvedDay).toUpperCase(),
+                accent: 'mod',
+              },
+              { label: 'MISSIONS', value: missions.length || '—', accent: 'mod' },
+              { label: 'SYNCED', value: syncedLabel },
+            ]}
+            pill={
+              isStale
+                ? { text: 'STALE', ok: false }
+                : { text: statusToken, ok: true, accent: 'mod' }
+            }
+          />
+        </GlitchOnChange>
 
         <div className="flex min-w-0 flex-col gap-7">
-          <div className="font-mono text-[11px] uppercase tracking-[0.35em] text-rga-mod">
-            {heroKicker} · {statusToken} ·{' '}
-            {formatDayWithWeekday(resolvedDay).toUpperCase()}
-          </div>
+          <GlitchOnChange triggerKey={resolvedDay}>
+            <div className="font-mono text-[11px] uppercase tracking-[0.35em] text-rga-mod">
+              {heroKicker} · {statusToken} ·{' '}
+              {formatDayWithWeekday(resolvedDay).toUpperCase()}
+            </div>
+          </GlitchOnChange>
 
           <h1
             className="font-display uppercase leading-[0.85] tracking-[0.005em] text-balance break-words"
@@ -174,20 +179,24 @@ export function EscalationPage({ daily, week, targetDay, content }: EscalationPa
       </header>
 
       <div className="flex flex-col gap-6 sm:gap-8">
-        <MissionRow
-          missions={missions}
-          dayLootByPosition={dayLootByPosition}
-          selectedDay={resolvedDay}
-          sectionLabel={content?.missionsSectionLabel ?? undefined}
-        />
-        <PrototypeCaches
-          caches={caches}
-          sectionLabel={content?.cachesSectionLabel ?? undefined}
-          blurb={content?.cachesBlurb ?? undefined}
-        />
-        <div className="flex justify-end pt-2">
-          <EscalationDayStepper selectedDay={resolvedDay} />
-        </div>
+        <GlitchOnChange triggerKey={resolvedDay}>
+          <div className="flex flex-col gap-6 sm:gap-8">
+            <MissionRow
+              missions={missions}
+              dayLootByPosition={dayLootByPosition}
+              selectedDay={resolvedDay}
+              sectionLabel={content?.missionsSectionLabel ?? undefined}
+            />
+            <PrototypeCaches
+              caches={caches}
+              sectionLabel={content?.cachesSectionLabel ?? undefined}
+              blurb={content?.cachesBlurb ?? undefined}
+            />
+            <div className="flex justify-end pt-2">
+              <EscalationDayStepper selectedDay={resolvedDay} />
+            </div>
+          </div>
+        </GlitchOnChange>
         <EscalationDiscordRow content={content?.discord} />
       </div>
     </Shell>
