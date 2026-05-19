@@ -10,6 +10,9 @@ type CornerColor =
   | 'dev'
   | 'admin'
   | 'mod'
+  | 'source-youtube'
+  | 'source-reddit'
+  | 'source-ubisoft'
 
 interface CyberCornersProps {
   children: React.ReactNode
@@ -60,6 +63,18 @@ const colorMap: Record<CornerColor, { line: string; glow: string }> = {
   mod: {
     line: 'bg-rga-mod',
     glow: 'shadow-[0_0_6px_rgba(255,128,0,0.5)]',
+  },
+  'source-youtube': {
+    line: 'bg-source-youtube',
+    glow: 'shadow-[0_0_6px_rgba(255,0,64,0.5)]',
+  },
+  'source-reddit': {
+    line: 'bg-source-reddit',
+    glow: 'shadow-[0_0_6px_rgba(255,69,0,0.5)]',
+  },
+  'source-ubisoft': {
+    line: 'bg-source-ubisoft',
+    glow: 'shadow-[0_0_6px_rgba(0,161,251,0.5)]',
   },
 }
 
@@ -223,6 +238,24 @@ const tagColorConfig: Record<
     text: 'text-rga-mod',
     glow: 'shadow-[0_0_16px_rgba(255,128,0,0.5)]',
     gradient: 'from-rga-mod/20 to-transparent',
+  },
+  'source-youtube': {
+    bg: 'bg-source-youtube',
+    text: 'text-source-youtube',
+    glow: 'shadow-[0_0_16px_rgba(255,0,64,0.5)]',
+    gradient: 'from-source-youtube/20 to-transparent',
+  },
+  'source-reddit': {
+    bg: 'bg-source-reddit',
+    text: 'text-source-reddit',
+    glow: 'shadow-[0_0_16px_rgba(255,69,0,0.5)]',
+    gradient: 'from-source-reddit/20 to-transparent',
+  },
+  'source-ubisoft': {
+    bg: 'bg-source-ubisoft',
+    text: 'text-source-ubisoft',
+    glow: 'shadow-[0_0_16px_rgba(0,161,251,0.5)]',
+    gradient: 'from-source-ubisoft/20 to-transparent',
   },
 }
 
