@@ -110,6 +110,17 @@ function coerceNumber(value: unknown): number | null {
   return null
 }
 
+/**
+ * Clamp a relevance score to the Ashley-documented 1-5 range. Defends
+ * against schema drift if Ashley ever ships a value outside the range —
+ * the card UI renders the raw number directly and a `★99` would look
+ * broken.
+ */
+function clampRelevance(value: number | null): number | null {
+  if (value === null) return null
+  return Math.max(1, Math.min(5, Math.round(value)))
+}
+
 /** Coerce authors — could be a string, an array of strings, or a `{ name }[]`. */
 function coerceAuthors(value: unknown): string[] {
   if (typeof value === 'string' && value.length > 0) return [value]
