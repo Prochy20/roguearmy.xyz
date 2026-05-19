@@ -6,6 +6,12 @@ import {
 } from '@/lib/division2/escalation.server'
 import { todayUtcIso, weekStartForDayUtc } from '@/lib/division2/format'
 
+// Bypass the Next.js full-route cache: the `?day=` param controls what the
+// page shows, and we want each navigation to re-run the data fetches.
+// Without this, the router's prefetched RSC payload for the previous-day
+// link can serve stale content after the underlying day's cache expires.
+export const dynamic = 'force-dynamic'
+
 const DEFAULT_TITLE = 'Escalation Protocol | Division 2 · Rogue Army'
 const DEFAULT_DESCRIPTION =
   'Active targeted-loot rotation for The Division 2 escalation — step through any day to see what drops from each mission.'
