@@ -190,6 +190,7 @@ export const Division2: GlobalConfig = {
             // SEO
             {
               name: 'seo',
+              label: 'SEO',
               type: 'group',
               admin: { description: 'Document title + meta description.' },
               fields: [
