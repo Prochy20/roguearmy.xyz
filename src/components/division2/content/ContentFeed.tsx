@@ -8,23 +8,15 @@ import { ContentEndMarker } from './ContentEndMarker'
 import { FILTER_SCROLL_KEY } from './ContentFilterChips'
 import { loadMoreContent } from '@/app/(frontend)/(with-chrome)/division-2/content/actions'
 import { substituteTokens } from '@/lib/division2/content.format'
-import type {
-  ContentArticle,
-  ContentList,
-  ContentSource,
-} from '@/lib/division2/content.server'
+import type { ContentArticle, ContentList, ContentSource } from '@/lib/division2/content.server'
 import type { AshleyErrorCode } from '@/lib/api/server'
 
 interface ContentFeedProps {
-  /** First batch + total + offset, server-rendered. */
   initial: ContentList
-  /** Active source filter. Used in cache key + session-storage key. */
   source: ContentSource | undefined
-  /** Active minRelevance value. Threaded through to loadMore and storage key. */
   minRelevance: number
-  /** Page size — must match the server's fetch limit so offsets align. */
+  /** Must match the server's fetch limit so offsets align. */
   limit: number
-  /** End-of-feed copy template (CMS-driven), e.g. `// END OF FEED · {COUNT} ITEMS`. */
   endOfFeedLabel: string
 }
 
@@ -34,7 +26,7 @@ interface FailState {
 }
 
 const SESSION_KEY_PREFIX = 'd2-content-feed:'
-const SESSION_TTL_MS = 10 * 60 * 1000 // 10 minutes
+const SESSION_TTL_MS = 10 * 60 * 1000
 
 interface SessionSnapshot {
   items: ContentArticle[]
@@ -48,10 +40,7 @@ function sessionKey(source: ContentSource | undefined, min: number): string {
   return `${SESSION_KEY_PREFIX}${source ?? 'all'}:r${min}`
 }
 
-function readSnapshot(
-  source: ContentSource | undefined,
-  min: number,
-): SessionSnapshot | null {
+function readSnapshot(source: ContentSource | undefined, min: number): SessionSnapshot | null {
   if (typeof window === 'undefined') return null
   try {
     const raw = window.sessionStorage.getItem(sessionKey(source, min))
@@ -73,19 +62,13 @@ function writeSnapshot(
   try {
     window.sessionStorage.setItem(sessionKey(source, min), JSON.stringify(snap))
   } catch {
-    // sessionStorage quota or disabled — silently skip; back-nav just
-    // won't restore, which is the same as a fresh navigation.
+    // quota / disabled — back-nav silently won't restore.
   }
 }
 
 /**
- * Client component. Manages the appended list, IntersectionObserver-driven
- * loadMore, and sessionStorage-backed back-nav restoration.
- *
- * Restore ordering matters: hydrate appended state from session FIRST, then
- * restore scroll, THEN attach the IntersectionObserver. Attaching the
- * observer before restore would race against the scroll restore (sentinel
- * lands in viewport → loadMore fires → double-load).
+ * Attach the IntersectionObserver only after snapshot restore completes,
+ * otherwise the sentinel can land in-viewport during restore and double-load.
  */
 export function ContentFeed({
   initial,
@@ -105,65 +88,59 @@ export function ContentFeed({
   const [observerReady, setObserverReady] = useState<boolean>(false)
 
   const sentinelRef = useRef<HTMLDivElement | null>(null)
-  // Memoized "now" so timeago strings are stable across re-renders of this
-  // feed instance — but refreshed when filters change (key on the parent).
   const renderNow = useMemo(() => Date.now(), [])
-
-  // ── Filter-change scroll restore ───────────────────────────────────────
-  // When the user clicks a filter chip, ContentFilterChips saves the
-  // current scrollY to sessionStorage. This effect reads + clears it
-  // BEFORE paint so the user never sees the browser's auto-clamp to
-  // top during the brief DOM swap that happens on filter change.
-  //
-  // useLayoutEffect (not useEffect) is critical here — it runs after
-  // DOM mutation but before paint, so the scroll restore wins against
-  // any router-induced scroll-to-top.
+  const renderedItems = useMemo(() => {
+    const seen = new Set<string>()
+    const out: ContentArticle[] = []
+    for (const article of items) {
+      if (seen.has(article.id)) continue
+      seen.add(article.id)
+      out.push(article)
+    }
+    return out
+  }, [items])
   useLayoutEffect(() => {
+    let filterScrollHandled = false
     try {
       const raw = window.sessionStorage.getItem(FILTER_SCROLL_KEY)
-      if (!raw) return
-      const { y, time } = JSON.parse(raw) as { y: number; time: number }
-      window.sessionStorage.removeItem(FILTER_SCROLL_KEY)
-      // Only honor recent saves (< 3s) — a stale value from a previous
-      // session shouldn't yank scroll on a fresh page load.
-      if (typeof y === 'number' && Date.now() - time < 3000) {
-        window.scrollTo({ top: y, behavior: 'auto' })
+      if (raw) {
+        window.sessionStorage.removeItem(FILTER_SCROLL_KEY)
+        const time = Number(raw)
+        if (Number.isFinite(time) && Date.now() - time < 3000) {
+          const bar = document.querySelector<HTMLElement>('[data-d2-filter-bar]')
+          bar?.scrollIntoView({
+            block: 'start',
+            behavior: 'instant' as ScrollBehavior,
+          })
+          filterScrollHandled = true
+        }
       }
-    } catch {
-      // sessionStorage disabled / parse error — fall through.
-    }
-    // Runs on every mount (the parent's `key` change ensures this is a
-    // fresh mount per filter combo).
-  }, [])
+    } catch {}
 
-  // ── sessionStorage restore on mount ────────────────────────────────────
-  // Runs once per filter change. If the saved snapshot is fresh AND its
-  // `total` matches the server-rendered total, restore the appended list
-  // and the scroll position. Otherwise fall through with the SSR'd initial.
-  useEffect(() => {
+    if (filterScrollHandled) {
+      setObserverReady(true)
+      return
+    }
+
     const snap = readSnapshot(source, minRelevance)
     if (snap && snap.total === initial.total && snap.items.length > initial.items.length) {
       setItems(snap.items)
       setOffset(snap.offset)
       setTotal(snap.total)
       setDone(snap.items.length >= snap.total)
-      // Restore scroll after paint settles. Use requestAnimationFrame twice
-      // to ensure the list has laid out before we scroll.
+      // Two rAFs let appended items lay out before we scroll;
+      // 'instant' overrides the site-wide `scroll-behavior: smooth`.
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
-          window.scrollTo({ top: snap.scrollY, behavior: 'auto' })
+          window.scrollTo({ top: snap.scrollY, behavior: 'instant' as ScrollBehavior })
           setObserverReady(true)
         })
       })
     } else {
       setObserverReady(true)
     }
-    // We intentionally key on `source` only — filter change triggers a full
-    // remount via the parent's `key` prop, so this effect runs cleanly.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [source])
+  }, [source, minRelevance, initial.total, initial.items.length])
 
-  // ── Save snapshot before unload + on every items/offset change ─────────
   useEffect(() => {
     if (!observerReady) return
     const save = () => {
@@ -175,7 +152,6 @@ export function ContentFeed({
         savedAt: Date.now(),
       })
     }
-    // Save on tab hide (covers external link click → external tab → back).
     const onVisibility = () => {
       if (document.visibilityState === 'hidden') save()
     }
@@ -187,7 +163,6 @@ export function ContentFeed({
     }
   }, [items, offset, total, source, minRelevance, observerReady])
 
-  // ── loadMore action ────────────────────────────────────────────────────
   const loadMore = useCallback(async () => {
     if (isLoading || done || fail) return
     setIsLoading(true)
@@ -198,7 +173,13 @@ export function ContentFeed({
       return
     }
     const batch = result.data
-    setItems((prev) => [...prev, ...batch.items])
+    // Ashley's offset pagination can repeat ids across adjacent pages
+    // when new items are ingested between requests.
+    setItems((prev) => {
+      const seen = new Set(prev.map((a) => a.id))
+      const additions = batch.items.filter((a) => !seen.has(a.id))
+      return additions.length > 0 ? [...prev, ...additions] : prev
+    })
     setOffset((prev) => prev + batch.items.length)
     setTotal(batch.total)
     if (batch.items.length < limit || batch.items.length === 0) {
@@ -209,12 +190,9 @@ export function ContentFeed({
 
   const retry = useCallback(() => {
     setFail(null)
-    // Caller's next observer fire will re-trigger loadMore. Force one now
-    // for instant retry feel.
     void loadMore()
   }, [loadMore])
 
-  // ── IntersectionObserver ───────────────────────────────────────────────
   useEffect(() => {
     if (!observerReady || done || fail) return
     const node = sentinelRef.current
@@ -234,7 +212,7 @@ export function ContentFeed({
   return (
     <div className="flex flex-col gap-6">
       <div className="mx-auto flex w-full max-w-3xl flex-col gap-3 sm:gap-4">
-        {items.map((article) => (
+        {renderedItems.map((article) => (
           <ContentCard key={article.id} article={article} now={renderNow} />
         ))}
         {isLoading && (
@@ -247,11 +225,7 @@ export function ContentFeed({
 
       {fail && (
         <div className="flex flex-col gap-3">
-          <FailRow
-            code={fail.code}
-            status={fail.status}
-            returnTo="/division-2/content"
-          />
+          <FailRow code={fail.code} status={fail.status} returnTo="/division-2/content" />
           <button
             type="button"
             onClick={retry}
@@ -262,14 +236,10 @@ export function ContentFeed({
         </div>
       )}
 
-      {!fail && !done && !isLoading && (
-        <div ref={sentinelRef} aria-hidden className="h-1 w-full" />
-      )}
+      {!fail && !done && !isLoading && <div ref={sentinelRef} aria-hidden className="h-1 w-full" />}
 
       {done && items.length > 0 && (
-        <ContentEndMarker
-          label={substituteTokens(endOfFeedLabel, { count: items.length })}
-        />
+        <ContentEndMarker label={substituteTokens(endOfFeedLabel, { count: items.length })} />
       )}
     </div>
   )
