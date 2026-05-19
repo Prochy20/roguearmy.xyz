@@ -14,6 +14,14 @@ const nextConfig = {
   // Required for sharp to work correctly in Vercel serverless functions
   serverExternalPackages: ['sharp'],
 
+  // SWC rewrites `import { Icon } from 'lucide-react'` into direct deep
+  // imports at build time, sidestepping the barrel file's parse-time cost
+  // for every unused icon. ~50–150 KB of client JS off the leaderboard,
+  // blog, staff, and community routes that use lucide-react.
+  experimental: {
+    optimizePackageImports: ['lucide-react'],
+  },
+
   // Image optimization settings
   images: {
     formats: ['image/avif', 'image/webp'],
