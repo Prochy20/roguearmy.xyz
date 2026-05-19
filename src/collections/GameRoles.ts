@@ -32,7 +32,10 @@ export const GameRoles: CollectionConfig = {
     plural: 'Game Roles',
   },
   admin: {
-    useAsTitle: 'game',
+    // displayName is a virtual field resolved on read — see below. We can't
+    // useAsTitle: 'game' directly because it's a relationship and Payload
+    // renders relationship-typed titles as the raw target id.
+    useAsTitle: 'displayName',
     group: 'Taxonomies',
     defaultColumns: ['game', 'roles'],
     description: 'Pair Discord roles with games. Members holding any paired role count as playing that game.',
@@ -79,6 +82,16 @@ export const GameRoles: CollectionConfig = {
     ],
   },
   fields: [
+    {
+      name: 'displayName',
+      type: 'text',
+      // Payload-3 virtual-on-relationship: resolves the linked game's `name`
+      // automatically on read. We point `useAsTitle` at this so the
+      // relationship picker in Settings shows "The Division 2" instead of
+      // the raw entry id.
+      virtual: 'game.name',
+      admin: { hidden: true },
+    },
     {
       name: 'game',
       type: 'relationship',

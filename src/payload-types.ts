@@ -111,11 +111,13 @@ export interface Config {
     homepage: Homepage;
     'staff-page': StaffPage;
     manifesto: Manifesto;
+    settings: Setting;
   };
   globalsSelect: {
     homepage: HomepageSelect<false> | HomepageSelect<true>;
     'staff-page': StaffPageSelect<false> | StaffPageSelect<true>;
     manifesto: ManifestoSelect<false> | ManifestoSelect<true>;
+    settings: SettingsSelect<false> | SettingsSelect<true>;
   };
   locale: null;
   user: User & {
@@ -309,6 +311,7 @@ export interface Series {
  */
 export interface GameRole {
   id: string;
+  displayName?: string | null;
   /**
    * One GameRoles entry per game.
    */
@@ -735,6 +738,7 @@ export interface GamesSelect<T extends boolean = true> {
  * via the `definition` "game-roles_select".
  */
 export interface GameRolesSelect<T extends boolean = true> {
+  displayName?: T;
   game?: T;
   roles?: T;
   updatedAt?: T;
@@ -1379,6 +1383,25 @@ export interface Manifesto {
   createdAt?: string | null;
 }
 /**
+ * Site-wide configuration. Role Gates wire game-roles to access-controlled features.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "settings".
+ */
+export interface Setting {
+  id: string;
+  roleGates?: {
+    /**
+     * Game-roles entry whose Discord roles grant access to /division-2. Clearing this disables the section for everyone.
+     */
+    division2Role?: (string | null) | GameRole;
+  };
+  features?: {};
+  integrations?: {};
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "homepage_select".
  */
@@ -1552,6 +1575,22 @@ export interface ManifestoSelect<T extends boolean = true> {
         content?: T;
         outlineDocumentId?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "settings_select".
+ */
+export interface SettingsSelect<T extends boolean = true> {
+  roleGates?:
+    | T
+    | {
+        division2Role?: T;
+      };
+  features?: T | {};
+  integrations?: T | {};
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
