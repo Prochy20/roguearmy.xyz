@@ -1,10 +1,11 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { FailRow } from '@/components/shared/FailRow'
 import { ContentCard } from './ContentCard'
 import { ContentSkeleton } from './ContentSkeleton'
 import { ContentEndMarker } from './ContentEndMarker'
+import { FILTER_SCROLL_KEY } from './ContentFilterChips'
 import { loadMoreContent } from '@/app/(frontend)/(with-chrome)/division-2/content/actions'
 import { substituteTokens } from '@/lib/division2/content.format'
 import type {
@@ -19,6 +20,8 @@ interface ContentFeedProps {
   initial: ContentList
   /** Active source filter. Used in cache key + session-storage key. */
   source: ContentSource | undefined
+  /** Active minRelevance value. Threaded through to loadMore and storage key. */
+  minRelevance: number
   /** Page size — must match the server's fetch limit so offsets align. */
   limit: number
   /** End-of-feed copy template (CMS-driven), e.g. `// END OF FEED · {COUNT} ITEMS`. */
@@ -41,14 +44,17 @@ interface SessionSnapshot {
   savedAt: number
 }
 
-function sessionKey(source: ContentSource | undefined): string {
-  return `${SESSION_KEY_PREFIX}${source ?? 'all'}`
+function sessionKey(source: ContentSource | undefined, min: number): string {
+  return `${SESSION_KEY_PREFIX}${source ?? 'all'}:r${min}`
 }
 
-function readSnapshot(source: ContentSource | undefined): SessionSnapshot | null {
+function readSnapshot(
+  source: ContentSource | undefined,
+  min: number,
+): SessionSnapshot | null {
   if (typeof window === 'undefined') return null
   try {
-    const raw = window.sessionStorage.getItem(sessionKey(source))
+    const raw = window.sessionStorage.getItem(sessionKey(source, min))
     if (!raw) return null
     const snap = JSON.parse(raw) as SessionSnapshot
     if (Date.now() - snap.savedAt > SESSION_TTL_MS) return null
@@ -60,11 +66,12 @@ function readSnapshot(source: ContentSource | undefined): SessionSnapshot | null
 
 function writeSnapshot(
   source: ContentSource | undefined,
+  min: number,
   snap: SessionSnapshot,
 ): void {
   if (typeof window === 'undefined') return
   try {
-    window.sessionStorage.setItem(sessionKey(source), JSON.stringify(snap))
+    window.sessionStorage.setItem(sessionKey(source, min), JSON.stringify(snap))
   } catch {
     // sessionStorage quota or disabled — silently skip; back-nav just
     // won't restore, which is the same as a fresh navigation.
@@ -83,6 +90,7 @@ function writeSnapshot(
 export function ContentFeed({
   initial,
   source,
+  minRelevance,
   limit,
   endOfFeedLabel,
 }: ContentFeedProps) {
@@ -101,12 +109,39 @@ export function ContentFeed({
   // feed instance — but refreshed when filters change (key on the parent).
   const renderNow = useMemo(() => Date.now(), [])
 
+  // ── Filter-change scroll restore ───────────────────────────────────────
+  // When the user clicks a filter chip, ContentFilterChips saves the
+  // current scrollY to sessionStorage. This effect reads + clears it
+  // BEFORE paint so the user never sees the browser's auto-clamp to
+  // top during the brief DOM swap that happens on filter change.
+  //
+  // useLayoutEffect (not useEffect) is critical here — it runs after
+  // DOM mutation but before paint, so the scroll restore wins against
+  // any router-induced scroll-to-top.
+  useLayoutEffect(() => {
+    try {
+      const raw = window.sessionStorage.getItem(FILTER_SCROLL_KEY)
+      if (!raw) return
+      const { y, time } = JSON.parse(raw) as { y: number; time: number }
+      window.sessionStorage.removeItem(FILTER_SCROLL_KEY)
+      // Only honor recent saves (< 3s) — a stale value from a previous
+      // session shouldn't yank scroll on a fresh page load.
+      if (typeof y === 'number' && Date.now() - time < 3000) {
+        window.scrollTo({ top: y, behavior: 'auto' })
+      }
+    } catch {
+      // sessionStorage disabled / parse error — fall through.
+    }
+    // Runs on every mount (the parent's `key` change ensures this is a
+    // fresh mount per filter combo).
+  }, [])
+
   // ── sessionStorage restore on mount ────────────────────────────────────
   // Runs once per filter change. If the saved snapshot is fresh AND its
   // `total` matches the server-rendered total, restore the appended list
   // and the scroll position. Otherwise fall through with the SSR'd initial.
   useEffect(() => {
-    const snap = readSnapshot(source)
+    const snap = readSnapshot(source, minRelevance)
     if (snap && snap.total === initial.total && snap.items.length > initial.items.length) {
       setItems(snap.items)
       setOffset(snap.offset)
@@ -132,7 +167,7 @@ export function ContentFeed({
   useEffect(() => {
     if (!observerReady) return
     const save = () => {
-      writeSnapshot(source, {
+      writeSnapshot(source, minRelevance, {
         items,
         offset,
         total,
@@ -150,13 +185,13 @@ export function ContentFeed({
       window.removeEventListener('pagehide', save)
       document.removeEventListener('visibilitychange', onVisibility)
     }
-  }, [items, offset, total, source, observerReady])
+  }, [items, offset, total, source, minRelevance, observerReady])
 
   // ── loadMore action ────────────────────────────────────────────────────
   const loadMore = useCallback(async () => {
     if (isLoading || done || fail) return
     setIsLoading(true)
-    const result = await loadMoreContent(source, offset, limit)
+    const result = await loadMoreContent(source, offset, limit, String(minRelevance))
     if (!result.ok) {
       setFail({ code: result.error.code, status: result.error.status })
       setIsLoading(false)
@@ -170,7 +205,7 @@ export function ContentFeed({
       setDone(true)
     }
     setIsLoading(false)
-  }, [isLoading, done, fail, source, offset, limit])
+  }, [isLoading, done, fail, source, offset, limit, minRelevance])
 
   const retry = useCallback(() => {
     setFail(null)

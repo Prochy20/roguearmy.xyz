@@ -31,7 +31,12 @@ export function Header() {
   return (
     <Dialog.Root open={isOpen} onOpenChange={setOpen}>
       {!hideTopBar && (
-        <header className="fixed inset-x-0 top-0 z-50">
+        // `pointer-events-none` on the wrapper ensures the otherwise-empty
+        // 80px-tall fixed bar across the top of the viewport doesn't
+        // intercept clicks meant for page-level sticky content docked at
+        // `top-0`. The BracketButton inside re-enables hit detection via
+        // its own `pointer-events-auto`.
+        <header className="pointer-events-none fixed inset-x-0 top-0 z-50">
           <TopBar onOpen={open} member={member} />
         </header>
       )}

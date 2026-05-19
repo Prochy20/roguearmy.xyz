@@ -1422,6 +1422,10 @@ export interface Division2 {
      */
     feedSectionLabel?: string | null;
     /**
+     * Editorial blurb shown under the SEC_03 // LIVE FEED label. Best used to explain what the filters do, since the trigger UI is intentionally terse.
+     */
+    feedBlurb?: string | null;
+    /**
      * Shown when a source filter is active but Ashley returns zero items. `{SOURCE}` is replaced with the active source name (YOUTUBE / REDDIT / UBISOFT).
      */
     emptyFiltered?: string | null;
@@ -1711,6 +1715,7 @@ export interface Division2Select<T extends boolean = true> {
         intro?: T;
         filterSectionLabel?: T;
         feedSectionLabel?: T;
+        feedBlurb?: T;
         emptyFiltered?: T;
         emptyAll?: T;
         endOfFeedLabel?: T;

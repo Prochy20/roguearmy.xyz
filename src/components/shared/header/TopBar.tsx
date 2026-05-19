@@ -10,15 +10,21 @@ interface TopBarProps {
 
 // `member` is accepted for future use but the closed top bar intentionally
 // shows no avatar — the overlay's bottom rail handles member identity.
+//
+// The outer flex container is `pointer-events-none` so the otherwise-empty
+// 80px-tall strip across the top of the viewport doesn't intercept clicks
+// meant for any page-level sticky content that docks at `top-0` (e.g. the
+// Division 2 content filter bar). The MENU button itself re-enables hit
+// detection via `pointer-events-auto`.
 export function TopBar({ onOpen }: TopBarProps) {
   return (
-    <div className="relative z-[1] flex items-center justify-end gap-3 h-20 px-7">
+    <div className="pointer-events-none relative z-[1] flex items-center justify-end gap-3 h-20 px-7">
       <BracketButton
         type="button"
         onClick={onOpen}
         aria-label="Open menu"
         accent="cyan"
-        className="h-11 px-4"
+        className="pointer-events-auto h-11 px-4"
       >
         <svg
           width="20"

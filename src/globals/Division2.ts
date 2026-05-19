@@ -107,6 +107,16 @@ export const Division2: GlobalConfig = {
               defaultValue: '// LIVE FEED',
               admin: { description: 'Mono label above the card grid.' },
             },
+            {
+              name: 'feedBlurb',
+              type: 'textarea',
+              defaultValue:
+                'Filter the feed by source above — YouTube creator content, Reddit discussion, or Ubisoft official news — or leave it on ALL for the combined firehose. Strictness ladder: SCAN sweeps wide (★3 and up), TRACE narrows to sharper signals (★4+), LOCK targets top-tier intel only (★5).',
+              admin: {
+                description:
+                  'Editorial blurb shown under the SEC_03 // LIVE FEED label. Best used to explain what the filters do, since the trigger UI is intentionally terse.',
+              },
+            },
 
             // Empty + end states
             {
