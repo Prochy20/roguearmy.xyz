@@ -14,7 +14,7 @@ const STAT_LABELS = {
   members: 'OPERATIVES',
   joined14d: 'JOINED · LAST 14 DAYS',
   voice: 'MINUTES IN VOICE',
-  messages: 'MESSAGES LOGGED',
+  messages: 'CHAT MESSAGES',
 } as const
 
 const COMMITMENTS = [

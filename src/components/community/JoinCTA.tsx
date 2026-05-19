@@ -9,8 +9,7 @@ const DISCORD_INVITE = 'https://dc.roguearmy.xyz'
 const COPY = {
   kicker: '// RECRUITMENT ORDER · OPEN STANDING',
   heading: 'STAND THE WATCH',
-  body:
-    'The door stays open. Drop your platform and timezone in #intros once you’re in — that’s the whole onboarding.',
+  body: 'The door stays open. Drop your platform and timezone in #general once you’re in — that’s the whole onboarding.',
   eligibility: [
     { label: '25+', tone: 'green' as const },
     { label: 'SA · UK · EU', tone: 'cyan' as const },

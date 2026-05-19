@@ -516,15 +516,16 @@ export const StaffPage: GlobalConfig = {
                   severity: 'social',
                   question: 'New here and just want to say hi?',
                   answer: paragraph(
-                    'Drop a quick intro in #intros — display name, timezone, the games you play. That’s the whole onboarding. People do react and reply, but there’s no checklist, no quiz, and no minimum word count. The intro just helps regulars know who you are when you show up in a voice channel later.',
+                    'Drop a quick intro in #general — display name, timezone, the games you play. That’s the whole onboarding. People do react and reply, but there’s no checklist, no quiz, and no minimum word count. The intro just helps regulars know who you are when you show up in a voice channel later.',
                   ),
-                  channel: 'Drop a line in #intros',
-                  channelHint: '#intros',
+                  channel: 'Drop a line in #general',
+                  channelHint: '#general',
                   response: 'Whenever',
                 },
               ],
               admin: {
-                description: 'FAQ entries rendered as a 2-column grid of cards. Reorder with the drag handle; ordering controls render order.',
+                description:
+                  'FAQ entries rendered as a 2-column grid of cards. Reorder with the drag handle; ordering controls render order.',
                 initCollapsed: false,
               },
               fields: [
