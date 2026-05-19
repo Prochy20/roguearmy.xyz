@@ -20,6 +20,8 @@ interface MissionRowProps {
   /** Currently-displayed day (YYYY-MM-DD UTC). When set, the day-stepper
    *  renders and lets the user navigate by calendar day. */
   selectedDay?: string
+  /** Mono label rendered next to SEC_01. Sourced from the Division 2 global. */
+  sectionLabel?: string
 }
 
 const ESCALATION_BASE = '/division-2/escalation'
@@ -32,10 +34,16 @@ const ESCALATION_BASE = '/division-2/escalation'
  * The day-stepper at the top scrubs by single calendar days — `?day=` on the
  * single base route. No notion of "weeks" in the URL.
  */
-export function MissionRow({ missions, dayLootByPosition, selectedDay }: MissionRowProps) {
+export function MissionRow({
+  missions,
+  dayLootByPosition,
+  selectedDay,
+  sectionLabel,
+}: MissionRowProps) {
   if (missions.length === 0) return null
 
   const stepper = selectedDay ? buildStepper(selectedDay) : null
+  const label = sectionLabel?.trim() || '// ACTIVE MISSIONS'
 
   return (
     <section className="space-y-4">
@@ -43,7 +51,7 @@ export function MissionRow({ missions, dayLootByPosition, selectedDay }: Mission
         <div className="flex items-center gap-3">
           <span className="font-mono text-[10px] tracking-[0.4em] text-rga-mod">SEC_01</span>
           <span className="font-mono text-[10px] tracking-[0.3em] text-text-muted">
-            // ACTIVE MISSIONS
+            {label}
           </span>
         </div>
         {stepper ? (

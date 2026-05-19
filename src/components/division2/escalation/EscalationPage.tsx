@@ -4,6 +4,7 @@ import { StatRibbon } from '@/components/shared/StatRibbon'
 import { HeroGlitch } from '@/components/effects/HeroGlitch'
 import { EscalationDayStepper, MissionRow } from './MissionRow'
 import { PrototypeCaches } from './PrototypeCaches'
+import { EscalationDiscordRow } from './EscalationDiscordRow'
 import {
   formatDayWithWeekday,
   hoursSince,
@@ -18,6 +19,9 @@ import type {
   EscalationPrototypeCache,
   EscalationWeekDetail,
 } from '@/lib/division2/escalation.server'
+import type { Division2 } from '@/payload-types'
+
+type EscalationPageContent = NonNullable<Division2['escalationPage']>
 
 interface EscalationPageProps {
   /** Authoritative source for the selected day's items + caches + week summary. */
@@ -28,7 +32,18 @@ interface EscalationPageProps {
   week: AshleyResult<EscalationWeekDetail>
   /** The day the page is meant to render (server-resolved, already clamped). */
   targetDay: string
+  /** Editable copy sourced from the Division 2 global. Fields fall back to
+   *  built-in defaults if the admin clears them, so the page never goes blank. */
+  content: EscalationPageContent | null | undefined
 }
+
+const DEFAULTS = {
+  heroKicker: '// DIVISION 2 · ESCALATION · TARGETED LOOT',
+  heroTitle: 'ESCALATION',
+  heroAccent: 'PROTOCOL',
+  intro:
+    'Targeted-loot rotation for the active escalation. Step through any day — back through prior days if you need older intel.',
+} as const
 
 /**
  * Day-by-day escalation view. Always renders a single day's data:
@@ -40,7 +55,7 @@ interface EscalationPageProps {
  * notion of "weeks" in the URL or UI — everything is keyed on a single
  * `?day=YYYY-MM-DD` param.
  */
-export function EscalationPage({ daily, week, targetDay }: EscalationPageProps) {
+export function EscalationPage({ daily, week, targetDay, content }: EscalationPageProps) {
   // Hard fail only when BOTH the day and the week are unavailable — we have
   // nothing to render.
   if (!daily.ok && !week.ok) {
@@ -86,6 +101,11 @@ export function EscalationPage({ daily, week, targetDay }: EscalationPageProps) 
   const isStale = Number.isFinite(ageHours) && ageHours > STALE_HOURS_THRESHOLD
   const syncedLabel = fetchedAt ? formatSynced(fetchedAt) : '—'
 
+  const heroKicker = content?.heroKicker?.trim() || DEFAULTS.heroKicker
+  const heroTitle = content?.heroTitle?.trim() || DEFAULTS.heroTitle
+  const heroAccent = content?.heroAccent?.trim() || DEFAULTS.heroAccent
+  const intro = content?.intro?.trim() || DEFAULTS.intro
+
   return (
     <Shell>
       <header className="flex flex-col gap-7 sm:gap-9">
@@ -109,7 +129,7 @@ export function EscalationPage({ daily, week, targetDay }: EscalationPageProps) 
 
         <div className="flex min-w-0 flex-col gap-7">
           <div className="font-mono text-[11px] uppercase tracking-[0.35em] text-rga-mod">
-            // DIVISION 2 · ESCALATION · TARGETED LOOT · {statusToken} ·{' '}
+            {heroKicker} · {statusToken} ·{' '}
             {formatDayWithWeekday(resolvedDay).toUpperCase()}
           </div>
 
@@ -125,7 +145,7 @@ export function EscalationPage({ daily, week, targetDay }: EscalationPageProps) 
               dataCorruption
               scanlines
             >
-              <span className="text-text-primary">ESCALATION</span>
+              <span className="text-text-primary">{heroTitle}</span>
             </HeroGlitch>
             <HeroGlitch
               className="block"
@@ -142,14 +162,13 @@ export function EscalationPage({ daily, week, targetDay }: EscalationPageProps) 
                     '0 0 36px rgba(255,128,0,0.45), 0 0 80px rgba(255,128,0,0.18)',
                 }}
               >
-                PROTOCOL
+                {heroAccent}
               </span>
             </HeroGlitch>
           </h1>
 
           <p className="max-w-2xl text-base leading-relaxed text-text-secondary sm:text-lg">
-            Targeted-loot rotation for the active escalation. Step through any day
-            — back through prior days if you need older intel.
+            {intro}
           </p>
         </div>
       </header>
@@ -159,11 +178,17 @@ export function EscalationPage({ daily, week, targetDay }: EscalationPageProps) 
           missions={missions}
           dayLootByPosition={dayLootByPosition}
           selectedDay={resolvedDay}
+          sectionLabel={content?.missionsSectionLabel ?? undefined}
         />
-        <PrototypeCaches caches={caches} />
-        <footer className="flex justify-end pt-2">
+        <PrototypeCaches
+          caches={caches}
+          sectionLabel={content?.cachesSectionLabel ?? undefined}
+          blurb={content?.cachesBlurb ?? undefined}
+        />
+        <div className="flex justify-end pt-2">
           <EscalationDayStepper selectedDay={resolvedDay} />
-        </footer>
+        </div>
+        <EscalationDiscordRow content={content?.discord} />
       </div>
     </Shell>
   )

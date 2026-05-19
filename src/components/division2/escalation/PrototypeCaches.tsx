@@ -8,6 +8,10 @@ import type {
 
 interface PrototypeCachesProps {
   caches: EscalationPrototypeCache | null | undefined
+  /** Mono label rendered next to SEC_02. Sourced from the Division 2 global. */
+  sectionLabel?: string
+  /** Body paragraph under the section header describing the vendor + location. */
+  blurb?: string
 }
 
 /**
@@ -16,7 +20,11 @@ interface PrototypeCachesProps {
  * sheet on the right. The vendor sells one gear-slot cache and one
  * weapon-class cache per day, independent of mission/loot pairings.
  */
-export function PrototypeCaches({ caches }: PrototypeCachesProps) {
+export function PrototypeCaches({ caches, sectionLabel, blurb }: PrototypeCachesProps) {
+  const label =
+    sectionLabel?.trim() || '// ESCALATION VENDOR · PROTOTYPE CACHES'
+  const blurbText = blurb?.trim() ?? ''
+
   return (
     <section className="space-y-4">
       <header className="flex flex-col gap-2">
@@ -24,18 +32,18 @@ export function PrototypeCaches({ caches }: PrototypeCachesProps) {
           <div className="flex items-center gap-3">
             <span className="font-mono text-[10px] tracking-[0.4em] text-rga-cyan">SEC_02</span>
             <span className="font-mono text-[10px] tracking-[0.3em] text-text-muted">
-              // ESCALATION VENDOR · PROTOTYPE CACHES
+              {label}
             </span>
           </div>
           <span className="font-mono text-[9px] tracking-[0.3em] text-text-muted opacity-70">
             2 ON SALE
           </span>
         </div>
-        <p className="max-w-2xl text-xs leading-relaxed text-text-secondary sm:text-sm">
-          Vendor in the <span className="text-rga-cyan">White House · Escalation area</span>{' '}
-          sells one gear-slot cache and one weapon-class cache each day.
-          Rotation is independent of the mission targeted-loot above.
-        </p>
+        {blurbText && (
+          <p className="max-w-2xl text-xs leading-relaxed text-text-secondary sm:text-sm">
+            {blurbText}
+          </p>
+        )}
       </header>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <CacheCard kind="GEAR" loot={caches?.gear ?? null} />
