@@ -111,13 +111,13 @@ export interface Config {
     homepage: Homepage;
     'staff-page': StaffPage;
     manifesto: Manifesto;
-    settings: Setting;
+    division2: Division2;
   };
   globalsSelect: {
     homepage: HomepageSelect<false> | HomepageSelect<true>;
     'staff-page': StaffPageSelect<false> | StaffPageSelect<true>;
     manifesto: ManifestoSelect<false> | ManifestoSelect<true>;
-    settings: SettingsSelect<false> | SettingsSelect<true>;
+    division2: Division2Select<false> | Division2Select<true>;
   };
   locale: null;
   user: User & {
@@ -1383,21 +1383,89 @@ export interface Manifesto {
   createdAt?: string | null;
 }
 /**
- * Site-wide configuration. Role Gates wire game-roles to access-controlled features.
+ * Access gate + editable copy for the Division 2 tools. Clearing the gate role disables the section for all members.
  *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "settings".
+ * via the `definition` "division2".
  */
-export interface Setting {
+export interface Division2 {
   id: string;
-  roleGates?: {
+  gate?: {
     /**
      * Game-roles entry whose Discord roles grant access to /division-2. Clearing this disables the section for everyone.
      */
-    division2Role?: (string | null) | GameRole;
+    role?: (string | null) | GameRole;
   };
-  features?: {};
-  integrations?: {};
+  escalationPage?: {
+    /**
+     * Small mono kicker above the headline. The status token (TODAY / VIEWING) and date are appended automatically.
+     */
+    heroKicker?: string | null;
+    /**
+     * First word of the two-line headline — rendered in white.
+     */
+    heroTitle?: string | null;
+    /**
+     * Second word of the headline — rendered in Division 2 orange with extra glow.
+     */
+    heroAccent?: string | null;
+    /**
+     * Paragraph under the headline.
+     */
+    intro?: string | null;
+    /**
+     * Mono label next to SEC_01.
+     */
+    missionsSectionLabel?: string | null;
+    /**
+     * Mono label next to SEC_02.
+     */
+    cachesSectionLabel?: string | null;
+    /**
+     * Short paragraph under the SEC_02 header explaining the vendor and its location.
+     */
+    cachesBlurb?: string | null;
+    /**
+     * SEC_03 card pointing members at the Discord channel that mirrors the same daily intel. Toggle off to hide the section entirely.
+     */
+    discord?: {
+      /**
+       * Toggle the section without losing its copy.
+       */
+      enabled?: boolean | null;
+      /**
+       * Mono label next to SEC_03.
+       */
+      sectionLabel?: string | null;
+      /**
+       * Section display title.
+       */
+      heading?: string | null;
+      /**
+       * Body paragraph for the SEC_03 card.
+       */
+      body?: string | null;
+      /**
+       * Mono channel reference shown above the CTA.
+       */
+      channelLabel?: string | null;
+      /**
+       * CTA button label.
+       */
+      ctaLabel?: string | null;
+      /**
+       * Discord channel URL (the deep link is what desktop and mobile Discord both honour).
+       */
+      channelUrl?: string | null;
+    };
+    /**
+     * Document title + meta description.
+     */
+    seo?: {
+      title?: string | null;
+      description?: string | null;
+    };
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1581,16 +1649,42 @@ export interface ManifestoSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "settings_select".
+ * via the `definition` "division2_select".
  */
-export interface SettingsSelect<T extends boolean = true> {
-  roleGates?:
+export interface Division2Select<T extends boolean = true> {
+  gate?:
     | T
     | {
-        division2Role?: T;
+        role?: T;
       };
-  features?: T | {};
-  integrations?: T | {};
+  escalationPage?:
+    | T
+    | {
+        heroKicker?: T;
+        heroTitle?: T;
+        heroAccent?: T;
+        intro?: T;
+        missionsSectionLabel?: T;
+        cachesSectionLabel?: T;
+        cachesBlurb?: T;
+        discord?:
+          | T
+          | {
+              enabled?: T;
+              sectionLabel?: T;
+              heading?: T;
+              body?: T;
+              channelLabel?: T;
+              ctaLabel?: T;
+              channelUrl?: T;
+            };
+        seo?:
+          | T
+          | {
+              title?: T;
+              description?: T;
+            };
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

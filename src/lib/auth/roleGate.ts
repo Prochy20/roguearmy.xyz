@@ -27,24 +27,33 @@ function extractRoleSnapshotIds(value: GameRole['roles']): string[] {
 }
 
 /**
+ * Per-key resolver: which global + nested path holds the gate role. Extend
+ * this map when a new game-tool global lands (e.g. `destiny2Role`).
+ */
+const GATE_SOURCES: Record<RoleGateKey, { slug: 'division2'; read: (g: unknown) => unknown }> = {
+  division2Role: {
+    slug: 'division2',
+    read: (g) => (g as { gate?: { role?: unknown } } | null | undefined)?.gate?.role,
+  },
+}
+
+/**
  * Resolve a role gate for the current request.
  *
- * Reads the Settings global (request-scoped via React.cache) and intersects
- * the configured game-roles entry's Discord-role snapshot against the
- * member's raw `guildMember.roles` exposed by `getMemberAuth`. No Ashley
+ * Reads the relevant game-tool global (request-scoped via React.cache) and
+ * intersects its configured game-roles entry's Discord-role snapshot against
+ * the member's raw `guildMember.roles` exposed by `getMemberAuth`. No Ashley
  * call — purely a Payload + cached auth read.
  */
 export const checkRoleGate = cache(async (key: RoleGateKey): Promise<{ state: GateState }> => {
   const auth = await getMemberAuth()
   if (!auth.authenticated) return { state: 'anonymous' }
 
+  const source = GATE_SOURCES[key]
   const payload = await getPayload({ config })
-  const settings = await payload.findGlobal({
-    slug: 'settings',
-    depth: 1,
-  })
+  const global = await payload.findGlobal({ slug: source.slug, depth: 1 })
 
-  const gateValue = settings.roleGates?.[key]
+  const gateValue = source.read(global)
   // Unset OR not populated to an object (depth=1 should give us the GameRole doc).
   if (!gateValue || typeof gateValue !== 'object') return { state: 'unconfigured' }
 

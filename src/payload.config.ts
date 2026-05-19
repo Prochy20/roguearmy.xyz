@@ -18,9 +18,9 @@ import { Articles } from './collections/Articles'
 import { ReadProgress } from './collections/ReadProgress'
 import { Bookmarks } from './collections/Bookmarks'
 import { StaffProfiles } from './collections/StaffProfiles'
+import { Division2 } from './globals/Division2'
 import { Homepage } from './globals/Homepage'
 import { Manifesto } from './globals/Manifesto'
-import { Settings } from './globals/Settings'
 import { StaffPage } from './globals/StaffPage'
 import { CalloutBlock, CodeBlock, MermaidBlock, SocialEmbedBlock, TrelloCardBlock, VideoEmbedBlock } from './blocks'
 
@@ -70,7 +70,7 @@ export default buildConfig({
   // ordered before Manifesto so it sits right next to its sibling collection
   // (Staff Profiles) in the admin sidebar.
   collections: [Articles, Series, Games, GameRoles, Topics, ContentTypes, StaffProfiles, Media, Users, Members, ReadProgress, Bookmarks],
-  globals: [Homepage, StaffPage, Manifesto, Settings],
+  globals: [Homepage, StaffPage, Manifesto, Division2],
   editor: lexicalEditor({
     features: ({ defaultFeatures }) => [
       ...defaultFeatures,
