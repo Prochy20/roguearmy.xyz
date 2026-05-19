@@ -17,10 +17,11 @@ export const metadata = {
     'A casual gaming community for adults across South Africa, the UK, and Europe. Drama-free, no skill gates, no engagement metrics — just the people, by the numbers.',
 }
 
-// Per-request fresh data: the stats DTO carries a generatedAt timestamp the
-// hero shows, so static caching would lie. Next.js will still SSR each visit;
-// adjust to revalidate when metrics tolerate staleness.
-export const dynamic = 'force-dynamic'
+// Dynamic rendering is already forced by the cookie-based auth read in
+// getMemberAuth(), so an explicit `force-dynamic` is redundant. Leaving it
+// off means individual fetch() calls inside the render are uncached by
+// default (Next 15 behavior) — exactly what we want for the live stats DTO
+// without disabling caching globally.
 
 export default async function CommunityPage() {
   const [stats, auth] = await Promise.all([
