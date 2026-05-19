@@ -1,5 +1,6 @@
 import { FailRow } from '@/components/shared/FailRow'
 import { HeroGlitch } from '@/components/effects/HeroGlitch'
+import { GlitchOnChange } from '@/components/effects/GlitchOnChange'
 import { StatRibbon } from '@/components/shared/StatRibbon'
 import { ContentFilterChips } from './ContentFilterChips'
 import { ContentFeed } from './ContentFeed'
@@ -8,7 +9,6 @@ import type { AshleyResult } from '@/lib/api/server'
 import type { ContentList, ContentSource } from '@/lib/division2/content.server'
 import type { Division2 } from '@/payload-types'
 
-/** Map minRelevance numeric tier → SCAN/TRACE/LOCK label for the StatRibbon. */
 function modeLabelFor(min: number): string {
   if (min >= 5) return 'LOCK'
   if (min >= 4) return 'TRACE'
@@ -18,16 +18,11 @@ function modeLabelFor(min: number): string {
 type ContentPageContent = NonNullable<Division2['contentPage']>
 
 interface ContentPageProps {
-  /** First-batch fetch result for the active filter. */
   initial: AshleyResult<ContentList>
-  /** Active source filter (undefined = "All"). */
   source: ContentSource | undefined
-  /** Active minimum relevance score (3 / 4 / 5). */
   minRelevance: number
-  /** Page size — passed to the client feed so loadMore uses the same value. */
   limit: number
-  /** Editable copy sourced from the Division 2 global. Fields fall back to
-   *  built-in defaults if the admin clears them, so the page never goes blank. */
+  /** Falls back to built-in defaults when the admin clears a field. */
   content: ContentPageContent | null | undefined
 }
 
@@ -45,24 +40,9 @@ const DEFAULTS = {
   endOfFeedLabel: '// END OF FEED · {COUNT} ITEMS',
 } as const
 
-/**
- * Server component. Lays out the content firehose page: hero header,
- * source filter chips, then either an inline FailRow (if Ashley failed),
- * an empty-state copy (if Ashley returned zero items), or the client-side
- * ContentFeed (which appends batches as the user scrolls).
- *
- * Hero + filter chips stay rendered even on failure — so the user can
- * still switch source filters and try again without losing context. This
- * is why the FailRow goes inline in the grid area, not as a full-page
- * replacement.
- */
-export function ContentPage({
-  initial,
-  source,
-  minRelevance,
-  limit,
-  content,
-}: ContentPageProps) {
+/** Hero + filter chips stay rendered on failure so the user can re-filter
+ *  without losing context — that's why FailRow renders inline, not full-page. */
+export function ContentPage({ initial, source, minRelevance, limit, content }: ContentPageProps) {
   const heroKicker = content?.heroKicker?.trim() || DEFAULTS.heroKicker
   const heroTitle = content?.heroTitle?.trim() || DEFAULTS.heroTitle
   const heroAccent = content?.heroAccent?.trim() || DEFAULTS.heroAccent
@@ -75,9 +55,7 @@ export function ContentPage({
 
   const sourceLabel = source ?? 'ALL'
   const modeLabel = modeLabelFor(minRelevance)
-  const itemsValue = initial.ok
-    ? `${initial.data.items.length}/${initial.data.total}`
-    : '—'
+  const itemsValue = initial.ok ? `${initial.data.items.length}/${initial.data.total}` : '—'
 
   return (
     <Shell>
@@ -90,9 +68,7 @@ export function ContentPage({
             { label: 'ITEMS', value: itemsValue, accent: 'mod' },
           ]}
           pill={
-            initial.ok
-              ? { text: 'LIVE', ok: true, accent: 'mod' }
-              : { text: 'OFFLINE', ok: false }
+            initial.ok ? { text: 'LIVE', ok: true, accent: 'mod' } : { text: 'OFFLINE', ok: false }
           }
         />
 
@@ -126,8 +102,7 @@ export function ContentPage({
               <span
                 className="text-rga-mod"
                 style={{
-                  textShadow:
-                    '0 0 36px rgba(255,128,0,0.45), 0 0 80px rgba(255,128,0,0.18)',
+                  textShadow: '0 0 36px rgba(255,128,0,0.45), 0 0 80px rgba(255,128,0,0.18)',
                 }}
               >
                 {heroAccent}
@@ -140,21 +115,10 @@ export function ContentPage({
           </p>
         </div>
       </header>
-
-      {/*
-        Sticky filter bar — docks at `top-0` (very top of the viewport)
-        co-located with the chrome TopBar (which is `fixed top-0 z-50`).
-        The TopBar's bar area is transparent except for the right-aligned
-        MENU button, so this filter at `z-40` shines through its empty
-        regions while the MENU button (z-50) floats on top-right.
-
-        Content has a generous right pad so the chip row doesn't slide
-        under the MENU button when the row is narrow.
-
-        `-mx-*` + matching `px-*` makes the bar full-bleed despite living
-        inside the page's padded Shell.
-      */}
-      <div className="sticky top-0 z-40 -mx-4 border-b border-text-muted/15 bg-void/90 px-4 backdrop-blur-md sm:-mx-8 sm:px-8 lg:-mx-16 lg:px-16">
+      <div
+        data-d2-filter-bar
+        className="sticky top-0 z-40 -mx-4 border-b border-text-muted/15 bg-void/90 px-4 backdrop-blur-md sm:-mx-8 sm:px-8 lg:-mx-16 lg:px-16"
+      >
         <div className="pr-24 sm:pr-28 lg:pr-36">
           <ContentFilterChips activeSource={source} activeMin={minRelevance} />
         </div>
@@ -164,9 +128,7 @@ export function ContentPage({
         <div className="flex flex-col gap-3 border-b border-text-muted/15 pb-3">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div className="flex items-center gap-3">
-              <span className="font-mono text-[10px] tracking-[0.4em] text-rga-mod">
-                SEC_03
-              </span>
+              <span className="font-mono text-[10px] tracking-[0.4em] text-rga-mod">SEC_03</span>
               <span className="font-mono text-[10px] tracking-[0.3em] text-text-muted">
                 {feedSectionLabel}
               </span>
@@ -179,9 +141,7 @@ export function ContentPage({
                     {initial.data.items.length}
                   </span>
                   <span className="text-text-muted/70">/</span>
-                  <span className="tabular-nums text-text-secondary">
-                    {initial.data.total}
-                  </span>
+                  <span className="tabular-nums text-text-secondary">{initial.data.total}</span>
                 </span>
                 <span aria-hidden className="h-3 w-px bg-text-muted/20" />
                 <span className="inline-flex items-center gap-1.5 text-rga-mod">
@@ -208,22 +168,18 @@ export function ContentPage({
             returnTo="/division-2/content"
           />
         ) : initial.data.items.length === 0 ? (
-          <EmptyCopy
-            text={
-              source
-                ? substituteTokens(emptyFiltered, { source })
-                : emptyAll
-            }
-          />
+          <EmptyCopy text={source ? substituteTokens(emptyFiltered, { source }) : emptyAll} />
         ) : (
-          <ContentFeed
-            key={`${source ?? 'all'}-${minRelevance}`}
-            initial={initial.data}
-            source={source}
-            minRelevance={minRelevance}
-            limit={limit}
-            endOfFeedLabel={endOfFeedLabel}
-          />
+          <GlitchOnChange triggerKey={`${source ?? 'all'}-${minRelevance}`}>
+            <ContentFeed
+              key={`${source ?? 'all'}-${minRelevance}`}
+              initial={initial.data}
+              source={source}
+              minRelevance={minRelevance}
+              limit={limit}
+              endOfFeedLabel={endOfFeedLabel}
+            />
+          </GlitchOnChange>
         )}
       </section>
     </Shell>
@@ -233,10 +189,22 @@ export function ContentPage({
 function EmptyCopy({ text }: { text: string }) {
   return (
     <div className="relative flex items-center gap-3 border border-text-muted/25 bg-[rgba(0,0,0,0.4)] px-5 py-8 font-mono text-[11px] uppercase tracking-[0.35em] text-text-secondary">
-      <span aria-hidden className="pointer-events-none absolute -top-px -left-px h-2 w-2 border-l border-t border-text-muted/60" />
-      <span aria-hidden className="pointer-events-none absolute -top-px -right-px h-2 w-2 border-r border-t border-text-muted/60" />
-      <span aria-hidden className="pointer-events-none absolute -bottom-px -left-px h-2 w-2 border-b border-l border-text-muted/60" />
-      <span aria-hidden className="pointer-events-none absolute -bottom-px -right-px h-2 w-2 border-b border-r border-text-muted/60" />
+      <span
+        aria-hidden
+        className="pointer-events-none absolute -top-px -left-px h-2 w-2 border-l border-t border-text-muted/60"
+      />
+      <span
+        aria-hidden
+        className="pointer-events-none absolute -top-px -right-px h-2 w-2 border-r border-t border-text-muted/60"
+      />
+      <span
+        aria-hidden
+        className="pointer-events-none absolute -bottom-px -left-px h-2 w-2 border-b border-l border-text-muted/60"
+      />
+      <span
+        aria-hidden
+        className="pointer-events-none absolute -bottom-px -right-px h-2 w-2 border-b border-r border-text-muted/60"
+      />
       <span aria-hidden className="inline-block h-2 w-2 rounded-[1px] bg-text-muted/60" />
       <span>{text}</span>
     </div>
