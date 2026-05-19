@@ -1,4 +1,5 @@
 import { CyberCorners } from '@/components/ui/CyberCorners'
+import { GlitchOnChange } from '@/components/effects/GlitchOnChange'
 import { LootIcon } from './LootIcon'
 import { SpecimenFrame } from './SpecimenFrame'
 import type {
@@ -12,6 +13,8 @@ interface PrototypeCachesProps {
   sectionLabel?: string
   /** Body paragraph under the section header describing the vendor + location. */
   blurb?: string
+  /** Optional day key. Changing it fires the inner glitch transition. */
+  glitchKey?: string
 }
 
 /**
@@ -20,7 +23,12 @@ interface PrototypeCachesProps {
  * sheet on the right. The vendor sells one gear-slot cache and one
  * weapon-class cache per day, independent of mission/loot pairings.
  */
-export function PrototypeCaches({ caches, sectionLabel, blurb }: PrototypeCachesProps) {
+export function PrototypeCaches({
+  caches,
+  sectionLabel,
+  blurb,
+  glitchKey,
+}: PrototypeCachesProps) {
   const label =
     sectionLabel?.trim() || '// ESCALATION VENDOR · PROTOTYPE CACHES'
   const blurbText = blurb?.trim() ?? ''
@@ -45,10 +53,12 @@ export function PrototypeCaches({ caches, sectionLabel, blurb }: PrototypeCaches
           </p>
         )}
       </header>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <CacheCard kind="GEAR" loot={caches?.gear ?? null} />
-        <CacheCard kind="WEAPON" loot={caches?.weapon ?? null} />
-      </div>
+      <GlitchOnChange triggerKey={glitchKey ?? ''}>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <CacheCard kind="GEAR" loot={caches?.gear ?? null} />
+          <CacheCard kind="WEAPON" loot={caches?.weapon ?? null} />
+        </div>
+      </GlitchOnChange>
     </section>
   )
 }

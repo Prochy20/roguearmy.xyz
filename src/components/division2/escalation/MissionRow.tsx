@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { CyberCorners } from '@/components/ui/CyberCorners'
+import { GlitchOnChange } from '@/components/effects/GlitchOnChange'
 import { LootIcon } from './LootIcon'
 import { SpecimenFrame } from './SpecimenFrame'
 import {
@@ -64,6 +65,7 @@ export function MissionRow({
       </header>
 
       <CyberCorners color="mod" size="md">
+        <GlitchOnChange triggerKey={selectedDay ?? ''}>
         <ul className="flex flex-col border border-rga-mod/15 bg-[rgba(0,0,0,0.5)]">
           {missions.map((mission, idx) => {
             const dayLoot = dayLootByPosition?.get(mission.position)
@@ -124,6 +126,7 @@ export function MissionRow({
             )
           })}
         </ul>
+        </GlitchOnChange>
       </CyberCorners>
     </section>
   )
@@ -193,6 +196,7 @@ function DayStepperBar({ stepper }: { stepper: StepperState }) {
         <Link
           href={stepper.today.href}
           scroll={false}
+          prefetch={false}
           aria-label="Jump to today"
           className="inline-flex h-9 items-center justify-center border border-rga-mod/40 bg-rga-mod/10 px-3 font-mono text-[10px] tracking-[0.3em] text-rga-mod transition-colors hover:border-rga-mod/80 hover:bg-rga-mod/20"
         >
@@ -228,6 +232,7 @@ function StepArrow({
     <Link
       href={target.href}
       scroll={false}
+      prefetch={false}
       aria-label={`${srLabel} · ${target.label}`}
       className="inline-flex h-9 w-9 items-center justify-center border border-rga-mod/25 bg-[rgba(0,0,0,0.4)] text-rga-mod transition-colors hover:border-rga-mod/70 hover:bg-rga-mod/10"
     >
