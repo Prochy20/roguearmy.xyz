@@ -3,7 +3,8 @@ import Image from 'next/image'
 import { getMemberAuth } from '@/lib/auth/session.server'
 import { getAshleyAccessCookie } from '@/lib/auth/cookies'
 import { getDiscordAvatarUrl } from '@/lib/auth/discord'
-import { fetchAshleyUser, type AshleyResult, type AshleyErrorCode } from '@/lib/api/server'
+import { fetchAshleyUser, type AshleyResult } from '@/lib/api/server'
+import { FailRow } from '@/components/shared/FailRow'
 import { CyberCorners, CyberTag } from '@/components/ui/CyberCorners'
 import { CountUp } from '@/components/shared/CountUp'
 import { TierBand } from '@/components/community/leaderboard/formation/TierBand'
@@ -282,7 +283,7 @@ function ProgressionBand({ level }: { level: AshleyResult<AshleyLevel> }) {
     return (
       <div className="flex flex-col gap-3 border-t border-[rgba(255,255,255,0.08)] pt-8">
         <div className="font-mono text-[10px] tracking-[0.3em] text-text-muted">PROGRESSION</div>
-        <FailRow code={level.error.code} status={level.error.status} />
+        <FailRow code={level.error.code} status={level.error.status} returnTo="/me" />
       </div>
     )
   }
@@ -344,7 +345,7 @@ function normalizeLabel(value: unknown): string | null {
 
 function RoleStrip({ ashleyMe }: { ashleyMe: AshleyResult<AshleyMe> }) {
   if (!ashleyMe.ok) {
-    return <FailRow code={ashleyMe.error.code} status={ashleyMe.error.status} />
+    return <FailRow code={ashleyMe.error.code} status={ashleyMe.error.status} returnTo="/me" />
   }
 
   const roles = ashleyMe.data.user.discordRoles
@@ -374,40 +375,6 @@ function RoleStrip({ ashleyMe }: { ashleyMe: AshleyResult<AshleyMe> }) {
         </li>
       ))}
     </ul>
-  )
-}
-
-function FailRow({ code, status }: { code: AshleyErrorCode; status?: number }) {
-  let message: string
-  let action: { href: string; label: string } | null = null
-
-  switch (code) {
-    case 'unauthenticated':
-      message = 'ASHLEY SESSION NOT ESTABLISHED'
-      action = { href: '/auth/login?returnTo=/me', label: 'RE-LOGIN' }
-      break
-    case 'unauthorized':
-      message = 'SESSION EXPIRED — TOKENS NEED A REFRESH'
-      action = { href: '/auth/login?returnTo=/me', label: 'RE-LOGIN' }
-      break
-    case 'unavailable':
-      message = `UPSTREAM UNREACHABLE${status ? ` — CODE ${status}` : ''} — RETRY MOMENTARILY`
-      break
-    default:
-      message = `REQUEST REJECTED — CODE ${status ?? '?'}`
-      break
-  }
-
-  return (
-    <div className="flex flex-wrap items-center gap-3 border border-[rgba(255,0,255,0.25)] bg-[rgba(255,0,255,0.03)] px-4 py-3 font-mono text-[11px] uppercase tracking-[0.25em] text-rga-magenta">
-      <span aria-hidden className="inline-block h-2 w-2 rounded-[1px] bg-rga-magenta shadow-[0_0_8px_#FF00FF]" />
-      <span>// {message}</span>
-      {action && (
-        <a href={action.href} className="ml-auto underline underline-offset-4 transition-colors hover:text-text-primary">
-          {action.label} →
-        </a>
-      )}
-    </div>
   )
 }
 
