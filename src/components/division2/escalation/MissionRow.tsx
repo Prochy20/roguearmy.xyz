@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { CyberCorners } from '@/components/ui/CyberCorners'
 import { GlitchOnChange } from '@/components/effects/GlitchOnChange'
 import { LootIcon } from './LootIcon'
@@ -214,7 +215,7 @@ function StepArrow({
   direction: 'prev' | 'next'
   target: { href: string; label: string } | null
 }) {
-  const glyph = direction === 'prev' ? '←' : '→'
+  const Icon = direction === 'prev' ? ChevronLeft : ChevronRight
   const srLabel = direction === 'prev' ? 'Previous day' : 'Next day'
 
   if (!target) {
@@ -223,7 +224,7 @@ function StepArrow({
         aria-hidden
         className="inline-flex h-9 w-9 items-center justify-center border border-rga-mod/10 bg-[rgba(0,0,0,0.4)] text-rga-mod/30"
       >
-        {glyph}
+        <Icon className="h-4 w-4" strokeWidth={1.5} />
       </span>
     )
   }
@@ -236,7 +237,7 @@ function StepArrow({
       aria-label={`${srLabel} · ${target.label}`}
       className="inline-flex h-9 w-9 items-center justify-center border border-rga-mod/25 bg-[rgba(0,0,0,0.4)] text-rga-mod transition-colors hover:border-rga-mod/70 hover:bg-rga-mod/10"
     >
-      {glyph}
+      <Icon className="h-4 w-4" strokeWidth={1.5} />
     </Link>
   )
 }

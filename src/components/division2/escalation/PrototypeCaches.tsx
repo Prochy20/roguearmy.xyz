@@ -70,7 +70,7 @@ function CacheCard({ kind, loot }: { kind: 'GEAR' | 'WEAPON'; loot: EscalationLo
         {/* Hero: specimen frame holding the cache icon */}
         <div className="w-[120px] shrink-0 sm:w-[140px] lg:w-[160px]">
           <SpecimenFrame color="cyan" pending={!loot} padPx={18}>
-            {loot && <LootIcon slug={loot.slug} name={loot.name} size={112} />}
+            {loot && <LootIcon slug={loot.slug} name={loot.name} size={88} />}
           </SpecimenFrame>
         </div>
 
