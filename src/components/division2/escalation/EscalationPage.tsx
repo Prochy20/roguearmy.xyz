@@ -115,15 +115,15 @@ export function EscalationPage({ daily, week, targetDay, content }: EscalationPa
             {
               label: 'DAY',
               value: formatDayWithWeekday(resolvedDay).toUpperCase(),
-              accent: 'mod',
+              accent: 'green',
             },
-            { label: 'MISSIONS', value: missions.length || '—', accent: 'mod' },
+            { label: 'MISSIONS', value: missions.length || '—', accent: 'green' },
             { label: 'SYNCED', value: syncedLabel },
           ]}
           pill={
             isStale
               ? { text: 'STALE', ok: false }
-              : { text: statusToken, ok: true, accent: 'mod' }
+              : { text: statusToken, ok: true, accent: 'green' }
           }
         />
 

@@ -108,7 +108,7 @@ function buildDesignator(prefix: string, sourceId: string): string {
  */
 export function ContentCard({ article, now }: ContentCardProps) {
   const cls = SOURCE_CARD_CLASSES[article.source]
-  const summary = article.aiSummary || article.perex
+  const summary = article.perex
   const author = article.authors[0]
   const timeago = formatTimeago(article.publishedAt, now)
   const contentType = article.contentType?.toUpperCase()

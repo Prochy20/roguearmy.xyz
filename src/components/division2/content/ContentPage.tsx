@@ -63,12 +63,12 @@ export function ContentPage({ initial, source, minRelevance, limit, content }: C
         <StatRibbon
           prefix="// CONTENT FEED"
           fields={[
-            { label: 'SOURCE', value: sourceLabel, accent: 'mod' },
-            { label: 'MODE', value: modeLabel, accent: 'mod' },
-            { label: 'ITEMS', value: itemsValue, accent: 'mod' },
+            { label: 'SOURCE', value: sourceLabel, accent: 'green' },
+            { label: 'MODE', value: modeLabel, accent: 'green' },
+            { label: 'ITEMS', value: itemsValue, accent: 'green' },
           ]}
           pill={
-            initial.ok ? { text: 'LIVE', ok: true, accent: 'mod' } : { text: 'OFFLINE', ok: false }
+            initial.ok ? { text: 'LIVE', ok: true, accent: 'green' } : { text: 'OFFLINE', ok: false }
           }
         />
 
