@@ -1,3 +1,5 @@
+import type { RoleGateKey } from '@/lib/auth/roleGate.types'
+
 export interface NavSubLink {
   label: string
   href: string
@@ -11,6 +13,12 @@ export interface NavItem {
   available: boolean
   /** When true, hide this entry for visitors who aren't signed in. */
   requiresAuth?: boolean
+  /**
+   * When set, hide this entry unless the resolved gate for the given Settings
+   * key is `allowed`. Lookup happens client-side against the `roleGates` map
+   * threaded through the auth context.
+   */
+  requiresRole?: RoleGateKey
   sub: readonly NavSubLink[]
 }
 
@@ -47,5 +55,14 @@ export const NAV: readonly NavItem[] = [
       { label: 'Privacy', href: '/manifesto#privacy', available: true },
       { label: 'Terms', href: '/manifesto#terms', available: true },
     ],
+  },
+  {
+    label: 'DIVISION 2',
+    href: '/division-2/escalation',
+    blurb: 'Active operatives only · escalation, loot, tools',
+    available: true,
+    requiresAuth: true,
+    requiresRole: 'division2Role',
+    sub: [{ label: 'Escalation', href: '/division-2/escalation', available: true }],
   },
 ] as const

@@ -2,8 +2,15 @@
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import type { AuthState, MemberSession } from '@/lib/auth/types'
+import type { RoleGateMap } from '@/lib/auth/roleGate.types'
 
 interface AuthContextType extends AuthState {
+  /**
+   * Resolved role-gate states keyed by Settings field (e.g. `division2Role`).
+   * Computed server-side once per request and threaded through `initialState`
+   * to avoid a flash of un-gated nav on first paint.
+   */
+  roleGates: RoleGateMap
   logout: () => Promise<void>
   refresh: () => Promise<void>
 }
@@ -19,6 +26,7 @@ interface AuthProviderProps {
   initialState?: {
     isAuthenticated: boolean
     member: MemberSession | null
+    roleGates?: RoleGateMap
   }
 }
 
@@ -40,6 +48,8 @@ export function AuthProvider({ children, initialState }: AuthProviderProps) {
     }
   })
 
+  const [roleGates, setRoleGates] = useState<RoleGateMap>(() => initialState?.roleGates ?? {})
+
   const fetchSession = async () => {
     try {
       const response = await fetch('/api/auth/me')
@@ -50,12 +60,14 @@ export function AuthProvider({ children, initialState }: AuthProviderProps) {
         isLoading: false,
         member: data.member as MemberSession | null,
       })
+      if (data.roleGates) setRoleGates(data.roleGates as RoleGateMap)
     } catch {
       setState({
         isAuthenticated: false,
         isLoading: false,
         member: null,
       })
+      setRoleGates({})
     }
   }
 
@@ -80,7 +92,7 @@ export function AuthProvider({ children, initialState }: AuthProviderProps) {
   }, [initialState])
 
   return (
-    <AuthContext.Provider value={{ ...state, logout, refresh }}>
+    <AuthContext.Provider value={{ ...state, roleGates, logout, refresh }}>
       {children}
     </AuthContext.Provider>
   )

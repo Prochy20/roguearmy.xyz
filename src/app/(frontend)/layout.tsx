@@ -7,6 +7,12 @@ import { ScanlineOverlay } from '@/components/effects/ScanlineOverlay'
 import { MenuProvider } from '@/components/shared/header/MenuContext'
 import { AuthProvider } from '@/components/auth/AuthProvider'
 import { getJwtSession } from '@/lib/auth/session.server'
+import { checkRoleGate, type RoleGateKey } from '@/lib/auth/roleGate'
+import type { RoleGateMap } from '@/lib/auth/roleGate.types'
+
+// Keys here are evaluated for every authenticated request to populate the
+// AuthProvider's `roleGates` map. Extend as new gated nav entries land.
+const NAV_ROLE_GATE_KEYS: RoleGateKey[] = ['division2Role']
 
 const siteUrl = 'https://roguearmy.xyz'
 
@@ -109,10 +115,22 @@ export default async function FrontendLayout(props: { children: React.ReactNode 
   // which is fine for chrome rendering. The profile page reads fresh values via getMemberAuth.
   const session = await getJwtSession()
 
+  // Resolve role gates server-side so the nav doesn't flash between paint and
+  // first /api/auth/me round-trip. Anonymous sessions skip the gate entirely
+  // (every key resolves to 'anonymous' without hitting the DB).
+  const roleGates: RoleGateMap = {}
+  if (session) {
+    const results = await Promise.all(
+      NAV_ROLE_GATE_KEYS.map(async (key) => [key, await checkRoleGate(key)] as const),
+    )
+    for (const [key, gate] of results) roleGates[key] = gate.state
+  }
+
   const initialAuthState = session
     ? {
         isAuthenticated: true,
         member: session,
+        roleGates,
       }
     : undefined
 

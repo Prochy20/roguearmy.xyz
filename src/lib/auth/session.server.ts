@@ -38,6 +38,12 @@ export interface MemberAuthResult {
   } | null
   /** Symbolic roles (post-sync if a refresh just happened, else last-known). */
   symbolicRoles: SymbolicRole[]
+  /**
+   * Raw Discord role snowflake IDs from `guildMember.roles`. Used by
+   * `checkRoleGate` to intersect against game-roles snapshots — kept here so
+   * the gate is a pure derived check off the cached auth result.
+   */
+  discordRoleIds: string[]
   primaryBadge: PrimaryBadge
   isBooster: boolean
   reason?: 'not_authenticated' | 'banned' | 'left_server' | 'error'
@@ -45,8 +51,18 @@ export interface MemberAuthResult {
 
 const EMPTY_BADGE_FIELDS = {
   symbolicRoles: [] as SymbolicRole[],
+  discordRoleIds: [] as string[],
   primaryBadge: 'MEMBER' as PrimaryBadge,
   isBooster: false,
+}
+
+function normalizeDiscordRoleIds(input: unknown): string[] {
+  if (!Array.isArray(input)) return []
+  const out: string[] = []
+  for (const value of input) {
+    if (typeof value === 'string' && value.length > 0) out.push(value)
+  }
+  return out
 }
 
 /**
@@ -127,6 +143,7 @@ export const getMemberAuth = cache(async (): Promise<MemberAuthResult> => {
 
     const primaryBadge = pickPrimaryBadge(symbolicRoles)
     const isBooster = hasBoosterDecoration(symbolicRoles)
+    const discordRoleIds = normalizeDiscordRoleIds(member.guildMember?.roles)
 
     if (effectiveStatus === 'banned') {
       return {
@@ -135,6 +152,7 @@ export const getMemberAuth = cache(async (): Promise<MemberAuthResult> => {
         status: effectiveStatus,
         member: null,
         symbolicRoles,
+        discordRoleIds,
         primaryBadge,
         isBooster,
         reason: 'banned',
@@ -148,6 +166,7 @@ export const getMemberAuth = cache(async (): Promise<MemberAuthResult> => {
         status: effectiveStatus,
         member: null,
         symbolicRoles,
+        discordRoleIds,
         primaryBadge,
         isBooster,
         reason: 'left_server',
@@ -161,6 +180,7 @@ export const getMemberAuth = cache(async (): Promise<MemberAuthResult> => {
         status: effectiveStatus,
         member: null,
         symbolicRoles,
+        discordRoleIds,
         primaryBadge,
         isBooster,
         reason: 'banned',
@@ -180,6 +200,7 @@ export const getMemberAuth = cache(async (): Promise<MemberAuthResult> => {
         joinedAt: member.joinedAt ?? null,
       },
       symbolicRoles,
+      discordRoleIds,
       primaryBadge,
       isBooster,
     }

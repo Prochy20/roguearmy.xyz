@@ -14,7 +14,7 @@ import { useMenu } from './MenuContext'
 const HIDE_TOPBAR_PREFIXES = ['/blog']
 
 export function Header() {
-  const { member, logout } = useAuth()
+  const { member, logout, roleGates } = useAuth()
   const { isOpen, open, close, setOpen } = useMenu()
   const pathname = usePathname()
   const lastPathnameRef = useRef(pathname)
@@ -72,7 +72,7 @@ export function Header() {
           </div>
 
           <div className="relative z-[1] flex flex-col flex-1 px-7 pb-7 overflow-y-auto">
-            <NavCenteredStack onNavigate={close} isLoggedIn={Boolean(member)} />
+            <NavCenteredStack onNavigate={close} isLoggedIn={Boolean(member)} roleGates={roleGates} />
             <div className="flex-1" />
             <BottomRail member={member} onLogout={logout} />
           </div>

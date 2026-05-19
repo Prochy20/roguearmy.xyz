@@ -3,14 +3,20 @@
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { NAV, type NavItem, type NavSubLink } from './nav-data'
+import type { RoleGateMap } from '@/lib/auth/roleGate.types'
 
 interface NavCenteredStackProps {
   onNavigate: () => void
   isLoggedIn: boolean
+  roleGates: RoleGateMap
 }
 
-export function NavCenteredStack({ onNavigate, isLoggedIn }: NavCenteredStackProps) {
-  const items = NAV.filter((item) => !item.requiresAuth || isLoggedIn)
+export function NavCenteredStack({ onNavigate, isLoggedIn, roleGates }: NavCenteredStackProps) {
+  const items = NAV.filter((item) => {
+    if (item.requiresAuth && !isLoggedIn) return false
+    if (item.requiresRole && roleGates[item.requiresRole] !== 'allowed') return false
+    return true
+  })
   return (
     <div className="flex flex-col items-center px-8 md:px-20 pt-12 pb-6">
       <ul className="flex flex-col items-center" style={{ gap: 6 }}>
