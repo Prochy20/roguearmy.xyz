@@ -114,6 +114,19 @@
   --color-glow-green: rgba(0, 255, 65, 0.5);
   --color-glow-cyan: rgba(0, 255, 255, 0.5);
   --color-glow-magenta: rgba(255, 0, 255, 0.5);
+  --color-glow-orange: rgba(255, 128, 0, 0.5);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     SOURCE BRAND COLORS — used on the /division-2/content firehose cards
+     and filter chips. Tuned slightly toward neon to fit the cyberpunk
+     palette while staying recognizable as each platform's brand.
+     ───────────────────────────────────────────────────────────────────────── */
+  --color-source-youtube: #ff0040;
+  --color-source-reddit: #ff4500;
+  --color-source-ubisoft: #00a1fb;
+  --color-glow-source-youtube: rgba(255, 0, 64, 0.5);
+  --color-glow-source-reddit: rgba(255, 69, 0, 0.5);
+  --color-glow-source-ubisoft: rgba(0, 161, 251, 0.5);
 
   /* ─────────────────────────────────────────────────────────────────────────
      CUSTOM FONTS
@@ -425,6 +438,30 @@
     box-shadow:
       0 0 20px var(--color-glow-magenta),
       0 0 40px var(--color-glow-magenta);
+  }
+
+  .glow-orange {
+    box-shadow:
+      0 0 20px var(--color-glow-orange),
+      0 0 40px var(--color-glow-orange);
+  }
+
+  .glow-source-youtube {
+    box-shadow:
+      0 0 20px var(--color-glow-source-youtube),
+      0 0 40px var(--color-glow-source-youtube);
+  }
+
+  .glow-source-reddit {
+    box-shadow:
+      0 0 20px var(--color-glow-source-reddit),
+      0 0 40px var(--color-glow-source-reddit);
+  }
+
+  .glow-source-ubisoft {
+    box-shadow:
+      0 0 20px var(--color-glow-source-ubisoft),
+      0 0 40px var(--color-glow-source-ubisoft);
   }
 
   /* Gradient Text */

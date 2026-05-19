@@ -26,10 +26,20 @@ const nextConfig = {
   images: {
     formats: ['image/avif', 'image/webp'],
     remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'images.unsplash.com',
-      },
+      { protocol: 'https', hostname: 'images.unsplash.com' },
+      // YouTube thumbnails (Division 2 content feed)
+      { protocol: 'https', hostname: 'i.ytimg.com' },
+      { protocol: 'https', hostname: 'i9.ytimg.com' },
+      { protocol: 'https', hostname: 'yt3.ggpht.com' },
+      // Reddit thumbnails — most are blocked by hotlink protection, the
+      // ContentCard uses `unoptimized` for Reddit so these are mostly
+      // belt-and-suspenders.
+      { protocol: 'https', hostname: 'i.redd.it' },
+      { protocol: 'https', hostname: 'preview.redd.it' },
+      { protocol: 'https', hostname: 'g.redd.it' },
+      { protocol: 'https', hostname: 'external-preview.redd.it' },
+      // Ubisoft news thumbnails (Contentful CDN, confirmed via Ashley probe).
+      { protocol: 'https', hostname: 'images.ctfassets.net' },
     ],
   },
 
