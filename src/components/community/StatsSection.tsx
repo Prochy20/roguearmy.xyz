@@ -26,8 +26,7 @@ const COMMITMENTS = [
 const TONE_CLASS: Record<'green' | 'cyan' | 'magenta', string> = {
   green: 'text-rga-green border-rga-green/40 [text-shadow:0_0_18px_rgba(0,255,65,0.45)]',
   cyan: 'text-rga-cyan border-rga-cyan/40 [text-shadow:0_0_18px_rgba(0,255,255,0.45)]',
-  magenta:
-    'text-rga-magenta border-rga-magenta/40 [text-shadow:0_0_18px_rgba(255,0,255,0.45)]',
+  magenta: 'text-rga-magenta border-rga-magenta/40 [text-shadow:0_0_18px_rgba(255,0,255,0.45)]',
 }
 
 const CELL_TONE: Record<'green' | 'cyan' | 'magenta', string> = {

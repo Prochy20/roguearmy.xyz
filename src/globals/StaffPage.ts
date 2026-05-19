@@ -76,7 +76,8 @@ export const StaffPage: GlobalConfig = {
   },
   admin: {
     group: 'Content',
-    description: 'All copy + content for the /community/staff page. Roster operatives live in the Staff Profiles collection.',
+    description:
+      'All copy + content for the /community/staff page. Roster operatives live in the Staff Profiles collection.',
   },
   fields: [
     {
@@ -103,7 +104,9 @@ export const StaffPage: GlobalConfig = {
               name: 'midLine',
               type: 'text',
               defaultValue: 'HOLDS',
-              admin: { description: 'Middle word of the headline — rendered in cyan with extra glow.' },
+              admin: {
+                description: 'Middle word of the headline — rendered in cyan with extra glow.',
+              },
             },
             {
               name: 'postLine',
@@ -202,7 +205,10 @@ export const StaffPage: GlobalConfig = {
                       name: 'label',
                       type: 'text',
                       defaultValue: 'OFF_MANIFEST.LOG',
-                      admin: { description: 'Header label at the top of the readout (e.g. a fake filename).' },
+                      admin: {
+                        description:
+                          'Header label at the top of the readout (e.g. a fake filename).',
+                      },
                     },
                     {
                       name: 'entries',
@@ -372,7 +378,8 @@ export const StaffPage: GlobalConfig = {
                 },
               ],
               admin: {
-                description: 'Contact lanes shown side-by-side. Three by default — Tickets / DM / Tag. Add more if you grow new channels.',
+                description:
+                  'Contact lanes shown side-by-side. Three by default — Tickets / DM / Tag. Add more if you grow new channels.',
                 initCollapsed: false,
               },
               fields: [
@@ -404,7 +411,10 @@ export const StaffPage: GlobalConfig = {
                       name: 'toneLabel',
                       type: 'text',
                       required: true,
-                      admin: { width: '50%', description: 'Mono label at the top of the card (e.g. "FORMAL").' },
+                      admin: {
+                        width: '50%',
+                        description: 'Mono label at the top of the card (e.g. "FORMAL").',
+                      },
                     },
                     {
                       name: 'title',
@@ -418,7 +428,9 @@ export const StaffPage: GlobalConfig = {
                   name: 'hint',
                   type: 'text',
                   required: true,
-                  admin: { description: 'Short mono channel reference (e.g. "#open-a-ticket", "@handle").' },
+                  admin: {
+                    description: 'Short mono channel reference (e.g. "#open-a-ticket", "@handle").',
+                  },
                 },
                 {
                   name: 'body',
@@ -432,12 +444,19 @@ export const StaffPage: GlobalConfig = {
                     {
                       name: 'href',
                       type: 'text',
-                      admin: { width: '70%', description: 'Optional outbound URL. When set, the lane gets an "OPEN CHANNEL" CTA pill at the bottom.' },
+                      admin: {
+                        width: '70%',
+                        description:
+                          'Optional outbound URL. When set, the lane gets an "OPEN CHANNEL" CTA pill at the bottom.',
+                      },
                     },
                     {
                       name: 'ctaLabel',
                       type: 'text',
-                      admin: { width: '30%', description: 'CTA pill label. Defaults to "OPEN CHANNEL" if blank.' },
+                      admin: {
+                        width: '30%',
+                        description: 'CTA pill label. Defaults to "OPEN CHANNEL" if blank.',
+                      },
                     },
                   ],
                 },
@@ -559,13 +578,19 @@ export const StaffPage: GlobalConfig = {
                       name: 'channel',
                       type: 'text',
                       required: true,
-                      admin: { width: '60%', description: 'Channel description (e.g. "Open a ticket").' },
+                      admin: {
+                        width: '60%',
+                        description: 'Channel description (e.g. "Open a ticket").',
+                      },
                     },
                     {
                       name: 'channelHint',
                       type: 'text',
                       required: true,
-                      admin: { width: '40%', description: 'Mono channel reference (e.g. "#help").' },
+                      admin: {
+                        width: '40%',
+                        description: 'Mono channel reference (e.g. "#help").',
+                      },
                     },
                   ],
                 },
@@ -581,7 +606,10 @@ export const StaffPage: GlobalConfig = {
                   name: 'response',
                   type: 'text',
                   required: true,
-                  admin: { description: 'Response time expectation (e.g. "Minutes", "Hours · paper trail").' },
+                  admin: {
+                    description:
+                      'Response time expectation (e.g. "Minutes", "Hours · paper trail").',
+                  },
                 },
               ],
             },
@@ -589,7 +617,10 @@ export const StaffPage: GlobalConfig = {
               name: 'groundRulesLabel',
               type: 'text',
               defaultValue: '// GROUND RULES',
-              admin: { description: 'Mono label next to the warning icon in the ground rules strip below the FAQ.' },
+              admin: {
+                description:
+                  'Mono label next to the warning icon in the ground rules strip below the FAQ.',
+              },
             },
             {
               name: 'groundRules',
@@ -602,7 +633,8 @@ export const StaffPage: GlobalConfig = {
                 { tone: 'green', label: 'WE HAVE DAY JOBS' },
               ],
               admin: {
-                description: 'Short pills shown below the FAQ grid, closing out the protocol section.',
+                description:
+                  'Short pills shown below the FAQ grid, closing out the protocol section.',
                 initCollapsed: false,
               },
               fields: [
@@ -651,7 +683,10 @@ export const StaffPage: GlobalConfig = {
               name: 'compiledLabel',
               type: 'text',
               defaultValue: 'COMPILED',
-              admin: { description: 'Prefix before the compiled timestamp (e.g. "COMPILED · 14:32 UTC · 16 MAY").' },
+              admin: {
+                description:
+                  'Prefix before the compiled timestamp (e.g. "COMPILED · 14:32 UTC · 16 MAY").',
+              },
             },
           ],
         },
