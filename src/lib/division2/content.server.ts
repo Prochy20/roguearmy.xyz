@@ -4,36 +4,11 @@ import { unstable_cache } from 'next/cache'
 import { fetchAshleyService, type AshleyResult } from '@/lib/api/server'
 import type { components } from '@/lib/api/schema'
 
-/**
- * Content firehose read helpers.
- *
- * Service-identity Ashley calls (X-API-Key only — no member context needed,
- * the role gate lives at the layout). Each helper wraps `fetchAshleyService`
- * in `unstable_cache` with a tiered TTL:
- *
- *   - offset === 0 ("what's new")        → 5 min
- *   - offset > 0  ("older slices")        → 60 min
- *
- * The cache key version-suffix (`-r3-d2`) bakes the minRelevance floor and
- * topic into the key, so future tuning automatically invalidates entries.
- *
- * The data layer is also the boundary where we *normalize* Ashley's article
- * shape. The generated OpenAPI declares `url`, `thumbnailUrl`, `perex`, etc.
- * as `Record<string, never>` (almost certainly a generator bug — these are
- * nullable strings in live data). The normalizer defensively coerces every
- * unknown-shape field and drops articles where `url` is unrecoverable.
- *
- * Consumers receive the local `ContentArticle` / `ContentList` types, not
- * the raw DTOs — this keeps downstream code typed against the stable shape
- * even if Ashley's generator output changes.
- */
-
 type RawArticle = components['schemas']['ContentArticleDto']
 type RawList = components['schemas']['ContentListDto']
 
 export type ContentSource = 'UBISOFT' | 'REDDIT' | 'YOUTUBE'
 
-/** Normalized article shape — what the rest of the codebase consumes. */
 export interface ContentArticle {
   id: string
   source: ContentSource
@@ -44,7 +19,7 @@ export interface ContentArticle {
   title: string
   perex: string | null
   thumbnailUrl: string | null
-  /** Original URL — never null (articles with unrecoverable URLs are dropped). */
+  /** Never null — articles with unrecoverable URLs are dropped. */
   url: string
   authors: string[]
   tags: string[]
@@ -61,11 +36,10 @@ export interface ContentList {
   offset: number
 }
 
-const HOT_TTL = 5 * 60 // offset 0 — "what's new"
-const WARM_TTL = 60 * 60 // offset > 0 — older slices
-/** Server-side floor — Ashley calls below this never happen, regardless of URL. */
+const HOT_TTL = 5 * 60
+const WARM_TTL = 60 * 60
+/** Ashley calls below this never happen, regardless of URL params. */
 const MIN_RELEVANCE_FLOOR = 3
-/** Default applied when no `?min=` is in the URL — matches the prior bake-in. */
 const DEFAULT_MIN_RELEVANCE = 3
 const TOPIC = 'division-2'
 const DEFAULT_LIMIT = 24
@@ -73,11 +47,7 @@ const VALID_MIN_RELEVANCE = new Set<number>([3, 4, 5])
 
 const VALID_SOURCES = new Set<ContentSource>(['UBISOFT', 'REDDIT', 'YOUTUBE'])
 
-/**
- * Coerce a value that *should* be a URL string but may have arrived as a
- * `{ value }` / `{ href }` wrapper, a string, or null. Returns null if no
- * usable URL can be extracted.
- */
+/** Accepts a string, `{ value }` / `{ href }` / `{ url }` wrapper, or null. */
 function coerceUrl(value: unknown): string | null {
   if (typeof value === 'string') return value.length > 0 ? value : null
   if (value && typeof value === 'object') {
@@ -89,7 +59,6 @@ function coerceUrl(value: unknown): string | null {
   return null
 }
 
-/** Coerce a value that *should* be a plain string. */
 function coerceString(value: unknown): string | null {
   if (typeof value === 'string') return value.length > 0 ? value : null
   if (value && typeof value === 'object') {
@@ -100,7 +69,6 @@ function coerceString(value: unknown): string | null {
   return null
 }
 
-/** Coerce a value that *should* be a number (e.g., relevance score). */
 function coerceNumber(value: unknown): number | null {
   if (typeof value === 'number' && Number.isFinite(value)) return value
   if (typeof value === 'string') {
@@ -110,18 +78,13 @@ function coerceNumber(value: unknown): number | null {
   return null
 }
 
-/**
- * Clamp a relevance score to the Ashley-documented 1-5 range. Defends
- * against schema drift if Ashley ever ships a value outside the range —
- * the card UI renders the raw number directly and a `★99` would look
- * broken.
- */
+/** Cards render the raw number, so anything outside 1-5 would look broken. */
 function clampRelevance(value: number | null): number | null {
   if (value === null) return null
   return Math.max(1, Math.min(5, Math.round(value)))
 }
 
-/** Coerce authors — could be a string, an array of strings, or a `{ name }[]`. */
+/** Accepts a string, string[], or `{ name | username }[]`. */
 function coerceAuthors(value: unknown): string[] {
   if (typeof value === 'string' && value.length > 0) return [value]
   if (!Array.isArray(value)) return []
@@ -138,11 +101,7 @@ function coerceAuthors(value: unknown): string[] {
     .filter((n): n is string => typeof n === 'string' && n.length > 0)
 }
 
-/**
- * Normalize one raw Ashley article into the local `ContentArticle` shape.
- * Returns `null` if the article is unusable (missing/unrecoverable `url`,
- * unknown source).
- */
+/** Returns null when the article is unusable (no `url`, unknown source). */
 function normalizeArticle(raw: RawArticle): ContentArticle | null {
   const url = coerceUrl(raw.url)
   if (!url) return null
@@ -164,18 +123,26 @@ function normalizeArticle(raw: RawArticle): ContentArticle | null {
     authors: coerceAuthors(raw.authors),
     tags: Array.isArray(raw.tags) ? raw.tags.filter((t) => typeof t === 'string') : [],
     contentType: coerceString(raw.contentType),
-    relevance: coerceNumber(raw.relevance),
+    relevance: clampRelevance(coerceNumber(raw.relevance)),
     aiSummary: coerceString(raw.aiSummary),
-    metadata: raw.metadata && typeof raw.metadata === 'object'
-      ? (raw.metadata as Record<string, unknown>)
-      : null,
+    metadata:
+      raw.metadata && typeof raw.metadata === 'object'
+        ? (raw.metadata as Record<string, unknown>)
+        : null,
   }
 }
 
 function normalizeList(raw: RawList): ContentList {
-  const items = (raw.items ?? [])
-    .map(normalizeArticle)
-    .filter((a): a is ContentArticle => a !== null)
+  // Ashley occasionally returns the same id twice in one response.
+  const seen = new Set<string>()
+  const items: ContentArticle[] = []
+  for (const rawItem of raw.items ?? []) {
+    const article = normalizeArticle(rawItem)
+    if (!article) continue
+    if (seen.has(article.id)) continue
+    seen.add(article.id)
+    items.push(article)
+  }
   return {
     items,
     total: raw.total ?? 0,
@@ -188,22 +155,16 @@ export interface FetchContentArgs {
   source?: ContentSource
   offset: number
   limit?: number
-  /** Minimum relevance score (3-5). Clamped to the server-side floor of 3. */
+  /** Clamped to MIN_RELEVANCE_FLOOR on the server. */
   minRelevance?: number
 }
 
-/**
- * Fetch a single batch of content from Ashley, cached per `(source, min,
- * offset, limit)`. Topic is baked into the helper. Returns the *normalized*
- * list (not the raw DTO).
- */
 export function fetchContentList({
   source,
   offset,
   limit = DEFAULT_LIMIT,
   minRelevance = DEFAULT_MIN_RELEVANCE,
 }: FetchContentArgs): Promise<AshleyResult<ContentList>> {
-  // Clamp to the server-side floor — nobody bypasses it via URL tampering.
   const min = Math.max(MIN_RELEVANCE_FLOOR, minRelevance)
   const ttl = offset === 0 ? HOT_TTL : WARM_TTL
   const cached = unstable_cache(
@@ -224,24 +185,16 @@ export function fetchContentList({
       if (!result.ok) return result
       return { ok: true, data: normalizeList(result.data) }
     },
-    [
-      'division2-content-d2',
-      source ?? 'all',
-      `r${min}`,
-      String(offset),
-      String(limit),
-    ],
+    ['division2-content-d2', source ?? 'all', `r${min}`, String(offset), String(limit)],
     { revalidate: ttl, tags: ['content', 'content-list'] },
   )
   return cached()
 }
 
-/** Type guard for query-string source values. */
 export function isContentSource(value: unknown): value is ContentSource {
   return typeof value === 'string' && VALID_SOURCES.has(value as ContentSource)
 }
 
-/** Parse + validate `?min=` from URL — returns undefined for absent/invalid. */
 export function parseMinRelevance(value: unknown): number | undefined {
   if (typeof value !== 'string') return undefined
   const n = Number.parseInt(value, 10)
