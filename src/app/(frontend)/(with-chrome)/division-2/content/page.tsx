@@ -8,11 +8,10 @@ import {
   DEFAULT_MIN_RELEVANCE,
 } from '@/lib/division2/content.server'
 
-// Bypass the Next.js full-route cache: the `?source=` param controls what the
-// page shows, and we want each navigation to re-run the data fetches.
-// Without this, the router's prefetched RSC payload for the filter-chip
-// links can serve stale content after the underlying cache expires.
-export const dynamic = 'force-dynamic'
+// Dynamic rendering is implicit via the `searchParams` read below. Data
+// freshness is governed by the `unstable_cache` TTL on `fetchContentList`;
+// the route-level `dynamic` directive doesn't affect `unstable_cache`, so
+// declaring it here would have been belt-and-suspenders only.
 
 const DEFAULT_TITLE = 'Content Feed | Division 2 · Rogue Army'
 const DEFAULT_DESCRIPTION =

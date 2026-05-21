@@ -22,7 +22,10 @@ import {
   transformCitationMarkers,
 } from '@/lib/division2/digest.citations'
 
-export const dynamic = 'force-dynamic'
+// Dynamic rendering is implicit: `params`, `searchParams`, and the cookie
+// read inside `getMemberAuth()` each opt this route out of static
+// prerendering. Data freshness comes from the `unstable_cache` TTL on
+// `fetchDigestById`, not the route-level dynamic mode.
 
 interface PageProps {
   params: Promise<{ id: string }>

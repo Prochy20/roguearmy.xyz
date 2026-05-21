@@ -5,11 +5,12 @@ import { getMemberAuth } from '@/lib/auth/session.server'
 import { todayUtcIso } from '@/lib/division2/format'
 import { fetchLandingState } from '@/lib/division2/landing.server'
 
-// Bypass the Next.js full-route cache: per-tile freshness signals + the
-// ribbon's aggregate pill depend on real-time clock math, and the underlying
-// Ashley fetches handle their own caching. Without this the prefetched RSC
-// payload could serve a stale "6H AGO" indefinitely.
-export const dynamic = 'force-dynamic'
+// Dynamic rendering is already implicit: `getMemberAuth()` reads cookies,
+// which opts this route out of static prerendering. Per-tile freshness
+// signals + the ribbon aggregate pill rely on `todayUtcIso()` running each
+// request — that holds as long as render isn't memoized at build time, which
+// the cookie read guarantees. Ashley fetches handle their own caching via
+// `unstable_cache`, unaffected by route-level dynamic mode.
 
 const DEFAULT_TITLE = 'Command Console | Division 2 · Rogue Army'
 const DEFAULT_DESCRIPTION =

@@ -11,10 +11,10 @@ import {
 } from '@/lib/division2/digest.server'
 import { formatDayShort } from '@/lib/division2/format'
 
-// Bypass the Next.js full-route cache: the `?week=` param and the dev `?as=`
-// override change what the page renders, and we want every navigation to
-// re-run the data fetches.
-export const dynamic = 'force-dynamic'
+// Dynamic rendering is already implicit: this page reads `searchParams`
+// (?week, ?as) and `getMemberAuth()` reads cookies — either alone opts the
+// route out of static prerendering. Data freshness is governed by the
+// `unstable_cache` TTLs on the digest fetches, not by route-level dynamic.
 
 const DEFAULT_TITLE = 'Digest Archive | Division 2 · Rogue Army'
 const DEFAULT_DESCRIPTION =
