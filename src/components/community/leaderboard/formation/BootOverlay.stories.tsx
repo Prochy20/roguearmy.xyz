@@ -22,7 +22,7 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
-  play: async ({ canvasElement, step }) => {
+  play: async ({ step }) => {
     const body = within(document.body)
     await step('Header chip renders inside the dialog', async () => {
       await expect(body.getByRole('dialog', { name: /initializing formation hud/i })).toBeInTheDocument()

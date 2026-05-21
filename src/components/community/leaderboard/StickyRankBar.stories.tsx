@@ -33,7 +33,7 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 export const RankedUser: Story = {
-  play: async ({ canvasElement, step }) => {
+  play: async ({ step }) => {
     // StickyRankBar uses `position: fixed` so it can render outside canvasElement; query the body.
     const body = within(document.body)
     await step('Rank + level + xp render on the bar', async () => {
@@ -51,7 +51,7 @@ export const RankedUser: Story = {
 
 export const NoXp: Story = {
   args: { me: null },
-  play: async ({ canvasElement, step }) => {
+  play: async ({ step }) => {
     const body = within(document.body)
     await step('"NO XP YET" banner shows for caller with no rank', async () => {
       await expect(body.getByText(/no xp yet/i)).toBeInTheDocument()
@@ -61,7 +61,7 @@ export const NoXp: Story = {
 
 export const FetchFailed: Story = {
   args: { fail: ERR_UNAVAILABLE },
-  play: async ({ canvasElement, step }) => {
+  play: async ({ step }) => {
     const body = within(document.body)
     await step('Recalculating banner renders for transient fails', async () => {
       await expect(body.getByText(/being recalculated/i)).toBeInTheDocument()

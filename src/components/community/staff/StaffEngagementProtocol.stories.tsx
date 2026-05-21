@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
-import { expect, within } from 'storybook/test'
+import { expect } from 'storybook/test'
 import { StaffEngagementProtocol } from './StaffEngagementProtocol'
 
 const meta = {
@@ -17,7 +17,6 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   play: async ({ canvasElement, step }) => {
-    const canvas = within(canvasElement)
     await step('Protocol section mounts (renders the SectionHeader frame)', async () => {
       await expect(canvasElement.children.length).toBeGreaterThan(0)
     })

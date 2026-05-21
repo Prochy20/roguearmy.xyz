@@ -14,7 +14,7 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
-  play: async ({ canvasElement, step }) => {
+  play: async ({ step }) => {
     const body = within(document.body)
     await step('Configured text appears inside the bordered box', async () => {
       await expect(body.getByText('// FORMATION HUD ARMED')).toBeInTheDocument()

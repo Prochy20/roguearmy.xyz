@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import type { ManifestoDocKey } from './types'
 import { DOC_ORDER } from './types'
 

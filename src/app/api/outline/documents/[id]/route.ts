@@ -17,7 +17,7 @@ interface RouteParams {
  * - Members-only articles: Requires authenticated member
  * - Documents not linked to any published article: Requires authentication
  */
-export async function GET(request: Request, { params }: RouteParams) {
+export async function GET(_request: Request, { params }: RouteParams) {
   try {
     const { id } = await params
 

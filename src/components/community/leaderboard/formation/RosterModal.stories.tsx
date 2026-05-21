@@ -27,7 +27,7 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 export const Open: Story = {
-  play: async ({ args, canvasElement, step }) => {
+  play: async ({ args, step }) => {
     const body = within(document.body)
     await step('Roster row for the top operative renders', async () => {
       await expect(body.getAllByText(MOCK_ROSTER[0].displayName).length).toBeGreaterThan(0)

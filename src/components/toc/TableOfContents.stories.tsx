@@ -35,7 +35,7 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
-  play: async ({ canvasElement, step }) => {
+  play: async ({ step }) => {
     const body = within(document.body)
     await step('Back-to-articles link is in the panel', async () => {
       await expect(body.getByRole('link', { name: /back to articles/i })).toBeInTheDocument()
