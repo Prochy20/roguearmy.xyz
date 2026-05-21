@@ -1,6 +1,5 @@
 import React from 'react'
 import type { Metadata } from 'next'
-import Script from 'next/script'
 import { Analytics } from '@vercel/analytics/react'
 import '@/app/globals.css'
 import { ScanlineOverlay } from '@/components/effects/ScanlineOverlay'
@@ -139,9 +138,18 @@ export default async function FrontendLayout(props: { children: React.ReactNode 
   return (
     <AuthProvider initialState={initialAuthState}>
       <MenuProvider>
-        <Script id="json-ld" type="application/ld+json" strategy="afterInteractive">
-          {JSON.stringify(jsonLd)}
-        </Script>
+        {/* Inline so the structured data is in the SSR HTML — crawlers and
+            social unfurlers don't run our JS bundle, and `afterInteractive`
+            would inject this only after hydration. The `<` -> `<`
+            escape is the documented Next.js JSON-LD pattern; it prevents
+            a `</script>` sequence inside any string field from prematurely
+            terminating the tag (XSS-safe; jsonLd is a static literal). */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c'),
+          }}
+        />
         <ScanlineOverlay intensity="low" />
         {children}
         <Analytics />
