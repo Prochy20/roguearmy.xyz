@@ -17,82 +17,16 @@ import {
 import { GlowButton } from '@/components/shared/GlowButton'
 import { CyberCorners, CyberTag } from '@/components/ui/CyberCorners'
 import { CyberButton } from '@/components/members/CyberButton'
+import {
+  BRAND_COLORS,
+  BG_COLORS,
+  TEXT_COLORS,
+  GLOW_COLORS,
+  TYPE_SCALE,
+  GRADIENTS,
+  type ColorSwatch,
+} from '@/lib/design-tokens'
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   COLOR DATA
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-interface ColorSwatch {
-  name: string
-  hex: string
-  tailwind: string
-  glow?: boolean
-}
-
-const BRAND_COLORS: ColorSwatch[] = [
-  { name: 'Green', hex: '#00FF41', tailwind: 'rga-green', glow: true },
-  { name: 'Cyan', hex: '#00FFFF', tailwind: 'rga-cyan', glow: true },
-  { name: 'Magenta', hex: '#FF00FF', tailwind: 'rga-magenta', glow: true },
-]
-
-const BG_COLORS: ColorSwatch[] = [
-  { name: 'Void', hex: '#030303', tailwind: 'void' },
-  { name: 'Primary', hex: '#0A0A0A', tailwind: 'bg-primary' },
-  { name: 'Elevated', hex: '#111111', tailwind: 'bg-elevated' },
-  { name: 'Surface', hex: '#1A1A1A', tailwind: 'bg-surface' },
-]
-
-const TEXT_COLORS: ColorSwatch[] = [
-  { name: 'Primary', hex: '#FFFFFF', tailwind: 'text-primary' },
-  { name: 'Secondary', hex: '#888888', tailwind: 'text-secondary' },
-  { name: 'Muted', hex: '#555555', tailwind: 'text-muted' },
-]
-
-const GLOW_COLORS: ColorSwatch[] = [
-  { name: 'Glow Green', hex: 'rgba(0,255,65,0.5)', tailwind: 'glow-green' },
-  { name: 'Glow Cyan', hex: 'rgba(0,255,255,0.5)', tailwind: 'glow-cyan' },
-  { name: 'Glow Magenta', hex: 'rgba(255,0,255,0.5)', tailwind: 'glow-magenta' },
-]
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   TYPOGRAPHY DATA
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-const TYPE_SCALE = [
-  { label: 'H1', classes: 'font-display text-5xl md:text-6xl uppercase', sample: 'ROGUE ARMY' },
-  { label: 'H2', classes: 'font-display text-3xl md:text-4xl uppercase', sample: 'SECTION TITLE' },
-  { label: 'H3', classes: 'font-display text-xl md:text-2xl uppercase', sample: 'SUB HEADING' },
-  { label: 'Body', classes: 'font-body text-base', sample: 'The quick brown fox jumps over the lazy dog. Rogue Army is a gaming community with cyberpunk aesthetics.' },
-  { label: 'Small', classes: 'font-body text-sm text-text-secondary', sample: 'Secondary text for supporting information and metadata.' },
-  { label: 'Mono', classes: 'font-mono text-sm', sample: '> system.init() // terminal output' },
-]
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   GRADIENT DATA
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-const GRADIENTS = [
-  {
-    name: 'Brand Gradient',
-    classes: 'bg-linear-to-r from-rga-green via-rga-cyan to-rga-magenta',
-    description: 'The full RGA spectrum. Use for primary CTAs, hero accents, and major brand moments. This is the most impactful gradient — use it sparingly to maintain its effect.',
-  },
-  {
-    name: 'Green \u2192 Cyan',
-    classes: 'bg-linear-to-r from-rga-green to-rga-cyan',
-    description: 'The primary accent pair. Use for secondary UI elements, progress bars, and data visualizations. Feels technical and clean.',
-  },
-  {
-    name: 'Cyan \u2192 Magenta',
-    classes: 'bg-linear-to-r from-rga-cyan to-rga-magenta',
-    description: 'The neon accent pair. Works well for hover states, notifications, and decorative lines. Has a more energetic, cyberpunk feel.',
-  },
-  {
-    name: 'Green \u2192 Magenta',
-    classes: 'bg-linear-to-r from-rga-green to-rga-magenta',
-    description: 'High contrast pair. Use for alerts, important badges, or when you need maximum visual tension. The complementary colors create strong energy.',
-  },
-]
 
 /* ═══════════════════════════════════════════════════════════════════════════
    COPY TOAST
