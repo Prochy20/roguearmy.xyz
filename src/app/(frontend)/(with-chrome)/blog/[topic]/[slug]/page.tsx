@@ -11,15 +11,15 @@ import {
 import { getActiveMemberId } from '@/lib/auth/session.server'
 import { getMemberProgressMap } from '@/lib/progress.server'
 import { extractHeadingsFromLexical } from '@/lib/toc'
-import { ReadProgressTracker } from '@/components/members/ReadProgressTracker'
+import { ReadProgressTracker } from '@/components/article/ReadProgressTracker'
 import { cn } from '@/lib/utils'
 import { BlogArticleHero } from './BlogArticleHero'
 import { ArticleWithTOC } from './components/ArticleWithTOC'
 import { ArticlePageClient } from './components/ArticlePageClient'
 import { ReadingStatus } from './components/ReadingStatus'
 import { BlogSeriesNavigation } from './BlogSeriesNavigation'
-import { FeaturedArticles } from '@/components/members/FeaturedArticles'
-import { ArticleTeaserView } from '@/components/blog/ArticleTeaserView'
+import { FeaturedArticles } from '@/components/article/FeaturedArticles'
+import { ArticleTeaserView } from '@/components/article/ArticleTeaserView'
 
 interface ArticlePageProps {
   params: Promise<{ topic: string; slug: string }>

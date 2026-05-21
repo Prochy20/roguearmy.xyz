@@ -6,7 +6,7 @@ import { Gamepad2, FileText, Tag, Layers, Clock, BookOpen } from 'lucide-react'
 import { BlogArticleFeed } from './BlogArticleFeed'
 import { BlogFilterDrawer } from './BlogFilterDrawer'
 import { BlogFilterButton } from './BlogFilterButton'
-import { ViewModeToggle } from '@/components/members/ViewModeToggle'
+import { ViewModeToggle } from '@/components/article/ViewModeToggle'
 import { HeroGlitch } from '@/components/effects/HeroGlitch'
 import {
   FilterMultiDropdown,

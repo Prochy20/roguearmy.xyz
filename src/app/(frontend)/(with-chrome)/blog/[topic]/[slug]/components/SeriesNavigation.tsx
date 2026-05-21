@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils'
 import { CyberCorners, CyberTag } from '@/components/ui/CyberCorners'
 import { type Article, type SeriesNavigation as SeriesNavType, getArticleUrl, getSeriesUrl } from '@/lib/articles'
 import { type ArticleProgress } from '@/lib/progress.server'
-import { ReadStatusIndicator, getReadStatus } from '@/components/members/ReadStatusIndicator'
+import { ReadStatusIndicator, getReadStatus } from '@/components/article/ReadStatusIndicator'
 
 // ============================================================================
 // SERIES NAV CARD - Mini article card for prev/next navigation

@@ -3,7 +3,7 @@ import { expect, fn, userEvent, within } from 'storybook/test'
 import { EmptyState } from './EmptyState'
 
 const meta = {
-  title: 'Components/Members/EmptyState',
+  title: 'Components/Article/EmptyState',
   component: EmptyState,
   argTypes: {
     message: { control: 'text' },

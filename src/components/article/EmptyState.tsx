@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'motion/react'
-import { GlowButton } from '@/components/shared/GlowButton'
+import { GlowButton } from '@/components/ui/GlowButton'
 
 interface EmptyStateProps {
   onClearFilters: () => void

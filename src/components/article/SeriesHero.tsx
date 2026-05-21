@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import { motion } from 'motion/react'
 import { ArrowLeft, BookOpen } from 'lucide-react'
-import { CyberButton } from './CyberButton'
+import { CyberButton } from '@/components/ui/CyberButton'
 import { SeriesProgressBar } from './SeriesProgressBar'
 import { HeroGlitch } from '@/components/effects/HeroGlitch'
 import { CyberTag } from '@/components/ui/CyberCorners'

@@ -18,7 +18,7 @@ import { ArticleHero } from './ArticleHero'
 import { ArticleWithTOC } from './ArticleWithTOC'
 import { ReadingStatus } from './ReadingStatus'
 import { SeriesNavigation } from './SeriesNavigation'
-import { FeaturedArticles } from '@/components/members/FeaturedArticles'
+import { FeaturedArticles } from '@/components/article/FeaturedArticles'
 
 interface ArticlePageClientProps {
   initialArticle: Article

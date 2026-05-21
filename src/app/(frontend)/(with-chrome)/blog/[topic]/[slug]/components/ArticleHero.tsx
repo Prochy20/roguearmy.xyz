@@ -24,8 +24,8 @@ import {
   formatArticleDate,
   getSeriesUrl,
 } from '@/lib/articles'
-import { BookmarkButton } from '@/components/members/BookmarkButton'
-import { ShareButton } from '@/components/members/ShareButton'
+import { BookmarkButton } from '@/components/article/BookmarkButton'
+import { ShareButton } from '@/components/article/ShareButton'
 
 // Map article tint to CyberTag color
 const tintToColor = (tint: TintColor) => {

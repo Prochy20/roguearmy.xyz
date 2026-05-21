@@ -4,7 +4,7 @@ import { ArticleCardMini } from './ArticleCardMini'
 import { MOCK_ARTICLE, MOCK_ARTICLES, MOCK_PROGRESS_COMPLETED } from './_mock'
 
 const meta = {
-  title: 'Components/Members/ArticleCardMini',
+  title: 'Components/Article/ArticleCardMini',
   component: ArticleCardMini,
   args: {
     article: MOCK_ARTICLE,

@@ -3,11 +3,12 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'motion/react'
-import { Clock } from 'lucide-react'
+import { Clock, Lock } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { CyberCorners, CyberTag } from '@/components/ui/CyberCorners'
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip'
 import { HoverGlitch } from '@/components/effects/HoverGlitch'
-import { ReadStatusIndicator, getReadStatus, type ReadStatus } from './ReadStatusIndicator'
+import { ReadStatusIndicator, getReadStatus, type ReadStatus } from '@/components/article/ReadStatusIndicator'
 import { type Article, getArticleUrl } from '@/lib/articles'
 import type { ArticleProgress } from '@/lib/progress.server'
 
@@ -16,10 +17,11 @@ interface SeriesArticleCardProps {
   order: number
   progress?: ArticleProgress | null
   index?: number
+  isAuthenticated?: boolean
 }
 
 /**
- * Article card for series detail page with read status indicator
+ * Article card for series detail page with read status indicator and visibility badge
  * Shows order number, title, perex, and reading status
  */
 export function SeriesArticleCard({
@@ -27,8 +29,11 @@ export function SeriesArticleCard({
   order,
   progress,
   index = 0,
+  isAuthenticated = false,
 }: SeriesArticleCardProps) {
   const readStatus: ReadStatus = getReadStatus(progress?.progress, progress?.completed)
+  const articleUrl = getArticleUrl(article)
+  const isMembersOnly = article.visibility === 'members_only'
 
   return (
     <motion.article
@@ -41,7 +46,7 @@ export function SeriesArticleCard({
         ease: [0.25, 0.46, 0.45, 0.94],
       }}
     >
-      <Link href={getArticleUrl(article)} className="block group">
+      <Link href={articleUrl} className="block group">
         <CyberCorners
           color={readStatus === 'completed' ? 'green' : readStatus === 'in_progress' ? 'cyan' : 'gray'}
           size="sm"
@@ -57,6 +62,20 @@ export function SeriesArticleCard({
                   : 'border-rga-gray/20 hover:border-rga-gray/40'
             )}
           >
+            {/* Members-only lock icon - top right */}
+            {isMembersOnly && (
+              <TooltipProvider delayDuration={300}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="absolute top-2 right-2 flex items-center justify-center w-6 h-6 bg-bg-elevated/80 backdrop-blur-sm rounded border border-rga-cyan/30 cursor-help z-10">
+                      <Lock className="w-3 h-3 text-rga-cyan" />
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent accent="cyan">Members only</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
+
             {/* Order number */}
             <div
               className={cn(
@@ -87,7 +106,7 @@ export function SeriesArticleCard({
               {/* Title */}
               <HoverGlitch
                 intensity={2}
-                className="block font-display text-lg text-white leading-tight mb-1 truncate"
+                className="block font-display text-lg text-white leading-tight mb-1 truncate pr-8"
               >
                 {article.title}
               </HoverGlitch>
@@ -109,14 +128,16 @@ export function SeriesArticleCard({
               </div>
             </div>
 
-            {/* Read status indicator */}
-            <div className="flex-shrink-0 self-center">
-              <ReadStatusIndicator
-                status={readStatus}
-                progress={progress?.progress}
-                size="md"
-              />
-            </div>
+            {/* Read status indicator - only for authenticated users */}
+            {isAuthenticated && (
+              <div className="flex-shrink-0 self-center">
+                <ReadStatusIndicator
+                  status={readStatus}
+                  progress={progress?.progress}
+                  size="md"
+                />
+              </div>
+            )}
           </div>
         </CyberCorners>
       </Link>

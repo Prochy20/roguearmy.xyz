@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { expect, within } from 'storybook/test'
-import { BlogArticleCardCompact } from './BlogArticleCardCompact'
-import { MOCK_ARTICLE, MOCK_ARTICLE_MAGENTA } from '@/components/members/_mock'
+import { ArticleCardIncoming } from './ArticleCardIncoming'
+import { MOCK_ARTICLE, MOCK_ARTICLE_MAGENTA } from '@/components/article/_mock'
 
 const meta = {
-  title: 'Components/Blog/BlogArticleCardCompact',
-  component: BlogArticleCardCompact,
+  title: 'Components/Article/ArticleCardIncoming',
+  component: ArticleCardIncoming,
   args: { article: MOCK_ARTICLE, index: 0, isAuthenticated: false },
   parameters: {
     layout: 'padded',
@@ -18,7 +18,7 @@ const meta = {
       </div>
     ),
   ],
-} satisfies Meta<typeof BlogArticleCardCompact>
+} satisfies Meta<typeof ArticleCardIncoming>
 
 export default meta
 type Story = StoryObj<typeof meta>
@@ -26,7 +26,7 @@ type Story = StoryObj<typeof meta>
 export const Default: Story = {
   play: async ({ args, canvasElement, step }) => {
     const canvas = within(canvasElement)
-    await step('Title and topic render', async () => {
+    await step('Compact incoming card renders title + topic', async () => {
       await expect(canvas.getByText(args.article.title)).toBeInTheDocument()
       await expect(canvas.getByText(args.article.topic.name)).toBeInTheDocument()
     })

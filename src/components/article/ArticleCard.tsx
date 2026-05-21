@@ -1,6 +1,5 @@
 'use client'
 
-import { memo } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'motion/react'
@@ -15,8 +14,9 @@ import {
   formatArticleDate,
   getArticleUrl,
 } from '@/lib/articles'
-import { ReadStatusIndicator, getReadStatus } from './ReadStatusIndicator'
-import { BookmarkButton } from './BookmarkButton'
+import { ReadStatusIndicator, getReadStatus } from '@/components/article/ReadStatusIndicator'
+import { BookmarkButton } from '@/components/article/BookmarkButton'
+import { MembersOnlyOverlay } from './MembersOnlyOverlay'
 
 /** Minimal progress data needed for article card display */
 interface CardProgressData {
@@ -40,11 +40,14 @@ interface ArticleCardProps {
   article: Article
   index?: number
   progress?: CardProgressData | null
+  isAuthenticated?: boolean
 }
 
-function ArticleCardComponent({ article, index = 0, progress }: ArticleCardProps) {
+export function ArticleCard({ article, index = 0, progress, isAuthenticated = false }: ArticleCardProps) {
   const tint = getTintClasses(article.topic.tint)
   const cornerColor = tintToColor(article.topic.tint)
+  const articleUrl = getArticleUrl(article)
+  const isMembersOnly = article.visibility === 'members_only'
 
   return (
     <motion.article
@@ -58,7 +61,7 @@ function ArticleCardComponent({ article, index = 0, progress }: ArticleCardProps
       }}
       className="h-full"
     >
-      <Link href={getArticleUrl(article)} className="block group h-full">
+      <Link href={articleUrl} className="block group h-full">
         <CyberCorners color={cornerColor} size="md" glow className="h-full">
           <div
             className={cn(
@@ -83,7 +86,12 @@ function ArticleCardComponent({ article, index = 0, progress }: ArticleCardProps
               {/* Scanline effect on hover */}
               <div className="absolute inset-0 bg-[repeating-linear-gradient(0deg,transparent,transparent_2px,rgba(0,255,65,0.03)_2px,rgba(0,255,65,0.03)_4px)] opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
-              {/* Topic Badge */}
+              {/* Members-only overlay - centered, only shown when not authenticated */}
+              {isMembersOnly && !isAuthenticated && (
+                <MembersOnlyOverlay size="lg" />
+              )}
+
+              {/* Topic Badge + Game Badge */}
               <div className="absolute bottom-4 left-4 flex items-center gap-2">
                 <CyberTag color={cornerColor} className={tint.text}>
                   {article.topic.name}
@@ -135,17 +143,19 @@ function ArticleCardComponent({ article, index = 0, progress }: ArticleCardProps
                   </div>
                 </div>
 
-                {/* Right side actions */}
-                <div className="flex items-center gap-2">
-                  <BookmarkButton articleId={article.id} size="sm" />
-                  {progress !== undefined && (
-                    <ReadStatusIndicator
-                      status={getReadStatus(progress?.progress, progress?.completed)}
-                      progress={progress?.progress}
-                      size="md"
-                    />
-                  )}
-                </div>
+                {/* Right side actions - only show for authenticated users */}
+                {isAuthenticated && (
+                  <div className="flex items-center gap-2">
+                    <BookmarkButton articleId={article.id} size="sm" />
+                    {progress !== undefined && (
+                      <ReadStatusIndicator
+                        status={getReadStatus(progress?.progress, progress?.completed)}
+                        progress={progress?.progress}
+                        size="md"
+                      />
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -154,11 +164,3 @@ function ArticleCardComponent({ article, index = 0, progress }: ArticleCardProps
     </motion.article>
   )
 }
-
-// Memoize to prevent re-renders when parent state changes
-export const ArticleCard = memo(ArticleCardComponent, (prev, next) =>
-  prev.article.id === next.article.id &&
-  prev.index === next.index &&
-  prev.progress?.progress === next.progress?.progress &&
-  prev.progress?.completed === next.progress?.completed
-)

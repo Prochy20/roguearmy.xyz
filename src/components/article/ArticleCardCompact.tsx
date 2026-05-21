@@ -13,8 +13,8 @@ import {
   getTintClasses,
   getArticleUrl,
 } from '@/lib/articles'
-import { ReadStatusIndicator, getReadStatus } from '@/components/members/ReadStatusIndicator'
-import { BookmarkButton } from '@/components/members/BookmarkButton'
+import { ReadStatusIndicator, getReadStatus } from '@/components/article/ReadStatusIndicator'
+import { BookmarkButton } from '@/components/article/BookmarkButton'
 import { MembersOnlyOverlay } from './MembersOnlyOverlay'
 
 interface CardProgressData {
@@ -33,7 +33,7 @@ const tintToColor = (tint: TintColor) => {
   }
 }
 
-interface BlogArticleCardCompactProps {
+interface ArticleCardCompactProps {
   article: Article
   index?: number
   progress?: CardProgressData | null
@@ -44,7 +44,7 @@ interface BlogArticleCardCompactProps {
  * Compact article card for Archive grid view
  * Vertical layout with image, title, perex, and metadata
  */
-export function BlogArticleCardCompact({ article, index = 0, progress, isAuthenticated = false }: BlogArticleCardCompactProps) {
+export function ArticleCardCompact({ article, index = 0, progress, isAuthenticated = false }: ArticleCardCompactProps) {
   const tint = getTintClasses(article.topic.tint)
   const cornerColor = tintToColor(article.topic.tint)
   const articleUrl = getArticleUrl(article)

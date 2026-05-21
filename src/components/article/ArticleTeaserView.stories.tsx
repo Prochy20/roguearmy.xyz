@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { expect, within } from 'storybook/test'
 import { ArticleTeaserView } from './ArticleTeaserView'
-import { MOCK_ARTICLE_MAGENTA } from '@/components/members/_mock'
+import { MOCK_ARTICLE_MAGENTA } from '@/components/article/_mock'
 
 const meta = {
-  title: 'Components/Blog/ArticleTeaserView',
+  title: 'Components/Article/ArticleTeaserView',
   component: ArticleTeaserView,
   args: { article: MOCK_ARTICLE_MAGENTA },
   parameters: {

@@ -3,10 +3,10 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Gamepad2, Tag, Layers, BookOpen } from 'lucide-react'
-import { SeriesGrid } from '@/components/members/SeriesGrid'
+import { SeriesGrid } from '@/components/article/SeriesGrid'
 import { BlogFilterDrawer } from './BlogFilterDrawer'
 import { BlogFilterButton } from './BlogFilterButton'
-import { EmptyState } from '@/components/members/EmptyState'
+import { EmptyState } from '@/components/article/EmptyState'
 import { HeroGlitch } from '@/components/effects/HeroGlitch'
 import { FilterMultiDropdown, FilterPills } from '@/components/blog/filter-fields'
 import {

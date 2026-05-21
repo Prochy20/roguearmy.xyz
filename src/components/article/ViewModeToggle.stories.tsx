@@ -25,7 +25,7 @@ function ViewModeToggleDemo({ initial, disableFeatured, onViewModeChange }: Demo
 }
 
 const meta = {
-  title: 'Components/Members/ViewModeToggle',
+  title: 'Components/Article/ViewModeToggle',
   component: ViewModeToggleDemo,
   argTypes: {
     initial: { control: 'inline-radio', options: ['featured', 'grid', 'list'] },

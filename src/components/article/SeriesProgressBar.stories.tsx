@@ -3,7 +3,7 @@ import { expect, within } from 'storybook/test'
 import { SeriesProgressBar } from './SeriesProgressBar'
 
 const meta = {
-  title: 'Components/Members/SeriesProgressBar',
+  title: 'Components/Article/SeriesProgressBar',
   component: SeriesProgressBar,
   argTypes: {
     completedCount: { control: { type: 'number', min: 0 } },

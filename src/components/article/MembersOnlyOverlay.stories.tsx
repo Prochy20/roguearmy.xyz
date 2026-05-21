@@ -3,7 +3,7 @@ import { expect } from 'storybook/test'
 import { MembersOnlyOverlay } from './MembersOnlyOverlay'
 
 const meta = {
-  title: 'Components/Blog/MembersOnlyOverlay',
+  title: 'Components/Article/MembersOnlyOverlay',
   component: MembersOnlyOverlay,
   argTypes: {
     size: { control: 'inline-radio', options: ['sm', 'md', 'lg'] },

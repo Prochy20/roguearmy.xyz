@@ -3,7 +3,7 @@ import { expect, within } from 'storybook/test'
 import { ShareButton } from './ShareButton'
 
 const meta = {
-  title: 'Components/Members/ShareButton',
+  title: 'Components/Article/ShareButton',
   component: ShareButton,
   argTypes: {
     size: { control: 'inline-radio', options: ['sm', 'md'] },

@@ -4,7 +4,7 @@ import { BookmarksProvider } from '@/contexts/BookmarksContext'
 import { BookmarkButton } from './BookmarkButton'
 
 const meta = {
-  title: 'Components/Members/BookmarkButton',
+  title: 'Components/Article/BookmarkButton',
   component: BookmarkButton,
   argTypes: {
     size: { control: 'inline-radio', options: ['sm', 'md'] },

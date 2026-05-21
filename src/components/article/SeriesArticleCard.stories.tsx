@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { expect, within } from 'storybook/test'
-import { BlogSeriesArticleCard } from './BlogSeriesArticleCard'
-import { MOCK_ARTICLE, MOCK_ARTICLE_MAGENTA } from '@/components/members/_mock'
+import { SeriesArticleCard } from './SeriesArticleCard'
+import { MOCK_ARTICLE, MOCK_ARTICLE_MAGENTA } from '@/components/article/_mock'
 
 const PROGRESS = {
   articleId: MOCK_ARTICLE.id,
@@ -13,8 +13,8 @@ const PROGRESS = {
 }
 
 const meta = {
-  title: 'Components/Blog/BlogSeriesArticleCard',
-  component: BlogSeriesArticleCard,
+  title: 'Components/Article/SeriesArticleCard',
+  component: SeriesArticleCard,
   args: { article: MOCK_ARTICLE, order: 1, index: 0, isAuthenticated: false },
   parameters: {
     layout: 'padded',
@@ -27,7 +27,7 @@ const meta = {
       </div>
     ),
   ],
-} satisfies Meta<typeof BlogSeriesArticleCard>
+} satisfies Meta<typeof SeriesArticleCard>
 
 export default meta
 type Story = StoryObj<typeof meta>

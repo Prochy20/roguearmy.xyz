@@ -13,8 +13,8 @@ import {
   getTintClasses,
   getArticleUrl,
 } from '@/lib/articles'
-import { ReadStatusIndicator, getReadStatus } from '@/components/members/ReadStatusIndicator'
-import { BookmarkButton } from '@/components/members/BookmarkButton'
+import { ReadStatusIndicator, getReadStatus } from '@/components/article/ReadStatusIndicator'
+import { BookmarkButton } from '@/components/article/BookmarkButton'
 import { MembersOnlyOverlay } from './MembersOnlyOverlay'
 
 interface CardProgressData {
@@ -33,7 +33,7 @@ const tintToColor = (tint: TintColor) => {
   }
 }
 
-interface BlogArticleCardIncomingProps {
+interface ArticleCardIncomingProps {
   article: Article
   index?: number
   progress?: CardProgressData | null
@@ -44,7 +44,7 @@ interface BlogArticleCardIncomingProps {
  * Vertical card for Incoming section - data terminal entry aesthetic
  * Compact image header, structured content zones, fixed height
  */
-export function BlogArticleCardIncoming({ article, index = 0, progress, isAuthenticated = false }: BlogArticleCardIncomingProps) {
+export function ArticleCardIncoming({ article, index = 0, progress, isAuthenticated = false }: ArticleCardIncomingProps) {
   const tint = getTintClasses(article.topic.tint)
   const cornerColor = tintToColor(article.topic.tint)
   const articleUrl = getArticleUrl(article)

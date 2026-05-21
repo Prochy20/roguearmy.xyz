@@ -6,9 +6,9 @@ import { Bookmark, BookmarkX, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useBookmarks } from '@/contexts/BookmarksContext'
 import { useBookmarkProgress } from '@/hooks/useBookmarkProgress'
-import { getReadStatus, type ReadStatus } from '@/components/members/ReadStatusIndicator'
+import { getReadStatus, type ReadStatus } from '@/components/article/ReadStatusIndicator'
 import { Drawer, DrawerHeader, DrawerContent, DrawerFooter } from '@/components/ui/drawer'
-import { BlogBookmarkDrawerItem } from './BlogBookmarkDrawerItem'
+import { BookmarkDrawerItem } from './BookmarkDrawerItem'
 import {
   Tooltip,
   TooltipContent,
@@ -25,7 +25,7 @@ const filterTabs: { value: FilterStatus; label: string }[] = [
   { value: 'completed', label: 'Done' },
 ]
 
-export function BlogBookmarksDrawer() {
+export function BookmarksDrawer() {
   const [isOpen, setIsOpen] = useState(false)
   const [filter, setFilter] = useState<FilterStatus>('all')
   const { bookmarks, isLoading, toggleBookmark } = useBookmarks()
@@ -178,7 +178,7 @@ export function BlogBookmarksDrawer() {
           ) : (
             <div className="divide-y divide-rga-cyan/5">
               {filteredBookmarks.map((bookmark) => (
-                <BlogBookmarkDrawerItem
+                <BookmarkDrawerItem
                   key={bookmark.id}
                   bookmark={bookmark}
                   progress={progressMap[bookmark.article.id]}

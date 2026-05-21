@@ -2,8 +2,8 @@ import { notFound } from 'next/navigation'
 import { getActiveMemberId } from '@/lib/auth/session.server'
 import { getSeriesBySlug, getAllSeriesSlugs } from '@/lib/series.server'
 import { getMemberProgressMap } from '@/lib/progress.server'
-import { SeriesHero } from '@/components/members/SeriesHero'
-import { BlogSeriesArticleCard } from '@/components/blog/BlogSeriesArticleCard'
+import { SeriesHero } from '@/components/article/SeriesHero'
+import { SeriesArticleCard } from '@/components/article/SeriesArticleCard'
 
 interface SeriesDetailPageProps {
   params: Promise<{ slug: string }>
@@ -54,7 +54,7 @@ export default async function SeriesDetailPage({ params }: SeriesDetailPageProps
         <div className="container mx-auto px-4 py-12">
           <div className="max-w-3xl mx-auto space-y-4">
             {series.articles.map((article, index) => (
-              <BlogSeriesArticleCard
+              <SeriesArticleCard
                 key={article.id}
                 article={article}
                 order={index + 1}

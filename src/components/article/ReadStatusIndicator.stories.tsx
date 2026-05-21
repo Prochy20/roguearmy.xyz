@@ -5,7 +5,7 @@ import { ReadStatusIndicator, type ReadStatus } from './ReadStatusIndicator'
 const ALL_STATUSES: ReadStatus[] = ['unread', 'in_progress', 'completed']
 
 const meta = {
-  title: 'Components/Members/ReadStatusIndicator',
+  title: 'Components/Article/ReadStatusIndicator',
   component: ReadStatusIndicator,
   argTypes: {
     status: { control: 'inline-radio', options: ALL_STATUSES },

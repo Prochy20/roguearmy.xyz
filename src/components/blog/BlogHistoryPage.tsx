@@ -5,10 +5,10 @@ import Link from 'next/link'
 import { motion } from 'motion/react'
 import { History, ArrowRight, CheckCircle2, Clock, ListFilter } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { BlogArticleCard } from './BlogArticleCard'
-import { BlogArticleCardCompact } from './BlogArticleCardCompact'
-import { BlogArticleCardList } from './BlogArticleCardList'
-import { ViewModeToggle } from '@/components/members/ViewModeToggle'
+import { ArticleCard } from '@/components/article/ArticleCard'
+import { ArticleCardCompact } from '@/components/article/ArticleCardCompact'
+import { ArticleCardList } from '@/components/article/ArticleCardList'
+import { ViewModeToggle } from '@/components/article/ViewModeToggle'
 import { HeroGlitch } from '@/components/effects/HeroGlitch'
 import { useViewMode } from '@/hooks/useViewMode'
 import type { Article } from '@/lib/articles'
@@ -58,7 +58,7 @@ export function BlogHistoryPage({ articles, progress, statusFilter }: BlogHistor
     switch (viewMode) {
       case 'grid':
         return (
-          <BlogArticleCardCompact
+          <ArticleCardCompact
             key={article.id}
             article={article}
             index={index}
@@ -68,7 +68,7 @@ export function BlogHistoryPage({ articles, progress, statusFilter }: BlogHistor
         )
       case 'list':
         return (
-          <BlogArticleCardList
+          <ArticleCardList
             key={article.id}
             article={article}
             index={index}
@@ -79,7 +79,7 @@ export function BlogHistoryPage({ articles, progress, statusFilter }: BlogHistor
       case 'featured':
       default:
         return (
-          <BlogArticleCard
+          <ArticleCard
             key={article.id}
             article={article}
             index={index}

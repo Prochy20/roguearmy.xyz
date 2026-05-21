@@ -6,10 +6,10 @@ import { motion } from 'motion/react'
 import { BookmarkX, ArrowRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useBookmarks } from '@/contexts/BookmarksContext'
-import { BlogArticleCard } from '@/components/blog/BlogArticleCard'
-import { BlogArticleCardCompact } from '@/components/blog/BlogArticleCardCompact'
-import { BlogArticleCardList } from '@/components/blog/BlogArticleCardList'
-import { ViewModeToggle } from '@/components/members/ViewModeToggle'
+import { ArticleCard } from '@/components/article/ArticleCard'
+import { ArticleCardCompact } from '@/components/article/ArticleCardCompact'
+import { ArticleCardList } from '@/components/article/ArticleCardList'
+import { ViewModeToggle } from '@/components/article/ViewModeToggle'
 import { HeroGlitch } from '@/components/effects/HeroGlitch'
 import { transformBookmarkToArticle } from '@/lib/bookmarks'
 import { useBookmarkProgress } from '@/hooks/useBookmarkProgress'
@@ -54,7 +54,7 @@ export default function BookmarksPage() {
     switch (viewMode) {
       case 'grid':
         return (
-          <BlogArticleCardCompact
+          <ArticleCardCompact
             key={article.id}
             article={article}
             index={index}
@@ -64,7 +64,7 @@ export default function BookmarksPage() {
         )
       case 'list':
         return (
-          <BlogArticleCardList
+          <ArticleCardList
             key={article.id}
             article={article}
             index={index}
@@ -75,7 +75,7 @@ export default function BookmarksPage() {
       case 'featured':
       default:
         return (
-          <BlogArticleCard
+          <ArticleCard
             key={article.id}
             article={article}
             index={index}

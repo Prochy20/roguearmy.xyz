@@ -13,8 +13,8 @@ import {
   getTintClasses,
   getArticleUrl,
 } from '@/lib/articles'
-import { ReadStatusIndicator, getReadStatus } from '@/components/members/ReadStatusIndicator'
-import { BookmarkButton } from '@/components/members/BookmarkButton'
+import { ReadStatusIndicator, getReadStatus } from '@/components/article/ReadStatusIndicator'
+import { BookmarkButton } from '@/components/article/BookmarkButton'
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip'
 import { MembersOnlyOverlay } from './MembersOnlyOverlay'
 
@@ -34,7 +34,7 @@ const tintToColor = (tint: TintColor) => {
   }
 }
 
-interface BlogArticleCardListProps {
+interface ArticleCardListProps {
   article: Article
   index?: number
   progress?: CardProgressData | null
@@ -45,7 +45,7 @@ interface BlogArticleCardListProps {
  * List-style article card for dense browsing with visibility badge
  * Horizontal layout with thumbnail, title, perex, and metadata
  */
-export function BlogArticleCardList({ article, index = 0, progress, isAuthenticated = false }: BlogArticleCardListProps) {
+export function ArticleCardList({ article, index = 0, progress, isAuthenticated = false }: ArticleCardListProps) {
   const tint = getTintClasses(article.topic.tint)
   const cornerColor = tintToColor(article.topic.tint)
   const articleUrl = getArticleUrl(article)

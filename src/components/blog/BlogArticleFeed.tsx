@@ -3,12 +3,12 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion } from 'motion/react'
 import { cn } from '@/lib/utils'
-import { BlogArticleCard } from './BlogArticleCard'
-import { BlogArticleCardCompact } from './BlogArticleCardCompact'
-import { BlogArticleCardList } from './BlogArticleCardList'
-import { BlogArticleCardIncoming } from './BlogArticleCardIncoming'
+import { ArticleCard } from '@/components/article/ArticleCard'
+import { ArticleCardCompact } from '@/components/article/ArticleCardCompact'
+import { ArticleCardList } from '@/components/article/ArticleCardList'
+import { ArticleCardIncoming } from '@/components/article/ArticleCardIncoming'
 import { BlogSectionDivider } from './BlogSectionDivider'
-import { EmptyState } from '@/components/members/EmptyState'
+import { EmptyState } from '@/components/article/EmptyState'
 import { type Article, type FilterState, filterArticles } from '@/lib/articles'
 import { type ArticleProgress } from '@/lib/progress.server'
 import type { ViewMode } from '@/hooks/useViewMode'
@@ -127,7 +127,7 @@ export function BlogArticleFeed({
         {featuredArticle && (
           <section className="space-y-4">
             <BlogSectionDivider label="Priority Transmission" />
-            <BlogArticleCard
+            <ArticleCard
               article={featuredArticle}
               index={0}
               progress={progress?.[featuredArticle.id]}
@@ -142,7 +142,7 @@ export function BlogArticleFeed({
             <BlogSectionDivider label="Recent" />
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-fr">
               {recentArticles.map((article, index) => (
-                <BlogArticleCardIncoming
+                <ArticleCardIncoming
                   key={article.id}
                   article={article}
                   index={index}
@@ -160,7 +160,7 @@ export function BlogArticleFeed({
             <BlogSectionDivider label="Archive" />
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-fr">
               {displayedArchiveArticles.map((article, index) => (
-                <BlogArticleCardCompact
+                <ArticleCardCompact
                   key={article.id}
                   article={article}
                   index={index}
@@ -200,7 +200,7 @@ export function BlogArticleFeed({
     switch (effectiveViewMode) {
       case 'grid':
         return (
-          <BlogArticleCardCompact
+          <ArticleCardCompact
             key={article.id}
             article={article}
             index={index}
@@ -210,7 +210,7 @@ export function BlogArticleFeed({
         )
       case 'list':
         return (
-          <BlogArticleCardList
+          <ArticleCardList
             key={article.id}
             article={article}
             index={index}

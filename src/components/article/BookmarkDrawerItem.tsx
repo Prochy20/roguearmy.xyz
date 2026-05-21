@@ -4,23 +4,23 @@ import Link from 'next/link'
 import { X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { mapPayloadColorToTint, getTintClasses, getArticleUrl } from '@/lib/articles'
-import { ReadStatusIndicator, getReadStatus, type ReadStatus } from '@/components/members/ReadStatusIndicator'
+import { ReadStatusIndicator, getReadStatus, type ReadStatus } from '@/components/article/ReadStatusIndicator'
 import type { BookmarkWithArticle } from '@/lib/bookmarks'
 import type { BookmarkProgressData } from '@/hooks/useBookmarkProgress'
 
-interface BlogBookmarkDrawerItemProps {
+interface BookmarkDrawerItemProps {
   bookmark: BookmarkWithArticle
   progress?: BookmarkProgressData
   onRemove: () => void
   onNavigate: () => void
 }
 
-export function BlogBookmarkDrawerItem({
+export function BookmarkDrawerItem({
   bookmark,
   progress,
   onRemove,
   onNavigate,
-}: BlogBookmarkDrawerItemProps) {
+}: BookmarkDrawerItemProps) {
   const { article } = bookmark
 
   // Get topic color classes

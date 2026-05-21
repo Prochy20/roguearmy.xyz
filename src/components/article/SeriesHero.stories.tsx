@@ -8,7 +8,7 @@ const HERO = {
 }
 
 const meta = {
-  title: 'Components/Members/SeriesHero',
+  title: 'Components/Article/SeriesHero',
   component: SeriesHero,
   argTypes: {
     articleCount: { control: { type: 'number', min: 0 } },
