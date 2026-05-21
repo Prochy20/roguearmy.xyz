@@ -3,16 +3,21 @@
    Tailwind CSS v4 + shadcn/ui Configuration
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/* 1. All @import statements MUST come first (CSS requirement). Google fonts
-   (Black Ops One, JetBrains Mono, Outfit) are self-hosted via `next/font` in
-   `src/app/layout.tsx` — variables consumed by the `@theme` tokens below. */
+/* 1. All @import statements MUST come first (CSS requirement). The Google
+   fonts (Black Ops One, JetBrains Mono, Outfit) plus Hanson Bold are
+   self-hosted via `next/font` in `src/app/fonts.ts` — variables consumed
+   by the `@theme` tokens below. */
 @import "tailwindcss";
 @import "tw-animate-css";
 
 /* 2. Custom Dark Variant (for .dark class support) */
 @custom-variant dark (&:is(.dark *));
 
-/* 3. Self-hosted Font Face (download from fontmirror.com/hanson) */
+/* 3. Plain `@font-face` for Hanson Bold under its literal name. next/font/local
+   provides the optimized variable for Next.js, but Storybook's vite plugin
+   doesn't always inject the runtime @font-face for local fonts — the literal
+   "Hanson Bold" registration here keeps the docs surface working as a fallback
+   via `var(--font-hanson-bold, "Hanson Bold")` in --font-display. */
 @font-face {
   font-family: "Hanson Bold";
   src: url("/fonts/Hanson-Bold.otf") format("opentype");
@@ -135,9 +140,9 @@
      JetBrains Mono for terminal/code
      Outfit for body text
      ───────────────────────────────────────────────────────────────────────── */
-  --font-display: "Hanson Bold", var(--font-black-ops-one), sans-serif;
-  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
-  --font-body: var(--font-outfit), system-ui, sans-serif;
+  --font-display: var(--font-hanson-bold, "Hanson Bold"), var(--font-black-ops-one, "Black Ops One"), sans-serif;
+  --font-mono: var(--font-jetbrains-mono, "JetBrains Mono"), ui-monospace, monospace;
+  --font-body: var(--font-outfit, "Outfit"), system-ui, sans-serif;
 
   /* ─────────────────────────────────────────────────────────────────────────
      CUSTOM ANIMATIONS

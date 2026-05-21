@@ -2,9 +2,17 @@ import type { Preview } from '@storybook/nextjs-vite'
 import { themes } from 'storybook/theming'
 
 import '../src/app/globals.css'
+import { fontVariables } from '../src/app/fonts'
 
 const preview: Preview = {
   tags: ['autodocs'],
+  decorators: [
+    (Story) => (
+      <div className={fontVariables}>
+        <Story />
+      </div>
+    ),
+  ],
   parameters: {
     layout: 'centered',
     // The @storybook/nextjs-vite framework injects a passthrough loader for

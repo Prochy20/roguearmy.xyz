@@ -20,7 +20,7 @@ const SceneBackdrop = ({ children }: { children?: React.ReactNode }) => (
     <p style={{ fontFamily: 'monospace', fontSize: '0.75rem', color: '#00FFFF', letterSpacing: '0.2em', margin: 0 }}>
       // SCENE
     </p>
-    <h2 style={{ fontFamily: '"Hanson Bold", sans-serif', fontSize: '3rem', textTransform: 'uppercase', color: '#FFFFFF', margin: '0.5rem 0' }}>
+    <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '3rem', textTransform: 'uppercase', color: '#FFFFFF', margin: '0.5rem 0' }}>
       ROGUE ARMY
     </h2>
     <p style={{ color: '#888', fontSize: '0.875rem', maxWidth: '24rem', margin: '0.75rem auto', lineHeight: 1.6 }}>
