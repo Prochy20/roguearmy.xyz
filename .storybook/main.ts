@@ -17,7 +17,7 @@ const config: StorybookConfig = {
     '../src/components/**/*.mdx',
     '../src/components/**/*.stories.@(ts|tsx)',
   ],
-  addons: ['@storybook/addon-docs'],
+  addons: ['@storybook/addon-docs', '@storybook/addon-vitest'],
   typescript: {
     check: false,
     reactDocgen: 'react-docgen-typescript',
