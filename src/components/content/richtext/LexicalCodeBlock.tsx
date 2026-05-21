@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { MermaidDiagram } from '@/components/markdown/MermaidDiagram'
+import { MermaidDiagram } from '@/components/content/markdown/MermaidDiagram'
 
 interface LexicalCodeBlockProps {
   code: string

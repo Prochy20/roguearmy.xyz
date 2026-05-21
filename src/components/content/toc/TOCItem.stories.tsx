@@ -3,7 +3,7 @@ import { expect, fn, userEvent, within } from 'storybook/test'
 import { TOCItem } from './TOCItem'
 
 const meta = {
-  title: 'Components/TOC/TOCItem',
+  title: 'Components/Content/TOC/TOCItem',
   component: TOCItem,
   argTypes: {
     isActive: { control: 'boolean' },

@@ -58,7 +58,7 @@ const HELLO_DOC: SerializedEditorState = {
 }
 
 const meta = {
-  title: 'Components/RichText/RichTextRenderer',
+  title: 'Components/Content/RichText/RichTextRenderer',
   component: RichTextRenderer,
   args: { data: HELLO_DOC },
   parameters: { layout: 'padded' },

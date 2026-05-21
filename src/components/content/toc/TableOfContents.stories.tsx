@@ -12,7 +12,7 @@ const MOCK_HEADINGS: TOCHeading[] = [
 ]
 
 const meta = {
-  title: 'Components/TOC/TableOfContents',
+  title: 'Components/Content/TOC/TableOfContents',
   component: TableOfContents,
   args: { headings: MOCK_HEADINGS },
   parameters: {

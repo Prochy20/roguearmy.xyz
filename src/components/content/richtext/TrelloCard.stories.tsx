@@ -3,7 +3,7 @@ import { within } from 'storybook/test'
 import { TrelloCard } from './TrelloCard'
 
 const meta = {
-  title: 'Components/RichText/TrelloCard',
+  title: 'Components/Content/RichText/TrelloCard',
   component: TrelloCard,
   argTypes: {
     url: { control: 'text' },

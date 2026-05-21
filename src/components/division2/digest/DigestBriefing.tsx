@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo } from 'react'
-import { MarkdownRenderer } from '@/components/markdown/MarkdownRenderer'
+import { MarkdownRenderer } from '@/components/content/markdown/MarkdownRenderer'
 import { createDigestMarkdownComponents } from './digestMarkdownComponents'
 import type { AccentName } from './accent'
 

@@ -5,7 +5,7 @@ import { Callout } from './Callout'
 const ALL_TYPES = ['info', 'warning', 'tip', 'success', 'danger', 'error', 'note'] as const
 
 const meta = {
-  title: 'Components/Markdown/Callout',
+  title: 'Components/Content/Markdown/Callout',
   component: Callout,
   argTypes: {
     type: { control: 'select', options: ALL_TYPES },

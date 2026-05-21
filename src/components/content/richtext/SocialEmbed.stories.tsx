@@ -3,7 +3,7 @@ import { expect, within } from 'storybook/test'
 import { SocialEmbed } from './SocialEmbed'
 
 const meta = {
-  title: 'Components/RichText/SocialEmbed',
+  title: 'Components/Content/RichText/SocialEmbed',
   component: SocialEmbed,
   argTypes: {
     url: { control: 'text' },

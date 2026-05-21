@@ -1,8 +1,8 @@
 'use client'
 
 import { memo, useRef, useEffect, useCallback } from 'react'
-import { RichTextRenderer } from '@/components/richtext/RichTextRenderer'
-import { MarkdownRenderer } from '@/components/markdown/MarkdownRenderer'
+import { RichTextRenderer } from '@/components/content/richtext/RichTextRenderer'
+import { MarkdownRenderer } from '@/components/content/markdown/MarkdownRenderer'
 import type { ManifestoDocument } from './types'
 
 /** Glitch phase drives the multi-phase transition effect */

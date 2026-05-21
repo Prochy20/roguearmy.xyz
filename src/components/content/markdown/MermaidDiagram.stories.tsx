@@ -8,7 +8,7 @@ const FLOWCHART = `flowchart LR
   B -- No --> D[Reject]`
 
 const meta = {
-  title: 'Components/Markdown/MermaidDiagram',
+  title: 'Components/Content/Markdown/MermaidDiagram',
   component: MermaidDiagram,
   args: { code: FLOWCHART },
   parameters: { layout: 'padded' },

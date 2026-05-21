@@ -14,9 +14,9 @@ import {
 } from '@payloadcms/richtext-lexical/react'
 
 import type { CalloutBlockType, CodeBlockType, MermaidBlockType, SocialEmbedBlockType, TrelloCardBlockType, VideoEmbedBlockType } from '@/payload-types'
-import { Callout } from '@/components/markdown/Callout'
+import { Callout } from '@/components/content/markdown/Callout'
 import { LexicalCodeBlock } from './LexicalCodeBlock'
-import { MermaidDiagram } from '@/components/markdown/MermaidDiagram'
+import { MermaidDiagram } from '@/components/content/markdown/MermaidDiagram'
 import { SocialEmbed } from './SocialEmbed'
 import { TrelloCard } from './TrelloCard'
 import { VideoEmbed } from './VideoEmbed'

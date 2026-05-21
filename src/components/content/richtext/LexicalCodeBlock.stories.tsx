@@ -3,7 +3,7 @@ import { within } from 'storybook/test'
 import { LexicalCodeBlock } from './LexicalCodeBlock'
 
 const meta = {
-  title: 'Components/RichText/LexicalCodeBlock',
+  title: 'Components/Content/RichText/LexicalCodeBlock',
   component: LexicalCodeBlock,
   argTypes: {
     language: { control: 'text' },

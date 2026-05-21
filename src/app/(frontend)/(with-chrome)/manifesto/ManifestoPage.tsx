@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useMemo, useCallback, useEffect } from 'react'
-import { useTOC } from '@/components/toc/useTOC'
+import { useTOC } from '@/components/content/toc/useTOC'
 import type { ManifestoDocument, ManifestoDocKey, DifficultyMode } from './types'
 import { DOC_ORDER } from './types'
 import {

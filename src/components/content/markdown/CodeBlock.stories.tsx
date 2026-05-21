@@ -7,7 +7,7 @@ const TS_SAMPLE = `export function add(a: number, b: number) {
 }`
 
 const meta = {
-  title: 'Components/Markdown/CodeBlock',
+  title: 'Components/Content/Markdown/CodeBlock',
   component: CodeBlock,
   argTypes: {
     className: { control: 'text' },

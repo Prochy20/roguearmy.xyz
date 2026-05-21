@@ -26,7 +26,7 @@ export function deploy(): boolean {
 `
 
 const meta = {
-  title: 'Components/Markdown/MarkdownRenderer',
+  title: 'Components/Content/Markdown/MarkdownRenderer',
   component: MarkdownRenderer,
   argTypes: {
     content: { control: 'text' },

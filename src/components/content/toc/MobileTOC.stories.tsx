@@ -10,7 +10,7 @@ const MOCK_HEADINGS: TOCHeading[] = [
 ]
 
 const meta = {
-  title: 'Components/TOC/MobileTOC',
+  title: 'Components/Content/TOC/MobileTOC',
   component: MobileTOC,
   args: { headings: MOCK_HEADINGS },
   parameters: { layout: 'padded' },
