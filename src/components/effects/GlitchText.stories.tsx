@@ -24,7 +24,7 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-export const HoverTrigger: Story = {
+export const Default: Story = {
   play: async ({ canvasElement, step }) => {
     const canvas = within(canvasElement)
     const targets = canvas.getAllByText('Hover Me')
@@ -35,14 +35,9 @@ export const HoverTrigger: Story = {
   },
 }
 
-export const ScrollTrigger: Story = {
-  args: { trigger: 'scroll', children: <span className="font-display text-5xl uppercase text-white">SCROLL IN</span> },
-}
-
-export const AlwaysOn: Story = {
-  args: { trigger: 'always', children: <span className="font-display text-5xl uppercase text-white">CONTINUOUS</span> },
-}
-
 export const NoChromatic: Story = {
-  args: { chromatic: false, children: <span className="font-display text-5xl uppercase text-white">FLAT</span> },
+  args: {
+    chromatic: false,
+    children: <span className="font-display text-5xl uppercase text-white">FLAT</span>,
+  },
 }

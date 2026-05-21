@@ -43,7 +43,3 @@ export const Default: Story = {
 }
 
 export const NoCursor: Story = { args: { cursor: false } }
-
-export const Fast: Story = { args: { speed: 10, text: 'fast type-out' } }
-
-export const Slow: Story = { args: { speed: 80, text: 'slow' } }
