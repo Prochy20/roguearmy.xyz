@@ -1,4 +1,4 @@
-import { StatRibbon } from '@/components/shared/StatRibbon'
+import { StatRibbon } from '@/components/ui/StatRibbon'
 import { DigestPageShell } from './DigestPageShell'
 import { DigestBreadcrumb } from './DigestBreadcrumb'
 import { DigestHeroFrame } from './DigestHeroFrame'

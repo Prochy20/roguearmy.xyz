@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import { checkRoleGate } from '@/lib/auth/roleGate'
-import { EmptyDossier } from '@/components/shared/EmptyDossier'
+import { EmptyDossier } from '@/components/division2/EmptyDossier'
 
 /**
  * Layout-level access gate for the entire `/division-2` subtree. Every page

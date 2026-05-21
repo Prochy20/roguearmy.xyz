@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { FailRow } from '@/components/shared/FailRow'
+import { FailRow } from '@/components/ui/FailRow'
 import { ContentCard } from './ContentCard'
 import { ContentSkeleton } from './ContentSkeleton'
 import { ContentEndMarker } from './ContentEndMarker'

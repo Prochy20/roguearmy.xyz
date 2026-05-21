@@ -12,7 +12,7 @@ const ALL_KINDS = [
 ] as const
 
 const meta = {
-  title: 'Components/Shared/EmptyDossier',
+  title: 'Components/Division2/EmptyDossier',
   component: EmptyDossier,
   argTypes: {
     kind: { control: 'select', options: ALL_KINDS },

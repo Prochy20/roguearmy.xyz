@@ -1,4 +1,4 @@
-import { CyberButton } from '@/components/members/CyberButton'
+import { CyberButton } from '@/components/ui/CyberButton'
 import type { Division2 } from '@/payload-types'
 
 type DigestPerks = NonNullable<NonNullable<Division2['digestPage']>['perks']>

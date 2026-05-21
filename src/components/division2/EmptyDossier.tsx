@@ -1,6 +1,6 @@
 import { CyberCorners } from '@/components/ui/CyberCorners'
-import { CyberButton } from '@/components/members/CyberButton'
-import { DiscordIcon } from '@/components/shared/DiscordIcon'
+import { CyberButton } from '@/components/ui/CyberButton'
+import { DiscordIcon } from '@/components/ui/DiscordIcon'
 
 const DISCORD_INVITE = 'https://dc.roguearmy.xyz'
 
