@@ -32,6 +32,20 @@ export function weekStartForDayUtc(day: string): string {
   return d.toISOString().slice(0, 10)
 }
 
+/**
+ * Monday ≤ given day (UTC), as `YYYY-MM-DD`. Used to bucket content digests
+ * into calendar weeks — Ashley publishes weekly digests with periodStart on a
+ * Monday, so this aligns daily digests to the same week boundaries.
+ */
+export function mondayOfWeekUtc(day: string): string {
+  const d = new Date(`${day}T00:00:00.000Z`)
+  if (Number.isNaN(d.getTime())) return day
+  // (dow + 6) % 7 maps: Mon→0, Tue→1, Wed→2, Thu→3, Fri→4, Sat→5, Sun→6
+  const daysBack = (d.getUTCDay() + 6) % 7
+  d.setUTCDate(d.getUTCDate() - daysBack)
+  return d.toISOString().slice(0, 10)
+}
+
 /** Step one calendar day backward in UTC. */
 export function previousDayUtc(day: string): string {
   const d = new Date(`${day}T00:00:00.000Z`)

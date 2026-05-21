@@ -215,9 +215,9 @@ export function fetchWeeklyDigests({
 }
 
 interface FetchDailyForWeekArgs {
-  /** Weekly digest's periodStart (ISO date). Identifies the cache row + filter range. */
+  /** Week's periodStart (ISO date). Identifies the cache row + filter range. */
   periodStart: string
-  /** Weekly digest's periodEnd (ISO date, inclusive). */
+  /** Week's periodEnd (ISO date, exclusive — first day of the next week). */
   periodEnd: string
 }
 
@@ -271,8 +271,11 @@ export function fetchDailyDigestsForWeek({
       )
       if (!result.ok) return result
       const all = normalizeList(result.data).items
+      // Half-open `[start, end)` — Ashley stores periodEnd as the *start*
+      // of the next week (e.g. May 11→18 covers Mon May 11–Sun May 17).
+      // Inclusive on both ends would double-count the boundary daily.
       const filtered = all
-        .filter((d) => d.periodStart >= periodStart && d.periodStart <= periodEnd)
+        .filter((d) => d.periodStart >= periodStart && d.periodStart < periodEnd)
         .sort((a, b) => a.periodStart.localeCompare(b.periodStart))
       return { ok: true, data: filtered }
     },

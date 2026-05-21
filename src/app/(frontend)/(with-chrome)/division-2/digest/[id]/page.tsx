@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
-import { EmptyDossier } from '@/components/shared/EmptyDossier'
-import { FailRow } from '@/components/shared/FailRow'
+import { EmptyDossier } from '@/components/division2/EmptyDossier'
+import { FailRow } from '@/components/ui/FailRow'
 import { DigestDetailPage } from '@/components/division2/digest/DigestDetailPage'
 import { getMemberAuth } from '@/lib/auth/session.server'
 import { hasDigestAccess } from '@/lib/auth/badges'

@@ -4,12 +4,12 @@ import { cachedFindGlobal } from '@/lib/payload/cached'
 import { getMemberAuth } from '@/lib/auth/session.server'
 import { hasDigestAccess } from '@/lib/auth/badges'
 import {
-  fetchDailyDigestsForWeek,
+  fetchRecentDailyDigests,
   fetchWeeklyDigests,
   parseWeekParam,
   type Digest,
 } from '@/lib/division2/digest.server'
-import { formatDayShort } from '@/lib/division2/format'
+import { formatDayShort, mondayOfWeekUtc, todayUtcIso } from '@/lib/division2/format'
 
 // Dynamic rendering is already implicit: this page reads `searchParams`
 // (?week, ?as) and `getMemberAuth()` reads cookies — either alone opts the
@@ -35,7 +35,8 @@ interface PageProps {
 
 export default async function Division2DigestPage({ searchParams }: PageProps) {
   const { week: rawWeek, as: rawAs } = await searchParams
-  const requestedWeek = parseWeekParam(rawWeek)
+  const requestedDay = parseWeekParam(rawWeek)
+  const requestedWeekStart = requestedDay ? mondayOfWeekUtc(requestedDay) : null
   const isPreviewingAsMember = rawAs === 'member'
   const showDevToggle = process.env.NODE_ENV !== 'production'
 
@@ -44,36 +45,40 @@ export default async function Division2DigestPage({ searchParams }: PageProps) {
     devOverride: isPreviewingAsMember ? 'member' : null,
   })
 
-  const [weekly, division2] = await Promise.all([
+  // Fetch weeklies + (booster-only) dailies in parallel; weeklies is the
+  // primary call — its failure surfaces as the page-level error.
+  const [weekliesResult, dailiesResult, division2] = await Promise.all([
     fetchWeeklyDigests({ limit: 20 }),
+    hasAccess ? fetchRecentDailyDigests({ limit: 30 }) : Promise.resolve(null),
     cachedFindGlobal('division2'),
   ])
 
-  // Resolve the current week — URL match if provided, otherwise newest.
-  const currentWeekly = weekly.ok ? pickCurrentWeekly(weekly.data.items, requestedWeek) : null
+  const weeklies = weekliesResult.ok ? weekliesResult.data.items : []
+  const dailies = dailiesResult?.ok ? dailiesResult.data : []
+  // Merged feed, periodStart desc. Weeklies and dailies share the timeline —
+  // a weekly's periodStart (Monday) places it at the start of its week.
+  const merged: Digest[] = [...weeklies, ...dailies].sort((a, b) =>
+    b.periodStart.localeCompare(a.periodStart),
+  )
 
-  // Boosters get daily fetches; non-boosters skip the call entirely.
-  const dailies =
-    hasAccess && currentWeekly
-      ? await fetchDailyDigestsForWeek({
-          periodStart: currentWeekly.periodStart,
-          periodEnd: currentWeekly.periodEnd,
-        })
-      : null
+  // Calendar weeks (Mondays) that contain at least one digest, desc.
+  const weekStartsInData = uniqueWeekStartsDesc(merged)
 
-  const stepper =
-    weekly.ok && currentWeekly ? buildStepper(weekly.data.items, currentWeekly) : null
+  // Active week: URL override if it points to a week with data; else newest
+  // week with data; else today's Monday (gives a sensible empty state).
+  const activeWeekStart =
+    pickActiveWeekStart(requestedWeekStart, weekStartsInData) ??
+    mondayOfWeekUtc(todayUtcIso())
 
-  // Only the newest week gets the LATEST hero treatment — paginating back
-  // collapses the page to a uniform archive grid (no hero callout).
-  const newestWeeklyId = weekly.ok ? weekly.data.items[0]?.id ?? null : null
-  const isLatestWeek = currentWeekly?.id != null && currentWeekly.id === newestWeeklyId
+  const digestsForWeek = filterToWeek(merged, activeWeekStart)
+  const stepper = buildStepper(weekStartsInData, activeWeekStart)
+  const isLatestWeek = activeWeekStart === weekStartsInData[0]
 
   return (
     <DigestPage
-      weekly={weekly}
-      currentWeekly={currentWeekly}
-      dailies={dailies}
+      weekly={weekliesResult}
+      digestsForWeek={digestsForWeek}
+      activeWeekStart={activeWeekStart}
       hasAccess={hasAccess}
       isPreviewingAsMember={isPreviewingAsMember}
       showDevToggle={showDevToggle}
@@ -84,48 +89,79 @@ export default async function Division2DigestPage({ searchParams }: PageProps) {
   )
 }
 
-/** Find the weekly matching `?week=` or fall back to the newest. */
-function pickCurrentWeekly(items: Digest[], requested: string | null): Digest | null {
-  if (items.length === 0) return null
-  if (requested) {
-    return items.find((d) => d.periodStart === requested) ?? null
-  }
-  return items[0]
+/**
+ * Pick the calendar-week Monday to render. URL `?week=` wins when valid;
+ * otherwise default to the newest week with data. Returns null when there's
+ * no data at all (caller falls back to today's Monday for an empty state).
+ */
+function pickActiveWeekStart(
+  requested: string | null,
+  weekStartsInData: string[],
+): string | null {
+  if (requested) return requested
+  return weekStartsInData[0] ?? null
+}
+
+function filterToWeek(merged: Digest[], weekStart: string): Digest[] {
+  const weekEnd = addDaysUtc(weekStart, 7)
+  return merged.filter(
+    (d) => d.periodStart >= weekStart && d.periodStart < weekEnd,
+  )
+}
+
+function uniqueWeekStartsDesc(merged: Digest[]): string[] {
+  const set = new Set<string>()
+  for (const d of merged) set.add(mondayOfWeekUtc(d.periodStart))
+  return [...set].sort().reverse()
 }
 
 /**
- * Build the stepper from the (date-desc) weeklies list. Prev = older entry
- * (next in array). Next = newer entry (previous in array). Both null at the
- * boundaries.
+ * Stepper bounds = data-driven. Prev / next jump to the nearest week that
+ * actually has digests; the user can't paginate into an empty void. When the
+ * active week itself has no data (e.g. the user typed a custom URL), prev /
+ * next still point to the bracketing data-bearing weeks.
  */
-function buildStepper(items: Digest[], current: Digest): WeekStepperState {
-  const index = items.findIndex((d) => d.id === current.id)
-  const newer = index > 0 ? items[index - 1] : null
-  const older = index >= 0 && index < items.length - 1 ? items[index + 1] : null
+function buildStepper(
+  weekStartsDesc: string[],
+  activeWeekStart: string,
+): WeekStepperState | null {
+  if (weekStartsDesc.length === 0) return null
+  // Nearest neighbors: in a desc-sorted list, the first match `< active` is
+  // the largest-below-active (nearest older), and the first match `> active`
+  // when scanning ascending is the smallest-above-active (nearest newer).
+  const older = weekStartsDesc.find((w) => w < activeWeekStart) ?? null
+  const newer = [...weekStartsDesc].reverse().find((w) => w > activeWeekStart) ?? null
 
   return {
     current: {
-      periodStart: current.periodStart,
-      periodEnd: current.periodEnd,
-      label: `${formatDayShort(current.periodStart)} → ${formatDayShort(current.periodEnd)}`,
+      periodStart: activeWeekStart,
+      periodEnd: addDaysUtc(activeWeekStart, 7),
+      label: `${formatDayShort(activeWeekStart)} → ${formatDayShort(addDaysUtc(activeWeekStart, 6))}`,
     },
     prev: older
       ? {
-          periodStart: older.periodStart,
-          href: urlForWeek(older.periodStart),
-          label: formatDayShort(older.periodStart),
+          periodStart: older,
+          href: urlForWeek(older),
+          label: formatDayShort(older),
         }
       : null,
     next: newer
       ? {
-          periodStart: newer.periodStart,
-          href: urlForWeek(newer.periodStart),
-          label: formatDayShort(newer.periodStart),
+          periodStart: newer,
+          href: urlForWeek(newer),
+          label: formatDayShort(newer),
         }
       : null,
   }
 }
 
-function urlForWeek(periodStart: string): string {
-  return `/division-2/digest?week=${periodStart}`
+function urlForWeek(weekStart: string): string {
+  return `/division-2/digest?week=${weekStart}`
+}
+
+function addDaysUtc(iso: string, days: number): string {
+  const d = new Date(`${iso}T00:00:00.000Z`)
+  if (Number.isNaN(d.getTime())) return iso
+  d.setUTCDate(d.getUTCDate() + days)
+  return d.toISOString().slice(0, 10)
 }

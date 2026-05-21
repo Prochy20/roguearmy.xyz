@@ -1,6 +1,6 @@
-import { FailRow } from '@/components/shared/FailRow'
-import { StatRibbon } from '@/components/shared/StatRibbon'
-import { EmptyDossier } from '@/components/shared/EmptyDossier'
+import { FailRow } from '@/components/ui/FailRow'
+import { StatRibbon } from '@/components/ui/StatRibbon'
+import { EmptyDossier } from '@/components/division2/EmptyDossier'
 import { GlitchOnChange } from '@/components/effects/GlitchOnChange'
 import { DigestCard } from './DigestCard'
 import { DigestHero } from './DigestHero'
@@ -9,26 +9,26 @@ import { BoosterPerksWidget } from './BoosterPerksWidget'
 import { DevPreviewToggle } from './DevPreviewToggle'
 import { formatDayShort } from '@/lib/division2/format'
 import type { AshleyResult } from '@/lib/api/server'
-import type { Digest, DigestList } from '@/lib/division2/digest.server'
+import type { DigestList, Digest } from '@/lib/division2/digest.server'
 import type { Division2 } from '@/payload-types'
 
 type DigestPageContent = NonNullable<Division2['digestPage']>
 
 interface DigestPageProps {
-  /** Full weekly archive result — drives the stepper. */
+  /** Primary fetch result — drives the LIVE/OFFLINE pill and page-level error UI. */
   weekly: AshleyResult<DigestList>
-  /** The weekly digest for the selected week, or null when not found. */
-  currentWeekly: Digest | null
-  /** Dailies belonging to the current week (only fetched for digest-access users). */
-  dailies: AshleyResult<Digest[]> | null
-  /** True when the viewer can see daily briefings. */
+  /** Digests landing in the active calendar week, sorted by periodStart desc. */
+  digestsForWeek: Digest[]
+  /** Monday (UTC, YYYY-MM-DD) of the active calendar week. */
+  activeWeekStart: string
+  /** True when the viewer can see daily briefings (booster). */
   hasAccess: boolean
   /** True only when the dev `?as=member` override is currently in effect. */
   isPreviewingAsMember: boolean
   /** Whether the dev toggle UI should be rendered (localhost only). */
   showDevToggle: boolean
   stepper: WeekStepperState | null
-  /** True when the viewer is on the newest week — drives the LATEST hero treatment. */
+  /** True when the active week is the newest data-bearing week — drives the LATEST hero. */
   isLatestWeek: boolean
   content: DigestPageContent | null | undefined
 }
@@ -39,16 +39,12 @@ const DEFAULTS = {
   heroAccent: 'BRIEFINGS',
   intro:
     'AI-summarized briefings on the Division 2 firehose. Weekly roll-ups are open to every operative; daily briefings unlock for Discord boosters.',
-  weeklySectionLabel: '// THIS WEEK',
-  dailiesSectionLabel: '// DAILY BRIEFINGS',
-  emptyWeek: '// NO BRIEFING FOR THIS WEEK',
-  emptyAll: '// BRIEFINGS ARCHIVE EMPTY — AWAITING FIRST RUN',
 } as const
 
 export function DigestPage({
   weekly,
-  currentWeekly,
-  dailies,
+  digestsForWeek,
+  activeWeekStart,
   hasAccess,
   isPreviewingAsMember,
   showDevToggle,
@@ -60,10 +56,6 @@ export function DigestPage({
   const heroTitle = content?.heroTitle?.trim() || DEFAULTS.heroTitle
   const heroAccent = content?.heroAccent?.trim() || DEFAULTS.heroAccent
   const intro = content?.intro?.trim() || DEFAULTS.intro
-  const weeklySectionLabel =
-    content?.weeklySectionLabel?.trim() || DEFAULTS.weeklySectionLabel
-  const dailiesSectionLabel =
-    content?.dailiesSectionLabel?.trim() || DEFAULTS.dailiesSectionLabel
 
   return (
     <Shell>
@@ -73,12 +65,12 @@ export function DigestPage({
           fields={[
             {
               label: 'WEEK',
-              value: currentWeekly ? formatDayShort(currentWeekly.periodStart) : '—',
+              value: formatDayShort(activeWeekStart),
               accent: 'green',
             },
             {
-              label: 'SLOTS',
-              value: hasAccess ? '8' : '1',
+              label: 'FILES',
+              value: String(digestsForWeek.length).padStart(2, '0'),
               accent: 'green',
             },
             {
@@ -113,12 +105,10 @@ export function DigestPage({
 
       <DigestBody
         weekly={weekly}
-        currentWeekly={currentWeekly}
-        dailies={dailies}
+        digestsForWeek={digestsForWeek}
+        activeWeekStart={activeWeekStart}
         hasAccess={hasAccess}
         content={content}
-        weeklySectionLabel={weeklySectionLabel}
-        dailiesSectionLabel={dailiesSectionLabel}
         isLatestWeek={isLatestWeek}
       />
 
@@ -133,23 +123,19 @@ export function DigestPage({
 
 interface DigestBodyProps {
   weekly: AshleyResult<DigestList>
-  currentWeekly: Digest | null
-  dailies: AshleyResult<Digest[]> | null
+  digestsForWeek: Digest[]
+  activeWeekStart: string
   hasAccess: boolean
   content: DigestPageContent | null | undefined
-  weeklySectionLabel: string
-  dailiesSectionLabel: string
   isLatestWeek: boolean
 }
 
 function DigestBody({
   weekly,
-  currentWeekly,
-  dailies,
+  digestsForWeek,
+  activeWeekStart,
   hasAccess,
   content,
-  weeklySectionLabel,
-  dailiesSectionLabel,
   isLatestWeek,
 }: DigestBodyProps) {
   if (!weekly.ok) {
@@ -162,34 +148,16 @@ function DigestBody({
     )
   }
 
-  if (weekly.data.items.length === 0) {
-    return <EmptyDossier kind="NO_DIGEST_FOR_WEEK" />
+  if (digestsForWeek.length === 0) {
+    return <EmptyDossier kind="NO_DIGEST_FOR_WEEK" weekStart={activeWeekStart} />
   }
 
-  if (!currentWeekly) {
-    return (
-      <EmptyDossier
-        kind="NO_DIGEST_FOR_WEEK"
-        weekStart={weekly.data.items[0]?.periodStart}
-      />
-    )
-  }
-
-  const dailyItems = hasAccess && dailies?.ok ? dailies.data : []
-  // Merge weekly + dailies into one chronological feed. Sort by periodStart
-  // descending so the newest day surfaces first; the weekly drops in wherever
-  // its periodStart (Monday of the week) places it — no special elevation.
-  const allDigests = [currentWeekly, ...dailyItems].sort((a, b) =>
-    b.periodStart.localeCompare(a.periodStart),
-  )
-  void weeklySectionLabel
-  void dailiesSectionLabel
-
-  const lead = allDigests[0]
-  // The LATEST hero only appears on the newest week. Paginating back to an
-  // older week collapses everything into a single uniform grid section.
+  // The newest week gets a featured lead card; older weeks render as a
+  // uniform grid. Same treatment regardless of whether the lead is a weekly
+  // roll-up or a daily briefing — frequency is just an accent color.
   const showLeadHero = isLatestWeek
-  const gridItems = showLeadHero ? allDigests.slice(1) : allDigests
+  const lead = showLeadHero ? digestsForWeek[0] : null
+  const gridItems = showLeadHero ? digestsForWeek.slice(1) : digestsForWeek
   const gridLabel = showLeadHero ? '// ARCHIVE' : '// BRIEFING INDEX'
   const gridSec = showLeadHero ? 'SEC_02' : 'SEC_01'
   const gridAccent: 'green' | 'mod' = showLeadHero ? 'mod' : 'green'
@@ -198,65 +166,43 @@ function DigestBody({
     <div className="flex flex-col gap-10 sm:gap-12">
       {/* SEC_01 — lead hero. Rendered OUTSIDE GlitchOnChange because its
           `overflow-hidden` would clip the lead's outside-floating corner
-          brackets. The lead's URL-driven re-render handles freshness fine
-          without the glitch effect. */}
+          brackets. */}
       {showLeadHero && lead && (
         <Section sec="SEC_01" label="// LATEST" accent="green">
           <DigestCard digest={lead} tone="lead" />
         </Section>
       )}
 
-      {/* Everything else can glitch on week-change without consequence,
-          since standard cards no longer render outside-floating corners. */}
-      <GlitchOnChange triggerKey={currentWeekly.periodStart}>
+      <GlitchOnChange triggerKey={activeWeekStart}>
         <div className="flex flex-col gap-10 sm:gap-12">
-          {hasAccess && (
-            <Section
-              sec={gridSec}
-              label={gridLabel}
-              accent={gridAccent}
-              meta={
-                dailies?.ok ? (
-                  <span className="tabular-nums">
-                    {String(gridItems.length).padStart(2, '0')} FILES
-                  </span>
-                ) : null
-              }
-            >
-              {gridItems.length > 0 ? (
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3 xl:grid-cols-4">
-                  {gridItems.map((d) => (
-                    <DigestCard key={d.id} digest={d} />
-                  ))}
-                </div>
-              ) : dailies && !dailies.ok ? (
-                <FailRow
-                  code={dailies.error.code}
-                  status={dailies.error.status}
-                  returnTo="/division-2/digest"
-                />
-              ) : (
-                <div className="border border-dashed border-text-muted/30 bg-[rgba(0,0,0,0.3)] px-5 py-8 font-mono text-[11px] uppercase tracking-[0.3em] text-text-muted">
-                  // NO ADDITIONAL BRIEFINGS PUBLISHED THIS WEEK
-                </div>
-              )}
-            </Section>
-          )}
-
-          {!hasAccess && !showLeadHero && lead && (
-            <Section sec="SEC_01" label="// BRIEFING INDEX" accent="green">
+          <Section
+            sec={gridSec}
+            label={gridLabel}
+            accent={gridAccent}
+            meta={
+              <span className="tabular-nums">
+                {String(gridItems.length).padStart(2, '0')} FILES
+              </span>
+            }
+          >
+            {gridItems.length > 0 ? (
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3 xl:grid-cols-4">
-                <DigestCard digest={lead} />
+                {gridItems.map((d) => (
+                  <DigestCard key={d.id} digest={d} />
+                ))}
               </div>
-            </Section>
-          )}
+            ) : (
+              <div className="border border-dashed border-text-muted/30 bg-[rgba(0,0,0,0.3)] px-5 py-8 font-mono text-[11px] uppercase tracking-[0.3em] text-text-muted">
+                // NO ADDITIONAL BRIEFINGS THIS WEEK
+              </div>
+            )}
+          </Section>
 
           {!hasAccess && (
             <Section
-              sec="SEC_02"
-              label="// ARCHIVE"
+              sec={showLeadHero ? 'SEC_03' : 'SEC_02'}
+              label="// BOOSTER PERK"
               accent="mod"
-              meta={<span>// BOOSTER PERK</span>}
             >
               <BoosterPerksWidget perks={content?.perks ?? null} />
             </Section>
