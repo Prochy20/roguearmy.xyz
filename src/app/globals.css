@@ -3,8 +3,9 @@
    Tailwind CSS v4 + shadcn/ui Configuration
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/* 1. All @import statements MUST come first (CSS requirement) */
-@import url("https://fonts.googleapis.com/css2?family=Black+Ops+One&family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@300;400;500;600;700&display=swap");
+/* 1. All @import statements MUST come first (CSS requirement). Google fonts
+   (Black Ops One, JetBrains Mono, Outfit) are self-hosted via `next/font` in
+   `src/app/layout.tsx` — variables consumed by the `@theme` tokens below. */
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -134,9 +135,9 @@
      JetBrains Mono for terminal/code
      Outfit for body text
      ───────────────────────────────────────────────────────────────────────── */
-  --font-display: "Hanson Bold", "Black Ops One", sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, monospace;
-  --font-body: "Outfit", system-ui, sans-serif;
+  --font-display: "Hanson Bold", var(--font-black-ops-one), sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+  --font-body: var(--font-outfit), system-ui, sans-serif;
 
   /* ─────────────────────────────────────────────────────────────────────────
      CUSTOM ANIMATIONS
