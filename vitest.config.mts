@@ -27,6 +27,14 @@ export default defineConfig({
             storybookScript: 'pnpm storybook --ci',
           }),
         ],
+        resolve: {
+          alias: {
+            '@/lib/division2/assetMap.server': path.join(
+              dirname,
+              'src/lib/division2/assetMap.browser-stub.ts',
+            ),
+          },
+        },
         test: {
           name: 'storybook',
           browser: {
