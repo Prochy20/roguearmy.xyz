@@ -12,7 +12,7 @@ import {
 } from 'lucide-react'
 import { SectionHeader } from '@/components/community/SectionHeader'
 import { CyberCorners, CyberTag } from '@/components/ui/CyberCorners'
-import { RichTextRenderer } from '@/components/richtext/RichTextRenderer'
+import { RichTextRenderer } from '@/components/content/richtext/RichTextRenderer'
 import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
 import type { StaffPage } from '@/payload-types'
 

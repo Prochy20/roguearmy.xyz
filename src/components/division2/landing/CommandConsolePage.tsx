@@ -1,5 +1,5 @@
 import { HeroGlitch } from '@/components/effects/HeroGlitch'
-import { StatRibbon } from '@/components/shared/StatRibbon'
+import { StatRibbon } from '@/components/ui/StatRibbon'
 import { todayUtcIso } from '@/lib/division2/format'
 import type { LandingState } from '@/lib/division2/landing.server'
 import type { Division2 } from '@/payload-types'

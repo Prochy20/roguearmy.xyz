@@ -3,7 +3,7 @@ import { expect } from 'storybook/test'
 import { DiscordIcon } from './DiscordIcon'
 
 const meta = {
-  title: 'Components/Shared/DiscordIcon',
+  title: 'Components/UI/DiscordIcon',
   component: DiscordIcon,
   argTypes: {
     className: { control: 'text' },

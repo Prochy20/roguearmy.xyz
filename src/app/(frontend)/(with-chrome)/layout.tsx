@@ -1,6 +1,6 @@
 import React from 'react'
-import { Footer } from '@/components/shared/Footer'
-import { Header } from '@/components/shared/header/Header'
+import { Footer } from '@/components/chrome/Footer'
+import { Header } from '@/components/chrome/header/Header'
 
 /**
  * Sub-layout for "normal" pages that get the full site chrome (Header + Footer).

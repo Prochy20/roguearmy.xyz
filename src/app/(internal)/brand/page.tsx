@@ -13,10 +13,10 @@ import {
   ScrollReveal,
   ScrollRevealContainer,
   ScrollRevealItem,
-} from '@/components/shared/ScrollReveal'
-import { GlowButton } from '@/components/shared/GlowButton'
+} from '@/components/effects/ScrollReveal'
+import { GlowButton } from '@/components/ui/GlowButton'
 import { CyberCorners, CyberTag } from '@/components/ui/CyberCorners'
-import { CyberButton } from '@/components/members/CyberButton'
+import { CyberButton } from '@/components/ui/CyberButton'
 import {
   BRAND_COLORS,
   BG_COLORS,
@@ -972,7 +972,7 @@ export default function BrandPage() {
                     button per viewport.
                   </p>
                   <p className="font-mono text-xs text-text-muted">
-                    {'import { GlowButton } from "@/components/shared/GlowButton"'}
+                    {'import { GlowButton } from "@/components/ui/GlowButton"'}
                   </p>
                 </div>
               </CyberCorners>
@@ -1031,7 +1031,7 @@ export default function BrandPage() {
                     magenta for featured, and gray for neutral/disabled-looking actions.
                   </p>
                   <p className="font-mono text-xs text-text-muted">
-                    {'import { CyberButton } from "@/components/members/CyberButton"'}
+                    {'import { CyberButton } from "@/components/ui/CyberButton"'}
                   </p>
                 </div>
               </CyberCorners>

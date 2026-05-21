@@ -3,7 +3,7 @@ import { expect, fn, userEvent, within } from 'storybook/test'
 import { GlowButton } from './GlowButton'
 
 const meta = {
-  title: 'Components/Shared/GlowButton',
+  title: 'Components/UI/GlowButton',
   component: GlowButton,
   argTypes: {
     glowColor: { control: 'inline-radio', options: ['green', 'cyan', 'magenta'] },

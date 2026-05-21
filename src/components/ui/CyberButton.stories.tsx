@@ -4,7 +4,7 @@ import { ArrowRight, ExternalLink } from 'lucide-react'
 import { CyberButton } from './CyberButton'
 
 const meta = {
-  title: 'Components/Members/CyberButton',
+  title: 'Components/UI/CyberButton',
   component: CyberButton,
   argTypes: {
     color: { control: 'inline-radio', options: ['green', 'cyan', 'magenta', 'gray'] },

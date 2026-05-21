@@ -1,7 +1,7 @@
 import { ArrowRight } from 'lucide-react'
-import { CyberButton } from '@/components/members/CyberButton'
+import { CyberButton } from '@/components/ui/CyberButton'
 import { CyberTag } from '@/components/ui/CyberCorners'
-import { DiscordIcon } from '@/components/shared/DiscordIcon'
+import { DiscordIcon } from '@/components/ui/DiscordIcon'
 import { SectionHeader } from './SectionHeader'
 
 const DISCORD_INVITE = 'https://dc.roguearmy.xyz'

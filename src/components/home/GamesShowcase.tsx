@@ -2,7 +2,7 @@
 
 import { motion } from "motion/react"
 import { SectionGlitch } from "@/components/effects/SectionGlitch"
-import { ScrollReveal } from "@/components/shared/ScrollReveal"
+import { ScrollReveal } from "@/components/effects/ScrollReveal"
 import type { Game } from "@/payload-types"
 
 interface GamesShowcaseProps {

@@ -4,7 +4,7 @@ import { BottomRail } from './BottomRail'
 import { MOCK_MEMBER, MOCK_MEMBER_BOOSTER, MOCK_MEMBER_DEV } from './_mock'
 
 const meta = {
-  title: 'Components/Shared/Header/BottomRail',
+  title: 'Components/Chrome/Header/BottomRail',
   component: BottomRail,
   args: {
     member: MOCK_MEMBER,

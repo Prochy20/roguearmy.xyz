@@ -1,7 +1,7 @@
 'use client'
 
-import { BracketButton } from '@/components/shared/header/BracketButton'
-import { useMenu } from '@/components/shared/header/MenuContext'
+import { BracketButton } from '@/components/chrome/header/BracketButton'
+import { useMenu } from '@/components/chrome/header/MenuContext'
 
 export function BlogNavMenuTrigger() {
   const { open } = useMenu()

@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion } from 'motion/react'
 import Image from 'next/image'
-import { DiscordIcon } from '@/components/shared/DiscordIcon'
+import { DiscordIcon } from '@/components/ui/DiscordIcon'
 import { TerminalWindow } from './TerminalWindow'
 import { AsciiArt } from './AsciiArt'
 import { BootSequence } from './BootSequence'

@@ -13,8 +13,8 @@ import {
   ScrollReveal,
   ScrollRevealContainer,
   ScrollRevealItem,
-} from '@/components/shared/ScrollReveal'
-import { GlowButton } from '@/components/shared/GlowButton'
+} from '@/components/effects/ScrollReveal'
+import { GlowButton } from '@/components/ui/GlowButton'
 import { CyberCorners } from '@/components/ui/CyberCorners'
 import { OverlayBox } from '@/components/overlays/OverlayBox'
 import type { OverlayBoxConfig } from '@/lib/overlay-box-config'

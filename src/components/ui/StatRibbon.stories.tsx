@@ -3,7 +3,7 @@ import { expect, within } from 'storybook/test'
 import { StatRibbon } from './StatRibbon'
 
 const meta = {
-  title: 'Components/Shared/StatRibbon',
+  title: 'Components/UI/StatRibbon',
   component: StatRibbon,
   args: {
     prefix: '// SYNC',

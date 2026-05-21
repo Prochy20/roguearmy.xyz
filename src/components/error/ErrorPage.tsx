@@ -6,7 +6,7 @@ import Link from "next/link"
 import { motion } from "motion/react"
 import { Home, RotateCcw } from "lucide-react"
 import { HeroGlitch } from "@/components/effects/HeroGlitch"
-import { GlowButton } from "@/components/shared/GlowButton"
+import { GlowButton } from "@/components/ui/GlowButton"
 import { AshleyErrorTerminal } from "./AshleyErrorTerminal"
 import { getErrorConfig, type ErrorCode } from "./error-config"
 

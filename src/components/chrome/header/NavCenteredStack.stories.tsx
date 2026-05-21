@@ -4,7 +4,7 @@ import { NavCenteredStack } from './NavCenteredStack'
 import { MOCK_ROLE_GATES, MOCK_ROLE_GATES_DENIED } from './_mock'
 
 const meta = {
-  title: 'Components/Shared/Header/NavCenteredStack',
+  title: 'Components/Chrome/Header/NavCenteredStack',
   component: NavCenteredStack,
   args: {
     onNavigate: fn(),

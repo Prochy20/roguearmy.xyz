@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
-import { DiscordIcon } from "@/components/shared/DiscordIcon"
+import { DiscordIcon } from "@/components/ui/DiscordIcon"
 import { CyberCorners } from "@/components/ui/CyberCorners"
 import { cn } from "@/lib/utils"
 

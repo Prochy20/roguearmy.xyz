@@ -3,7 +3,7 @@ import { expect, fn, userEvent, within } from 'storybook/test'
 import { BracketButton } from './BracketButton'
 
 const meta = {
-  title: 'Components/Shared/Header/BracketButton',
+  title: 'Components/Chrome/Header/BracketButton',
   component: BracketButton,
   argTypes: {
     accent: { control: 'inline-radio', options: ['cyan', 'green', 'white'] },

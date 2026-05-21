@@ -1,4 +1,4 @@
-import { StatRibbon } from '@/components/shared/StatRibbon'
+import { StatRibbon } from '@/components/ui/StatRibbon'
 import { HeroGlitch } from '@/components/effects/HeroGlitch'
 import type { StaffPage } from '@/payload-types'
 import { StaffRadar } from './StaffRadar'

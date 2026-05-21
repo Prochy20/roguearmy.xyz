@@ -9,7 +9,7 @@ const Card = ({ children }: { children: React.ReactNode }) => (
 )
 
 const meta = {
-  title: 'Components/Shared/ScrollReveal',
+  title: 'Components/Effects/ScrollReveal',
   component: ScrollReveal,
   argTypes: {
     direction: { control: 'inline-radio', options: ['up', 'down', 'left', 'right', 'none'] },

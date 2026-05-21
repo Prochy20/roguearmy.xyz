@@ -4,7 +4,7 @@ import { TopBar } from './TopBar'
 import { MOCK_MEMBER } from './_mock'
 
 const meta = {
-  title: 'Components/Shared/Header/TopBar',
+  title: 'Components/Chrome/Header/TopBar',
   component: TopBar,
   args: {
     member: null,

@@ -4,7 +4,7 @@ import { Avatar } from './Avatar'
 import { MOCK_MEMBER, MOCK_MEMBER_BOOSTER } from './_mock'
 
 const meta = {
-  title: 'Components/Shared/Header/Avatar',
+  title: 'Components/Chrome/Header/Avatar',
   component: Avatar,
   argTypes: {
     size: { control: { type: 'number', min: 16, max: 96, step: 4 } },

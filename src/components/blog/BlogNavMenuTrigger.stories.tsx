@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { expect, within } from 'storybook/test'
-import { MenuProvider } from '@/components/shared/header/MenuContext'
+import { MenuProvider } from '@/components/chrome/header/MenuContext'
 import { BlogNavMenuTrigger } from './BlogNavMenuTrigger'
 
 const meta = {

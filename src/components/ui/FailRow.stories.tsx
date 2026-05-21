@@ -5,7 +5,7 @@ import { FailRow } from './FailRow'
 const ALL_CODES = ['unauthenticated', 'unauthorized', 'unavailable', 'unknown'] as const
 
 const meta = {
-  title: 'Components/Shared/FailRow',
+  title: 'Components/UI/FailRow',
   component: FailRow,
   argTypes: {
     code: { control: 'select', options: ALL_CODES },

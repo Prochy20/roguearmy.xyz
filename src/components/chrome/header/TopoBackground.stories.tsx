@@ -3,7 +3,7 @@ import { expect } from 'storybook/test'
 import { TopoBackground } from './TopoBackground'
 
 const meta = {
-  title: 'Components/Shared/Header/TopoBackground',
+  title: 'Components/Chrome/Header/TopoBackground',
   component: TopoBackground,
   argTypes: {
     accent: { control: 'inline-radio', options: ['green', 'cyan'] },

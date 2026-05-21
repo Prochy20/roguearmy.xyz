@@ -1,8 +1,8 @@
 import type { AshleyResult } from '@/lib/api/server'
 import type { components } from '@/lib/api/schema'
-import { CyberButton } from '@/components/members/CyberButton'
-import { DiscordIcon } from '@/components/shared/DiscordIcon'
-import { StatRibbon } from '@/components/shared/StatRibbon'
+import { CyberButton } from '@/components/ui/CyberButton'
+import { DiscordIcon } from '@/components/ui/DiscordIcon'
+import { StatRibbon } from '@/components/ui/StatRibbon'
 import { HeroGlitch } from '@/components/effects/HeroGlitch'
 
 type CommunityStats = components['schemas']['CommunityStatsDto']

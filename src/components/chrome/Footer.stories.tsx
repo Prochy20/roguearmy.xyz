@@ -3,7 +3,7 @@ import { expect, within } from 'storybook/test'
 import { Footer } from './Footer'
 
 const meta = {
-  title: 'Components/Shared/Footer',
+  title: 'Components/Chrome/Footer',
   component: Footer,
   parameters: {
     layout: 'fullscreen',

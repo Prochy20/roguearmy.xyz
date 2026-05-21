@@ -3,7 +3,7 @@ import { expect, within } from 'storybook/test'
 import { CountUp } from './CountUp'
 
 const meta = {
-  title: 'Components/Shared/CountUp',
+  title: 'Components/UI/CountUp',
   component: CountUp,
   argTypes: {
     value: { control: { type: 'number' } },

@@ -3,7 +3,7 @@ import { expect, within } from 'storybook/test'
 import { DataStreamLoader } from './DataStreamLoader'
 
 const meta = {
-  title: 'Components/Loading/DataStreamLoader',
+  title: 'Components/UI/DataStreamLoader',
   component: DataStreamLoader,
   argTypes: {
     lines: { control: { type: 'number', min: 1, max: 12 } },

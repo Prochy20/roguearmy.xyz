@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { CountUp, formatCompact } from '@/components/shared/CountUp'
+import { CountUp, formatCompact } from '@/components/ui/CountUp'
 
 interface StatCounterProps {
   value: number

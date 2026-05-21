@@ -5,7 +5,7 @@ import { motion } from 'motion/react'
 import { BlogNavLinks } from './BlogNavLinks'
 import { BlogNavSearch } from './BlogNavSearch'
 import { BlogNavUserMenu } from './BlogNavUserMenu'
-import { BlogBookmarksDrawer } from './BlogBookmarksDrawer'
+import { BookmarksDrawer } from '@/components/article/BookmarksDrawer'
 import { BlogNavMenuTrigger } from './BlogNavMenuTrigger'
 import { useScrollVisibility } from './useScrollVisibility'
 import { useBlogAuth } from '@/contexts/BlogAuthContext'
@@ -54,7 +54,7 @@ export function BlogNav({ hideOnScroll = false }: BlogNavProps) {
             {isAuthenticated && (
               <>
                 {/* Show bookmarks drawer for authenticated users */}
-                <BlogBookmarksDrawer />
+                <BookmarksDrawer />
                 <div className="hidden sm:block">
                   <BlogNavUserMenu />
                 </div>

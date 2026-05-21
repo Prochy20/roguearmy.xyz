@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { StatRibbon } from '@/components/shared/StatRibbon'
+import { StatRibbon } from '@/components/ui/StatRibbon'
 import type { ManifestoDocument } from './types'
 import { DOC_ORDER } from './types'
 

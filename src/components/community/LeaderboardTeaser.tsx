@@ -1,5 +1,5 @@
 import { ArrowRight } from 'lucide-react'
-import { CyberButton } from '@/components/members/CyberButton'
+import { CyberButton } from '@/components/ui/CyberButton'
 import { CyberCorners, CyberTag } from '@/components/ui/CyberCorners'
 
 const COPY = {

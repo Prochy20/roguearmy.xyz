@@ -35,7 +35,7 @@ function HeaderHost({ member, roleGates }: HeaderHostProps) {
 }
 
 const meta = {
-  title: 'Components/Shared/Header/Header',
+  title: 'Components/Chrome/Header/Header',
   component: HeaderHost,
   args: {
     member: MOCK_MEMBER,

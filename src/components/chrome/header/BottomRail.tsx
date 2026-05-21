@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { DiscordIcon } from '@/components/shared/DiscordIcon'
+import { DiscordIcon } from '@/components/ui/DiscordIcon'
 import { Avatar } from './Avatar'
 import { BracketButton } from './BracketButton'
 import type { MemberSession } from '@/lib/auth/types'
