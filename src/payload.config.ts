@@ -63,7 +63,7 @@ export default buildConfig({
   },
 
   // CORS configuration - add your production domains here
-  cors: [process.env.NEXT_PUBLIC_SERVER_URL || ''].filter(Boolean),
+  cors: [process.env.NEXT_PUBLIC_SERVER_URL || '', 'https://rga.local'].filter(Boolean),
 
   // Order determines admin menu group ordering: Content, Taxonomies, Assets, Users.
   // Within a group Payload lists collections first then globals, so StaffPage is
