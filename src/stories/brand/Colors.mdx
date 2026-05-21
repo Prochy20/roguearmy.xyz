@@ -1,0 +1,62 @@
+import { Meta, ColorPalette, ColorItem } from '@storybook/addon-docs/blocks'
+import { BRAND_COLORS, BG_COLORS, TEXT_COLORS, GLOW_COLORS } from '@/lib/design-tokens'
+
+<Meta title="Brand/Colors" />
+
+# Colors
+
+The RGA palette is built for dark interfaces. Three brand colors — Green, Cyan, and Magenta — are high-saturation neon accents designed to pop against near-black backgrounds.
+
+The values below come directly from `src/lib/design-tokens.ts`. Both this page and the `/brand` route on the live site read from the same source.
+
+## Brand colors
+
+These are the core identity colors:
+
+- **Green** — primary accent for CTAs, active states, and the logo glow.
+- **Cyan** — secondary accent for links, highlights, and technical UI.
+- **Magenta** — tertiary accent for warnings, special badges, and visual tension.
+
+<ColorPalette>
+  {BRAND_COLORS.map((c) => (
+    <ColorItem key={c.hex} title={c.name} subtitle={c.tailwind} colors={{ [c.name]: c.hex }} />
+  ))}
+</ColorPalette>
+
+> **Never** use brand colors as large background fills — they are accent colors only. On dark backgrounds, use them for text, borders, glows, and small UI elements. If you need a colored background area, use the color at 5-10% opacity (e.g. `bg-rga-green/5`).
+
+## Background colors
+
+Four levels of darkness create depth and hierarchy. Layer them from dark to light: **Void → Primary → Elevated → Surface**. Never skip levels (e.g. don't place Surface directly on Void).
+
+<ColorPalette>
+  {BG_COLORS.map((c) => (
+    <ColorItem key={c.hex} title={c.name} subtitle={c.tailwind} colors={{ [c.name]: c.hex }} />
+  ))}
+</ColorPalette>
+
+## Text colors
+
+Three text hierarchy levels:
+
+- **Primary** (#FFFFFF) — headings and important content.
+- **Secondary** (#888888) — body text and descriptions.
+- **Muted** (#555555) — labels, timestamps, placeholders, disabled text.
+
+<ColorPalette>
+  {TEXT_COLORS.map((c) => (
+    <ColorItem key={c.hex} title={c.name} subtitle={c.tailwind} colors={{ [c.name]: c.hex }} />
+  ))}
+</ColorPalette>
+
+> Never use brand colors (green, cyan, magenta) for long-form body text — they are for short labels, links, and accents only.
+
+## Glow colors
+
+Semi-transparent versions of our brand colors, used exclusively for `box-shadow` and glow effects. These create the signature neon luminosity that defines our cyberpunk aesthetic.
+
+<ColorPalette>
+  {GLOW_COLORS.map((c) => (
+    <ColorItem key={c.tailwind} title={c.name} subtitle={c.tailwind} colors={{ [c.name]: c.hex }} />
+  ))}
+</ColorPalette>

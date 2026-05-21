@@ -1,0 +1,41 @@
+import { Meta, Title, Subtitle, Description, Primary, Controls, Stories } from '@storybook/addon-docs/blocks'
+import * as GlowButtonStories from './GlowButton.stories'
+
+<Meta of={GlowButtonStories} />
+
+<Title />
+<Subtitle>The primary call-to-action button. Extends shadcn Button with a neon glow.</Subtitle>
+
+## When to use
+
+- The **single most important action** on a page (`Join Now`, `Open Builder`, `Submit`).
+- Combine with `pulse` for the headline CTA you want users to act on.
+- Pair with `GlowButton` *only* — don't mix with `CyberButton` in the same group; they have different visual weights.
+
+## Color semantics
+
+| Color | Use for |
+|---|---|
+| `green` | Primary actions, confirmations, "go" |
+| `cyan` | Secondary actions, informational CTAs |
+| `magenta` | Destructive or high-attention actions |
+
+## Usage rules
+
+> **Only one pulsing button per viewport.** Pulse signals "this is THE action." If two buttons pulse, neither feels primary.
+
+> **Never use as a navigation link** for non-critical nav. The neon glow is loud — overuse turns it into noise.
+
+```tsx
+import { GlowButton } from '@/components/shared/GlowButton'
+
+<GlowButton glowColor="green" pulse onClick={join}>
+  Join Now
+</GlowButton>
+```
+
+<Primary />
+
+<Controls />
+
+<Stories />

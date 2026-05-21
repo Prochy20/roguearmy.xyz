@@ -1,0 +1,45 @@
+import { Meta, Title, Subtitle, Primary, Controls, Stories } from '@storybook/addon-docs/blocks'
+import * as CyberTagStories from './CyberTag.stories'
+
+<Meta of={CyberTagStories} />
+
+<Title />
+<Subtitle>Compact tactical badge with miniature targeting brackets — the small-scale sibling of CyberCorners.</Subtitle>
+
+## When to use
+
+Status indicators, role labels, category tags, and metadata chips. The backdrop blur and dark background make them work well layered over any content (including image-heavy cards).
+
+## Color semantics
+
+| Color | Meaning |
+|---|---|
+| `green` | Active, online, success |
+| `cyan` | Information, neutral status |
+| `magenta` | Featured, special, attention |
+| `orange` | Warning |
+| `red` | Error, offline, danger |
+| `gray` | Neutral, archived, disabled |
+| `dev` / `admin` / `mod` | User roles |
+| `source-*` | Content source attribution |
+
+## Usage rules
+
+> **Tags are short.** 1–3 short words max. If you need to write a sentence, use a different component.
+
+> **Don't mix tags from different semantic groups in one row** without an obvious grouping label. A row containing `[ADMIN] [WARNING] [REDDIT]` reads as random noise to users.
+
+`CyberTag` is exported from the same module as `CyberCorners`:
+
+```tsx
+import { CyberTag } from '@/components/ui/CyberCorners'
+
+<CyberTag color="green">ACTIVE</CyberTag>
+<CyberTag color="dev">DEV</CyberTag>
+```
+
+<Primary />
+
+<Controls />
+
+<Stories />

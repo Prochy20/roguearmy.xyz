@@ -1,0 +1,45 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Brand/Logo" />
+
+# Logo
+
+The RGA skull logo is the single most recognizable element of our brand. It should always appear sharp, properly spaced, and in its original colors. It works on both dark and light backgrounds. Never alter, recolor, or distort it.
+
+## The mark
+
+<div style={{ display: 'flex', justifyContent: 'center', padding: '3rem', border: '1px solid rgba(255,255,255,0.1)', background: '#0A0A0A', position: 'relative', marginTop: '1rem' }}>
+  <img src="/logo.png" alt="RGA Logo" width={160} height={160} style={{ filter: 'drop-shadow(0 0 40px rgba(0,255,65,0.5))' }} />
+  <div style={{ position: 'absolute', top: 0, left: 0, width: '1.5rem', height: '1.5rem', borderLeft: '2px solid rgba(0,255,65,0.4)', borderTop: '2px solid rgba(0,255,65,0.4)' }} />
+  <div style={{ position: 'absolute', top: 0, right: 0, width: '1.5rem', height: '1.5rem', borderRight: '2px solid rgba(0,255,65,0.4)', borderTop: '2px solid rgba(0,255,65,0.4)' }} />
+  <div style={{ position: 'absolute', bottom: 0, left: 0, width: '1.5rem', height: '1.5rem', borderLeft: '2px solid rgba(0,255,65,0.4)', borderBottom: '2px solid rgba(0,255,65,0.4)' }} />
+  <div style={{ position: 'absolute', bottom: 0, right: 0, width: '1.5rem', height: '1.5rem', borderRight: '2px solid rgba(0,255,65,0.4)', borderBottom: '2px solid rgba(0,255,65,0.4)' }} />
+</div>
+
+[Download `/logo.png`](/logo.png)
+
+## Clear space
+
+Always maintain a clear zone around the logo equal to at least **25% of its height** on all sides. No text, icons, or other graphic elements should enter this zone. The green corner brackets above illustrate the minimum padding boundary.
+
+## Minimum sizes
+
+| Size | Use case |
+|---|---|
+| **128px** | Hero / splash |
+| **64px** | Navigation / cards |
+| **32px** | Minimum allowed |
+
+The logo must never be rendered below 32px. At smaller sizes, fine details in the skull are lost and the mark becomes unrecognizable. For avatars or favicons, use a simplified icon variant if available.
+
+## Do
+
+- Render on **dark backgrounds** — `void` (#030303) or darker.
+- Apply the signature **green glow** drop-shadow on hero placements.
+- Use on light backgrounds when context requires it (the colors hold up).
+
+## Don't
+
+- **Stretch or distort** — always preserve the 1:1 aspect ratio.
+- **Rotate or flip** — the skull must face forward, upright.
+- **Recolor or convert to monochrome** — original colors only.

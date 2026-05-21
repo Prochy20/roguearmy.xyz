@@ -1,0 +1,38 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { BRAND_SECTIONS } from '@/lib/design-tokens'
+
+<Meta title="Brand/Introduction" />
+
+# RGA — Brand Manual
+
+The official Rogue Army brand manual. The single source of truth for our visual identity — every color, typeface, effect, and component that makes RGA look like RGA.
+
+This manual is the **developer-facing** view of the brand. The companion `/brand` route on the live site is the same content rendered for designers, streamers, and content creators. Both surfaces consume `src/lib/design-tokens.ts` so they can never disagree on the data.
+
+---
+
+## What is this for?
+
+Anyone creating visual content for Rogue Army — designers, developers, streamers, and content creators. If you're putting the RGA name or logo on something, check this manual first.
+
+## How it's organised
+
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.5rem', marginTop: '1rem' }}>
+  {BRAND_SECTIONS.map((s) => (
+    <div key={s.num} style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start', border: '1px solid rgba(255,255,255,0.05)', background: 'rgba(10,10,10,0.5)', padding: '0.75rem' }}>
+      <span style={{ fontFamily: 'monospace', fontSize: '0.75rem', color: '#00FFFF', flexShrink: 0 }}>{s.num}</span>
+      <div>
+        <p style={{ fontFamily: 'monospace', fontSize: '0.75rem', color: '#FFFFFF', margin: 0 }}>{s.label}</p>
+        <p style={{ color: '#555555', fontSize: '0.75rem', margin: 0, lineHeight: 1.5 }}>{s.desc}</p>
+      </div>
+    </div>
+  ))}
+</div>
+
+## The golden rule
+
+Consistency is everything. Every piece of RGA content should feel like it came from the same universe — dark, neon-lit, and unmistakably cyberpunk. When in doubt, refer back here. If something isn't covered, ask before improvising.
+
+## Source of truth
+
+Brand data (color hex values, type scale, gradient definitions) lives in `src/lib/design-tokens.ts`. This Storybook and the `/brand` Next.js route both import from there. If you need to change a brand value, change it in tokens — both surfaces will update automatically.

@@ -1,0 +1,49 @@
+import { Meta, Title, Subtitle, Primary, Controls, Stories } from '@storybook/addon-docs/blocks'
+import * as ScanlineOverlayStories from './ScanlineOverlay.stories'
+
+<Meta of={ScanlineOverlayStories} />
+
+<Title />
+<Subtitle>CRT-style horizontal scanlines, fixed to the viewport. Ambient atmosphere for the cyberpunk aesthetic.</Subtitle>
+
+## When to use
+
+- **Page-wide ambient texture** at `intensity="low"` — applied once at the page root, it sits behind everything as subtle CRT-screen feel.
+- **Section-specific atmosphere** at `intensity="medium"` for cinematic scenes (hero areas, command-console panels).
+- **High-impact moments** at `intensity="high"` — rare, intentional, never page-wide.
+
+## Intensity scale
+
+| Value | Opacity | Use for |
+|---|---|---|
+| `low` | 0.02 | Page-wide ambient (default for site root) |
+| `medium` | 0.04 | Section-specific atmosphere |
+| `high` | 0.08 | Specific scenes, hero callouts |
+
+## Positioning
+
+> The component renders `fixed inset-0 z-50`. It covers the entire viewport, not just its parent container. There's no "scoped" variant — if you need scanlines inside a card, use a CSS `background: repeating-linear-gradient` directly instead of this component.
+
+> `pointer-events-none` is baked in, so the overlay never blocks clicks.
+
+## Usage rules
+
+> **One ScanlineOverlay per page** — they don't stack meaningfully. If you mount two, opacities multiply and the canvas turns muddy.
+
+> **Don't crank intensity above `medium` for ambient use.** `high` plus animation is for cinematic moments (a stream scene, a launch reveal), not for a normal browsing page.
+
+```tsx
+import { ScanlineOverlay } from '@/components/effects/ScanlineOverlay'
+
+// Page-wide ambient (typical)
+<ScanlineOverlay intensity="low" />
+
+// Section-specific, animation off for a calmer feel
+<ScanlineOverlay intensity="medium" animated={false} />
+```
+
+<Primary />
+
+<Controls />
+
+<Stories />
