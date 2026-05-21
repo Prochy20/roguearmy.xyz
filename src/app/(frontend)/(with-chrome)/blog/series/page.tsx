@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { getActiveMemberId } from '@/lib/auth/session.server'
 import {
   getSeriesWithProgress,
@@ -15,11 +16,17 @@ export default async function SeriesListingPage() {
     getSeriesFilterOptions(),
   ])
 
+  // BlogSeriesPage reads `useSearchParams` for filter state. Without this
+  // Suspense boundary, Next opts the whole route out of static prerendering
+  // and emits a "missing-suspense-with-csr-bailout" build warning. Matches
+  // the wrapping pattern used by /blog and /blog/history.
   return (
-    <BlogSeriesPage
-      series={series}
-      filterOptions={filterOptions}
-      isAuthenticated={!!memberId}
-    />
+    <Suspense fallback={null}>
+      <BlogSeriesPage
+        series={series}
+        filterOptions={filterOptions}
+        isAuthenticated={!!memberId}
+      />
+    </Suspense>
   )
 }
