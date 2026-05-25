@@ -51,7 +51,7 @@ interface ArticleDetailPageProps {
  * `components/content/reader/*` with article-specific slot content (bookmark
  * + share actions, FeaturedArticles deck, topic back link + series prev/next).
  *
- * Composition mirrors the digest detail page so both surfaces read as one
+ * Composition mirrors the briefing detail page so both surfaces read as one
  * site:
  *   breadcrumb · stat ribbon · title + perex + bookmark/share · hero frame
  *      ↓

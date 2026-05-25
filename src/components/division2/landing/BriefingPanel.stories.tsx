@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { expect, within } from 'storybook/test'
 import { BriefingPanel } from './BriefingPanel'
-import { MOCK_DIGEST_DAILY, MOCK_DIGEST_WEEKLY } from '../_mock'
+import { MOCK_BRIEFING_DAILY, MOCK_BRIEFING_WEEKLY } from '../_mock'
 
 const PERKS = {
   enabled: true,
@@ -17,8 +17,8 @@ const meta = {
   title: 'Components/Division2/Landing/BriefingPanel',
   component: BriefingPanel,
   args: {
-    digest: MOCK_DIGEST_WEEKLY,
-    dailies: [MOCK_DIGEST_DAILY],
+    briefing: MOCK_BRIEFING_WEEKLY,
+    dailies: [MOCK_BRIEFING_DAILY],
     hasAccess: true,
     perks: PERKS,
   },
@@ -42,7 +42,7 @@ export const Booster: Story = {
   play: async ({ canvasElement, step }) => {
     const canvas = within(canvasElement)
     await step('Weekly card title renders', async () => {
-      await expect(canvas.getByText(MOCK_DIGEST_WEEKLY.title)).toBeInTheDocument()
+      await expect(canvas.getByText(MOCK_BRIEFING_WEEKLY.title)).toBeInTheDocument()
     })
   },
 }

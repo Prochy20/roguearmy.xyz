@@ -15,7 +15,7 @@ const meta: Meta<typeof ReaderBreadcrumb> = {
     accent: 'cyan',
     trail: [
       { href: '/division-2', label: 'DIVISION 2' },
-      { href: '/division-2/digest', label: 'BRIEFINGS' },
+      { href: '/division-2/briefings', label: 'BRIEFINGS' },
     ],
     designator: 'WK21_2026',
   },

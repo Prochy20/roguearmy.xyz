@@ -19,7 +19,7 @@ interface ReaderActionsProps {
  * pipe between the two buttons, snap-on-hover (no easing). Hover pushes
  * both label and tick to accent color.
  *
- * This is the digest's default actions slot. Articles use bookmark + share
+ * This is the briefing's default actions slot. Articles use bookmark + share
  * components instead, passed directly into the title block's `actions` slot
  * rather than via this component.
  */

@@ -26,7 +26,7 @@ interface MarkdownRendererProps {
  * - Cyberpunk-themed styling matching the site design
  *
  * Pass `componentsOverride` to swap individual element renderers for a single
- * surface without forking the shared map — used by the digest detail to
+ * surface without forking the shared map — used by the briefing detail to
  * supply its own h2 / aside / img treatments.
  */
 export function MarkdownRenderer({

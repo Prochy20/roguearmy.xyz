@@ -1,6 +1,6 @@
 import { HeroGlitch } from '@/components/effects/HeroGlitch'
 
-interface DigestHeroProps {
+interface BriefingHeroProps {
   kicker: string
   title: string
   accent: string
@@ -8,10 +8,10 @@ interface DigestHeroProps {
 }
 
 /**
- * Hero header for the digest list page. Same layout language as the content
+ * Hero header for the briefings list page. Same layout language as the content
  * and escalation pages — kicker + two-tone display headline + intro paragraph.
  */
-export function DigestHero({ kicker, title, accent, intro }: DigestHeroProps) {
+export function BriefingHero({ kicker, title, accent, intro }: BriefingHeroProps) {
   return (
     <div className="flex min-w-0 flex-col gap-7">
       <div className="font-mono text-[11px] uppercase tracking-[0.35em] text-rga-mod">

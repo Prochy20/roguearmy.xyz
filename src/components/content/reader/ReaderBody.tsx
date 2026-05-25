@@ -39,7 +39,7 @@ interface ReaderBodyProps {
  *
  * For markdown sources, the body is already two transforms deep by the time
  * it arrives here:
- *  1. Citation transform (digest only) — `(ref:UUID)` → `<sup>[N]</sup>` (server)
+ *  1. Citation transform (briefing only) — `(ref:UUID)` → `<sup>[N]</sup>` (server)
  *  2. Section anchoring — `## Title` → `<h2 id="sec-NN" data-sec-num="NN">Title</h2>` (server)
  *
  * For Lexical sources, the heading converter receives a section map keyed

@@ -149,7 +149,7 @@ export function buildConverters({
    *   1. Hash anchors (`#…`)        — in-document jumps, no icon.
    *   2. External (http/https)      — accent-aware underline + ExternalLinkIcon.
    *   3. Internal / relative        — quiet cyan underline.
-   * Citation chips (`data-cite-chip`) only appear in digest markdown content
+   * Citation chips (`data-cite-chip`) only appear in briefing markdown content
    * and never in Lexical, so the chip branch isn't reachable here.
    */
   function renderLink({

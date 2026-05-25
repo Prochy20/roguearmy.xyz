@@ -11,11 +11,11 @@ import type {
   EscalationDailySummary,
 } from '@/lib/division2/escalation.server'
 import type {
-  Digest,
-  DigestArticle,
-  DigestDetail,
-  DigestSection,
-} from '@/lib/division2/digest.server'
+  Briefing,
+  BriefingArticle,
+  BriefingDetail,
+  BriefingSection,
+} from '@/lib/division2/briefing.server'
 import type { AshleyResult } from '@/lib/api/server'
 
 const NOW_ISO = '2026-05-21T10:00:00.000Z'
@@ -115,10 +115,10 @@ export const MOCK_WEEKS_LIST_FAIL: AshleyResult<EscalationWeekList> = {
   error: { code: 'unavailable', status: 503 },
 }
 
-// ── Digest ────────────────────────────────────────────────────────────────
+// ── Briefing ──────────────────────────────────────────────────────────────
 
-export const MOCK_DIGEST_WEEKLY: Digest = {
-  id: 'dig_weekly_20260519',
+export const MOCK_BRIEFING_WEEKLY: Briefing = {
+  id: 'brf_weekly_20260519',
   topic: 'division-2',
   frequency: 'weekly',
   periodStart: '2026-05-19',
@@ -139,9 +139,9 @@ export const MOCK_DIGEST_WEEKLY: Digest = {
   updatedAt: '2026-05-26T09:00:00.000Z',
 }
 
-export const MOCK_DIGEST_DAILY: Digest = {
-  ...MOCK_DIGEST_WEEKLY,
-  id: 'dig_daily_20260521',
+export const MOCK_BRIEFING_DAILY: Briefing = {
+  ...MOCK_BRIEFING_WEEKLY,
+  id: 'brf_daily_20260521',
   frequency: 'daily',
   periodStart: '2026-05-21',
   periodEnd: '2026-05-21',
@@ -154,7 +154,7 @@ export const MOCK_DIGEST_DAILY: Digest = {
   articleCount: 5,
 }
 
-export const MOCK_DIGEST_ARTICLES: DigestArticle[] = [
+export const MOCK_BRIEFING_ARTICLES: BriefingArticle[] = [
   {
     id: 'art_001',
     title: 'Raid Meta Breakdown · Week 21',
@@ -190,13 +190,13 @@ export const MOCK_DIGEST_ARTICLES: DigestArticle[] = [
   },
 ]
 
-export const MOCK_DIGEST_DETAIL: DigestDetail = {
-  ...MOCK_DIGEST_WEEKLY,
+export const MOCK_BRIEFING_DETAIL: BriefingDetail = {
+  ...MOCK_BRIEFING_WEEKLY,
   content: `## Highlights\n\nThis week was about consolidation.\n\n## Vendor Rotation\n\nProtocol vendor swapped to Holster + Rifle slots.\n`,
-  articles: MOCK_DIGEST_ARTICLES,
+  articles: MOCK_BRIEFING_ARTICLES,
 }
 
-export const MOCK_DIGEST_SECTIONS: DigestSection[] = [
+export const MOCK_BRIEFING_SECTIONS: BriefingSection[] = [
   { num: 1, numLabel: '01', text: 'Highlights', id: 'sec-01' },
   { num: 2, numLabel: '02', text: 'Vendor Rotation', id: 'sec-02' },
   { num: 3, numLabel: '03', text: 'Mission Pacing', id: 'sec-03' },

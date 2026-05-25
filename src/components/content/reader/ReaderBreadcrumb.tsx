@@ -14,7 +14,7 @@ interface ReaderBreadcrumbProps {
  * a step you could `cd` into. Earlier segments are clickable back-links;
  * the leaf is the document's designator in accent color (not a link).
  *
- * Trail is generic: digest passes `[DIVISION 2, BRIEFINGS]`, article passes
+ * Trail is generic: briefing passes `[DIVISION 2, BRIEFINGS]`, article passes
  * `[BLOG, <topic name>]`.
  */
 export function ReaderBreadcrumb({

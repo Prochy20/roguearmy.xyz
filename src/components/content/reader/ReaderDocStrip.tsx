@@ -23,7 +23,7 @@ interface ReaderDocStripProps {
  *
  * Reads like the metadata block on top of an intel packet: a flat row of
  * label/value pairs separated by `::` ticks. Each caller composes its own
- * field list — digest passes DOC/CLASS/WORDS/UPDATED, article passes
+ * field list — briefing passes DOC/CLASS/WORDS/UPDATED, article passes
  * DOC/CLASS/WORDS/PUBLISHED, etc.
  *
  * Word count and date values typically use tabular-nums (caller adds it

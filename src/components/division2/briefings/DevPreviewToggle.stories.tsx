@@ -3,13 +3,13 @@ import { expect, within } from 'storybook/test'
 import { DevPreviewToggle } from './DevPreviewToggle'
 
 const meta = {
-  title: 'Components/Division2/Digest/DevPreviewToggle',
+  title: 'Components/Division2/Briefings/DevPreviewToggle',
   component: DevPreviewToggle,
   argTypes: { isPreviewingAsMember: { control: 'boolean' } },
   args: { isPreviewingAsMember: false },
   parameters: {
     layout: 'centered',
-    nextjs: { appDirectory: true, navigation: { pathname: '/division-2/digest' } },
+    nextjs: { appDirectory: true, navigation: { pathname: '/division-2/briefings' } },
   },
 } satisfies Meta<typeof DevPreviewToggle>
 

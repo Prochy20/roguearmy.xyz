@@ -10,8 +10,8 @@
  * spread the relevant pieces.
  *
  * Consumers map their domain concept to an accent:
- *  - Digests: weekly → cyan, daily → orange (via `frequencyAccent` in
- *    `components/division2/digest/accent-digest.ts`).
+ *  - Briefings: weekly → cyan, daily → orange (via `frequencyAccent` in
+ *    `components/division2/briefings/accent-briefing.ts`).
  *  - Articles: `article.topic.tint` → AccentName directly. Article tints
  *    today resolve to one of these five values via `mapPayloadColorToTint`
  *    in `src/lib/articles.ts`.
@@ -20,7 +20,7 @@
  * not Tailwind's `orange-500`. The accent is *named* orange because the
  * visual reads as orange to humans, but the underlying color tokens remain
  * `rga-mod` so it stays brand-aligned with everything else in the codebase
- * that still uses `'mod'` literals (DigestCard, BriefingPanel, etc.).
+ * that still uses `'mod'` literals (BriefingCard, BriefingPanel, etc.).
  */
 export type AccentName = 'green' | 'cyan' | 'magenta' | 'orange' | 'red'
 

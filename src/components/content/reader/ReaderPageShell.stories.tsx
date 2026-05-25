@@ -41,7 +41,7 @@ function buildSlots(accent: AccentName) {
           accent={accent}
           trail={[
             { href: '/division-2', label: 'DIVISION 2' },
-            { href: '/division-2/digest', label: 'BRIEFINGS' },
+            { href: '/division-2/briefings', label: 'BRIEFINGS' },
           ]}
           designator="WK21_2026"
         />
@@ -100,11 +100,11 @@ function buildSlots(accent: AccentName) {
     footer: (
       <ReaderDetailFooter
         accent={accent}
-        backHref="/division-2/digest?week=2026-05-19"
+        backHref="/division-2/briefings?week=2026-05-19"
         backLabel="WEEK"
         backValue="MAY 19"
-        prev={{ href: '/division-2/digest/d1', label: 'DAILY', sublabel: 'MAY 18' }}
-        next={{ href: '/division-2/digest/d2', label: 'WEEKLY', sublabel: 'MAY 26' }}
+        prev={{ href: '/division-2/briefings/d1', label: 'DAILY', sublabel: 'MAY 18' }}
+        next={{ href: '/division-2/briefings/d2', label: 'WEEKLY', sublabel: 'MAY 26' }}
       />
     ),
   }
@@ -125,7 +125,7 @@ const meta: Meta<typeof ReaderPageShell> = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-/** Digest-flavored composition — cyan weekly with ToC + full chrome. */
+/** Briefing-flavored composition — cyan weekly with ToC + full chrome. */
 export const Default: Story = {
   render: (args) => {
     const slots = buildSlots(args.accent)

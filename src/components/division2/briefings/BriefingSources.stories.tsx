@@ -1,15 +1,15 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { expect, within } from 'storybook/test'
-import { DigestSources } from './DigestSources'
-import { MOCK_DIGEST_ARTICLES } from '../_mock'
+import { BriefingSources } from './BriefingSources'
+import { MOCK_BRIEFING_ARTICLES } from '../_mock'
 
 const meta = {
-  title: 'Components/Division2/Digest/DigestSources',
-  component: DigestSources,
+  title: 'Components/Division2/Briefings/BriefingSources',
+  component: BriefingSources,
   argTypes: {
     accent: { control: 'inline-radio', options: ['cyan', 'mod'] },
   },
-  args: { accent: 'cyan', articles: MOCK_DIGEST_ARTICLES },
+  args: { accent: 'cyan', articles: MOCK_BRIEFING_ARTICLES },
   parameters: { layout: 'padded' },
   decorators: [
     (Story) => (
@@ -18,7 +18,7 @@ const meta = {
       </div>
     ),
   ],
-} satisfies Meta<typeof DigestSources>
+} satisfies Meta<typeof BriefingSources>
 
 export default meta
 type Story = StoryObj<typeof meta>
@@ -27,7 +27,7 @@ export const Default: Story = {
   play: async ({ canvasElement, step }) => {
     const canvas = within(canvasElement)
     await step('Each source article title renders', async () => {
-      for (const article of MOCK_DIGEST_ARTICLES) {
+      for (const article of MOCK_BRIEFING_ARTICLES) {
         await expect(canvas.getByText(article.title)).toBeInTheDocument()
       }
     })

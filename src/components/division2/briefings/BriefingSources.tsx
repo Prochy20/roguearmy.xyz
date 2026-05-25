@@ -5,11 +5,11 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { CyberCorners } from '@/components/ui/CyberCorners'
 import { formatDayShort } from '@/lib/division2/format'
 import { ACCENT_TOKENS, type AccentName } from '@/components/content/reader/accent'
-import type { DigestArticle } from '@/lib/division2/digest.server'
+import type { BriefingArticle } from '@/lib/division2/briefing.server'
 
-interface DigestSourcesProps {
+interface BriefingSourcesProps {
   accent: AccentName
-  articles: readonly DigestArticle[]
+  articles: readonly BriefingArticle[]
 }
 
 const PAGE_SIZE = 5
@@ -27,12 +27,12 @@ const PAGE_SIZE = 5
  * Pagination shows mono prev/next buttons + a row of accent dot pips, one
  * per page, with the active page rendered wider and glowing. State is local.
  *
- * Hash-anchor handler: `/digest/X#ref-3` deep links still work even when
+ * Hash-anchor handler: `/briefings/X#ref-3` deep links still work even when
  * ref 3 is on a non-current page. The component switches to the page
  * containing the ref and scrolls the row into view. Covers the few citations
  * that fall back to in-page anchors (articles without external URLs).
  */
-export function DigestSources({ accent, articles }: DigestSourcesProps) {
+export function BriefingSources({ accent, articles }: BriefingSourcesProps) {
   const a = ACCENT_TOKENS[accent]
   const [page, setPage] = useState(0)
 
@@ -204,7 +204,7 @@ const SOURCE_LABEL: Record<string, string> = {
 
 interface SourceRowProps {
   accent: AccentName
-  article: DigestArticle
+  article: BriefingArticle
   ordinal: number
   isFirst: boolean
 }

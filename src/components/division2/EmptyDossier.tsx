@@ -10,11 +10,11 @@ type DossierKind =
   | 'AWAITING_FIRST_SYNC'
   | 'NO_RECORD'
   | 'BOOSTER_REQUIRED'
-  | 'NO_DIGEST_FOR_WEEK'
+  | 'NO_BRIEFING_FOR_WEEK'
 
 interface EmptyDossierProps {
   kind: DossierKind
-  /** Used by NO_RECORD and NO_DIGEST_FOR_WEEK copy to surface the period. */
+  /** Used by NO_RECORD and NO_BRIEFING_FOR_WEEK copy to surface the period. */
   weekStart?: string
 }
 
@@ -68,18 +68,18 @@ function resolve(kind: DossierKind, weekStart?: string): DossierContent {
       return {
         pill: '// BOOSTER PERK',
         heading: 'DAILY BRIEFING LOCKED',
-        body: 'Daily digests are a Rogue Army booster perk. Weekly roll-ups stay open to every operative — the daily AI briefings unlock when you boost the Discord server.',
+        body: 'Daily briefings are a Rogue Army booster perk. Weekly roll-ups stay open to every operative — the daily AI briefings unlock when you boost the Discord server.',
         hint: '// PERK · DISCORD BOOSTER',
         color: 'magenta',
         cta: { href: DISCORD_INVITE, label: 'OPEN DISCORD', external: true },
       }
-    case 'NO_DIGEST_FOR_WEEK':
+    case 'NO_BRIEFING_FOR_WEEK':
       return {
-        pill: '// NO DIGEST',
-        heading: weekStart ? `WEEK OF ${weekStart}` : 'NO DIGEST YET',
+        pill: '// NO BRIEFING',
+        heading: weekStart ? `WEEK OF ${weekStart}` : 'NO BRIEFING YET',
         body: weekStart
-          ? `No digest has been generated for the week of ${weekStart}. Either Ashley skipped the run or this date is outside the archive.`
-          : 'No digests have been generated for this topic yet. Check back after the next scheduled run.',
+          ? `No briefing has been generated for the week of ${weekStart}. Either Ashley skipped the run or this date is outside the archive.`
+          : 'No briefings have been generated for this topic yet. Check back after the next scheduled run.',
         hint: '// RETRY · NEXT CACHE TICK',
         color: 'green',
       }

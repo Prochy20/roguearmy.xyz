@@ -10,7 +10,7 @@ interface ReaderTitleBlockProps {
   dateLabel: string
   /** Computed read-time in minutes — already clamped to >= 1 upstream. */
   readMinutes: number
-  /** Right-side action bar — bookmark/share for articles, copy/print for digests. */
+  /** Right-side action bar — bookmark/share for articles, copy/print for briefings. */
   actions: ReactNode
 }
 

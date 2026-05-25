@@ -12,7 +12,7 @@ interface WeekStepperProps {
 }
 
 /**
- * Prev / current-label / next stepper for the digest archive. Mirrors the
+ * Prev / current-label / next stepper for the briefings archive. Mirrors the
  * day-stepper used on `/division-2/escalation` so the navigation language is
  * consistent across Division 2 tools.
  */

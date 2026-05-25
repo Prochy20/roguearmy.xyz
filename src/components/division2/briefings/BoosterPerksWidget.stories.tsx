@@ -19,7 +19,7 @@ const PERKS = {
 }
 
 const meta = {
-  title: 'Components/Division2/Digest/BoosterPerksWidget',
+  title: 'Components/Division2/Briefings/BoosterPerksWidget',
   component: BoosterPerksWidget,
   args: { perks: PERKS },
   parameters: {

@@ -1,9 +1,9 @@
 import Link from 'next/link'
 import { formatDayShort, weekdayShort } from '@/lib/division2/format'
-import type { Digest } from '@/lib/division2/digest.server'
+import type { Briefing } from '@/lib/division2/briefing.server'
 
-interface DigestCardProps {
-  digest: Digest
+interface BriefingCardProps {
+  briefing: Briefing
   /**
    * `standard` is the default uniform tile. `lead` is the most-recent entry
    * — it spans two grid columns (set by the caller) and switches to a
@@ -17,7 +17,7 @@ const STRIPE_BG =
   'repeating-linear-gradient(-45deg, transparent 0 12px, rgba(255,255,255,0.018) 12px 13px)'
 
 /**
- * Uniform editorial card for a digest entry — weekly and daily share the
+ * Uniform editorial card for a briefing entry — weekly and daily share the
  * exact same shape. The frequency only changes the accent color (cyan for
  * weekly roll-ups, mod / orange for daily briefings) so the grid reads as a
  * date-sorted feed rather than a hierarchy of importance.
@@ -30,15 +30,15 @@ const STRIPE_BG =
  *   • agent telemetry footer with `▸ @ASHLEY · 7D AGO · N SRC · BRF_xxxx.md`
  *   • subtle diagonal-stripe ground + corner quote glyph
  */
-export function DigestCard({ digest, tone = 'standard' }: DigestCardProps) {
-  const isWeekly = digest.frequency === 'weekly'
+export function BriefingCard({ briefing, tone = 'standard' }: BriefingCardProps) {
+  const isWeekly = briefing.frequency === 'weekly'
   const isLead = tone === 'lead'
   const accent = accentClasses(isWeekly ? 'cyan' : 'mod')
-  const fileNumber = buildFileNumber(digest)
-  const age = formatAge(digest.periodStart)
+  const fileNumber = buildFileNumber(briefing)
+  const age = formatAge(briefing.periodStart)
   const dateStamp = isWeekly
-    ? `WK ${isoWeekNumber(digest.periodStart)} · ${formatDayShort(digest.periodStart)} → ${formatDayShort(digest.periodEnd)}`
-    : `${weekdayShort(digest.periodStart)} · ${formatDayShort(digest.periodStart)}`
+    ? `WK ${isoWeekNumber(briefing.periodStart)} · ${formatDayShort(briefing.periodStart)} → ${formatDayShort(briefing.periodEnd)}`
+    : `${weekdayShort(briefing.periodStart)} · ${formatDayShort(briefing.periodStart)}`
 
   // Lead tone is a borderless editorial hero — image left / text right at
   // lg+, stacking to vertical on mobile. No outer card border, no bg, no
@@ -62,7 +62,7 @@ export function DigestCard({ digest, tone = 'standard' }: DigestCardProps) {
 
   return (
     <Link
-      href={`/division-2/digest/${digest.id}`}
+      href={`/division-2/briefings/${briefing.id}`}
       prefetch={false}
       className={`group relative block h-full transition-colors ${wrapperLayout} ${
         isLead ? '' : `border ${accent.cardBorder} ${accent.cardBorderHover}`
@@ -73,10 +73,10 @@ export function DigestCard({ digest, tone = 'standard' }: DigestCardProps) {
       <QuoteOrnament lead={isLead} />
 
       <div className={previewLayout}>
-        {digest.thumbnailUrl ? (
+        {briefing.thumbnailUrl ? (
           <>
             <img
-              src={digest.thumbnailUrl}
+              src={briefing.thumbnailUrl}
               alt=""
               aria-hidden
               className="h-full w-full object-cover opacity-85 transition-all duration-300 group-hover:scale-[1.02] group-hover:opacity-100"
@@ -102,7 +102,7 @@ export function DigestCard({ digest, tone = 'standard' }: DigestCardProps) {
       <div className={bodyLayout}>
         <div className="flex flex-wrap items-center gap-2.5">
           <BracketPill
-            label={digest.frequency.toUpperCase()}
+            label={briefing.frequency.toUpperCase()}
             accent={isWeekly ? 'cyan' : 'mod'}
           />
           <span className="font-mono text-[10px] uppercase tracking-[0.32em] text-text-secondary">
@@ -122,10 +122,10 @@ export function DigestCard({ digest, tone = 'standard' }: DigestCardProps) {
         <h3
           className={`break-words font-display uppercase leading-[1.05] text-text-primary line-clamp-3 transition-colors ${headlineSize} ${accent.headlineHover}`}
         >
-          {digest.title}
+          {briefing.title}
         </h3>
 
-        {digest.perex && (
+        {briefing.perex && (
           <p
             className={`text-[13.5px] leading-snug text-text-secondary/90 sm:text-sm ${
               isLead
@@ -133,7 +133,7 @@ export function DigestCard({ digest, tone = 'standard' }: DigestCardProps) {
                 : 'line-clamp-3'
             }`}
           >
-            {digest.perex}
+            {briefing.perex}
           </p>
         )}
 
@@ -155,7 +155,7 @@ export function DigestCard({ digest, tone = 'standard' }: DigestCardProps) {
             <span aria-hidden className={accent.cursorText}>{'▸'}</span>
             <span>{age}</span>
             <span aria-hidden className="text-text-muted/40">·</span>
-            <span>{digest.articleCount} SRC</span>
+            <span>{briefing.articleCount} SRC</span>
             <span aria-hidden className="text-text-muted/40">·</span>
             <span>
               <span className="text-rga-mod">{fileNumber}</span>
@@ -286,8 +286,8 @@ function accentClasses(accent: 'cyan' | 'mod') {
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────
 
-function buildFileNumber(digest: Digest): string {
-  const tail = digest.id.replace(/-/g, '').slice(-4).toUpperCase()
+function buildFileNumber(briefing: Briefing): string {
+  const tail = briefing.id.replace(/-/g, '').slice(-4).toUpperCase()
   return `BRF_${tail}`
 }
 

@@ -1,45 +1,45 @@
 import Link from 'next/link'
-import { BoosterPerksWidget } from '@/components/division2/digest/BoosterPerksWidget'
-import { DigestCard } from '@/components/division2/digest/DigestCard'
+import { BoosterPerksWidget } from '@/components/division2/briefings/BoosterPerksWidget'
+import { BriefingCard } from '@/components/division2/briefings/BriefingCard'
 import { CyberCorners } from '@/components/ui/CyberCorners'
 import {
   formatDayShort,
   normalizeDayIso,
 } from '@/lib/division2/format'
-import type { Digest } from '@/lib/division2/digest.server'
+import type { Briefing } from '@/lib/division2/briefing.server'
 import type { Division2 } from '@/payload-types'
 
-type DigestPerks = NonNullable<NonNullable<Division2['digestPage']>['perks']>
+type BriefingsPerks = NonNullable<NonNullable<Division2['briefingsPage']>['perks']>
 
 interface BriefingPanelProps {
-  digest: Digest
+  briefing: Briefing
   /**
    * Latest daily briefings. Populated only for boosters/staff/dev; null for
    * plain members (the perks widget renders in that slot instead).
    */
-  dailies: Digest[] | null
+  dailies: Briefing[] | null
   /** True when the viewer can see the daily briefings. */
   hasAccess: boolean
-  /** Booster perks copy from the digest page CMS — used for non-boosters. */
-  perks: DigestPerks | null | undefined
+  /** Booster perks copy from the briefings page CMS — used for non-boosters. */
+  perks: BriefingsPerks | null | undefined
 }
 
 /**
- * Compact preview of the latest weekly digest. Title + period + highlights
+ * Compact preview of the latest weekly briefing. Title + period + highlights
  * bullets. Deliberately drops the editorial banner image and metadata
- * footer — those live on the digest detail page. This widget exists to
+ * footer — those live on the briefing detail page. This widget exists to
  * answer: "what does this week's briefing cover?"
  */
 export function BriefingPanel({
-  digest,
+  briefing,
   dailies,
   hasAccess,
   perks,
 }: BriefingPanelProps) {
-  const start = normalizeDayIso(digest.periodStart)
-  const end = normalizeDayIso(digest.periodEnd)
+  const start = normalizeDayIso(briefing.periodStart)
+  const end = normalizeDayIso(briefing.periodEnd)
   const period = `${formatDayShort(start)} → ${formatDayShort(end)}`
-  const highlights = (digest.highlights ?? []).slice(0, 4)
+  const highlights = (briefing.highlights ?? []).slice(0, 4)
   const dailyItems = (dailies ?? []).slice(0, 3)
   const showDailies = hasAccess && dailyItems.length > 0
   const showPerks = !hasAccess
@@ -67,7 +67,7 @@ export function BriefingPanel({
           label="// LATEST · WEEKLY BRIEFING"
           meta={period}
           cta={{
-            href: `/division-2/digest/${digest.id}`,
+            href: `/division-2/briefings/${briefing.id}`,
             label: 'READ FULL BRIEFING →',
           }}
         />
@@ -76,9 +76,9 @@ export function BriefingPanel({
         <div className="flex flex-col gap-5 border border-rga-cyan/20 bg-[rgba(0,0,0,0.5)] p-6 sm:p-7">
           <div className="flex flex-wrap items-baseline justify-between gap-3 font-mono text-[10px] uppercase tracking-[0.3em]">
             <span className="text-rga-cyan">▸ @ASHLEY · BRIEFING</span>
-            {typeof digest.articleCount === 'number' && digest.articleCount > 0 && (
+            {typeof briefing.articleCount === 'number' && briefing.articleCount > 0 && (
               <span className="text-text-muted tabular-nums">
-                {digest.articleCount} SOURCES
+                {briefing.articleCount} SOURCES
               </span>
             )}
           </div>
@@ -87,12 +87,12 @@ export function BriefingPanel({
             className="font-display text-2xl uppercase leading-[1.05] text-text-primary sm:text-3xl"
             style={{ textShadow: '0 0 18px rgba(0,255,255,0.18)' }}
           >
-            {digest.title}
+            {briefing.title}
           </h3>
 
-          {digest.perex && (
+          {briefing.perex && (
             <p className="line-clamp-3 max-w-3xl text-sm leading-relaxed text-text-secondary sm:text-base">
-              {digest.perex}
+              {briefing.perex}
             </p>
           )}
 
@@ -126,7 +126,7 @@ export function BriefingPanel({
           />
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
             {dailyItems.map((d) => (
-              <DigestCard key={d.id} digest={d} />
+              <BriefingCard key={d.id} briefing={d} />
             ))}
           </div>
         </div>

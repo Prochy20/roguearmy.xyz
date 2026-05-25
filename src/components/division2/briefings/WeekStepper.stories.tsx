@@ -4,12 +4,12 @@ import { WeekStepper, type WeekStepperState } from './WeekStepper'
 
 const STATE: WeekStepperState = {
   current: { periodStart: '2026-05-19', periodEnd: '2026-05-25', label: 'WEEK OF MAY 19' },
-  prev: { periodStart: '2026-05-12', href: '/division-2/digest?week=2026-05-12', label: 'WEEK OF MAY 12' },
-  next: { periodStart: '2026-05-26', href: '/division-2/digest?week=2026-05-26', label: 'WEEK OF MAY 26' },
+  prev: { periodStart: '2026-05-12', href: '/division-2/briefings?week=2026-05-12', label: 'WEEK OF MAY 12' },
+  next: { periodStart: '2026-05-26', href: '/division-2/briefings?week=2026-05-26', label: 'WEEK OF MAY 26' },
 }
 
 const meta = {
-  title: 'Components/Division2/Digest/WeekStepper',
+  title: 'Components/Division2/Briefings/WeekStepper',
   component: WeekStepper,
   args: { state: STATE },
   parameters: {

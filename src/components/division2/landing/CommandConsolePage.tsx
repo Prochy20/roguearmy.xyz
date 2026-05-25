@@ -9,7 +9,7 @@ import { LootStripPanel } from './LootStripPanel'
 import { RaidsPanel, type RaidsScheduleEntry } from './RaidsPanel'
 
 type LandingPageContent = NonNullable<Division2['landingPage']>
-type DigestPerks = NonNullable<NonNullable<Division2['digestPage']>['perks']>
+type BriefingsPerks = NonNullable<NonNullable<Division2['briefingsPage']>['perks']>
 
 interface CommandConsolePageProps {
   /** Aggregated state for the ribbon + peek data. */
@@ -18,8 +18,8 @@ interface CommandConsolePageProps {
   content: LandingPageContent | null | undefined
   /** True when the viewer can see daily briefings under the weekly card. */
   hasAccess: boolean
-  /** Booster perks copy from the digest page CMS — shown to non-boosters under SEC_03. */
-  perks: DigestPerks | null | undefined
+  /** Booster perks copy from the briefings page CMS — shown to non-boosters under SEC_03. */
+  perks: BriefingsPerks | null | undefined
 }
 
 const DEFAULTS = {
@@ -63,7 +63,7 @@ const DEFAULTS = {
  *   • Hero       — `COMMAND / CONSOLE` two-line headline + intro.
  *   • SEC_01     — live intel feed (compact peek into /content).
  *   • SEC_02     — today's targeted loot strip (compact peek into /escalation).
- *   • SEC_03     — latest weekly briefing (compact peek into /digest).
+ *   • SEC_03     — latest weekly briefing (compact peek into /briefings).
  *   • SEC_04     — weekly raids (Discord-routed via Apollo bot).
  *
  * Each peek widget is purpose-built — it does NOT reuse the destination
@@ -90,7 +90,7 @@ export function CommandConsolePage({
   const today = todayUtcIso()
   const escalationPeek = state.peeks.escalation
   const contentPeek = state.peeks.content
-  const digestPeek = state.peeks.digest
+  const briefingPeek = state.peeks.briefing
 
   // Now-time threaded into the intel feed for stable timeago strings.
   const now = Date.now()
@@ -204,9 +204,9 @@ export function CommandConsolePage({
 
       {/* SEC_03 — latest weekly briefing + (boosters) 3 most-recent dailies
           or (non-boosters) the BoosterPerksWidget pitching the daily perk. */}
-      {digestPeek && (
+      {briefingPeek && (
         <BriefingPanel
-          digest={digestPeek}
+          briefing={briefingPeek}
           dailies={state.peeks.dailies}
           hasAccess={hasAccess}
           perks={perks}

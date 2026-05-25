@@ -8,7 +8,7 @@ const ALL_KINDS = [
   'AWAITING_FIRST_SYNC',
   'NO_RECORD',
   'BOOSTER_REQUIRED',
-  'NO_DIGEST_FOR_WEEK',
+  'NO_BRIEFING_FOR_WEEK',
 ] as const
 
 const meta = {
@@ -40,4 +40,4 @@ export const FeaturePending: Story = { args: { kind: 'FEATURE_PENDING' } }
 export const AwaitingFirstSync: Story = { args: { kind: 'AWAITING_FIRST_SYNC' } }
 export const NoRecord: Story = { args: { kind: 'NO_RECORD', weekStart: '2026-05-19' } }
 export const BoosterRequired: Story = { args: { kind: 'BOOSTER_REQUIRED' } }
-export const NoDigestForWeek: Story = { args: { kind: 'NO_DIGEST_FOR_WEEK', weekStart: '2026-05-19' } }
+export const NoBriefingForWeek: Story = { args: { kind: 'NO_BRIEFING_FOR_WEEK', weekStart: '2026-05-19' } }

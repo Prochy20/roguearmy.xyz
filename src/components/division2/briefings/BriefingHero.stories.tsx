@@ -1,18 +1,18 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { expect, within } from 'storybook/test'
-import { DigestHero } from './DigestHero'
+import { BriefingHero } from './BriefingHero'
 
 const meta = {
-  title: 'Components/Division2/Digest/DigestHero',
-  component: DigestHero,
+  title: 'Components/Division2/Briefings/BriefingHero',
+  component: BriefingHero,
   args: {
-    kicker: '// AI · ASHLEY · DIGEST',
+    kicker: '// AI · ASHLEY · BRIEFING',
     title: 'DIVISION 2',
     accent: 'BRIEFINGS',
     intro: 'Ashley collates every relevant signal each week and condenses it into one packet.',
   },
   parameters: { layout: 'fullscreen' },
-} satisfies Meta<typeof DigestHero>
+} satisfies Meta<typeof BriefingHero>
 
 export default meta
 type Story = StoryObj<typeof meta>

@@ -1,10 +1,10 @@
 import { CyberButton } from '@/components/ui/CyberButton'
 import type { Division2 } from '@/payload-types'
 
-type DigestPerks = NonNullable<NonNullable<Division2['digestPage']>['perks']>
+type BriefingsPerks = NonNullable<NonNullable<Division2['briefingsPage']>['perks']>
 
 interface BoosterPerksWidgetProps {
-  perks: DigestPerks | null | undefined
+  perks: BriefingsPerks | null | undefined
 }
 
 const STRIPE_BG =
