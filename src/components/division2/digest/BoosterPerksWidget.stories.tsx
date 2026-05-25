@@ -52,9 +52,11 @@ export const Disabled: Story = {
   args: { perks: { ...PERKS, enabled: false } },
   play: async ({ canvasElement, step }) => {
     await step('Component returns null when disabled', async () => {
-      // The decorator wraps the story in a sizing div, so we check that the
-      // wrapper itself has no children (the component rendered nothing).
-      await expect(canvasElement.firstElementChild?.children.length ?? -1).toBe(0)
+      // canvasElement > globalFontDecorator > localMaxWidthDecorator > (null).
+      // Drill two levels to assert the innermost wrapper has zero children.
+      await expect(
+        canvasElement.firstElementChild?.firstElementChild?.children.length ?? -1,
+      ).toBe(0)
     })
   },
 }

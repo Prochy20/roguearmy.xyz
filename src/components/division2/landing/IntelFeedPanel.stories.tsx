@@ -38,7 +38,11 @@ export const Empty: Story = {
   args: { articles: [] },
   play: async ({ canvasElement, step }) => {
     await step('Returns null when there are no articles', async () => {
-      await expect(canvasElement.firstElementChild?.children.length ?? -1).toBe(0)
+      // canvasElement > globalFontDecorator > localMaxWidthDecorator > (null).
+      // Drill two levels to assert the innermost wrapper has zero children.
+      await expect(
+        canvasElement.firstElementChild?.firstElementChild?.children.length ?? -1,
+      ).toBe(0)
     })
   },
 }

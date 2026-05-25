@@ -55,7 +55,11 @@ export const Empty: Story = {
   args: { missions: [] },
   play: async ({ canvasElement, step }) => {
     await step('Empty mission list returns null — no chrome', async () => {
-      await expect(canvasElement.firstElementChild?.children.length ?? 0).toBe(0)
+      // canvasElement > globalFontDecorator > localMaxWidthDecorator > (null).
+      // Drill two levels to assert the innermost wrapper has zero children.
+      await expect(
+        canvasElement.firstElementChild?.firstElementChild?.children.length ?? -1,
+      ).toBe(0)
     })
   },
 }

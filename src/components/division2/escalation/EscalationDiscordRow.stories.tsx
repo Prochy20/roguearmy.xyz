@@ -37,7 +37,10 @@ export const Disabled: Story = {
   args: { content: { ...ENABLED_CONTENT, enabled: false } },
   play: async ({ canvasElement, step }) => {
     await step('Component returns null when disabled — no chrome rendered', async () => {
-      await expect(canvasElement.children.length).toBe(0)
+      // The Storybook preview wraps every story in a global font-variables
+      // div, so canvasElement's direct child is that wrapper. The wrapper
+      // itself should be empty when the component returns null.
+      await expect(canvasElement.firstElementChild?.children.length ?? -1).toBe(0)
     })
   },
 }
