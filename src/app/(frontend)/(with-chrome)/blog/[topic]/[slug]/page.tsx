@@ -1,7 +1,8 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { getTintClasses, formatArticleDate, getArticleUrl } from '@/lib/articles'
+import { getArticleUrl } from '@/lib/articles'
 import {
+  fetchWikiBody,
   getArticleByTopicAndSlug,
   getArticleByTopicAndSlugWithDraft,
   getSeriesNavigation,
@@ -10,16 +11,16 @@ import {
 } from '@/lib/articles.server'
 import { getActiveMemberId } from '@/lib/auth/session.server'
 import { getMemberProgressMap } from '@/lib/progress.server'
+import {
+  transformReaderBody,
+  type ReaderSection,
+} from '@/lib/content/markdown-sections'
 import { extractHeadingsFromLexical } from '@/lib/toc'
 import { ReadProgressTracker } from '@/components/article/ReadProgressTracker'
-import { cn } from '@/lib/utils'
-import { BlogArticleHero } from './BlogArticleHero'
-import { ArticleWithTOC } from './components/ArticleWithTOC'
-import { ArticlePageClient } from './components/ArticlePageClient'
-import { ReadingStatus } from './components/ReadingStatus'
-import { BlogSeriesNavigation } from './BlogSeriesNavigation'
-import { FeaturedArticles } from '@/components/article/FeaturedArticles'
 import { ArticleTeaserView } from '@/components/article/ArticleTeaserView'
+import { ArticleDetailPage } from '@/components/article/ArticleDetailPage'
+import type { ReaderBodySource } from '@/components/content/reader/ReaderBody'
+import { ArticlePageClient } from './components/ArticlePageClient'
 
 interface ArticlePageProps {
   params: Promise<{ topic: string; slug: string }>
@@ -77,10 +78,9 @@ export default async function BlogArticlePage({ params, searchParams }: ArticleP
   const { topic, slug } = await params
   const { preview } = await searchParams
 
-  // Preview mode is used by Payload Live Preview (iframe with postMessage)
+  // Preview mode is used by Payload Live Preview (iframe with postMessage).
   const isPreview = preview === 'true'
 
-  // Step 1: Parallel fetch article + memberId (independent operations)
   const [{ article, rawArticle }, memberId] = await Promise.all([
     getArticleByTopicAndSlugWithDraft(topic, slug, isPreview),
     getActiveMemberId(),
@@ -90,85 +90,79 @@ export default async function BlogArticlePage({ params, searchParams }: ArticleP
     notFound()
   }
 
-  // Check if user can view full content
-  // In preview mode (Payload Live Preview iframe), allow full content for CMS editing
-  // This is secure because Live Preview only works within authenticated Payload admin
+  // Visibility gate — preview mode bypasses since it's authenticated by
+  // Payload admin already.
   const canViewFullContent =
-    isPreview || // Preview mode (Live Preview iframe or draft mode) can always view
+    isPreview ||
     article.visibility === 'public' ||
     (article.visibility === 'members_only' && memberId !== null)
 
-  // If can't view full content, show teaser view
   if (!canViewFullContent) {
     return <ArticleTeaserView article={article} />
   }
 
-  const tint = getTintClasses(article.topic.tint)
+  // Fire the wiki fetch concurrently with the series/featured pipeline —
+  // it has no dependency on either. Cuts ~1 round trip off the cold-cache
+  // critical path for wiki articles. Resolved later, just before building
+  // bodySource. Non-wiki articles get a fast resolved-null sentinel.
+  const wikiBodyPromise =
+    article.contentSource.type === 'wiki' && article.contentSource.outlineDocumentId
+      ? fetchWikiBody(article.contentSource.outlineDocumentId)
+      : Promise.resolve(null)
 
-  // Step 2: Series navigation (depends on article)
+  // Series navigation (depends on article id).
   const seriesNavigation = await getSeriesNavigation(article.id)
 
-  // Extract curated article IDs from relatedArticles field
   const curatedArticleIds = (rawArticle.relatedArticles || []).map((a) =>
-    typeof a === 'string' ? a : a.id
+    typeof a === 'string' ? a : a.id,
   )
-
-  // Collect all article IDs that need progress (for parallel fetch below)
   const seriesArticleIds = seriesNavigation?.articleIds || []
 
-  // Step 3: Parallel fetch featured articles + progress (independent after series)
-  const [featuredArticles, progressMap] = await Promise.all([
-    getFeaturedArticles(
-      article.id,
-      article.topic.id,
-      article.games.map((g) => g.id),
-      curatedArticleIds,
-      seriesArticleIds
-    ),
-    // Defer progress fetch - we'll fetch with all IDs after we know featured articles
-    Promise.resolve(undefined as Map<string, import('@/lib/progress.server').ArticleProgress> | undefined),
-  ])
+  const featuredArticles = await getFeaturedArticles(
+    article.id,
+    article.topic.id,
+    article.games.map((g) => g.id),
+    curatedArticleIds,
+    seriesArticleIds,
+  )
 
-  // Now fetch progress for all articles if authenticated
   const progressArticleIds = [
     ...seriesArticleIds,
     ...featuredArticles.map((a) => a.id),
   ]
+  const finalProgressMap =
+    memberId && progressArticleIds.length > 0
+      ? await getMemberProgressMap(memberId, progressArticleIds)
+      : undefined
 
-  const finalProgressMap = memberId && progressArticleIds.length > 0
-    ? await getMemberProgressMap(memberId, progressArticleIds)
-    : progressMap
+  const seriesProgress =
+    finalProgressMap && seriesNavigation
+      ? Object.fromEntries(
+          seriesNavigation.articleIds
+            .filter((id) => finalProgressMap.has(id))
+            .map((id) => [id, finalProgressMap.get(id)!]),
+        )
+      : undefined
 
-  // Convert Map to serializable object for client component
-  const seriesProgress = finalProgressMap && seriesNavigation
-    ? Object.fromEntries(
-        seriesNavigation.articleIds
-          .filter((id) => finalProgressMap.has(id))
-          .map((id) => [id, finalProgressMap.get(id)!])
-      )
-    : undefined
+  const featuredProgress =
+    finalProgressMap && featuredArticles.length > 0
+      ? Object.fromEntries(
+          featuredArticles
+            .filter((a) => finalProgressMap.has(a.id))
+            .map((a) => [a.id, finalProgressMap.get(a.id)!]),
+        )
+      : undefined
 
-  const featuredProgress = finalProgressMap && featuredArticles.length > 0
-    ? Object.fromEntries(
-        featuredArticles
-          .filter((a) => finalProgressMap.has(a.id))
-          .map((a) => [a.id, finalProgressMap.get(a.id)!])
-      )
-    : undefined
+  const highlights = Array.isArray(rawArticle.highlights)
+    ? rawArticle.highlights.map((h) => h.text).filter((t): t is string => !!t)
+    : []
 
-  // Extract headings for TOC (server-side for Payload content)
-  const initialHeadings =
-    article.contentSource.type === 'payload'
-      ? extractHeadingsFromLexical(article.contentSource.content?.content)
-      : [] // Wiki content headings extracted client-side
-
-  // Preview mode: use client component with live preview hook
+  // Preview mode uses the client wrapper so live edits sync into the view.
   if (isPreview) {
     return (
       <ArticlePageClient
         initialArticle={article}
         rawArticle={rawArticle}
-        slug={slug}
         seriesNavigation={seriesNavigation}
         seriesProgress={seriesProgress}
         featuredArticles={featuredArticles}
@@ -177,142 +171,55 @@ export default async function BlogArticlePage({ params, searchParams }: ArticleP
     )
   }
 
-  // Normal mode: server-rendered output
+  // Normal mode: build body source + sections server-side, render the shared
+  // reader shell.
+  let bodySource: ReaderBodySource
+  let sections: ReaderSection[]
+  let wordCount: number
+
+  if (article.contentSource.type === 'wiki' && article.contentSource.outlineDocumentId) {
+    const wiki = await wikiBodyPromise
+    if (!wiki || !wiki.ok) {
+      // Outline fetch failed — fall back to the teaser-style view so the
+      // reader sees something other than an empty shell.
+      return <ArticleTeaserView article={article} />
+    }
+    const transformed = transformReaderBody(wiki.data.markdown)
+    bodySource = { type: 'markdown', content: transformed.transformed }
+    sections = transformed.sections
+    wordCount = transformed.wordCount
+  } else if (article.contentSource.type === 'payload' && article.contentSource.content?.content) {
+    const lexicalData = article.contentSource.content.content
+    bodySource = { type: 'lexical', data: lexicalData }
+    const headings = extractHeadingsFromLexical(lexicalData)
+    sections = headings.map((h, i) => ({
+      num: i + 1,
+      numLabel: String(i + 1).padStart(2, '0'),
+      text: h.text,
+      id: h.id,
+    }))
+    // Approximate from reading time (200 wpm). Real word count would require
+    // walking the Lexical AST; the estimate is close enough for the doc strip
+    // and the reading widget's progress math.
+    wordCount = Math.max(1, article.readingTime) * 200
+  } else {
+    notFound()
+  }
+
   return (
-    <div className="min-h-screen bg-void relative overflow-hidden">
-      {/* Reading status bar - bottom of screen */}
-      <ReadingStatus readingTime={article.readingTime} />
-
-      {/* Progress tracker - only for authenticated members */}
+    <>
       {memberId && <ReadProgressTracker articleId={article.id} />}
-
-      {/* Background atmospheric effects */}
-      <div
-        className="fixed inset-0 pointer-events-none opacity-50"
-        style={{
-          background: `
-            radial-gradient(ellipse 100% 50% at 0% 0%, rgba(0,255,65,0.08) 0%, transparent 50%),
-            radial-gradient(ellipse 80% 40% at 100% 100%, rgba(0,255,255,0.06) 0%, transparent 40%),
-            radial-gradient(ellipse 60% 30% at 50% 50%, rgba(255,0,255,0.04) 0%, transparent 40%)
-          `,
-        }}
-      />
-
-      {/* Hero Section - Full viewport */}
-      <BlogArticleHero
-        articleId={article.id}
-        slug={slug}
-        title={article.title}
-        heroImage={article.heroImage}
-        topic={article.topic}
-        tint={tint}
-        publishedAt={article.publishedAt}
-        readingTime={article.readingTime}
-        contentType={article.contentType}
-        games={article.games}
-        series={article.series}
+      <ArticleDetailPage
+        article={article}
+        bodySource={bodySource}
+        sections={sections}
+        wordCount={wordCount}
+        highlights={highlights}
+        featuredArticles={featuredArticles}
+        featuredProgress={featuredProgress}
+        seriesNavigation={seriesNavigation}
         isAuthenticated={!!memberId}
       />
-
-      {/* Content Section */}
-      <main className="relative z-10">
-        {/* Transition gradient from hero */}
-        <div className="h-32 bg-linear-to-b from-transparent to-void -mt-32 relative z-20" />
-
-        {/* Article Body - Full width with internal rhythm */}
-        <div className="bg-void relative">
-          {/* Left accent line */}
-          <div
-            className={cn(
-              'absolute left-0 top-0 bottom-0 w-1 hidden lg:block',
-              'bg-linear-to-b from-transparent via-current to-transparent opacity-20',
-              tint.text
-            )}
-          />
-
-          {/* Content grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_minmax(0,720px)_1fr] gap-8 px-6 md:px-12 lg:px-0">
-            {/* Left margin - empty spacer on large screens */}
-            <div className="hidden lg:block" />
-
-            {/* Center - Article content with fixed TOC */}
-            <ArticleWithTOC
-              contentSource={article.contentSource}
-              initialHeadings={initialHeadings}
-            >
-              {/* Series navigation - only show if article is part of a series */}
-              {seriesNavigation && (
-                <BlogSeriesNavigation
-                  navigation={seriesNavigation}
-                  seriesProgress={seriesProgress}
-                  isAuthenticated={!!memberId}
-                />
-              )}
-
-              {/* Featured articles - "You might also like" section (only show with exactly 3) */}
-              {featuredArticles.length === 3 && (
-                <FeaturedArticles
-                  articles={featuredArticles}
-                  progress={featuredProgress}
-                />
-              )}
-            </ArticleWithTOC>
-
-            {/* Right margin - metadata on large screens */}
-            <div className="hidden lg:block pt-12 pl-8">
-              <div className="sticky top-24 space-y-8">
-                {/* Mini metadata card */}
-                <div className="space-y-4 text-sm">
-                  <div>
-                    <span className="text-rga-gray/40 uppercase tracking-wider text-xs">
-                      Published
-                    </span>
-                    <p className="text-rga-gray mt-1">
-                      {formatArticleDate(article.publishedAt)}
-                    </p>
-                  </div>
-                  <div>
-                    <span className="text-rga-gray/40 uppercase tracking-wider text-xs">
-                      Reading time
-                    </span>
-                    <p className="text-rga-gray mt-1">
-                      {article.readingTime} minutes
-                    </p>
-                  </div>
-                  <div>
-                    <span className="text-rga-gray/40 uppercase tracking-wider text-xs">
-                      Topic
-                    </span>
-                    <p className={cn('mt-1', tint.text)}>
-                      {article.topic.name}
-                    </p>
-                  </div>
-                  {article.games.length > 0 && (
-                    <div>
-                      <span className="text-rga-gray/40 uppercase tracking-wider text-xs">
-                        Games
-                      </span>
-                      <div className="mt-1 space-y-1">
-                        {article.games.map((game) => (
-                          <p key={game.id} className="text-rga-gray">
-                            {game.name}
-                          </p>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Decorative element */}
-                <div className="w-16 h-px bg-linear-to-r from-rga-green/30 to-transparent" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </main>
-
-      {/* Bottom fade */}
-      <div className="h-32 bg-linear-to-t from-void to-transparent" />
-    </div>
+    </>
   )
 }

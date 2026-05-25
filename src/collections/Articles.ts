@@ -84,6 +84,24 @@ export const Articles: CollectionConfig = {
                 description: 'Short excerpt/description shown in article listings',
               },
             },
+            {
+              name: 'highlights',
+              type: 'array',
+              label: 'Key Takeaways (TL;DR)',
+              maxRows: 6,
+              admin: {
+                description:
+                  'Optional bullet list rendered above the article body. Leave empty to hide the TL;DR card.',
+              },
+              fields: [
+                {
+                  name: 'text',
+                  type: 'text',
+                  required: true,
+                  maxLength: 160,
+                },
+              ],
+            },
             // Named group to preserve articleContent.* data paths
             {
               name: 'articleContent',

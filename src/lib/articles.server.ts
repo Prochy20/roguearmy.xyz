@@ -20,6 +20,49 @@ import {
   transformPayloadArticle,
   mapPayloadColorToTint,
 } from './articles'
+import { getDocumentContent } from './outline'
+
+/** Wiki body fetched + cached for the reader pipeline. */
+export interface WikiBody {
+  markdown: string
+  updatedAt: string
+}
+
+/**
+ * Cached server-side fetcher for wiki article bodies. Mirrors the digest's
+ * fetchDigestById shape — discriminated `ok` flag, 24-hour TTL, per-document
+ * cache key, document-scoped tag for surgical revalidation.
+ *
+ * Replaces the old client-side `<WikiContent>` component's in-browser fetch.
+ * Returns a discriminated union so the caller can branch on success/error
+ * without throwing — matches how digest fetchers communicate failure.
+ */
+const WIKI_BODY_TTL = 24 * 60 * 60 // 24 hours
+
+export async function fetchWikiBody(
+  documentId: string,
+): Promise<{ ok: true; data: WikiBody } | { ok: false; error: string }> {
+  const cached = unstable_cache(
+    async () => {
+      const doc = await getDocumentContent(documentId)
+      return { markdown: doc.text ?? '', updatedAt: doc.updatedAt }
+    },
+    ['outline', 'doc', documentId],
+    {
+      revalidate: WIKI_BODY_TTL,
+      tags: ['outline', `outline:${documentId}`],
+    },
+  )
+  try {
+    const data = await cached()
+    return { ok: true, data }
+  } catch (err) {
+    return {
+      ok: false,
+      error: err instanceof Error ? err.message : 'Unknown wiki fetch error',
+    }
+  }
+}
 
 // ============================================================================
 // DATA FETCHING

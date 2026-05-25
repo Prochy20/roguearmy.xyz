@@ -160,6 +160,15 @@ export interface Article {
    * Short excerpt/description shown in article listings
    */
   perex: string;
+  /**
+   * Optional bullet list rendered above the article body. Leave empty to hide the TL;DR card.
+   */
+  highlights?:
+    | {
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
   articleContent?: {
     /**
      * Choose where the article content comes from
@@ -686,6 +695,12 @@ export interface ArticlesSelect<T extends boolean = true> {
   readingTime?: T;
   title?: T;
   perex?: T;
+  highlights?:
+    | T
+    | {
+        text?: T;
+        id?: T;
+      };
   articleContent?:
     | T
     | {
