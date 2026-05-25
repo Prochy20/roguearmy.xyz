@@ -7,10 +7,10 @@ import {
   type ContentArticle,
 } from './content.server'
 import {
-  fetchRecentDailyDigests,
-  fetchWeeklyDigests,
-  type Digest,
-} from './digest.server'
+  fetchRecentDailyBriefings,
+  fetchWeeklyBriefings,
+  type Briefing,
+} from './briefing.server'
 import {
   fetchDailyByDay,
   type EscalationLootItem,
@@ -38,7 +38,7 @@ import {
  * Fans out three parallel reads:
  *   - escalation daily for today  (powers ESCALATION tile + targeted-loot peek)
  *   - content list (first page)   (powers CONTENT tile + latest-articles peek)
- *   - weekly digests (latest)     (powers DIGEST tile + latest-digest peek)
+ *   - weekly briefings (latest)   (powers BRIEFING tile + latest-briefing peek)
  *
  * Each tile renders a discriminated `TileState`. The ribbon aggregates state
  * across the three. PENDING means "Ashley responded but archive is empty"
@@ -91,20 +91,20 @@ export interface EscalationPeek {
 export interface LandingPeeks {
   escalation: EscalationPeek | null
   content: ContentArticle[] | null
-  digest: Digest | null
+  briefing: Briefing | null
   /**
    * Latest daily briefings — only populated when the viewer can see them
    * (booster/staff/dev). Null for plain members so the page can swap in the
    * BoosterPerksWidget under SEC_03 instead.
    */
-  dailies: Digest[] | null
+  dailies: Briefing[] | null
   raids: Raid[]
 }
 
 export interface LandingState {
   escalation: TileState
   content: TileState
-  digest: TileState
+  briefing: TileState
   ribbon: RibbonState
   peeks: LandingPeeks
 }
@@ -116,20 +116,20 @@ export async function fetchLandingState(
   // Non-boosters never see the dailies row, so skip the fetch entirely for
   // them — saves an Ashley round-trip on the bulk of landing-page traffic.
   const dailiesPromise = opts.includeDailies
-    ? fetchRecentDailyDigests({ limit: 3 })
+    ? fetchRecentDailyBriefings({ limit: 3 })
     : Promise.resolve(null)
 
-  const [daily, content, digests, raids, dailies] = await Promise.all([
+  const [daily, content, briefings, raids, dailies] = await Promise.all([
     fetchDailyByDay(today),
     fetchContentList({ offset: 0, limit: DEFAULT_LIMIT }),
-    fetchWeeklyDigests({ limit: 1 }),
+    fetchWeeklyBriefings({ limit: 1 }),
     fetchUpcomingRaids(),
     dailiesPromise,
   ])
 
   const escalation = buildEscalationTile(daily, today)
   const contentTile = buildContentTile(content)
-  const digest = buildDigestTile(digests)
+  const briefing = buildBriefingTile(briefings)
 
   const peeks: LandingPeeks = {
     escalation:
@@ -142,7 +142,7 @@ export async function fetchLandingState(
           }
         : null,
     content: content.ok ? content.data.items : null,
-    digest: digests.ok ? (digests.data.items[0] ?? null) : null,
+    briefing: briefings.ok ? (briefings.data.items[0] ?? null) : null,
     // Failed dailies fetch reads as "no daily peek" rather than a stub —
     // matches per-section graceful degradation everywhere else on this page.
     dailies: dailies && dailies.ok ? dailies.data : null,
@@ -152,8 +152,8 @@ export async function fetchLandingState(
   return {
     escalation,
     content: contentTile,
-    digest,
-    ribbon: buildRibbon([escalation, contentTile, digest]),
+    briefing,
+    ribbon: buildRibbon([escalation, contentTile, briefing]),
     peeks,
   }
 }
@@ -235,24 +235,24 @@ function buildContentTile(
   }
 }
 
-function buildDigestTile(
-  digests: Awaited<ReturnType<typeof fetchWeeklyDigests>>,
+function buildBriefingTile(
+  briefings: Awaited<ReturnType<typeof fetchWeeklyBriefings>>,
 ): TileState {
-  if (!digests.ok) {
+  if (!briefings.ok) {
     return {
       mode: 'offline',
       pill: 'OFFLINE',
-      primary: tileMessageForError(digests.error.code, digests.error.status),
-      errorCode: digests.error.code,
+      primary: tileMessageForError(briefings.error.code, briefings.error.status),
+      errorCode: briefings.error.code,
     }
   }
 
-  const latest = digests.data.items[0]
+  const latest = briefings.data.items[0]
   if (!latest) {
     return { mode: 'pending', pill: 'PENDING', primary: 'AWAITING FIRST SYNC' }
   }
 
-  // Digest periods are retrospective (past week / past day), so we frame the
+  // Briefing periods are retrospective (past week / past day), so we frame the
   // primary line as `PAST WEEK · MAY 5 → MAY 11`. Ashley sometimes ships full
   // ISO datetimes for the period bounds — normalize before formatting.
   const start = normalizeDayIso(latest.periodStart)

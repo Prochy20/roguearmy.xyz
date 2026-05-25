@@ -1,10 +1,10 @@
 /**
  * Content-agnostic markdown sectioning + word-count helpers used by the
- * reader pipeline. Originally lived in `lib/division2/digest.server.ts`;
+ * reader pipeline. Originally lived in `lib/division2/briefing.server.ts`;
  * extracted here so blog articles (wiki markdown) can use the same
- * promote-H1 → enumerate → inject anchors transform that digests use.
+ * promote-H1 → enumerate → inject anchors transform that briefings use.
  *
- * No digest-specific knowledge in this module. The `ReaderSection` shape is
+ * No briefing-specific knowledge in this module. The `ReaderSection` shape is
  * what the ToC and the body share — id + display number + plain text.
  */
 

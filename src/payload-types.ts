@@ -1608,7 +1608,7 @@ export interface Division2 {
       description?: string | null;
     };
   };
-  digestPage?: {
+  briefingsPage?: {
     /**
      * Small mono kicker above the headline. The active week label is appended automatically.
      */
@@ -1977,7 +1977,7 @@ export interface Division2Select<T extends boolean = true> {
               description?: T;
             };
       };
-  digestPage?:
+  briefingsPage?:
     | T
     | {
         heroKicker?: T;

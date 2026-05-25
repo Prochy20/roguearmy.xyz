@@ -278,7 +278,7 @@ export const Division2: GlobalConfig = {
                   name: 'description',
                   type: 'textarea',
                   defaultValue:
-                    'Live overview of Division 2 ops — escalation drops, content firehose, and weekly digest, in one panel.',
+                    'Live overview of Division 2 ops — escalation drops, content firehose, and weekly briefing, in one panel.',
                 },
               ],
             },
@@ -567,7 +567,7 @@ export const Division2: GlobalConfig = {
 
         // ─── BRIEFINGS PAGE ─────────────────────────────────────────────────
         {
-          name: 'digestPage',
+          name: 'briefingsPage',
           label: 'Briefings Page',
           fields: [
             // Hero header

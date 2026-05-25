@@ -55,17 +55,17 @@ export function isQuarantined(roles: readonly SymbolicRole[]): boolean {
 }
 
 /**
- * Gate for premium digest content (daily briefings) on /division-2/digest.
+ * Gate for premium briefing content (daily briefings) on /division-2/briefings.
  *
  * Grants access to BOOSTER + STAFF + DEVELOPER so the team can read everything
- * boosters can. Plain members see only weekly digests on the list page and a
+ * boosters can. Plain members see only weekly briefings on the list page and a
  * BOOSTER_REQUIRED dossier when navigating to a daily detail URL directly.
  *
  * The `devOverride: 'member'` option lets a developer running locally preview
  * the non-booster experience. The env check lives here, not at the call site,
  * so a stray `?as=member` in production can never demote a real booster.
  */
-export function hasDigestAccess(
+export function hasBriefingsAccess(
   roles: readonly SymbolicRole[],
   opts?: { devOverride?: 'member' | null },
 ): boolean {

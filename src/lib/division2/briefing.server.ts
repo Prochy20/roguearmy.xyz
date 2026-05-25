@@ -6,13 +6,13 @@ import type { components } from '@/lib/api/schema'
 import { coerceAuthors, coerceString, coerceUrl } from './_coerce'
 
 /**
- * Content digest read helpers (service-identity Ashley calls, X-API-Key only).
+ * Content briefing read helpers (service-identity Ashley calls, X-API-Key only).
  *
  * Two endpoints back this:
  *   - GET /api/content/digests           — list (no body / no articles)
  *   - GET /api/content/digests/{id}      — detail (full markdown + cited articles)
  *
- * "A week" is whatever Ashley declares via the weekly digest's `periodStart` /
+ * "A week" is whatever Ashley declares via the weekly briefing's `periodStart` /
  * `periodEnd` — we never compute ISO-week boundaries ourselves. The list
  * endpoint can't filter by date, so per-week daily fetches pull a recent
  * window and filter client-side.
@@ -23,20 +23,22 @@ import { coerceAuthors, coerceString, coerceUrl } from './_coerce'
  *   - detail                    → 24 hr (content is immutable post-publish)
  */
 
+// "Briefing" is our domain word; "Digest" is Ashley's OpenAPI DTO name.
+// Coerce Raw* (Ashley) → Briefing* (ours) at this boundary.
 type RawDigest = components['schemas']['ContentDigestDto']
 type RawDigestList = components['schemas']['ContentDigestListDto']
 type RawDigestDetail = components['schemas']['ContentDigestDetailDto']
 type RawDigestArticle = components['schemas']['ContentDigestArticleDto']
 
-export type DigestFrequency = 'daily' | 'weekly'
+export type BriefingFrequency = 'daily' | 'weekly'
 
-export interface Digest {
+export interface Briefing {
   id: string
   topic: string
-  frequency: DigestFrequency
-  /** ISO date — first day this digest covers. */
+  frequency: BriefingFrequency
+  /** ISO date — first day this briefing covers. */
   periodStart: string
-  /** ISO date — last day this digest covers (inclusive). */
+  /** ISO date — last day this briefing covers (inclusive). */
   periodEnd: string
   title: string
   perex: string
@@ -48,7 +50,7 @@ export interface Digest {
   updatedAt: string
 }
 
-export interface DigestArticle {
+export interface BriefingArticle {
   id: string
   title: string
   source: string
@@ -60,15 +62,15 @@ export interface DigestArticle {
   contentType: string | null
 }
 
-export interface DigestDetail extends Digest {
+export interface BriefingDetail extends Briefing {
   /** Markdown body, with `(ref:UUID)` citation markers. */
   content: string
   /** Hydrated cited articles, ordered by relevance desc. */
-  articles: DigestArticle[]
+  articles: BriefingArticle[]
 }
 
-export interface DigestList {
-  items: Digest[]
+export interface BriefingList {
+  items: Briefing[]
   total: number
   limit: number
   offset: number
@@ -79,13 +81,13 @@ const WARM_TTL = 24 * 60 * 60
 const DETAIL_TTL = 24 * 60 * 60
 const TOPIC = 'division-2'
 
-const VALID_FREQUENCIES = new Set<DigestFrequency>(['daily', 'weekly'])
+const VALID_FREQUENCIES = new Set<BriefingFrequency>(['daily', 'weekly'])
 
-function coerceFrequency(value: unknown): DigestFrequency | null {
+function coerceFrequency(value: unknown): BriefingFrequency | null {
   if (typeof value !== 'string') return null
   const lower = value.toLowerCase()
-  return VALID_FREQUENCIES.has(lower as DigestFrequency)
-    ? (lower as DigestFrequency)
+  return VALID_FREQUENCIES.has(lower as BriefingFrequency)
+    ? (lower as BriefingFrequency)
     : null
 }
 
@@ -105,8 +107,8 @@ function toDateKey(value: string): string {
   return parsed.toISOString().slice(0, 10)
 }
 
-/** Returns null when the digest is unusable (missing id, period, frequency). */
-function normalizeDigest(raw: RawDigest): Digest | null {
+/** Returns null when the briefing is unusable (missing id, period, frequency). */
+function normalizeBriefing(raw: RawDigest): Briefing | null {
   if (!raw.id || !raw.periodStart || !raw.periodEnd) return null
   const frequency = coerceFrequency(raw.frequency)
   if (!frequency) return null
@@ -132,7 +134,7 @@ function normalizeDigest(raw: RawDigest): Digest | null {
   }
 }
 
-function normalizeArticle(raw: RawDigestArticle): DigestArticle | null {
+function normalizeArticle(raw: RawDigestArticle): BriefingArticle | null {
   if (!raw.id || !raw.title) return null
   return {
     id: raw.id,
@@ -147,16 +149,16 @@ function normalizeArticle(raw: RawDigestArticle): DigestArticle | null {
   }
 }
 
-function normalizeDigestDetail(raw: RawDigestDetail): DigestDetail | null {
+function normalizeBriefingDetail(raw: RawDigestDetail): BriefingDetail | null {
   // The detail DTO doesn't surface `articleIds` — synthesize from `articles[]`.
-  const base = normalizeDigest({
+  const base = normalizeBriefing({
     ...raw,
     articleIds: (raw.articles ?? []).map((a) => a.id),
   })
   if (!base) return null
   const articles = (raw.articles ?? [])
     .map(normalizeArticle)
-    .filter((a): a is DigestArticle => a !== null)
+    .filter((a): a is BriefingArticle => a !== null)
   return {
     ...base,
     content: typeof raw.content === 'string' ? raw.content : '',
@@ -164,15 +166,15 @@ function normalizeDigestDetail(raw: RawDigestDetail): DigestDetail | null {
   }
 }
 
-function normalizeList(raw: RawDigestList): DigestList {
+function normalizeList(raw: RawDigestList): BriefingList {
   const seen = new Set<string>()
-  const items: Digest[] = []
+  const items: Briefing[] = []
   for (const rawItem of raw.items ?? []) {
-    const digest = normalizeDigest(rawItem)
-    if (!digest) continue
-    if (seen.has(digest.id)) continue
-    seen.add(digest.id)
-    items.push(digest)
+    const briefing = normalizeBriefing(rawItem)
+    if (!briefing) continue
+    if (seen.has(briefing.id)) continue
+    seen.add(briefing.id)
+    items.push(briefing)
   }
   return {
     items,
@@ -188,16 +190,16 @@ interface FetchListArgs {
 }
 
 /**
- * Fetch the weekly digest archive for Division 2. Drives the week-stepper
+ * Fetch the weekly briefing archive for Division 2. Drives the week-stepper
  * on the list page plus the cross-frequency prev/next on detail.
  */
-export function fetchWeeklyDigests({
+export function fetchWeeklyBriefings({
   limit = 20,
   offset = 0,
-}: FetchListArgs = {}): Promise<AshleyResult<DigestList>> {
+}: FetchListArgs = {}): Promise<AshleyResult<BriefingList>> {
   const ttl = offset === 0 ? HOT_TTL : WARM_TTL
   const cached = unstable_cache(
-    async (): Promise<AshleyResult<DigestList>> => {
+    async (): Promise<AshleyResult<BriefingList>> => {
       const result = await fetchAshleyService<RawDigestList>((c) =>
         c.GET('/api/content/digests', {
           params: {
@@ -208,8 +210,8 @@ export function fetchWeeklyDigests({
       if (!result.ok) return result
       return { ok: true, data: normalizeList(result.data) }
     },
-    ['division2-digest-weekly', String(offset), String(limit)],
-    { revalidate: ttl, tags: ['digest', 'digest-list'] },
+    ['division2-briefing-weekly', String(offset), String(limit)],
+    { revalidate: ttl, tags: ['briefing', 'briefing-list'] },
   )
   return cached()
 }
@@ -222,15 +224,15 @@ interface FetchDailyForWeekArgs {
 }
 
 /**
- * Fetch the most recent N daily digests (no date filter). Drives the
+ * Fetch the most recent N daily briefings (no date filter). Drives the
  * SEC_03 booster peek on the `/division-2` landing page where we just want
  * the latest few dailies regardless of which week they fall in.
  */
-export function fetchRecentDailyDigests({
+export function fetchRecentDailyBriefings({
   limit = 3,
-}: { limit?: number } = {}): Promise<AshleyResult<Digest[]>> {
+}: { limit?: number } = {}): Promise<AshleyResult<Briefing[]>> {
   const cached = unstable_cache(
-    async (): Promise<AshleyResult<Digest[]>> => {
+    async (): Promise<AshleyResult<Briefing[]>> => {
       const result = await fetchAshleyService<RawDigestList>((c) =>
         c.GET('/api/content/digests', {
           params: {
@@ -241,27 +243,27 @@ export function fetchRecentDailyDigests({
       if (!result.ok) return result
       return { ok: true, data: normalizeList(result.data).items }
     },
-    ['division2-digest-daily-recent', String(limit)],
-    { revalidate: HOT_TTL, tags: ['digest', 'digest-list'] },
+    ['division2-briefing-daily-recent', String(limit)],
+    { revalidate: HOT_TTL, tags: ['briefing', 'briefing-list'] },
   )
   return cached()
 }
 
 /**
- * Fetch the daily digests covering a given week.
+ * Fetch the daily briefings covering a given week.
  *
  * Ashley's list endpoint can't filter by date, so we pull the most recent 30
  * dailies and filter client-side by periodStart ∈ [periodStart, periodEnd].
  * Adequate for the front-of-archive use cases — deep history will need an
  * offset hint later.
  */
-export function fetchDailyDigestsForWeek({
+export function fetchDailyBriefingsForWeek({
   periodStart,
   periodEnd,
-}: FetchDailyForWeekArgs): Promise<AshleyResult<Digest[]>> {
+}: FetchDailyForWeekArgs): Promise<AshleyResult<Briefing[]>> {
   const ttl = isCurrentOrFuture(periodEnd) ? HOT_TTL : WARM_TTL
   const cached = unstable_cache(
-    async (): Promise<AshleyResult<Digest[]>> => {
+    async (): Promise<AshleyResult<Briefing[]>> => {
       const result = await fetchAshleyService<RawDigestList>((c) =>
         c.GET('/api/content/digests', {
           params: {
@@ -279,46 +281,46 @@ export function fetchDailyDigestsForWeek({
         .sort((a, b) => a.periodStart.localeCompare(b.periodStart))
       return { ok: true, data: filtered }
     },
-    ['division2-digest-daily-week', periodStart],
+    ['division2-briefing-daily-week', periodStart],
     {
       revalidate: ttl,
-      tags: ['digest', 'digest-list', `digest-week-${periodStart}`],
+      tags: ['briefing', 'briefing-list', `briefing-week-${periodStart}`],
     },
   )
   return cached()
 }
 
 /**
- * Fetch a single digest by UUID with hydrated cited articles. Used by the
+ * Fetch a single briefing by UUID with hydrated cited articles. Used by the
  * detail page.
  */
-export function fetchDigestById(
+export function fetchBriefingById(
   id: string,
-): Promise<AshleyResult<DigestDetail | null>> {
+): Promise<AshleyResult<BriefingDetail | null>> {
   const cached = unstable_cache(
-    async (): Promise<AshleyResult<DigestDetail | null>> => {
+    async (): Promise<AshleyResult<BriefingDetail | null>> => {
       const result = await fetchAshleyService<RawDigestDetail>((c) =>
         c.GET('/api/content/digests/{id}', { params: { path: { id } } }),
       )
       if (!result.ok) return result
-      return { ok: true, data: normalizeDigestDetail(result.data) }
+      return { ok: true, data: normalizeBriefingDetail(result.data) }
     },
-    ['division2-digest-detail', id],
-    { revalidate: DETAIL_TTL, tags: ['digest', 'digest-detail', `digest-${id}`] },
+    ['division2-briefing-detail', id],
+    { revalidate: DETAIL_TTL, tags: ['briefing', 'briefing-detail', `briefing-${id}`] },
   )
   return cached()
 }
 
 /**
- * Fetch a recent slice of both daily + weekly digests, merged + sorted by
+ * Fetch a recent slice of both daily + weekly briefings, merged + sorted by
  * periodStart desc. Used by the detail page to compute chronological
  * prev/next across frequencies without an extra round-trip per click.
  */
-export async function fetchRecentDigests(
+export async function fetchRecentBriefings(
   limit = 30,
-): Promise<AshleyResult<Digest[]>> {
+): Promise<AshleyResult<Briefing[]>> {
   const cached = unstable_cache(
-    async (): Promise<AshleyResult<Digest[]>> => {
+    async (): Promise<AshleyResult<Briefing[]>> => {
       const [weekly, daily] = await Promise.all([
         fetchAshleyService<RawDigestList>((c) =>
           c.GET('/api/content/digests', {
@@ -343,8 +345,8 @@ export async function fetchRecentDigests(
       ].sort((a, b) => b.periodStart.localeCompare(a.periodStart))
       return { ok: true, data: merged }
     },
-    ['division2-digest-recent', String(limit)],
-    { revalidate: HOT_TTL, tags: ['digest', 'digest-list'] },
+    ['division2-briefing-recent', String(limit)],
+    { revalidate: HOT_TTL, tags: ['briefing', 'briefing-list'] },
   )
   return cached()
 }
@@ -374,25 +376,25 @@ import type { ReaderSection } from '@/lib/content/markdown-sections'
  * so blog articles can share the same ToC/anchor pipeline. New code should
  * import `ReaderSection` directly.
  */
-export type DigestSection = ReaderSection
+export type BriefingSection = ReaderSection
 
 /**
  * Build the short doc-designator that drives the breadcrumb tail and doc-strip
- * code. Weekly digests get an ISO-week tag (`WK17_2026`), daily get a date tag
- * (`D_2026-04-21`). Falls back to the digest id slice when the period is
+ * code. Weekly briefings get an ISO-week tag (`WK17_2026`), daily get a date tag
+ * (`D_2026-04-21`). Falls back to the briefing id slice when the period is
  * malformed.
  */
-export function buildDigestDesignator(digest: Digest): string {
-  if (digest.frequency === 'weekly') {
-    const week = isoWeekNumber(digest.periodStart)
-    const year = digest.periodStart.slice(0, 4)
+export function buildBriefingDesignator(briefing: Briefing): string {
+  if (briefing.frequency === 'weekly') {
+    const week = isoWeekNumber(briefing.periodStart)
+    const year = briefing.periodStart.slice(0, 4)
     if (week && year) return `WK${String(week).padStart(2, '0')}_${year}`
-  } else if (digest.frequency === 'daily') {
-    if (/^\d{4}-\d{2}-\d{2}$/.test(digest.periodStart)) {
-      return `D_${digest.periodStart}`
+  } else if (briefing.frequency === 'daily') {
+    if (/^\d{4}-\d{2}-\d{2}$/.test(briefing.periodStart)) {
+      return `D_${briefing.periodStart}`
     }
   }
-  return `DGST_${digest.id.slice(0, 8).toUpperCase()}`
+  return `BRF_${briefing.id.slice(0, 8).toUpperCase()}`
 }
 
 /**

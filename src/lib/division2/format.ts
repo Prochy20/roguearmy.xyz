@@ -33,9 +33,9 @@ export function weekStartForDayUtc(day: string): string {
 }
 
 /**
- * Monday ≤ given day (UTC), as `YYYY-MM-DD`. Used to bucket content digests
- * into calendar weeks — Ashley publishes weekly digests with periodStart on a
- * Monday, so this aligns daily digests to the same week boundaries.
+ * Monday ≤ given day (UTC), as `YYYY-MM-DD`. Used to bucket content briefings
+ * into calendar weeks — Ashley publishes weekly briefings with periodStart on
+ * a Monday, so this aligns daily briefings to the same week boundaries.
  */
 export function mondayOfWeekUtc(day: string): string {
   const d = new Date(`${day}T00:00:00.000Z`)

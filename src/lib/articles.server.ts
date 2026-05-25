@@ -29,13 +29,13 @@ export interface WikiBody {
 }
 
 /**
- * Cached server-side fetcher for wiki article bodies. Mirrors the digest's
- * fetchDigestById shape — discriminated `ok` flag, 24-hour TTL, per-document
+ * Cached server-side fetcher for wiki article bodies. Mirrors the briefing's
+ * fetchBriefingById shape — discriminated `ok` flag, 24-hour TTL, per-document
  * cache key, document-scoped tag for surgical revalidation.
  *
  * Replaces the old client-side `<WikiContent>` component's in-browser fetch.
  * Returns a discriminated union so the caller can branch on success/error
- * without throwing — matches how digest fetchers communicate failure.
+ * without throwing — matches how briefing fetchers communicate failure.
  */
 const WIKI_BODY_TTL = 24 * 60 * 60 // 24 hours
 

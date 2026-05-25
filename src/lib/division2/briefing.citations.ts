@@ -1,7 +1,7 @@
-import type { DigestArticle } from './digest.server'
+import type { BriefingArticle } from './briefing.server'
 
 /**
- * Citation transform for digest Markdown bodies.
+ * Citation transform for briefing Markdown bodies.
  *
  * Ashley emits three flavors of citation:
  *
@@ -38,7 +38,7 @@ export interface CitationMeta {
 
 /** UUID → citation metadata. Order in `articles[]` drives the ordinal. */
 export function buildCitationIndex(
-  articles: readonly DigestArticle[],
+  articles: readonly BriefingArticle[],
 ): ReadonlyMap<string, CitationMeta> {
   const index = new Map<string, CitationMeta>()
   articles.forEach((article, i) => {
@@ -59,7 +59,7 @@ export interface CitationTransformResult {
  * anchor (when there's a link phrase) or a numbered chip (when there isn't).
  *
  * Anchors are emitted as raw HTML so they round-trip through rehype-raw and
- * land in react-markdown's component map — where the digest-local `a`
+ * land in react-markdown's component map — where the briefing-local `a`
  * override paints them green with an external-link icon. This sidesteps any
  * brittleness in parsing `[text](url)` as a real markdown link when
  * adjacent content (e.g. `<sup>` raw HTML) follows immediately.
@@ -112,15 +112,15 @@ export function transformCitationMarkers(
  * Citation chip — `[N]` superscript anchor. When the article has an external
  * URL, the chip links directly to the source (opens in a new tab). When it
  * doesn't, it falls back to the in-page anchor that scrolls to the matching
- * sources-list entry. The `data-cite-chip` marker tells the digest-local
+ * sources-list entry. The `data-cite-chip` marker tells the briefing-local
  * `a` override to render this as a small cyan chip rather than the green
  * external-link treatment regular body links get.
  */
 function supChip(ordinal: number, url: string | null): string {
   if (url) {
-    return `<sup class="digest-ref" id="ref-${ordinal}-cite"><a href="${escapeAttr(url)}" target="_blank" rel="noopener noreferrer" data-cite-chip>[${ordinal}]</a></sup>`
+    return `<sup class="briefing-ref" id="ref-${ordinal}-cite"><a href="${escapeAttr(url)}" target="_blank" rel="noopener noreferrer" data-cite-chip>[${ordinal}]</a></sup>`
   }
-  return `<sup class="digest-ref" id="ref-${ordinal}-cite"><a href="#ref-${ordinal}" data-cite-chip>[${ordinal}]</a></sup>`
+  return `<sup class="briefing-ref" id="ref-${ordinal}-cite"><a href="#ref-${ordinal}" data-cite-chip>[${ordinal}]</a></sup>`
 }
 
 function anchorTag(url: string, text: string): string {
