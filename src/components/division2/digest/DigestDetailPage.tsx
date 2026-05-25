@@ -1,24 +1,28 @@
 import { StatRibbon } from '@/components/ui/StatRibbon'
-import { DigestPageShell } from './DigestPageShell'
-import { DigestBreadcrumb } from './DigestBreadcrumb'
-import { DigestHeroFrame } from './DigestHeroFrame'
-import { DigestTitleBlock } from './DigestTitleBlock'
-import { DigestActions } from './DigestActions'
-import { DigestDocStrip } from './DigestDocStrip'
-import { DigestTldrCard } from './DigestTldrCard'
-import { DigestToc } from './DigestToc'
-import { DigestReadingWidget } from './DigestReadingWidget'
-import { DigestShortcuts } from './DigestShortcuts'
-import { DigestBriefing } from './DigestBriefing'
+import { ReaderPageShell } from '@/components/content/reader/ReaderPageShell'
+import { ReaderBreadcrumb } from '@/components/content/reader/ReaderBreadcrumb'
+import { ReaderHeroFrame } from '@/components/content/reader/ReaderHeroFrame'
+import { ReaderTitleBlock } from '@/components/content/reader/ReaderTitleBlock'
+import { ReaderActions } from '@/components/content/reader/ReaderActions'
+import { ReaderDocStrip } from '@/components/content/reader/ReaderDocStrip'
+import { ReaderTldrCard } from '@/components/content/reader/ReaderTldrCard'
+import { ReaderToc } from '@/components/content/reader/ReaderToc'
+import { ReaderReadingWidget } from '@/components/content/reader/ReaderReadingWidget'
+import { ReaderShortcuts } from '@/components/content/reader/ReaderShortcuts'
+import { ReaderBody } from '@/components/content/reader/ReaderBody'
+import {
+  ReaderDetailFooter,
+  type ReaderFooterNeighbor,
+} from '@/components/content/reader/ReaderDetailFooter'
+import type { AccentName } from '@/components/content/reader/accent'
 import { DigestSources } from './DigestSources'
 import { DigestCard } from './DigestCard'
-import { DigestDetailFooter } from './DigestDetailFooter'
-import { frequencyAccent } from './accent'
+import { frequencyAccent } from './accent-digest'
 import { formatDayShort } from '@/lib/division2/format'
+import type { ReaderSection } from '@/lib/content/markdown-sections'
 import type {
   Digest,
   DigestDetail,
-  DigestSection,
 } from '@/lib/division2/digest.server'
 
 interface DigestDetailPageProps {
@@ -26,7 +30,7 @@ interface DigestDetailPageProps {
   /** Markdown body — citation markers AND H2 anchors already injected. */
   transformedContent: string
   /** Pre-enumerated H2 sections; drives both the body and the ToC. */
-  sections: DigestSection[]
+  sections: ReaderSection[]
   /** Short doc designator like `WK17_2026` or `D_2026-04-21`. */
   designator: string
   /** Word count of the body — drives doc-strip and reading widget. */
@@ -44,9 +48,9 @@ interface DigestDetailPageProps {
 }
 
 /**
- * Reader for a single Ashley digest. Three-column on desktop, single-column
- * on mobile/tablet. All chrome is frequency-tinted: cyan for weekly intel,
- * mod-orange for daily ops.
+ * Reader for a single Ashley digest. Composes the shared reader kit at
+ * `components/content/reader/*` with digest-specific slot content (Ashley
+ * actions, sources/citations, related digest cards, frequency-driven accent).
  *
  * Composition order (top to bottom of the eye's path):
  *   breadcrumb · tag row · title + dek + byline/actions · hero frame
@@ -72,9 +76,9 @@ export function DigestDetailPage({
   const periodLabel = formatPeriodLabel(digest)
   const dateLabel = formatDateLabel(digest)
 
-  // Field accent for the StatRibbon — restricted to green/cyan/mod by the
-  // shared component. Maps the frequency-driven page accent into the matching
-  // ribbon-field token.
+  // StatRibbon's local accent vocabulary is { green, cyan, mod, magenta } —
+  // map the reader-accent (cyan|orange) onto its closest sibling for the
+  // ribbon's numeric fields.
   const ribbonFieldAccent: 'cyan' | 'mod' = accent === 'cyan' ? 'cyan' : 'mod'
   const updatedShort = digest.updatedAt.slice(0, 10)
 
@@ -103,21 +107,29 @@ export function DigestDetailPage({
             : { text: 'PUBLIC', ok: true, accent: 'green' }
         }
       />
-      <DigestBreadcrumb accent={accent} designator={designator} />
-      <DigestTitleBlock
+      <ReaderBreadcrumb
+        accent={accent}
+        trail={[
+          { href: '/division-2', label: 'DIVISION 2' },
+          { href: '/division-2/digest', label: 'BRIEFINGS' },
+        ]}
+        designator={designator}
+      />
+      <ReaderTitleBlock
         accent={accent}
         title={digest.title}
         perex={digest.perex}
         dateLabel={dateLabel}
         readMinutes={readMinutes}
-        actions={<DigestActions accent={accent} />}
+        actions={<ReaderActions accent={accent} />}
       />
       {digest.thumbnailUrl && (
-        <DigestHeroFrame
+        <ReaderHeroFrame
           accent={accent}
           thumbnailUrl={digest.thumbnailUrl}
-          frequency={digest.frequency}
+          kindLabel={digest.frequency.toUpperCase()}
           periodLabel={periodLabel}
+          bylineLabel="// AI · ASHLEY"
         />
       )}
     </>
@@ -125,16 +137,31 @@ export function DigestDetailPage({
 
   const body = (
     <div className="flex flex-col gap-8 sm:gap-10">
-      <DigestDocStrip
+      <ReaderDocStrip
         accent={accent}
-        designator={designator}
-        frequency={digest.frequency}
-        wordCount={wordCount}
-        updatedAt={digest.updatedAt}
+        fields={[
+          { label: 'DOC', value: designator, tone: 'accent' },
+          { label: 'CLASS', value: digest.frequency.toUpperCase(), tone: 'muted' },
+          {
+            label: 'WORDS',
+            value: wordCount.toLocaleString('en-US'),
+            tone: 'secondary',
+          },
+          {
+            label: 'UPDATED',
+            value: /^\d{4}-\d{2}-\d{2}$/.test(updatedShort)
+              ? formatDayShort(updatedShort)
+              : digest.updatedAt,
+            tone: 'secondary',
+          },
+        ]}
       />
-      <DigestTldrCard accent={accent} highlights={digest.highlights} />
+      <ReaderTldrCard accent={accent} highlights={digest.highlights} />
       <article className="digest-body min-w-0">
-        <DigestBriefing content={transformedContent} accent={accent} />
+        <ReaderBody
+          accent={accent}
+          source={{ type: 'markdown', content: transformedContent }}
+        />
       </article>
       <DigestSources accent={accent} articles={digest.articles} />
       {related.length > 0 && (
@@ -144,31 +171,46 @@ export function DigestDetailPage({
   )
 
   return (
-    <DigestPageShell
+    <ReaderPageShell
       accent={accent}
       header={header}
       toc={
         sections.length > 0 ? (
-          <DigestToc accent={accent} sections={sections} />
+          <ReaderToc accent={accent} sections={sections} />
         ) : null
       }
       body={body}
       reading={
         <div className="flex flex-col gap-5">
-          <DigestReadingWidget accent={accent} wordCount={wordCount} />
-          <DigestShortcuts accent={accent} />
+          <ReaderReadingWidget accent={accent} wordCount={wordCount} />
+          <ReaderShortcuts accent={accent} />
         </div>
       }
       footer={
-        <DigestDetailFooter
+        <ReaderDetailFooter
           accent={accent}
-          weekPeriodStart={weekPeriodStart}
-          prev={prev}
-          next={next}
+          backHref={`/division-2/digest?week=${weekPeriodStart}`}
+          backLabel="WEEK"
+          backValue={formatDayShort(weekPeriodStart)}
+          prev={digestToNeighbor(prev)}
+          next={digestToNeighbor(next)}
         />
       }
     />
   )
+}
+
+/**
+ * Adapt a Digest to the reader footer's generic neighbor shape.
+ * Label = frequency uppercased ("WEEKLY" / "DAILY"), sublabel = period date.
+ */
+function digestToNeighbor(digest: Digest | null): ReaderFooterNeighbor | null {
+  if (!digest) return null
+  return {
+    href: `/division-2/digest/${digest.id}`,
+    label: digest.frequency.toUpperCase(),
+    sublabel: formatDayShort(digest.periodStart),
+  }
 }
 
 /**
@@ -202,7 +244,7 @@ function RelatedDigests({
   accent,
   digests,
 }: {
-  accent: ReturnType<typeof frequencyAccent>
+  accent: AccentName
   digests: Digest[]
 }) {
   return (
@@ -238,3 +280,4 @@ function RelatedDigests({
     </section>
   )
 }
+

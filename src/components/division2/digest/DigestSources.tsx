@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { CyberCorners } from '@/components/ui/CyberCorners'
 import { formatDayShort } from '@/lib/division2/format'
-import { ACCENT_TOKENS, type AccentName } from './accent'
+import { ACCENT_TOKENS, type AccentName } from '@/components/content/reader/accent'
 import type { DigestArticle } from '@/lib/division2/digest.server'
 
 interface DigestSourcesProps {
