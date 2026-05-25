@@ -5,22 +5,28 @@ import type {
   SerializedBlockNode,
   SerializedLinkNode,
 } from '@payloadcms/richtext-lexical'
-import type { SerializedEditorState, SerializedLexicalNode } from '@payloadcms/richtext-lexical/lexical'
+import type { SerializedLexicalNode } from '@payloadcms/richtext-lexical/lexical'
 import type { ReactNode } from 'react'
 
 import {
   type JSXConvertersFunction,
   LinkJSXConverter,
+  RichText,
 } from '@payloadcms/richtext-lexical/react'
 
 import type { CalloutBlockType, CodeBlockType, MermaidBlockType, SocialEmbedBlockType, TrelloCardBlockType, VideoEmbedBlockType } from '@/payload-types'
-import { Callout } from '@/components/content/markdown/Callout'
 import { LexicalCodeBlock } from './LexicalCodeBlock'
 import { MermaidDiagram } from '@/components/content/markdown/MermaidDiagram'
 import { SocialEmbed } from './SocialEmbed'
 import { TrelloCard } from './TrelloCard'
 import { VideoEmbed } from './VideoEmbed'
-import { slugify } from '@/lib/toc'
+import { slugify, getUniqueId } from '@/lib/toc'
+import { ACCENT_TOKENS, type AccentName } from '@/components/content/reader/accent'
+import {
+  ReaderImageFrame,
+  ReaderCalloutBlock,
+  type CalloutType,
+} from '@/components/content/reader/readerMarkdownComponents'
 
 // Extend node types to include our custom blocks
 type NodeTypes =
@@ -62,7 +68,6 @@ const internalDocToHref = ({ linkNode }: { linkNode: SerializedLinkNode }) => {
 
   switch (relationTo) {
     case 'articles': {
-      // Extract topic slug from the article's categorization
       const article = value as {
         slug?: string
         categorization?: {
@@ -72,7 +77,7 @@ const internalDocToHref = ({ linkNode }: { linkNode: SerializedLinkNode }) => {
       const topic = article.categorization?.topic
       const topicSlug = typeof topic === 'object' && topic?.slug
         ? topic.slug
-        : 'article' // Fallback if topic not populated
+        : 'article'
       return `/blog/${topicSlug}/${slug}`
     }
     case 'games':
@@ -83,447 +88,432 @@ const internalDocToHref = ({ linkNode }: { linkNode: SerializedLinkNode }) => {
 }
 
 /**
- * Corner bracket decoration component
- */
-function Corner({
-  position,
-  colorClass = 'text-rga-cyan/40',
-}: {
-  position: 'tl' | 'tr' | 'bl' | 'br'
-  colorClass?: string
-}) {
-  const rotations = {
-    tl: '',
-    tr: 'rotate-90',
-    bl: '-rotate-90',
-    br: 'rotate-180',
-  }
-  const positions = {
-    tl: 'top-0 left-0',
-    tr: 'top-0 right-0',
-    bl: 'bottom-0 left-0',
-    br: 'bottom-0 right-0',
-  }
-
-  return (
-    <div className={`absolute ${positions[position]} ${rotations[position]}`}>
-      <svg
-        width="12"
-        height="12"
-        viewBox="0 0 12 12"
-        fill="none"
-        className={colorClass}
-      >
-        <path d="M0 12V0H12" stroke="currentColor" strokeWidth="1.5" fill="none" />
-      </svg>
-    </div>
-  )
-}
-
-/**
- * External link icon component
+ * External-link icon — sized to baseline-align with surrounding prose; uses
+ * `currentColor` so it tracks the link's color through hover transitions.
  */
 function ExternalLinkIcon() {
   return (
     <svg
-      className="inline-block w-3 h-3 ml-1 -mt-0.5"
-      fill="none"
+      aria-hidden
       viewBox="0 0 24 24"
+      fill="none"
       stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="ml-0.5 -mt-0.5 inline-block h-[0.8em] w-[0.8em] align-baseline"
     >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-      />
+      <path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
     </svg>
   )
 }
 
+export interface BuildConvertersOptions {
+  /** Page accent — drives heading ordinals, frame ticks, callout quote pill. */
+  accent?: AccentName
+  /**
+   * Slugified-id → ordinal-label map (e.g. "the-new-build-meta" → "01"). When
+   * provided, h2 headings (and h3 fallback) get stamped with `data-sec-num`
+   * and render with the reader's display ordinal chrome. When omitted,
+   * headings render quietly without ordinals.
+   */
+  sectionMap?: ReadonlyMap<string, string>
+}
+
 /**
- * JSX converters that match markdownComponents.tsx styling
+ * Build the Lexical JSX converters. Threading the page `accent` and the
+ * `sectionMap` lets the body match the markdown surface: numbered ordinals,
+ * cyber-framed images, accent-driven callout pills, and the four-flavor link
+ * dispatcher.
+ *
+ * The renderer-level visual identity (heading ordinals, framed images,
+ * callout block) is shared with `readerMarkdownComponents.tsx` via the
+ * `ReaderImageFrame` and `ReaderCalloutBlock` primitives — markdown and
+ * Lexical render through one source of truth.
  */
-export const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) => ({
-  ...defaultConverters,
-  ...LinkJSXConverter({ internalDocToHref }),
+export function buildConverters({
+  accent = 'green',
+  sectionMap,
+}: BuildConvertersOptions = {}): JSXConvertersFunction<NodeTypes> {
+  const a = ACCENT_TOKENS[accent]
+  // Mirror the dedup pass `extractHeadingsFromLexical` runs at section-time so
+  // duplicate heading text gets the same `slug`, `slug-1`, `slug-2` sequence
+  // in the DOM as in the section manifest. Without this, the ToC anchors for
+  // duplicates point at non-existent ids, and the ordinal lookup falls back
+  // to the first instance.
+  const headingSeenIds = new Set<string>()
 
-  // ==================== HEADINGS ====================
+  /**
+   * Renders an `<a>` based on the link's URL shape. Mirrors the markdown
+   * link dispatcher:
+   *   1. Hash anchors (`#…`)        — in-document jumps, no icon.
+   *   2. External (http/https)      — accent-aware underline + ExternalLinkIcon.
+   *   3. Internal / relative        — quiet cyan underline.
+   * Citation chips (`data-cite-chip`) only appear in digest markdown content
+   * and never in Lexical, so the chip branch isn't reachable here.
+   */
+  function renderLink({
+    url,
+    children,
+    newTab,
+  }: {
+    url: string
+    children: ReactNode
+    newTab: boolean
+  }): ReactNode {
+    if (url.startsWith('#')) {
+      return (
+        <a href={url} className="text-rga-cyan/85 transition-colors hover:text-rga-cyan">
+          {children}
+        </a>
+      )
+    }
+    const isExternal = /^https?:\/\//i.test(url)
+    if (isExternal) {
+      return (
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-rga-green underline decoration-rga-green/30 underline-offset-2 transition-colors hover:text-rga-green/85 hover:decoration-rga-green/60"
+        >
+          {children}
+          <ExternalLinkIcon />
+        </a>
+      )
+    }
+    return (
+      <a
+        href={url}
+        {...(newTab ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+        className="text-rga-cyan underline decoration-rga-cyan/30 underline-offset-2 transition-colors hover:text-rga-green hover:decoration-rga-green/50"
+      >
+        {children}
+      </a>
+    )
+  }
 
-  heading: ({ node, nodesToJSX }) => {
-    const children = nodesToJSX({ nodes: node.children })
-    const text = extractTextFromLexicalChildren(node.children as SerializedLexicalNode[])
-    const id = slugify(text)
+  return ({ defaultConverters }) => ({
+    ...defaultConverters,
+    ...LinkJSXConverter({ internalDocToHref }),
 
-    switch (node.tag) {
-      case 'h1':
+    // ==================== HEADINGS ====================
+
+    heading: ({ node, nodesToJSX }) => {
+      const children = nodesToJSX({ nodes: node.children })
+      const text = extractTextFromLexicalChildren(node.children as SerializedLexicalNode[])
+      const id = getUniqueId(slugify(text), headingSeenIds)
+      headingSeenIds.add(id)
+      const secNum = sectionMap?.get(id) ?? null
+
+      // h1 + h2 (and h3 if it earned a section number) render as
+      // section-level — ordinal + display title.
+      const isSectionLevel =
+        node.tag === 'h1' || node.tag === 'h2' || (node.tag === 'h3' && !!secNum)
+
+      if (isSectionLevel) {
+        const Tag = node.tag === 'h1' ? 'h1' : node.tag === 'h2' ? 'h2' : 'h3'
         return (
-          <div className="mt-16 mb-8 first:mt-0">
-            <div className="w-12 h-px bg-rga-green/40 mb-4" />
-            <h1
-              id={id}
-              className="font-display text-2xl md:text-3xl lg:text-4xl text-white tracking-wide scroll-mt-28"
+          <Tag
+            id={id}
+            data-sec-num={secNum ?? undefined}
+            className="mt-14 mb-6 flex items-start gap-4 scroll-mt-28 first:mt-0 sm:gap-5"
+          >
+            {secNum && (
+              <span
+                className={`shrink-0 pt-1 font-mono text-[14px] tabular-nums tracking-[0.15em] ${a.text} sm:text-[15px]`}
+                style={{ textShadow: a.textGlow }}
+              >
+                {secNum}
+              </span>
+            )}
+            <span
+              className="break-words font-display uppercase leading-[0.95] text-text-primary"
+              style={{
+                fontSize: 'clamp(22px, 3vw, 34px)',
+                textShadow: '0 0 24px rgba(255,255,255,0.05)',
+              }}
             >
               {children}
-            </h1>
-          </div>
+            </span>
+          </Tag>
         )
-      case 'h2':
-        return (
-          <h2
-            id={id}
-            className="font-display text-xl md:text-2xl text-rga-cyan mt-12 mb-5 flex items-center gap-3 scroll-mt-28"
-          >
-            <span className="w-8 h-px bg-rga-cyan/50" />
-            {children}
-          </h2>
-        )
-      case 'h3':
+      }
+
+      // h3 without section number — quieter sub-heading under a numbered section.
+      if (node.tag === 'h3') {
         return (
           <h3
             id={id}
-            className="font-bold text-lg md:text-xl text-white mt-8 mb-4 tracking-wide scroll-mt-28"
+            className="mt-10 mb-4 scroll-mt-28 font-display text-lg uppercase tracking-wide text-text-primary sm:text-xl"
           >
             {children}
           </h3>
         )
-      case 'h4':
+      }
+      if (node.tag === 'h4') {
         return (
-          <h4 className="font-semibold text-base md:text-lg text-rga-cyan/90 mt-6 mb-3">
+          <h4 id={id} className="mt-8 mb-3 font-semibold text-base md:text-lg text-text-primary">
             {children}
           </h4>
         )
-      case 'h5':
+      }
+      if (node.tag === 'h5') {
         return (
-          <h5 className="font-medium text-base text-white/90 mt-4 mb-2">
+          <h5 id={id} className="mt-6 mb-2 font-medium text-base text-text-primary/90">
             {children}
           </h5>
         )
-      case 'h6':
+      }
+      if (node.tag === 'h6') {
         return (
-          <h6 className="font-medium text-sm text-rga-gray mt-4 mb-2 uppercase tracking-wider">
+          <h6
+            id={id}
+            className="mt-5 mb-2 font-mono text-sm uppercase tracking-wider text-text-muted"
+          >
             {children}
           </h6>
         )
-      default:
-        return <>{children}</>
-    }
-  },
+      }
+      return <>{children}</>
+    },
 
-  // ==================== PARAGRAPH ====================
+    // ==================== PARAGRAPH ====================
 
-  paragraph: ({ node, nodesToJSX }) => {
-    const children = nodesToJSX({ nodes: node.children })
-    return (
-      <p className="text-text-secondary text-base md:text-lg leading-[1.8] mb-6">
-        {children}
-      </p>
-    )
-  },
-
-  // ==================== LISTS ====================
-
-  list: ({ node, nodesToJSX }) => {
-    const children = nodesToJSX({ nodes: node.children })
-
-    if (node.listType === 'number') {
+    paragraph: ({ node, nodesToJSX }) => {
+      const children = nodesToJSX({ nodes: node.children })
       return (
-        <ol className="space-y-3 text-text-secondary mb-8 pl-0 list-none counter-reset-[list-counter]">
+        <p className="text-text-secondary text-base md:text-lg leading-[1.8] mb-6">
           {children}
-        </ol>
+        </p>
       )
-    }
+    },
 
-    // Check or bullet list
-    return (
-      <ul className="space-y-3 text-text-secondary mb-8 pl-0 list-none">
-        {children}
-      </ul>
-    )
-  },
+    // ==================== LISTS ====================
 
-  listitem: ({ node, nodesToJSX }) => {
-    const children = nodesToJSX({ nodes: node.children })
+    list: ({ node, nodesToJSX }) => {
+      const children = nodesToJSX({ nodes: node.children })
 
-    // Check if this is a task list item
-    if (node.checked !== undefined) {
+      if (node.listType === 'number') {
+        return (
+          <ol className="space-y-3 text-text-secondary mb-8 pl-0 list-none counter-reset-[list-counter]">
+            {children}
+          </ol>
+        )
+      }
+
       return (
-        <li className="flex items-start gap-3 text-base md:text-lg leading-relaxed list-none">
-          <span
-            className={`
-              inline-flex items-center justify-center w-5 h-5 mr-2 rounded border-2 flex-shrink-0 mt-0.5
-              ${
-                node.checked
-                  ? 'bg-rga-green/20 border-rga-green text-rga-green'
-                  : 'bg-transparent border-rga-gray/50'
-              }
-            `}
-          >
-            {node.checked && (
-              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-              </svg>
-            )}
+        <ul className="space-y-3 text-text-secondary mb-8 pl-0 list-none">
+          {children}
+        </ul>
+      )
+    },
+
+    listitem: ({ node, nodesToJSX }) => {
+      const children = nodesToJSX({ nodes: node.children })
+
+      if (node.checked !== undefined) {
+        return (
+          <li className="flex items-start gap-3 text-base md:text-lg leading-relaxed list-none">
+            <span
+              className={`
+                inline-flex items-center justify-center w-5 h-5 mr-2 rounded border-2 flex-shrink-0 mt-0.5
+                ${
+                  node.checked
+                    ? 'bg-rga-green/20 border-rga-green text-rga-green'
+                    : 'bg-transparent border-rga-gray/50'
+                }
+              `}
+            >
+              {node.checked && (
+                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                </svg>
+              )}
+            </span>
+            <span>{children}</span>
+          </li>
+        )
+      }
+
+      return (
+        <li className="flex items-start gap-3 text-base md:text-lg leading-relaxed">
+          <span className={`mt-2 flex-shrink-0 ${a.text}`}>
+            <span className={`block h-1.5 w-1.5 rounded-full ${a.bg}`} />
           </span>
           <span>{children}</span>
         </li>
       )
-    }
+    },
 
-    return (
-      <li className="flex items-start gap-3 text-base md:text-lg leading-relaxed">
-        <span className="text-rga-green mt-2 flex-shrink-0">
-          <span className="block w-1.5 h-1.5 bg-rga-green rounded-full" />
-        </span>
-        <span>{children}</span>
-      </li>
-    )
-  },
+    // ==================== LINKS (4-flavor dispatcher) ====================
 
-  // ==================== LINKS ====================
+    link: ({ node, nodesToJSX }) => {
+      const children = nodesToJSX({ nodes: node.children })
+      const url = node.fields.url || '#'
+      return renderLink({ url, children, newTab: !!node.fields.newTab })
+    },
 
-  link: ({ node, nodesToJSX }) => {
-    const children = nodesToJSX({ nodes: node.children })
-    const url = node.fields.url || '#'
-    const isExternal = url.startsWith('http')
-    const newTab = node.fields.newTab
+    autolink: ({ node, nodesToJSX }) => {
+      const children = nodesToJSX({ nodes: node.children })
+      const url = node.fields.url || '#'
+      return renderLink({ url, children, newTab: false })
+    },
 
-    return (
-      <a
-        href={url}
-        className="text-rga-cyan hover:text-rga-green transition-colors underline underline-offset-2 decoration-rga-cyan/30 hover:decoration-rga-green/50"
-        {...((isExternal || newTab) && {
-          target: '_blank',
-          rel: 'noopener noreferrer',
-        })}
-      >
-        {children}
-        {isExternal && <ExternalLinkIcon />}
-      </a>
-    )
-  },
+    // ==================== QUOTE ====================
 
-  autolink: ({ node, nodesToJSX }) => {
-    const children = nodesToJSX({ nodes: node.children })
-    const url = node.fields.url || '#'
-    const isExternal = url.startsWith('http')
-
-    return (
-      <a
-        href={url}
-        className="text-rga-cyan hover:text-rga-green transition-colors underline underline-offset-2 decoration-rga-cyan/30 hover:decoration-rga-green/50"
-        {...(isExternal && {
-          target: '_blank',
-          rel: 'noopener noreferrer',
-        })}
-      >
-        {children}
-        {isExternal && <ExternalLinkIcon />}
-      </a>
-    )
-  },
-
-  // ==================== QUOTE ====================
-
-  quote: ({ node, nodesToJSX }) => {
-    const children = nodesToJSX({ nodes: node.children })
-    return (
-      <blockquote className="my-6 border-l-4 border-rga-green bg-bg-surface/50 py-3 px-5 text-rga-gray italic rounded-r-lg">
-        {children}
-      </blockquote>
-    )
-  },
-
-  // ==================== TABLE ====================
-
-  table: ({ node, nodesToJSX }) => {
-    const children = nodesToJSX({ nodes: node.children })
-
-    return (
-      <div className="relative my-10 py-5 px-4 group">
-        {/* Corner brackets */}
-        <Corner position="tl" />
-        <Corner position="tr" />
-        <Corner position="bl" />
-        <Corner position="br" />
-
-        {/* Label */}
-        <div className="absolute -top-2 left-1/2 -translate-x-1/2 px-2 bg-bg-primary">
-          <span className="text-[9px] font-mono uppercase tracking-[0.15em] text-rga-cyan/30">
-            Table
-          </span>
-        </div>
-
-        {/* Table container */}
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse text-sm">
-            {children}
-          </table>
-        </div>
-      </div>
-    )
-  },
-
-  tablerow: ({ node, nodesToJSX }) => {
-    const children = nodesToJSX({ nodes: node.children })
-    return (
-      <tr className="border-b border-rga-green/5 last:border-b-0 hover:bg-rga-green/[0.02] transition-colors">
-        {children}
-      </tr>
-    )
-  },
-
-  tablecell: ({ node, nodesToJSX }) => {
-    const children = nodesToJSX({ nodes: node.children })
-
-    if (node.headerState > 0) {
+    quote: ({ node, nodesToJSX }) => {
+      const children = nodesToJSX({ nodes: node.children })
       return (
-        <th className="px-4 py-3 text-left font-mono font-medium text-rga-cyan text-xs uppercase tracking-wider border-b border-rga-cyan/20">
+        <ReaderCalloutBlock type="quote" accent={accent}>
           {children}
-        </th>
+        </ReaderCalloutBlock>
       )
-    }
+    },
 
-    return (
-      <td className="px-4 py-3 text-text-secondary text-sm">
-        {children}
-      </td>
-    )
-  },
+    // ==================== TABLE ====================
 
-  // ==================== HORIZONTAL RULE ====================
-
-  horizontalrule: () => (
-    <div className="my-14 mx-auto max-w-xs h-px bg-linear-to-r from-transparent via-rga-gray/20 to-transparent" />
-  ),
-
-  // ==================== TEXT FORMATTING ====================
-
-  text: ({ node }) => {
-    let text: ReactNode = node.text
-
-    // Apply formatting
-    if (node.format & 1) {
-      // Bold
-      text = <strong className="text-white font-medium mx-[0.1em]">{text}</strong>
-    }
-    if (node.format & 2) {
-      // Italic
-      text = <em className="text-rga-gray italic">{text}</em>
-    }
-    if (node.format & 4) {
-      // Strikethrough
-      text = <del className="text-rga-gray/60 line-through decoration-rga-gray/40">{text}</del>
-    }
-    if (node.format & 8) {
-      // Underline
-      text = <u className="underline underline-offset-2 decoration-rga-cyan/30">{text}</u>
-    }
-    if (node.format & 16) {
-      // Code (inline)
-      text = (
-        <code className="px-2 py-1 bg-bg-surface/80 text-rga-magenta rounded border border-rga-magenta/20 text-sm font-mono">
-          {text}
-        </code>
+    table: ({ node, nodesToJSX }) => {
+      const children = nodesToJSX({ nodes: node.children })
+      return (
+        <div className={`relative my-10 border ${a.borderFaint} bg-void/40 backdrop-blur-sm`}>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse text-sm">
+              {children}
+            </table>
+          </div>
+        </div>
       )
-    }
-    if (node.format & 32) {
-      // Subscript
-      text = <sub>{text}</sub>
-    }
-    if (node.format & 64) {
-      // Superscript
-      text = <sup>{text}</sup>
-    }
+    },
 
-    return <>{text}</>
-  },
+    tablerow: ({ node, nodesToJSX }) => {
+      const children = nodesToJSX({ nodes: node.children })
+      return (
+        <tr className="border-b border-text-muted/10 last:border-b-0 transition-colors">
+          {children}
+        </tr>
+      )
+    },
 
-  // ==================== UPLOAD (Images) ====================
+    tablecell: ({ node, nodesToJSX }) => {
+      const children = nodesToJSX({ nodes: node.children })
+      if (node.headerState > 0) {
+        return (
+          <th
+            className={`border-b ${a.borderSoft} px-4 py-3 text-left font-mono text-xs uppercase tracking-wider ${a.text}`}
+            style={{ textShadow: a.textGlow }}
+          >
+            {children}
+          </th>
+        )
+      }
+      return (
+        <td className="px-4 py-3 text-text-secondary text-sm">
+          {children}
+        </td>
+      )
+    },
 
-  upload: ({ node }) => {
-    // Handle image uploads
-    if (node.relationTo === 'media') {
-      const uploadDoc = node.value
-      if (typeof uploadDoc !== 'object' || !uploadDoc) {
-        return null
+    // ==================== HORIZONTAL RULE ====================
+
+    horizontalrule: () => (
+      <div className="my-14 mx-auto max-w-xs h-px bg-linear-to-r from-transparent via-text-muted/20 to-transparent" />
+    ),
+
+    // ==================== TEXT FORMATTING ====================
+
+    text: ({ node }) => {
+      let text: ReactNode = node.text
+
+      if (node.format & 1) {
+        text = <strong className="text-white font-medium mx-[0.1em]">{text}</strong>
+      }
+      if (node.format & 2) {
+        text = <em className="text-rga-gray italic">{text}</em>
+      }
+      if (node.format & 4) {
+        text = <del className="text-rga-gray/60 line-through decoration-rga-gray/40">{text}</del>
+      }
+      if (node.format & 8) {
+        text = <u className="underline underline-offset-2 decoration-rga-cyan/30">{text}</u>
+      }
+      if (node.format & 16) {
+        text = (
+          <code className="px-2 py-1 bg-bg-surface/80 text-rga-magenta rounded border border-rga-magenta/20 text-sm font-mono">
+            {text}
+          </code>
+        )
+      }
+      if (node.format & 32) {
+        text = <sub>{text}</sub>
+      }
+      if (node.format & 64) {
+        text = <sup>{text}</sup>
       }
 
+      return <>{text}</>
+    },
+
+    // ==================== UPLOAD (Images) — uses ReaderImageFrame ====================
+
+    upload: ({ node }) => {
+      if (node.relationTo !== 'media') return null
+      const uploadDoc = node.value
+      if (typeof uploadDoc !== 'object' || !uploadDoc) return null
       const { alt, url } = uploadDoc as { alt?: string; url?: string }
-
-      return (
-        <figure className="my-8">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={url}
-            alt={alt || ''}
-            loading="lazy"
-            className="rounded-lg border border-rga-green/20 w-full shadow-lg shadow-rga-green/5"
-          />
-          {alt && (
-            <figcaption className="mt-3 text-center text-sm text-rga-gray italic">
-              {alt}
-            </figcaption>
-          )}
-        </figure>
-      )
-    }
-
-    return null
-  },
-
-  // ==================== CUSTOM BLOCKS ====================
-
-  blocks: {
-    callout: ({ node }) => {
-      const { type, title, content } = node.fields
-
-      // We need to render the nested richText content
-      // For now, extract text from the content for simple rendering
-      // In a more complete implementation, you'd recursively render
-      return (
-        <Callout
-          type={type as 'info' | 'warning' | 'tip' | 'success' | 'danger' | 'error' | 'note'}
-          title={title || undefined}
-        >
-          <RichTextContent data={content} />
-        </Callout>
-      )
+      if (!url) return null
+      return <ReaderImageFrame accent={accent} src={url} alt={alt ?? ''} />
     },
 
-    codeBlock: ({ node }) => {
-      const { language, code } = node.fields
-      return <LexicalCodeBlock code={code} language={language} />
-    },
+    // ==================== CUSTOM BLOCKS ====================
 
-    mermaid: ({ node }) => {
-      const { code } = node.fields
-      return <MermaidDiagram code={code} />
-    },
+    blocks: {
+      callout: ({ node }) => {
+        const { type, title, content } = node.fields
+        return (
+          <ReaderCalloutBlock
+            type={type as CalloutType}
+            accent={accent}
+            title={title || undefined}
+          >
+            <RichText
+              data={content}
+              converters={buildConverters({ accent, sectionMap })}
+            />
+          </ReaderCalloutBlock>
+        )
+      },
 
-    socialEmbed: ({ node }) => {
-      const { url, caption } = node.fields
-      return <SocialEmbed url={url} caption={caption} />
-    },
+      codeBlock: ({ node }) => {
+        const { language, code } = node.fields
+        return <LexicalCodeBlock code={code} language={language} />
+      },
 
-    trelloCard: ({ node }) => {
-      const { url, caption } = node.fields
-      return <TrelloCard url={url} caption={caption} />
-    },
+      mermaid: ({ node }) => {
+        const { code } = node.fields
+        return <MermaidDiagram code={code} />
+      },
 
-    videoEmbed: ({ node }) => {
-      const { url, title } = node.fields
-      return <VideoEmbed url={url} title={title} />
+      socialEmbed: ({ node }) => {
+        const { url, caption } = node.fields
+        return <SocialEmbed url={url} caption={caption} />
+      },
+
+      trelloCard: ({ node }) => {
+        const { url, caption } = node.fields
+        return <TrelloCard url={url} caption={caption} />
+      },
+
+      videoEmbed: ({ node }) => {
+        const { url, title } = node.fields
+        return <VideoEmbed url={url} title={title} />
+      },
     },
-  },
-})
+  })
+}
 
 /**
- * Helper component to render nested RichText content (for callout blocks)
+ * Back-compat default — same shape as before this file gained the factory.
+ * New callers should use `buildConverters({ accent, sectionMap })` directly.
  */
-import { RichText } from '@payloadcms/richtext-lexical/react'
-
-function RichTextContent({ data }: { data: SerializedEditorState | null | undefined }) {
-  if (!data) return null
-  return <RichText data={data} converters={jsxConverters} />
-}
+export const jsxConverters: JSXConvertersFunction<NodeTypes> = buildConverters()

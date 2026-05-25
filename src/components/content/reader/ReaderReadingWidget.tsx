@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { ACCENT_TOKENS, type AccentName } from './accent'
 
-interface DigestReadingWidgetProps {
+interface ReaderReadingWidgetProps {
   accent: AccentName
   /** Total wordcount used to compute the remaining read-time. */
   wordCount: number
@@ -21,14 +21,14 @@ interface DigestReadingWidgetProps {
  *  - WORDS — total word count, tabular-nums for stable columns.
  *
  * Scroll math: percent = (scrollY) / (documentHeight - viewportHeight).
- * Honest enough — the digest's body is the dominant content on the page, so
+ * Honest enough — the document body is the dominant content on the page, so
  * scrolling the page roughly tracks reading position. Re-runs on scroll and
  * resize; uses requestAnimationFrame to coalesce.
  */
-export function DigestReadingWidget({
+export function ReaderReadingWidget({
   accent,
   wordCount,
-}: DigestReadingWidgetProps) {
+}: ReaderReadingWidgetProps) {
   const a = ACCENT_TOKENS[accent]
   const [progress, setProgress] = useState(0)
 

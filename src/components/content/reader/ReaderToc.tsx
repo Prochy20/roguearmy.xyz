@@ -2,11 +2,11 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { ACCENT_TOKENS, type AccentName } from './accent'
-import type { DigestSection } from '@/lib/division2/digest.server'
+import type { ReaderSection } from '@/lib/content/markdown-sections'
 
-interface DigestTocProps {
+interface ReaderTocProps {
   accent: AccentName
-  sections: readonly DigestSection[]
+  sections: readonly ReaderSection[]
 }
 
 /**
@@ -30,7 +30,7 @@ interface DigestTocProps {
  * Handlers ignore keystrokes when the focus is inside an input or textarea
  * so typing in the search box doesn't trigger navigation.
  */
-export function DigestToc({ accent, sections }: DigestTocProps) {
+export function ReaderToc({ accent, sections }: ReaderTocProps) {
   const a = ACCENT_TOKENS[accent]
   const [activeId, setActiveId] = useState<string>(sections[0]?.id ?? '')
   const [readSet, setReadSet] = useState<Set<string>>(new Set())
@@ -128,7 +128,7 @@ export function DigestToc({ accent, sections }: DigestTocProps) {
 
   if (sections.length === 0) return null
 
-  const matches = (section: DigestSection) =>
+  const matches = (section: ReaderSection) =>
     !query ||
     section.text.toLowerCase().includes(query.toLowerCase()) ||
     section.numLabel.includes(query)

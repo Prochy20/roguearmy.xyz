@@ -5,7 +5,7 @@ import type { Components } from 'react-markdown'
 import { ACCENT_TOKENS, type AccentName } from './accent'
 
 /**
- * Digest-local markdown component overrides.
+ * Reader-local markdown component overrides.
  *
  * Three elements get reshaped here:
  *  - h2 — wraps the heading in a numbered "section card" lookup. The server
@@ -16,14 +16,18 @@ import { ACCENT_TOKENS, type AccentName } from './accent'
  *    and an alt-text caption strip. Plays the same beat as the hero frame but
  *    at a quieter scale.
  *  - aside[data-callout] — the existing callout types and the new quote/rule
- *    types render through DigestCalloutBlock, which uses a left-anchored tag
+ *    types render through ReaderCalloutBlock, which uses a left-anchored tag
  *    pill instead of the shared Callout's center-floating label.
  *
+ * The shared visual primitives `ReaderImageFrame` and `ReaderCalloutBlock`
+ * are also exported so the Lexical rich text renderer can reuse them for
+ * upload nodes and callout blocks, keeping markdown vs Lexical body parity.
+ *
  * Built via a factory because the accent color is per-page state and Tailwind
- * needs literal class names — both arms of the cyan/mod fork live in
- * `ACCENT_TOKENS`, the factory just picks which row to spread into the JSX.
+ * needs literal class names — every accent row lives in `ACCENT_TOKENS`, the
+ * factory just picks which row to spread into the JSX.
  */
-export function createDigestMarkdownComponents(
+export function createReaderMarkdownComponents(
   accent: AccentName,
 ): Partial<Components> {
   const a = ACCENT_TOKENS[accent]
@@ -106,42 +110,9 @@ export function createDigestMarkdownComponents(
     },
 
     // Body images in cyber-frame with corner ticks + alt-text caption strip.
-    // Empty alt → frame only, no strip. External hosts are common in Ashley's
-    // payloads so we deliberately keep <img> (not next/image) and stay loose.
     img: ({ src, alt }) => {
       if (typeof src !== 'string' || src.length === 0) return null
-      const captionText = (alt ?? '').trim()
-      return (
-        <figure className="my-10">
-          <div className={`relative border ${a.borderFaint}`}>
-            <CornerTick position="tl" accent={accent} small />
-            <CornerTick position="tr" accent={accent} small />
-            <CornerTick position="bl" accent={accent} small />
-            <CornerTick position="br" accent={accent} small />
-            <div
-              className={`relative overflow-hidden border ${a.borderSoft}`}
-              style={{ background: a.radialGlow }}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={src}
-                alt={alt ?? ''}
-                loading="lazy"
-                className="block h-auto w-full object-cover"
-              />
-              {captionText.length > 0 && (
-                <div
-                  className={`flex items-center justify-between border-t ${a.borderFaint} bg-void/85 px-3 py-2 font-mono text-[9px] uppercase tracking-[0.32em] backdrop-blur-sm sm:px-4`}
-                >
-                  <span className={`${a.textSoft} truncate`}>
-                    // {captionText}
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
-        </figure>
-      )
+      return <ReaderImageFrame accent={accent} src={src} alt={alt ?? ''} />
     },
 
     // Anchor override — four flavors, dispatched in this order:
@@ -211,7 +182,7 @@ export function createDigestMarkdownComponents(
     },
 
     // Callout dispatcher — read data-callout off the aside, route to the
-    // digest-local block. Falls back to the shared aside for asides without
+    // reader-local block. Falls back to the shared aside for asides without
     // a callout type (rare; would only happen on raw HTML asides).
     aside: ({ children, ...props }) => {
       const calloutType = (props as { 'data-callout'?: string })['data-callout']
@@ -221,22 +192,76 @@ export function createDigestMarkdownComponents(
         return <aside {...props}>{children}</aside>
       }
       return (
-        <DigestCalloutBlock
+        <ReaderCalloutBlock
           type={calloutType as CalloutType}
           accent={accent}
           title={title}
           author={author}
         >
           {children}
-        </DigestCalloutBlock>
+        </ReaderCalloutBlock>
       )
     },
   }
 }
 
-/* ── Callout block ───────────────────────────────────────────────────────── */
+/* ── Image frame (also reused by Lexical upload nodes) ───────────────────── */
 
-type CalloutType =
+interface ReaderImageFrameProps {
+  accent: AccentName
+  src: string
+  alt: string
+}
+
+/**
+ * Body image in a cyber-frame: thin accent border, four corner ticks, and
+ * an optional caption strip pulled from the image's alt text. External hosts
+ * are common in pipeline content so we deliberately keep <img> (not
+ * next/image) and stay loose.
+ *
+ * Exported as a top-level component so the Lexical upload node converter
+ * (`components/content/richtext/converters.tsx`) can render upload images in
+ * the same frame as markdown images.
+ */
+export function ReaderImageFrame({ accent, src, alt }: ReaderImageFrameProps) {
+  const a = ACCENT_TOKENS[accent]
+  const captionText = alt.trim()
+  return (
+    <figure className="my-10">
+      <div className={`relative border ${a.borderFaint}`}>
+        <CornerTick position="tl" accent={accent} small />
+        <CornerTick position="tr" accent={accent} small />
+        <CornerTick position="bl" accent={accent} small />
+        <CornerTick position="br" accent={accent} small />
+        <div
+          className={`relative overflow-hidden border ${a.borderSoft}`}
+          style={{ background: a.radialGlow }}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={src}
+            alt={alt}
+            loading="lazy"
+            className="block h-auto w-full object-cover"
+          />
+          {captionText.length > 0 && (
+            <div
+              className={`flex items-center justify-between border-t ${a.borderFaint} bg-void/85 px-3 py-2 font-mono text-[9px] uppercase tracking-[0.32em] backdrop-blur-sm sm:px-4`}
+            >
+              <span className={`${a.textSoft} truncate`}>
+                // {captionText}
+              </span>
+            </div>
+          )}
+        </div>
+      </div>
+    </figure>
+  )
+}
+
+/* ── Callout block (also reused by Lexical callout block node) ───────────── */
+
+export type CalloutType =
   | 'info'
   | 'warning'
   | 'tip'
@@ -258,10 +283,9 @@ interface CalloutVariant {
 
 /**
  * Variant table — one row per callout type, fully spelled out so Tailwind
- * picks them up. Quote and rule are the two new types added for digest.
- * Quote uses the page accent (it's the in-document "voice of an operative"
- * marker, so it ties to the channel color). Rule is locked to magenta — it
- * encodes a hard constraint, independent of channel.
+ * picks them up. Quote uses the page accent (it's the in-document "voice of
+ * an operative" marker, so it ties to the channel color). Rule is locked to
+ * magenta — it encodes a hard constraint, independent of channel.
  */
 function calloutVariants(accent: AccentName): Record<CalloutType, CalloutVariant> {
   const a = ACCENT_TOKENS[accent]
@@ -341,7 +365,7 @@ function calloutVariants(accent: AccentName): Record<CalloutType, CalloutVariant
   }
 }
 
-interface DigestCalloutBlockProps {
+export interface ReaderCalloutBlockProps {
   type: CalloutType
   accent: AccentName
   title?: string
@@ -350,19 +374,25 @@ interface DigestCalloutBlockProps {
   children: ReactNode
 }
 
-function DigestCalloutBlock({
+/**
+ * Renders one callout block. Quote callouts have an extra trick: if no
+ * explicit `author` was passed, the component sniffs the children for a
+ * trailing paragraph that starts with `—` (em-dash) and splits it out as the
+ * attribution row.
+ *
+ * Exported so the Lexical callout block node converter can render Lexical
+ * callouts through the same component as markdown callouts.
+ */
+export function ReaderCalloutBlock({
   type,
   accent,
   title,
   author,
   children,
-}: DigestCalloutBlockProps) {
+}: ReaderCalloutBlockProps) {
   const variant = calloutVariants(accent)[type]
   const label = title?.toUpperCase().trim() || variant.label
 
-  // For quote callouts: if no explicit author attribute came in via
-  // ::quote{author="..."}, sniff the children for a trailing paragraph that
-  // starts with an em-dash and split it out as the attribution row.
   let body: ReactNode = children
   let attribution: string | null = author?.trim() || null
 

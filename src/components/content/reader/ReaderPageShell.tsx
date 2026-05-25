@@ -2,22 +2,22 @@ import { type ReactNode } from 'react'
 import { ManifestoProgress } from '@/app/(frontend)/(with-chrome)/manifesto/ManifestoProgress'
 import { ACCENT_TOKENS, type AccentName } from './accent'
 
-interface DigestPageShellProps {
+interface ReaderPageShellProps {
   accent: AccentName
   /** Full-width chrome above the 3-col body (breadcrumb, tag row, title, hero). */
   header: ReactNode
   /** Left rail. Null hides it and stretches the body column. */
   toc: ReactNode | null
-  /** Middle column — doc-strip, TL;DR, prose body, sources. */
+  /** Middle column — doc-strip, TL;DR, prose body, sources, related. */
   body: ReactNode
   /** Right rail. Hidden on mobile/tablet either way. */
   reading: ReactNode
-  /** Full-width footer (back-to-week + prev/next). */
+  /** Full-width footer (back link + prev/next). */
   footer: ReactNode
 }
 
 /**
- * Reader shell for the digest detail page.
+ * Layout primitive for the reader surface.
  *
  * Layout strategy:
  *  - lg+ (1024px+): three columns — `[ToC] [body] [reading]`. Rails are
@@ -29,18 +29,18 @@ interface DigestPageShellProps {
  *
  * The frame sits inside a subtle scanline overlay (1px horizontal stripe at
  * ~3.5% opacity) that gives the surface a CRT-tinted feel without screaming.
- * A second ambient wash pulses the frequency accent down from the top edge so
- * the chrome reads as "tuned to the right channel" before the reader even
+ * A second ambient wash pulses the page accent down from the top edge so the
+ * chrome reads as "tuned to the right channel" before the reader even
  * registers the tag pills.
  */
-export function DigestPageShell({
+export function ReaderPageShell({
   accent,
   header,
   toc,
   body,
   reading,
   footer,
-}: DigestPageShellProps) {
+}: ReaderPageShellProps) {
   const a = ACCENT_TOKENS[accent]
   const hasToc = toc !== null
 

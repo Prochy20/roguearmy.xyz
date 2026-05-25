@@ -1,13 +1,15 @@
 import { ACCENT_TOKENS, type AccentName } from './accent'
-import type { DigestFrequency } from '@/lib/division2/digest.server'
 
-interface DigestHeroFrameProps {
+interface ReaderHeroFrameProps {
   accent: AccentName
-  /** Always non-null here — the page hides the whole block when missing. */
+  /** Always non-null at this layer — caller hides the whole block when missing. */
   thumbnailUrl: string
-  frequency: DigestFrequency
-  /** Pre-formatted period — e.g. "WEEK OF MAY 19" or "MAY 19 · TUE". */
+  /** Short label rendered in the top-left documentary plate (e.g. WEEKLY, DAILY, ARTICLE). */
+  kindLabel: string
+  /** Pre-formatted period / publish date — e.g. "WEEK OF MAY 19" or "MAY 19 · TUE". */
   periodLabel: string
+  /** Optional right-side byline label (e.g. "// AI · ASHLEY"). Hidden when omitted. */
+  bylineLabel?: string
 }
 
 /**
@@ -18,18 +20,17 @@ interface DigestHeroFrameProps {
  *  - Four corner ticks in accent color, hugging the outer border.
  *  - Inside the frame: the image, an accent-tinted radial backlight behind it,
  *    and a film-strip-style metadata bar pinned to the bottom — left half is
- *    the period token, right half is `// AI · ASHLEY`. The bar is its own
- *    micro-frame: thin top border in accent, mono labels, generous letter
- *    tracking.
+ *    the kind + period token, right half is the optional byline.
  *  - On the top-left of the frame, a faint slate label `// SPECIMEN` doubles
  *    as a "documentary plate" tag — sells the cyber/intel reading.
  */
-export function DigestHeroFrame({
+export function ReaderHeroFrame({
   accent,
   thumbnailUrl,
-  frequency,
+  kindLabel,
   periodLabel,
-}: DigestHeroFrameProps) {
+  bylineLabel,
+}: ReaderHeroFrameProps) {
   const a = ACCENT_TOKENS[accent]
 
   return (
@@ -67,7 +68,7 @@ export function DigestHeroFrame({
           <span aria-hidden className={`inline-block h-1 w-1 ${a.bg}`} />
           <span className={a.textSoft}>SPECIMEN</span>
           <span aria-hidden className="text-text-muted/40">::</span>
-          <span className="text-text-muted">{frequency.toUpperCase()}</span>
+          <span className="text-text-muted">{kindLabel}</span>
         </div>
 
         {/* Bottom film-strip metadata bar */}
@@ -75,9 +76,11 @@ export function DigestHeroFrame({
           className={`absolute inset-x-0 bottom-0 flex items-center justify-between border-t ${a.borderSoft} bg-void/80 px-3 py-2 font-mono text-[9px] uppercase tracking-[0.32em] backdrop-blur-sm sm:px-5 sm:py-3 sm:text-[10px]`}
         >
           <span className={`${a.textSoft} truncate`}>
-            // {frequency.toUpperCase()} · {periodLabel}
+            // {kindLabel} · {periodLabel}
           </span>
-          <span className="text-text-muted">// AI · ASHLEY</span>
+          {bylineLabel && (
+            <span className="text-text-muted">{bylineLabel}</span>
+          )}
         </div>
       </div>
     </figure>

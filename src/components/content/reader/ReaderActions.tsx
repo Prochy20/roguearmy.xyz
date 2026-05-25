@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { ACCENT_TOKENS, type AccentName } from './accent'
 
-interface DigestActionsProps {
+interface ReaderActionsProps {
   accent: AccentName
 }
 
@@ -16,10 +16,14 @@ interface DigestActionsProps {
  * snapping back — confirms the operator without a toast system.
  *
  * Visual posture: mono labels with a leading `+` tick, vertical separator
- * pipe between the two buttons, snap-on-hover (no easing — terminals don't
- * ease). Hover pushes both label and tick to accent color.
+ * pipe between the two buttons, snap-on-hover (no easing). Hover pushes
+ * both label and tick to accent color.
+ *
+ * This is the digest's default actions slot. Articles use bookmark + share
+ * components instead, passed directly into the title block's `actions` slot
+ * rather than via this component.
  */
-export function DigestActions({ accent }: DigestActionsProps) {
+export function ReaderActions({ accent }: ReaderActionsProps) {
   const a = ACCENT_TOKENS[accent]
   const [copied, setCopied] = useState(false)
   const copiedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)

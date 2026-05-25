@@ -1,12 +1,12 @@
 import { ACCENT_TOKENS, type AccentName } from './accent'
 
-interface DigestTldrCardProps {
+interface ReaderTldrCardProps {
   accent: AccentName
   highlights: readonly string[]
 }
 
 /**
- * "Takeaways" card — Ashley's TL;DR for operators who won't read the body.
+ * "Takeaways" card — TL;DR for readers who won't read the body.
  *
  * Composition:
  *  - Label row: `// TL;DR · TAKEAWAYS` + a count chip (e.g. "x04 ITEMS").
@@ -18,9 +18,10 @@ interface DigestTldrCardProps {
  *    bg-void tint that distinguishes it from the prose body below.
  *
  * Returns null when highlights is empty so the page doesn't render an empty
- * shell.
+ * shell. Article callers rely on this: passing `[]` (no editor input) hides
+ * the card entirely.
  */
-export function DigestTldrCard({ accent, highlights }: DigestTldrCardProps) {
+export function ReaderTldrCard({ accent, highlights }: ReaderTldrCardProps) {
   if (highlights.length === 0) return null
   const a = ACCENT_TOKENS[accent]
 

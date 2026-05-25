@@ -2,7 +2,7 @@ import { type ReactNode } from 'react'
 import { HeroGlitch } from '@/components/effects/HeroGlitch'
 import { ACCENT_TOKENS, type AccentName } from './accent'
 
-interface DigestTitleBlockProps {
+interface ReaderTitleBlockProps {
   accent: AccentName
   title: string
   perex: string
@@ -10,7 +10,7 @@ interface DigestTitleBlockProps {
   dateLabel: string
   /** Computed read-time in minutes — already clamped to >= 1 upstream. */
   readMinutes: number
-  /** Right-side action bar — pass <DigestActions/> from the page. */
+  /** Right-side action bar — bookmark/share for articles, copy/print for digests. */
   actions: ReactNode
 }
 
@@ -19,29 +19,24 @@ interface DigestTitleBlockProps {
  *
  * Typography: display font for the title at a fluid scale (clamp 28-56px),
  * uppercase, leading-[0.9] for tight stacking, accent-tinted text-shadow glow.
- * Title is wrapped in `HeroGlitch` to give it the same periodic CRT-flicker
- * + RGB-split treatment the landing console hero uses — the digest reads as
- * a tactical packet, this is the packet "tuning in" every few seconds.
+ * Title is wrapped in `HeroGlitch` to give it a periodic CRT-flicker + RGB-split
+ * treatment — the document reads as a tactical packet "tuning in" every few
+ * seconds. Glitch colors are paired to the page accent.
  *
  * Dek in body font, comfortable line-height. Byline reduced to date +
- * read-time only — no author. Ashley generates the digest, but we don't
- * claim an author byline we can't back up.
+ * read-time only — no author. Authorship is whatever the caller renders into
+ * `actions` (or omits).
  */
-export function DigestTitleBlock({
+export function ReaderTitleBlock({
   accent,
   title,
   perex,
   dateLabel,
   readMinutes,
   actions,
-}: DigestTitleBlockProps) {
+}: ReaderTitleBlockProps) {
   const a = ACCENT_TOKENS[accent]
-  // Pick the RGB split colors for the glitch — cyan/magenta on weekly to read
-  // as terminal interference, mod-orange/amber on daily to keep the daily
-  // channel feeling "ops" rather than "intel". Slow + low-intensity (no data
-  // corruption) so the title remains readable.
-  const glitchColors: [string, string] =
-    accent === 'cyan' ? ['#00ffff', '#ff00ff'] : ['#ff8000', '#ffae42']
+  const glitchColors = GLITCH_COLOR_PAIRS[accent]
 
   return (
     <div className="flex flex-col gap-6 sm:gap-7">
@@ -84,4 +79,17 @@ export function DigestTitleBlock({
       </div>
     </div>
   )
+}
+
+/**
+ * RGB-split color pairs for the title HeroGlitch effect. Each accent picks
+ * two near-complementary tones that read as "terminal interference" for that
+ * channel. Tied to the accent so the glitch never reads as a different page.
+ */
+const GLITCH_COLOR_PAIRS: Record<AccentName, [string, string]> = {
+  green: ['#00ff41', '#00ffff'],
+  cyan: ['#00ffff', '#ff00ff'],
+  magenta: ['#ff00ff', '#00ffff'],
+  orange: ['#ff8000', '#ffae42'],
+  red: ['#ff3344', '#ff8888'],
 }

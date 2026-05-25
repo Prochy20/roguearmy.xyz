@@ -1,21 +1,20 @@
 import { ACCENT_TOKENS, type AccentName } from './accent'
 
-interface DigestShortcutsProps {
+interface ReaderShortcutsProps {
   accent: AccentName
 }
 
 /**
  * Visual-only keyboard shortcut panel — pairs with the handlers that live
- * inside `DigestToc`. This component renders nothing interactive; it just
+ * inside `ReaderToc`. This component renders nothing interactive; it just
  * reminds the operator which keys do what. The actual handlers are wired up
- * once on mount in `DigestToc` and remain active whether or not this panel
+ * once on mount in `ReaderToc` and remain active whether or not this panel
  * is on screen.
  *
- * Styling mirrors the rest of the right-rail chrome: frequency-driven accent
- * (cyan for weekly, mod-orange for daily), corner ticks, mono labels, and
- * kbd-style keycaps with an accent hairline border.
+ * Styling mirrors the rest of the right-rail chrome: accent-driven corner
+ * ticks, mono labels, and kbd-style keycaps with an accent hairline border.
  */
-export function DigestShortcuts({ accent }: DigestShortcutsProps) {
+export function ReaderShortcuts({ accent }: ReaderShortcutsProps) {
   const a = ACCENT_TOKENS[accent]
   return (
     <section
