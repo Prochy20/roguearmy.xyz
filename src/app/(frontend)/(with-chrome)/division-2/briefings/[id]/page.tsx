@@ -1,31 +1,31 @@
 import { notFound } from 'next/navigation'
 import { EmptyDossier } from '@/components/division2/EmptyDossier'
 import { FailRow } from '@/components/ui/FailRow'
-import { DigestDetailPage } from '@/components/division2/digest/DigestDetailPage'
+import { BriefingDetailPage } from '@/components/division2/briefings/BriefingDetailPage'
 import { getMemberAuth } from '@/lib/auth/session.server'
-import { hasDigestAccess } from '@/lib/auth/badges'
+import { hasBriefingsAccess } from '@/lib/auth/badges'
 import {
-  buildDigestDesignator,
+  buildBriefingDesignator,
   countMarkdownWords,
   enumerateSections,
-  fetchDigestById,
-  fetchRecentDigests,
-  fetchWeeklyDigests,
+  fetchBriefingById,
+  fetchRecentBriefings,
+  fetchWeeklyBriefings,
   injectSectionAnchors,
   promoteH1ToH2,
-  type Digest,
-  type DigestDetail,
-  type DigestSection,
-} from '@/lib/division2/digest.server'
+  type Briefing,
+  type BriefingDetail,
+  type BriefingSection,
+} from '@/lib/division2/briefing.server'
 import {
   buildCitationIndex,
   transformCitationMarkers,
-} from '@/lib/division2/digest.citations'
+} from '@/lib/division2/briefing.citations'
 
 // Dynamic rendering is implicit: `params`, `searchParams`, and the cookie
 // read inside `getMemberAuth()` each opt this route out of static
 // prerendering. Data freshness comes from the `unstable_cache` TTL on
-// `fetchDigestById`, not the route-level dynamic mode.
+// `fetchBriefingById`, not the route-level dynamic mode.
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -34,7 +34,7 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps) {
   const { id } = await params
-  const result = await fetchDigestById(id)
+  const result = await fetchBriefingById(id)
   if (!result.ok || !result.data) {
     return { title: 'Briefing | Division 2 · Rogue Army' }
   }
@@ -44,7 +44,7 @@ export async function generateMetadata({ params }: PageProps) {
   }
 }
 
-export default async function Division2DigestDetailPage({
+export default async function Division2BriefingDetailPage({
   params,
   searchParams,
 }: PageProps) {
@@ -52,31 +52,31 @@ export default async function Division2DigestDetailPage({
   const { as: rawAs } = await searchParams
   const isPreviewingAsMember = rawAs === 'member'
 
-  const [digestResult, auth] = await Promise.all([
-    fetchDigestById(id),
+  const [briefingResult, auth] = await Promise.all([
+    fetchBriefingById(id),
     getMemberAuth(),
   ])
 
-  if (!digestResult.ok) {
+  if (!briefingResult.ok) {
     return (
       <FailWrapper>
         <FailRow
-          code={digestResult.error.code}
-          status={digestResult.error.status}
-          returnTo="/division-2/digest"
+          code={briefingResult.error.code}
+          status={briefingResult.error.status}
+          returnTo="/division-2/briefings"
         />
       </FailWrapper>
     )
   }
-  if (!digestResult.data) notFound()
+  if (!briefingResult.data) notFound()
 
-  const digest = digestResult.data
-  const hasAccess = hasDigestAccess(auth.symbolicRoles, {
+  const briefing = briefingResult.data
+  const hasAccess = hasBriefingsAccess(auth.symbolicRoles, {
     devOverride: isPreviewingAsMember ? 'member' : null,
   })
 
   // Gate: non-boosters never read daily briefings via direct URL.
-  if (digest.frequency === 'daily' && !hasAccess) {
+  if (briefing.frequency === 'daily' && !hasAccess) {
     return (
       <FailWrapper>
         <EmptyDossier kind="BOOSTER_REQUIRED" />
@@ -84,31 +84,31 @@ export default async function Division2DigestDetailPage({
     )
   }
 
-  const { transformed, sections } = transformDigestBody(digest)
-  const wordCount = countMarkdownWords(digest.content)
+  const { transformed, sections } = transformBriefingBody(briefing)
+  const wordCount = countMarkdownWords(briefing.content)
   const readMinutes = Math.max(1, Math.floor(wordCount / 200))
-  const designator = buildDigestDesignator(digest)
-  // Daily digests are booster-gated. Weekly are public. The MEMBERS ONLY tag
+  const designator = buildBriefingDesignator(briefing)
+  // Daily briefings are booster-gated. Weekly are public. The MEMBERS ONLY tag
   // mirrors the same boolean that powered the gate above.
-  const isMembersOnly = digest.frequency === 'daily'
+  const isMembersOnly = briefing.frequency === 'daily'
 
   const [recent, weeklies] = await Promise.all([
-    fetchRecentDigests(30),
-    fetchWeeklyDigests({ limit: 20 }),
+    fetchRecentBriefings(30),
+    fetchWeeklyBriefings({ limit: 20 }),
   ])
 
-  const neighbors = recent.ok ? findNeighbors(recent.data, digest, hasAccess) : { prev: null, next: null }
+  const neighbors = recent.ok ? findNeighbors(recent.data, briefing, hasAccess) : { prev: null, next: null }
   const weekPeriodStart = resolveWeekPeriodStart(
-    digest,
+    briefing,
     weeklies.ok ? weeklies.data.items : [],
   )
   const related = recent.ok
-    ? findRelated(recent.data, digest, hasAccess)
+    ? findRelated(recent.data, briefing, hasAccess)
     : []
 
   return (
-    <DigestDetailPage
-      digest={digest}
+    <BriefingDetailPage
+      briefing={briefing}
       transformedContent={transformed}
       sections={sections}
       designator={designator}
@@ -131,15 +131,15 @@ function FailWrapper({ children }: { children: React.ReactNode }) {
   )
 }
 
-interface TransformedDigestBody {
+interface TransformedBriefingBody {
   /** Markdown with citations + section anchors both injected. */
   transformed: string
   /** Section manifest shared between the body and the ToC. */
-  sections: DigestSection[]
+  sections: BriefingSection[]
 }
 
 /**
- * Two-step server transform applied to the digest body before it reaches
+ * Two-step server transform applied to the briefing body before it reaches
  * the client renderer:
  *  1. Citation markers `(ref:UUID)` → `<sup>[N]</sup>` anchors.
  *  2. `## Title` → `<h2 id="sec-NN" data-sec-num="NN">Title</h2>` so the
@@ -147,23 +147,23 @@ interface TransformedDigestBody {
  * The section manifest is returned alongside the transformed string so the
  * ToC component can render without re-parsing the body.
  */
-function transformDigestBody(digest: DigestDetail): TransformedDigestBody {
+function transformBriefingBody(briefing: BriefingDetail): TransformedBriefingBody {
   // Promote any `# Title` in the body to `## Title` first — the page title
   // already serves as the document H1, so bare H1s in Ashley's content
   // should read as top-level sections, not competing document titles.
-  const promoted = promoteH1ToH2(digest.content)
+  const promoted = promoteH1ToH2(briefing.content)
 
   // Enumerate sections from the promoted markdown. Tries H2 first, falls
-  // back to H3 when the body has no H2s — keeps the ToC alive for digests
+  // back to H3 when the body has no H2s — keeps the ToC alive for briefings
   // authored with `#` for title + `###` for sections (now also picks up
   // promoted `# → ##` H1s).
   const { level, sections } = enumerateSections(promoted)
 
-  const index = buildCitationIndex(digest.articles)
+  const index = buildCitationIndex(briefing.articles)
   const { output, unresolved } = transformCitationMarkers(promoted, index)
   if (process.env.NODE_ENV !== 'production' && unresolved.length > 0) {
     console.warn(
-      `[digest ${digest.id}] unresolved citation markers:`,
+      `[briefing ${briefing.id}] unresolved citation markers:`,
       unresolved,
     )
   }
@@ -178,10 +178,10 @@ function transformDigestBody(digest: DigestDetail): TransformedDigestBody {
  * they should only step between weeklies, so filter the list when applicable.
  */
 function findNeighbors(
-  all: Digest[],
-  current: Digest,
+  all: Briefing[],
+  current: Briefing,
   hasAccess: boolean,
-): { prev: Digest | null; next: Digest | null } {
+): { prev: Briefing | null; next: Briefing | null } {
   const candidates = hasAccess
     ? all
     : all.filter((d) => d.frequency === 'weekly')
@@ -193,19 +193,19 @@ function findNeighbors(
 }
 
 /**
- * Pick up to 3 related digests to surface below the sources table.
+ * Pick up to 3 related briefings to surface below the sources table.
  *
  * Selection rule: prefer same-frequency siblings (a weekly's "related"
  * leans into more weeklies; daily → more dailies), so the cards read as
  * "more of what you're reading". Fall back to other-frequency entries if
- * the same-frequency pool runs short. Always excludes the current digest.
+ * the same-frequency pool runs short. Always excludes the current briefing.
  * Non-boosters never see daily entries — same gating as the neighbor walk.
  */
 function findRelated(
-  all: Digest[],
-  current: Digest,
+  all: Briefing[],
+  current: Briefing,
   hasAccess: boolean,
-): Digest[] {
+): Briefing[] {
   const pool = all.filter((d) => d.id !== current.id)
   const candidates = hasAccess
     ? pool
@@ -217,15 +217,15 @@ function findRelated(
 }
 
 /**
- * Determine which weekly digest contains this digest's period — used by the
- * back-to-week footer link. Weekly digest → itself. Daily digest → the weekly
+ * Determine which weekly briefing contains this briefing's period — used by the
+ * back-to-week footer link. Weekly briefing → itself. Daily briefing → the weekly
  * whose [periodStart, periodEnd] covers it.
  */
-function resolveWeekPeriodStart(digest: Digest, weeklies: Digest[]): string {
-  if (digest.frequency === 'weekly') return digest.periodStart
+function resolveWeekPeriodStart(briefing: Briefing, weeklies: Briefing[]): string {
+  if (briefing.frequency === 'weekly') return briefing.periodStart
   const containing = weeklies.find(
     (w) =>
-      w.periodStart <= digest.periodStart && digest.periodStart <= w.periodEnd,
+      w.periodStart <= briefing.periodStart && briefing.periodStart <= w.periodEnd,
   )
-  return containing?.periodStart ?? digest.periodStart
+  return containing?.periodStart ?? briefing.periodStart
 }

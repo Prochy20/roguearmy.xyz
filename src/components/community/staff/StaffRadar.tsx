@@ -106,7 +106,7 @@ export function StaffRadar({ blipCount = 4, contacts, className }: StaffRadarPro
       )}
     >
       <div className="absolute inset-[4.5%] overflow-hidden rounded-full">
-        <div className="rga-radar-sweep absolute inset-0">
+        <div className="rga-scanner-sweep absolute inset-0">
           <div
             className="absolute inset-0"
             style={{

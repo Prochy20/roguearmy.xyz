@@ -1,28 +1,28 @@
-import { DigestPage } from '@/components/division2/digest/DigestPage'
-import type { WeekStepperState } from '@/components/division2/digest/WeekStepper'
+import { BriefingsPage } from '@/components/division2/briefings/BriefingsPage'
+import type { WeekStepperState } from '@/components/division2/briefings/WeekStepper'
 import { cachedFindGlobal } from '@/lib/payload/cached'
 import { getMemberAuth } from '@/lib/auth/session.server'
-import { hasDigestAccess } from '@/lib/auth/badges'
+import { hasBriefingsAccess } from '@/lib/auth/badges'
 import {
-  fetchRecentDailyDigests,
-  fetchWeeklyDigests,
+  fetchRecentDailyBriefings,
+  fetchWeeklyBriefings,
   parseWeekParam,
-  type Digest,
-} from '@/lib/division2/digest.server'
+  type Briefing,
+} from '@/lib/division2/briefing.server'
 import { formatDayShort, mondayOfWeekUtc, todayUtcIso } from '@/lib/division2/format'
 
 // Dynamic rendering is already implicit: this page reads `searchParams`
 // (?week, ?as) and `getMemberAuth()` reads cookies — either alone opts the
 // route out of static prerendering. Data freshness is governed by the
-// `unstable_cache` TTLs on the digest fetches, not by route-level dynamic.
+// `unstable_cache` TTLs on the briefing fetches, not by route-level dynamic.
 
-const DEFAULT_TITLE = 'Digest Archive | Division 2 · Rogue Army'
+const DEFAULT_TITLE = 'Briefings Archive | Division 2 · Rogue Army'
 const DEFAULT_DESCRIPTION =
-  'AI-summarized weekly and daily digests for The Division 2 — distilled from the YouTube, Reddit, and Ubisoft firehose.'
+  'AI-summarized weekly and daily briefings for The Division 2 — distilled from the YouTube, Reddit, and Ubisoft firehose.'
 
 export async function generateMetadata() {
   const division2 = await cachedFindGlobal('division2')
-  const seo = division2.digestPage?.seo
+  const seo = division2.briefingsPage?.seo
   return {
     title: seo?.title?.trim() || DEFAULT_TITLE,
     description: seo?.description?.trim() || DEFAULT_DESCRIPTION,
@@ -33,23 +33,24 @@ interface PageProps {
   searchParams: Promise<{ week?: string; as?: string }>
 }
 
-export default async function Division2DigestPage({ searchParams }: PageProps) {
+export default async function Division2BriefingsPage({ searchParams }: PageProps) {
   const { week: rawWeek, as: rawAs } = await searchParams
   const requestedDay = parseWeekParam(rawWeek)
   const requestedWeekStart = requestedDay ? mondayOfWeekUtc(requestedDay) : null
-  const isPreviewingAsMember = rawAs === 'member'
-  const showDevToggle = process.env.NODE_ENV !== 'production'
 
   const auth = await getMemberAuth()
-  const hasAccess = hasDigestAccess(auth.symbolicRoles, {
-    devOverride: isPreviewingAsMember ? 'member' : null,
+  // `?as=member` URL override (dev-only via the env check inside the helper)
+  // still works for previewing the non-booster experience; the visible toggle
+  // UI was removed for visual cleanliness.
+  const hasAccess = hasBriefingsAccess(auth.symbolicRoles, {
+    devOverride: rawAs === 'member' ? 'member' : null,
   })
 
   // Fetch weeklies + (booster-only) dailies in parallel; weeklies is the
   // primary call — its failure surfaces as the page-level error.
   const [weekliesResult, dailiesResult, division2] = await Promise.all([
-    fetchWeeklyDigests({ limit: 20 }),
-    hasAccess ? fetchRecentDailyDigests({ limit: 30 }) : Promise.resolve(null),
+    fetchWeeklyBriefings({ limit: 20 }),
+    hasAccess ? fetchRecentDailyBriefings({ limit: 30 }) : Promise.resolve(null),
     cachedFindGlobal('division2'),
   ])
 
@@ -57,11 +58,11 @@ export default async function Division2DigestPage({ searchParams }: PageProps) {
   const dailies = dailiesResult?.ok ? dailiesResult.data : []
   // Merged feed, periodStart desc. Weeklies and dailies share the timeline —
   // a weekly's periodStart (Monday) places it at the start of its week.
-  const merged: Digest[] = [...weeklies, ...dailies].sort((a, b) =>
+  const merged: Briefing[] = [...weeklies, ...dailies].sort((a, b) =>
     b.periodStart.localeCompare(a.periodStart),
   )
 
-  // Calendar weeks (Mondays) that contain at least one digest, desc.
+  // Calendar weeks (Mondays) that contain at least one briefing, desc.
   const weekStartsInData = uniqueWeekStartsDesc(merged)
 
   // Active week: URL override if it points to a week with data; else newest
@@ -70,21 +71,19 @@ export default async function Division2DigestPage({ searchParams }: PageProps) {
     pickActiveWeekStart(requestedWeekStart, weekStartsInData) ??
     mondayOfWeekUtc(todayUtcIso())
 
-  const digestsForWeek = filterToWeek(merged, activeWeekStart)
+  const briefingsForWeek = filterToWeek(merged, activeWeekStart)
   const stepper = buildStepper(weekStartsInData, activeWeekStart)
   const isLatestWeek = activeWeekStart === weekStartsInData[0]
 
   return (
-    <DigestPage
+    <BriefingsPage
       weekly={weekliesResult}
-      digestsForWeek={digestsForWeek}
+      briefingsForWeek={briefingsForWeek}
       activeWeekStart={activeWeekStart}
       hasAccess={hasAccess}
-      isPreviewingAsMember={isPreviewingAsMember}
-      showDevToggle={showDevToggle}
       stepper={stepper}
       isLatestWeek={isLatestWeek}
-      content={division2.digestPage ?? null}
+      content={division2.briefingsPage ?? null}
     />
   )
 }
@@ -102,14 +101,14 @@ function pickActiveWeekStart(
   return weekStartsInData[0] ?? null
 }
 
-function filterToWeek(merged: Digest[], weekStart: string): Digest[] {
+function filterToWeek(merged: Briefing[], weekStart: string): Briefing[] {
   const weekEnd = addDaysUtc(weekStart, 7)
   return merged.filter(
     (d) => d.periodStart >= weekStart && d.periodStart < weekEnd,
   )
 }
 
-function uniqueWeekStartsDesc(merged: Digest[]): string[] {
+function uniqueWeekStartsDesc(merged: Briefing[]): string[] {
   const set = new Set<string>()
   for (const d of merged) set.add(mondayOfWeekUtc(d.periodStart))
   return [...set].sort().reverse()
@@ -117,7 +116,7 @@ function uniqueWeekStartsDesc(merged: Digest[]): string[] {
 
 /**
  * Stepper bounds = data-driven. Prev / next jump to the nearest week that
- * actually has digests; the user can't paginate into an empty void. When the
+ * actually has briefings; the user can't paginate into an empty void. When the
  * active week itself has no data (e.g. the user typed a custom URL), prev /
  * next still point to the bracketing data-bearing weeks.
  */
@@ -156,7 +155,7 @@ function buildStepper(
 }
 
 function urlForWeek(weekStart: string): string {
-  return `/division-2/digest?week=${weekStart}`
+  return `/division-2/briefings?week=${weekStart}`
 }
 
 function addDaysUtc(iso: string, days: number): string {

@@ -27,7 +27,7 @@ export function StaffManifestHeader({
 }: StaffManifestHeaderProps) {
   return (
     <section
-      className="relative overflow-hidden border-b border-[rgba(255,255,255,0.06)] px-4 pt-20 pb-16 sm:px-8 sm:pt-24 sm:pb-20 lg:px-16 lg:pt-28 lg:pb-24 [--radar-shove:132px] xl:[--radar-shove:168px] 2xl:[--radar-shove:204px]"
+      className="relative overflow-hidden border-b border-[rgba(255,255,255,0.06)] px-4 pt-20 pb-16 sm:px-8 sm:pt-24 sm:pb-20 lg:px-16 lg:pt-28 lg:pb-24 [--scanner-shove:132px] xl:[--scanner-shove:168px] 2xl:[--scanner-shove:204px]"
       aria-labelledby="staff-manifest-headline"
     >
       <div
@@ -53,13 +53,13 @@ export function StaffManifestHeader({
 
       <div
         aria-hidden
-        className="rga-radar-hover-zone pointer-events-auto absolute top-36 -right-[220px] hidden aspect-square w-[440px] rounded-full lg:block xl:top-40 xl:-right-[280px] xl:w-[560px] 2xl:top-44 2xl:-right-[340px] 2xl:w-[680px]"
+        className="rga-scanner-hover-zone pointer-events-auto absolute top-36 -right-[220px] hidden aspect-square w-[440px] rounded-full lg:block xl:top-40 xl:-right-[280px] xl:w-[560px] 2xl:top-44 2xl:-right-[340px] 2xl:w-[680px]"
       />
 
       <StaffRadar
         blipCount={rosterCount}
         contacts={rosterContacts}
-        className="absolute top-36 -right-[220px] transition-transform duration-500 ease-out xl:top-40 xl:-right-[280px] 2xl:top-44 2xl:-right-[340px] motion-safe:[section:has(.rga-radar-hover-zone:hover)_&]:translate-x-[calc(-1*var(--radar-shove))]"
+        className="absolute top-36 -right-[220px] transition-transform duration-500 ease-out xl:top-40 xl:-right-[280px] 2xl:top-44 2xl:-right-[340px] motion-safe:[section:has(.rga-scanner-hover-zone:hover)_&]:translate-x-[calc(-1*var(--scanner-shove))]"
       />
 
       <div className="relative mx-auto flex w-full max-w-[1480px] flex-col gap-8 sm:gap-10">
@@ -80,7 +80,7 @@ export function StaffManifestHeader({
           }}
         />
 
-        <div className="flex min-w-0 flex-col gap-7 transition-transform duration-500 ease-out motion-safe:[section:has(.rga-radar-hover-zone:hover)_&]:translate-x-[calc(-1*var(--radar-shove))]">
+        <div className="flex min-w-0 flex-col gap-7 transition-transform duration-500 ease-out motion-safe:[section:has(.rga-scanner-hover-zone:hover)_&]:translate-x-[calc(-1*var(--scanner-shove))]">
           {content?.kicker && (
             <div className="font-mono text-[11px] tracking-[0.35em] text-rga-cyan uppercase">
               {content.kicker}

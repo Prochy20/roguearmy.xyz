@@ -2,35 +2,31 @@ import { FailRow } from '@/components/ui/FailRow'
 import { StatRibbon } from '@/components/ui/StatRibbon'
 import { EmptyDossier } from '@/components/division2/EmptyDossier'
 import { GlitchOnChange } from '@/components/effects/GlitchOnChange'
-import { DigestCard } from './DigestCard'
-import { DigestHero } from './DigestHero'
+import { BriefingCard } from './BriefingCard'
+import { BriefingHero } from './BriefingHero'
+import { WashingtonMap } from './WashingtonMap'
 import { WeekStepper, type WeekStepperState } from './WeekStepper'
 import { BoosterPerksWidget } from './BoosterPerksWidget'
-import { DevPreviewToggle } from './DevPreviewToggle'
 import { formatDayShort } from '@/lib/division2/format'
 import type { AshleyResult } from '@/lib/api/server'
-import type { DigestList, Digest } from '@/lib/division2/digest.server'
+import type { BriefingList, Briefing } from '@/lib/division2/briefing.server'
 import type { Division2 } from '@/payload-types'
 
-type DigestPageContent = NonNullable<Division2['digestPage']>
+type BriefingsPageContent = NonNullable<Division2['briefingsPage']>
 
-interface DigestPageProps {
+interface BriefingsPageProps {
   /** Primary fetch result — drives the LIVE/OFFLINE pill and page-level error UI. */
-  weekly: AshleyResult<DigestList>
-  /** Digests landing in the active calendar week, sorted by periodStart desc. */
-  digestsForWeek: Digest[]
+  weekly: AshleyResult<BriefingList>
+  /** Briefings landing in the active calendar week, sorted by periodStart desc. */
+  briefingsForWeek: Briefing[]
   /** Monday (UTC, YYYY-MM-DD) of the active calendar week. */
   activeWeekStart: string
   /** True when the viewer can see daily briefings (booster). */
   hasAccess: boolean
-  /** True only when the dev `?as=member` override is currently in effect. */
-  isPreviewingAsMember: boolean
-  /** Whether the dev toggle UI should be rendered (localhost only). */
-  showDevToggle: boolean
   stepper: WeekStepperState | null
   /** True when the active week is the newest data-bearing week — drives the LATEST hero. */
   isLatestWeek: boolean
-  content: DigestPageContent | null | undefined
+  content: BriefingsPageContent | null | undefined
 }
 
 const DEFAULTS = {
@@ -41,123 +37,139 @@ const DEFAULTS = {
     'AI-summarized briefings on the Division 2 firehose. Weekly roll-ups are open to every operative; daily briefings unlock for Discord boosters.',
 } as const
 
-export function DigestPage({
+export function BriefingsPage({
   weekly,
-  digestsForWeek,
+  briefingsForWeek,
   activeWeekStart,
   hasAccess,
-  isPreviewingAsMember,
-  showDevToggle,
   stepper,
   isLatestWeek,
   content,
-}: DigestPageProps) {
+}: BriefingsPageProps) {
   const heroKicker = content?.heroKicker?.trim() || DEFAULTS.heroKicker
   const heroTitle = content?.heroTitle?.trim() || DEFAULTS.heroTitle
   const heroAccent = content?.heroAccent?.trim() || DEFAULTS.heroAccent
   const intro = content?.intro?.trim() || DEFAULTS.intro
 
   return (
-    <Shell>
-      <header className="flex flex-col gap-7 sm:gap-9">
-        <StatRibbon
-          prefix="// BRIEFINGS"
-          fields={[
-            {
-              label: 'WEEK',
-              value: formatDayShort(activeWeekStart),
-              accent: 'green',
-            },
-            {
-              label: 'FILES',
-              value: String(digestsForWeek.length).padStart(2, '0'),
-              accent: 'green',
-            },
-            {
-              label: 'TIER',
-              value: hasAccess ? 'BOOSTER' : 'MEMBER',
-              accent: hasAccess ? 'green' : 'mod',
-            },
-          ]}
-          pill={
-            weekly.ok
-              ? { text: 'LIVE', ok: true, accent: 'green' }
-              : { text: 'OFFLINE', ok: false }
-          }
+    <div>
+      {/* Hero section — lives OUTSIDE the body Shell so the WashingtonMap can
+          escape the max-width container with its negative-right offset. The
+          `:has()` hover-zone pattern + --scanner-shove custom property mirror
+          StaffManifestHeader (the radar's hero) so the two pages share the
+          same scanner-family interaction language. */}
+      <section
+        className="relative overflow-hidden px-4 pt-20 pb-10 sm:px-8 sm:pt-24 sm:pb-12 lg:px-16 lg:pt-28 lg:pb-14 [--scanner-shove:180px] xl:[--scanner-shove:230px] 2xl:[--scanner-shove:280px]"
+        aria-label="Briefings hero"
+      >
+        <div
+          aria-hidden
+          className="rga-scanner-hover-zone pointer-events-auto absolute top-16 -right-[300px] hidden aspect-square w-[600px] rounded-full lg:block xl:top-20 xl:-right-[380px] xl:w-[760px] 2xl:top-24 2xl:-right-[460px] 2xl:w-[920px]"
         />
 
-        <DigestHero
-          kicker={heroKicker}
-          title={heroTitle}
-          accent={heroAccent}
-          intro={intro}
+        <WashingtonMap
+          className="absolute top-16 -right-[300px] transition-transform duration-500 ease-out xl:top-20 xl:-right-[380px] 2xl:top-24 2xl:-right-[460px] motion-safe:[section:has(.rga-scanner-hover-zone:hover)_&]:translate-x-[calc(-1*var(--scanner-shove))]"
+        />
+
+        <div className="relative mx-auto flex w-full max-w-[1480px] flex-col gap-7 sm:gap-9">
+          {/* StatRibbon stays put on hover — it's page chrome, not hero
+              content. Only the headline + stepper slide with the map. */}
+          <StatRibbon
+            prefix="// BRIEFINGS"
+            fields={[
+              {
+                label: 'WEEK',
+                value: formatDayShort(activeWeekStart),
+                accent: 'green',
+              },
+              {
+                label: 'FILES',
+                value: String(briefingsForWeek.length).padStart(2, '0'),
+                accent: 'green',
+              },
+              {
+                label: 'TIER',
+                value: hasAccess ? 'BOOSTER' : 'MEMBER',
+                accent: hasAccess ? 'green' : 'mod',
+              },
+            ]}
+            pill={
+              weekly.ok
+                ? { text: 'LIVE', ok: true, accent: 'green' }
+                : { text: 'OFFLINE', ok: false }
+            }
+          />
+
+          <div className="flex flex-col gap-7 sm:gap-9 transition-transform duration-500 ease-out motion-safe:[section:has(.rga-scanner-hover-zone:hover)_&]:translate-x-[calc(-1*var(--scanner-shove))]">
+            <BriefingHero
+              kicker={heroKicker}
+              title={heroTitle}
+              accent={heroAccent}
+              intro={intro}
+            />
+
+            {stepper && <WeekStepper state={stepper} />}
+          </div>
+        </div>
+      </section>
+
+      <Shell>
+        <BriefingsBody
+          weekly={weekly}
+          briefingsForWeek={briefingsForWeek}
+          activeWeekStart={activeWeekStart}
+          hasAccess={hasAccess}
+          content={content}
+          isLatestWeek={isLatestWeek}
         />
 
         {stepper && (
-          <div className="flex flex-wrap items-center justify-between gap-4">
+          <footer className="flex justify-center pt-4">
             <WeekStepper state={stepper} />
-            {showDevToggle && (
-              <DevPreviewToggle isPreviewingAsMember={isPreviewingAsMember} />
-            )}
-          </div>
+          </footer>
         )}
-      </header>
-
-      <DigestBody
-        weekly={weekly}
-        digestsForWeek={digestsForWeek}
-        activeWeekStart={activeWeekStart}
-        hasAccess={hasAccess}
-        content={content}
-        isLatestWeek={isLatestWeek}
-      />
-
-      {stepper && (
-        <footer className="flex justify-center pt-4">
-          <WeekStepper state={stepper} />
-        </footer>
-      )}
-    </Shell>
+      </Shell>
+    </div>
   )
 }
 
-interface DigestBodyProps {
-  weekly: AshleyResult<DigestList>
-  digestsForWeek: Digest[]
+interface BriefingsBodyProps {
+  weekly: AshleyResult<BriefingList>
+  briefingsForWeek: Briefing[]
   activeWeekStart: string
   hasAccess: boolean
-  content: DigestPageContent | null | undefined
+  content: BriefingsPageContent | null | undefined
   isLatestWeek: boolean
 }
 
-function DigestBody({
+function BriefingsBody({
   weekly,
-  digestsForWeek,
+  briefingsForWeek,
   activeWeekStart,
   hasAccess,
   content,
   isLatestWeek,
-}: DigestBodyProps) {
+}: BriefingsBodyProps) {
   if (!weekly.ok) {
     return (
       <FailRow
         code={weekly.error.code}
         status={weekly.error.status}
-        returnTo="/division-2/digest"
+        returnTo="/division-2/briefings"
       />
     )
   }
 
-  if (digestsForWeek.length === 0) {
-    return <EmptyDossier kind="NO_DIGEST_FOR_WEEK" weekStart={activeWeekStart} />
+  if (briefingsForWeek.length === 0) {
+    return <EmptyDossier kind="NO_BRIEFING_FOR_WEEK" weekStart={activeWeekStart} />
   }
 
   // The newest week gets a featured lead card; older weeks render as a
   // uniform grid. Same treatment regardless of whether the lead is a weekly
   // roll-up or a daily briefing — frequency is just an accent color.
   const showLeadHero = isLatestWeek
-  const lead = showLeadHero ? digestsForWeek[0] : null
-  const gridItems = showLeadHero ? digestsForWeek.slice(1) : digestsForWeek
+  const lead = showLeadHero ? briefingsForWeek[0] : null
+  const gridItems = showLeadHero ? briefingsForWeek.slice(1) : briefingsForWeek
   const gridLabel = showLeadHero ? '// ARCHIVE' : '// BRIEFING INDEX'
   const gridSec = showLeadHero ? 'SEC_02' : 'SEC_01'
   const gridAccent: 'green' | 'mod' = showLeadHero ? 'mod' : 'green'
@@ -169,7 +181,7 @@ function DigestBody({
           brackets. */}
       {showLeadHero && lead && (
         <Section sec="SEC_01" label="// LATEST" accent="green">
-          <DigestCard digest={lead} tone="lead" />
+          <BriefingCard briefing={lead} tone="lead" />
         </Section>
       )}
 
@@ -187,8 +199,8 @@ function DigestBody({
           >
             {gridItems.length > 0 ? (
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3 xl:grid-cols-4">
-                {gridItems.map((d) => (
-                  <DigestCard key={d.id} digest={d} />
+                {gridItems.map((b) => (
+                  <BriefingCard key={b.id} briefing={b} />
                 ))}
               </div>
             ) : (
@@ -256,7 +268,7 @@ function Section({
 
 function Shell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-10 px-4 pt-20 pb-20 sm:gap-14 sm:px-8 sm:pt-24 sm:pb-28 lg:px-16 lg:pt-32 lg:pb-36">
+    <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-10 px-4 pb-20 sm:gap-14 sm:px-8 sm:pb-28 lg:px-16 lg:pb-36">
       {children}
     </div>
   )

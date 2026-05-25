@@ -65,7 +65,7 @@ export const NAV: readonly NavItem[] = [
     requiresRole: 'division2Role',
     sub: [
       { label: 'Escalation', href: '/division-2/escalation', available: true },
-      { label: 'Briefings', href: '/division-2/digest', available: true },
+      { label: 'Briefings', href: '/division-2/briefings', available: true },
       { label: 'Content', href: '/division-2/content', available: true },
     ],
   },

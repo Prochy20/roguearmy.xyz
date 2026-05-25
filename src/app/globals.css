@@ -639,21 +639,24 @@
   }
 }
 
-/* Staff hero radar — decorative sweep + blip ping (phase-locked to sweep). */
-.rga-radar-sweep {
+/* Shared scanner machinery — used by StaffRadar (staff page) and WashingtonMap
+   (briefings page). Naming: `rga-scanner-*` for cross-component primitives;
+   `rga-radar-*` is reserved for radar-specific viz (blip dot/halo). */
+.rga-scanner-sweep {
   transform-box: view-box;
   transform-origin: center;
-  animation: rga-radar-spin 11s linear infinite;
+  animation: rga-scanner-spin 11s linear infinite;
 }
 
-/* Blip core dot — one-shot. Hidden until animationDelay elapses (set per-blip
-   in JS so the ping fires the instant the sweep crosses), then fades over 3s. */
+/* Radar blip core dot — one-shot. Hidden until animationDelay elapses (set
+   per-blip in JS so the ping fires the instant the sweep crosses), then fades
+   over 3s. Radar-specific — map has no blips. */
 .rga-radar-blip-dot {
   opacity: 0;
   animation: rga-radar-ping-dot 3s linear forwards;
 }
 
-/* Blip halo — quick sonar ring that expands at the ping moment. */
+/* Radar blip halo — quick sonar ring that expands at the ping moment. */
 .rga-radar-blip-halo {
   opacity: 0;
   transform-box: fill-box;
@@ -661,7 +664,7 @@
   animation: rga-radar-ping-halo 1.6s ease-out forwards;
 }
 
-@keyframes rga-radar-spin {
+@keyframes rga-scanner-spin {
   to {
     transform: rotate(360deg);
   }
@@ -679,7 +682,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .rga-radar-sweep,
+  .rga-scanner-sweep,
   .rga-radar-blip-dot,
   .rga-radar-blip-halo {
     animation: none !important;
