@@ -8,18 +8,23 @@ import { CommunityValues } from "@/components/home/CommunityValues"
 import { AshleyTerminal } from "@/components/home/AshleyTerminal"
 import { FinalCTA } from "@/components/home/FinalCTA"
 import { HashScrollHandler } from "@/components/home/HashScrollHandler"
+import { getMemberCount } from '@/lib/community.server'
 
 export default async function HomePage() {
-  const payload = await getPayload({ config })
+  const [payload, { count, floor }] = await Promise.all([
+    getPayload({ config }),
+    getMemberCount(),
+  ])
   const homepage = await payload.findGlobal({ slug: 'homepage', depth: 1 })
   const games = (homepage.games as Game[]) ?? []
+  const memberCount = count ?? floor
 
   return (
     <>
       <HashScrollHandler />
       <Hero />
       <GamesShowcase games={games} />
-      <StatsTicker />
+      <StatsTicker memberCount={memberCount} />
       <CommunityValues />
       <AshleyTerminal />
       <FinalCTA />

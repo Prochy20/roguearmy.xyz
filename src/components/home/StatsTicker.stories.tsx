@@ -6,6 +6,7 @@ const meta = {
   title: 'Components/Home/StatsTicker',
   component: StatsTicker,
   parameters: { layout: 'fullscreen' },
+  args: { memberCount: 247 },
 } satisfies Meta<typeof StatsTicker>
 
 export default meta
