@@ -11,11 +11,33 @@ interface NavCenteredStackProps {
   roleGates: RoleGateMap
 }
 
+/**
+ * The DIVISION 2 nav row points at /division-2 by default, but anyone without
+ * the D2 role would hit the gate (notFound for anon; ROLE_REQUIRED dossier
+ * for signed-in-no-role). For those viewers we re-target the public clans
+ * page so a click lands somewhere useful. D2-role members keep the gated
+ * Command Console as their destination.
+ */
+function resolveDivision2Href(isLoggedIn: boolean, roleGates: RoleGateMap): string {
+  if (!isLoggedIn) return '/division-2/clans'
+  if (roleGates.division2Role === 'allowed') return '/division-2'
+  return '/division-2/clans'
+}
+
 export function NavCenteredStack({ onNavigate, isLoggedIn, roleGates }: NavCenteredStackProps) {
   const items = NAV.filter((item) => {
     if (item.requiresAuth && !isLoggedIn) return false
     if (item.requiresRole && roleGates[item.requiresRole] !== 'allowed') return false
     return true
+  }).map((item) => {
+    // Hide sub-links flagged requiresAuth for anonymous visitors. Same
+    // discipline as the top-level filter above — the sub-list is just data
+    // and gets the same gate.
+    const sub = item.sub.filter((s) => !(s.requiresAuth && !isLoggedIn))
+    if (item.label === 'DIVISION 2') {
+      return { ...item, href: resolveDivision2Href(isLoggedIn, roleGates), sub }
+    }
+    return { ...item, sub }
   })
   return (
     <div className="flex flex-col items-center px-8 md:px-20 pt-12 pb-6">
