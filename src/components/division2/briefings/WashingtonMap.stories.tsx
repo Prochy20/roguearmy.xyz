@@ -31,12 +31,10 @@ type Story = StoryObj<typeof meta>
 export const Default: Story = {
   play: async ({ canvasElement, step }) => {
     const canvas = within(canvasElement)
-    // The map is aria-hidden (purely decorative), so testing-library
-    // queries must opt into hidden content via `{ hidden: true }`.
     await step('Renders Division 2 landmark labels in the SVG overlay', async () => {
-      await expect(canvas.getByText('BASE OF OPS', { hidden: true })).toBeInTheDocument()
-      await expect(canvas.getByText('CAPITOL', { hidden: true })).toBeInTheDocument()
-      await expect(canvas.getByText('PENTAGON', { hidden: true })).toBeInTheDocument()
+      await expect(canvas.getByText('BASE OF OPS')).toBeInTheDocument()
+      await expect(canvas.getByText('CAPITOL')).toBeInTheDocument()
+      await expect(canvas.getByText('PENTAGON')).toBeInTheDocument()
     })
   },
 }
