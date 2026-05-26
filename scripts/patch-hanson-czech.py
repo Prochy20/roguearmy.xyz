@@ -211,7 +211,22 @@ def patch(src_path: Path, dst_path: Path) -> str:
     if "maxp" in font:
         font["maxp"].numGlyphs = len(font.getGlyphOrder())
 
+    # Sweep any legacy hashed builds from earlier iterations of this script,
+    # including the older Hanson-Bold-CzExt.* naming scheme.
+    sweep_patterns = (
+        f"{dst_path.stem}.*.otf",          # new naming with hashed variants
+        "Hanson-Bold-CzExt*.otf",          # legacy naming (with or without hash)
+    )
+    for pattern in sweep_patterns:
+        for stale in dst_path.parent.glob(pattern):
+            if stale != dst_path:
+                stale.unlink()
+    if dst_path.exists():
+        dst_path.unlink()
+
     font.save(str(dst_path))
+    content = dst_path.read_bytes()
+    short_hash = hashlib.sha256(content).hexdigest()[:8]
 
     print(f"\nAdded {len(added)} glyphs:")
     for cp, name in added:
@@ -220,8 +235,32 @@ def patch(src_path: Path, dst_path: Path) -> str:
         print(f"\nSkipped {len(skipped)}:")
         for cp, reason in skipped:
             print(f"  U+{cp:04X}  ({reason})")
-    print(f"\nWrote {dst_path.relative_to(ROOT)}")
+    print(f"\nWrote {dst_path.relative_to(ROOT)}  (sha256 {short_hash})")
+    return short_hash
+
+
+def rewrite_references(font_filename: str, cache_bust: str) -> None:
+    """Update fonts.ts (clean path) and globals.css (path + ?v=hash for the
+    literal @font-face used by Storybook). next/font/local handles cache
+    invalidation internally, so it doesn't need the query string."""
+    # fonts.ts: any .../<oldname-or-newname>(.hash)?.otf  →  clean filename
+    fonts_ts_pattern = re.compile(r"Hanson-Bold-(?:Czech|CzExt)(?:\.[0-9a-f]+)?\.otf")
+    original = FONTS_TS.read_text()
+    updated, n = fonts_ts_pattern.subn(font_filename, original)
+    if n and original != updated:
+        FONTS_TS.write_text(updated)
+        print(f"  ↻  {FONTS_TS.relative_to(ROOT)}")
+
+    # globals.css: same filename swap, plus a ?v=<hash> query string for cache busting
+    css_pattern = re.compile(r"Hanson-Bold-(?:Czech|CzExt)(?:\.[0-9a-f]+)?\.otf(?:\?v=[0-9a-f]+)?")
+    original = GLOBALS_CSS.read_text()
+    updated, n = css_pattern.subn(f"{font_filename}?v={cache_bust}", original)
+    if n and original != updated:
+        GLOBALS_CSS.write_text(updated)
+        print(f"  ↻  {GLOBALS_CSS.relative_to(ROOT)}")
 
 
 if __name__ == "__main__":
-    patch(SRC, DST)
+    short_hash = patch(SRC, DST)
+    print("\nRewriting source references:")
+    rewrite_references(DST.name, short_hash)
