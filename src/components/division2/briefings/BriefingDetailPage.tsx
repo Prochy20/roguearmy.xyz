@@ -123,15 +123,14 @@ export function BriefingDetailPage({
         readMinutes={readMinutes}
         actions={<ReaderActions accent={accent} />}
       />
-      {briefing.thumbnailUrl && (
-        <ReaderHeroFrame
-          accent={accent}
-          thumbnailUrl={briefing.thumbnailUrl}
-          kindLabel={briefing.frequency.toUpperCase()}
-          periodLabel={periodLabel}
-          bylineLabel="// AI · ASHLEY"
-        />
-      )}
+      <ReaderHeroFrame
+        accent={accent}
+        thumbnailUrl={briefing.thumbnailUrl}
+        kindLabel={briefing.frequency.toUpperCase()}
+        periodLabel={periodLabel}
+        bylineLabel="// AI · ASHLEY"
+        fileNumber={buildImageFileNumber(briefing.id)}
+      />
     </>
   )
 
@@ -198,6 +197,16 @@ export function BriefingDetailPage({
       }
     />
   )
+}
+
+/**
+ * Build the NoSignalPanel filename stamp from a briefing id.
+ * Mirrors the card's BRF_xxxx scheme but uses the IMG_ prefix so the
+ * placeholder filename reads as image-feed metadata, not document metadata.
+ */
+function buildImageFileNumber(briefingId: string): string {
+  const tail = briefingId.replace(/-/g, '').slice(-4).toUpperCase()
+  return `IMG_${tail}`
 }
 
 /**

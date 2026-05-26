@@ -41,3 +41,20 @@ export const Weekly: Story = {
 export const Daily: Story = { args: { briefing: MOCK_BRIEFING_DAILY } }
 
 export const Lead: Story = { args: { tone: 'lead' } }
+
+/**
+ * Thumbnail URL is null OR the remote image failed to load. The card swaps
+ * the &lt;img&gt; for a tactical NO_SIGNAL placeholder so the grid never shows
+ * a broken-image glyph. Use the `briefing` control to flip frequency
+ * (weekly/cyan vs daily/mod) — placeholder picks up the accent automatically.
+ */
+export const NoSignal: Story = {
+  args: { briefing: { ...MOCK_BRIEFING_DAILY, thumbnailUrl: null } },
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement)
+    await step('Placeholder shows the NO SIGNAL marker and feed-offline telemetry', async () => {
+      await expect(canvas.getByText('NO SIGNAL')).toBeInTheDocument()
+      await expect(canvas.getByText('OFFLINE')).toBeInTheDocument()
+    })
+  },
+}

@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { BriefingThumbnail } from './BriefingThumbnail'
 import { formatDayShort, weekdayShort } from '@/lib/division2/format'
 import type { Briefing } from '@/lib/division2/briefing.server'
 
@@ -73,30 +74,11 @@ export function BriefingCard({ briefing, tone = 'standard' }: BriefingCardProps)
       <QuoteOrnament lead={isLead} />
 
       <div className={previewLayout}>
-        {briefing.thumbnailUrl ? (
-          <>
-            <img
-              src={briefing.thumbnailUrl}
-              alt=""
-              aria-hidden
-              className="h-full w-full object-cover opacity-85 transition-all duration-300 group-hover:scale-[1.02] group-hover:opacity-100"
-            />
-            <div
-              aria-hidden
-              className={`pointer-events-none absolute inset-0 mix-blend-screen ${accent.thumbTint}`}
-            />
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-0 opacity-25"
-              style={{
-                backgroundImage:
-                  'repeating-linear-gradient(0deg, rgba(0,0,0,0) 0 2px, rgba(0,0,0,0.18) 2px 3px)',
-              }}
-            />
-          </>
-        ) : (
-          <ThumbnailPlaceholder accent={isWeekly ? 'cyan' : 'mod'} />
-        )}
+        <BriefingThumbnail
+          src={briefing.thumbnailUrl}
+          accent={isWeekly ? 'cyan' : 'mod'}
+          fileNumber={fileNumber.replace(/^BRF_/, 'IMG_')}
+        />
       </div>
 
       <div className={bodyLayout}>
@@ -214,25 +196,6 @@ function BracketPill({ label, accent }: { label: string; accent: 'cyan' | 'mod' 
   )
 }
 
-function ThumbnailPlaceholder({ accent }: { accent: 'cyan' | 'mod' }) {
-  const a = accentClasses(accent)
-  return (
-    <div className={`relative h-full w-full bg-[rgba(0,0,0,0.5)] ${a.placeholderBorder}`}>
-      <div
-        aria-hidden
-        className="absolute inset-0"
-        style={{
-          backgroundImage:
-            'repeating-linear-gradient(-45deg, transparent 0 10px, rgba(255,255,255,0.025) 10px 11px)',
-        }}
-      />
-      <span className="absolute bottom-2 right-3 font-mono text-[9px] uppercase tracking-[0.3em] text-text-muted/60">
-        NO_PREVIEW.bin
-      </span>
-    </div>
-  )
-}
-
 function QuoteOrnament({ lead = false }: { lead?: boolean }) {
   return (
     <span
@@ -259,9 +222,6 @@ function accentClasses(accent: 'cyan' | 'mod') {
       pillBorder: 'border-rga-cyan/55',
       pillText: 'text-rga-cyan',
       pillHoverFill: 'group-hover:bg-rga-cyan/15',
-      placeholderBorder: '',
-      thumbTint:
-        'bg-linear-to-tr from-rga-cyan/18 via-transparent to-transparent',
       ctaBorder: 'border-rga-cyan/55',
       ctaText: 'text-rga-cyan',
       ctaHoverFill: 'group-hover:bg-rga-cyan/15 group-hover:border-rga-cyan',
@@ -276,8 +236,6 @@ function accentClasses(accent: 'cyan' | 'mod') {
     pillBorder: 'border-rga-mod/55',
     pillText: 'text-rga-mod',
     pillHoverFill: 'group-hover:bg-rga-mod/15',
-    placeholderBorder: '',
-    thumbTint: 'bg-linear-to-tr from-rga-mod/18 via-transparent to-transparent',
     ctaBorder: 'border-rga-mod/55',
     ctaText: 'text-rga-mod',
     ctaHoverFill: 'group-hover:bg-rga-mod/15 group-hover:border-rga-mod',
