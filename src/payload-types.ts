@@ -114,12 +114,14 @@ export interface Config {
     'staff-page': StaffPage;
     manifesto: Manifesto;
     division2: Division2;
+    'site-chrome': SiteChrome;
   };
   globalsSelect: {
     homepage: HomepageSelect<false> | HomepageSelect<true>;
     'staff-page': StaffPageSelect<false> | StaffPageSelect<true>;
     manifesto: ManifestoSelect<false> | ManifestoSelect<true>;
     division2: Division2Select<false> | Division2Select<true>;
+    'site-chrome': SiteChromeSelect<false> | SiteChromeSelect<true>;
   };
   locale: null;
   user: User & {
@@ -1955,6 +1957,31 @@ export interface OutcomeStepBlock {
   blockType: 'outcomeStep';
 }
 /**
+ * Footer tagline copy and the member-count floor used when Ashley is unreachable.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-chrome".
+ */
+export interface SiteChrome {
+  id: string;
+  tagline?: {
+    /**
+     * Shown when Ashley is reachable. The literal token {members} is replaced with the live count plus "+" (e.g. 247+). If you omit the token, the sentence renders verbatim.
+     */
+    live?: string | null;
+    /**
+     * Shown verbatim when Ashley is unreachable. No token substitution.
+     */
+    fallback?: string | null;
+  };
+  /**
+   * StatsTicker fallback value when Ashley is unreachable. Rendered with a "+" suffix. Bump occasionally so the fallback stays honest.
+   */
+  memberCountFloor?: number | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "homepage_select".
  */
@@ -2369,6 +2396,22 @@ export interface OutcomeStepBlockSelect<T extends boolean = true> {
   statusLabel?: T;
   id?: T;
   blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-chrome_select".
+ */
+export interface SiteChromeSelect<T extends boolean = true> {
+  tagline?:
+    | T
+    | {
+        live?: T;
+        fallback?: T;
+      };
+  memberCountFloor?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

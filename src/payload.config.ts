@@ -22,6 +22,7 @@ import { Division2Clans } from './collections/Division2Clans'
 import { Division2 } from './globals/Division2'
 import { Homepage } from './globals/Homepage'
 import { Manifesto } from './globals/Manifesto'
+import { SiteChrome } from './globals/SiteChrome'
 import { StaffPage } from './globals/StaffPage'
 import { CalloutBlock, CodeBlock, MermaidBlock, SocialEmbedBlock, TrelloCardBlock, VideoEmbedBlock } from './blocks'
 
@@ -71,7 +72,7 @@ export default buildConfig({
   // ordered before Manifesto so it sits right next to its sibling collection
   // (Staff Profiles) in the admin sidebar.
   collections: [Articles, Series, Games, GameRoles, Topics, ContentTypes, StaffProfiles, Division2Clans, Media, Users, Members, ReadProgress, Bookmarks],
-  globals: [Homepage, StaffPage, Manifesto, Division2],
+  globals: [Homepage, StaffPage, Manifesto, Division2, SiteChrome],
   editor: lexicalEditor({
     features: ({ defaultFeatures }) => [
       ...defaultFeatures,
