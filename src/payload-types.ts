@@ -74,6 +74,7 @@ export interface Config {
     topics: Topic;
     'content-types': ContentType;
     'staff-profiles': StaffProfile;
+    'division2-clans': Division2Clan;
     media: Media;
     users: User;
     members: Member;
@@ -93,6 +94,7 @@ export interface Config {
     topics: TopicsSelect<false> | TopicsSelect<true>;
     'content-types': ContentTypesSelect<false> | ContentTypesSelect<true>;
     'staff-profiles': StaffProfilesSelect<false> | StaffProfilesSelect<true>;
+    'division2-clans': Division2ClansSelect<false> | Division2ClansSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     members: MembersSelect<false> | MembersSelect<true>;
@@ -414,6 +416,61 @@ export interface StaffProfile {
   createdAt: string;
 }
 /**
+ * In-game clans shown on /division-2/clans. Order ascending. Banner image and accent color carry each clan’s identity; the optional leader is members-only.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "division2-clans".
+ */
+export interface Division2Clan {
+  id: string;
+  /**
+   * Full clan name as displayed in Discord (e.g., Rogue Army SDC).
+   */
+  name: string;
+  /**
+   * Short clan tag (e.g., RGA, SDC, RGS). Up to 8 characters.
+   */
+  tag: string;
+  /**
+   * Path to the clan banner emblem. Drop the PNG into /public/division2/img/clans/ and reference it here, e.g. /division2/img/clans/rga.png. Target aspect ratio ~4:7 vertical (Discord pennant), ~600px wide minimum, transparent background recommended. Local files only — keeps emblems versioned with the code instead of going through Vercel Blob.
+   */
+  banner: string;
+  /**
+   * Card accent color — drives the left rail, banner halo, and tag chip tint. Pick the value that matches the clan’s Discord banner.
+   */
+  accent: 'green' | 'amber' | 'azure' | 'cyan' | 'magenta';
+  /**
+   * Display sort, ascending. Lower numbers appear first. Leave gaps (10, 20, 30…) so reordering is cheap.
+   */
+  order?: number | null;
+  /**
+   * Uncheck to hide from /division-2/clans without deleting the row.
+   */
+  isPublished?: boolean | null;
+  /**
+   * Optional clan leader. Search Discord members by name and pick one. Display name and avatar are hydrated from Ashley on save and refreshed lazily on page render. Leader info is shown only to signed-in members.
+   */
+  leaderDiscordId?: string | null;
+  /**
+   * Latest known Discord username (the @handle) for the leader. Refreshed lazily on page render past TTL.
+   */
+  cached_leaderUsername?: string | null;
+  /**
+   * Latest known display name from Discord for the leader.
+   */
+  cached_leaderDisplayName?: string | null;
+  /**
+   * Latest known Discord avatar URL for the leader.
+   */
+  cached_leaderAvatarUrl?: string | null;
+  /**
+   * When the cached leader fields were last refreshed from Ashley.
+   */
+  cached_leaderAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
@@ -624,6 +681,10 @@ export interface PayloadLockedDocument {
         value: string | StaffProfile;
       } | null)
     | ({
+        relationTo: 'division2-clans';
+        value: string | Division2Clan;
+      } | null)
+    | ({
         relationTo: 'media';
         value: string | Media;
       } | null)
@@ -797,6 +858,25 @@ export interface StaffProfilesSelect<T extends boolean = true> {
   cached_joinedAt?: T;
   cached_accountCreatedAt?: T;
   cached_at?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "division2-clans_select".
+ */
+export interface Division2ClansSelect<T extends boolean = true> {
+  name?: T;
+  tag?: T;
+  banner?: T;
+  accent?: T;
+  order?: T;
+  isPublished?: T;
+  leaderDiscordId?: T;
+  cached_leaderUsername?: T;
+  cached_leaderDisplayName?: T;
+  cached_leaderAvatarUrl?: T;
+  cached_leaderAt?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1608,6 +1688,108 @@ export interface Division2 {
       description?: string | null;
     };
   };
+  clansPage?: {
+    /**
+     * Mono kicker above the headline. Clan count is appended automatically.
+     */
+    heroKicker?: string | null;
+    /**
+     * First word of the two-line headline — rendered in white.
+     */
+    heroTitle?: string | null;
+    /**
+     * Second word of the headline — rendered in RGA green with extra glow.
+     */
+    heroAccent?: string | null;
+    /**
+     * Subtitle paragraph under the headline.
+     */
+    intro?: string | null;
+    /**
+     * Mono label above the three clan cards.
+     */
+    rosterSectionLabel?: string | null;
+    /**
+     * Shown when no clans are published yet. The rest of the page still renders.
+     */
+    emptyRoster?: string | null;
+    /**
+     * Enlistment protocol. Add as many steps as you like and reorder freely. Each step picks a variant: Command (slash-command chip), Instruction (plain text), or CTA (link button).
+     */
+    howTo?: {
+      /**
+       * Mono section kicker.
+       */
+      sectionKicker?: string | null;
+      /**
+       * Section display title.
+       */
+      sectionTitle?: string | null;
+      steps?: (CommandStepBlock | InstructionStepBlock | CtaStepBlock | OutcomeStepBlock)[] | null;
+    };
+    /**
+     * Friendly community message — the warm counterpoint to the procedural shell.
+     */
+    callout?: {
+      /**
+       * Mono section kicker.
+       */
+      kicker?: string | null;
+      /**
+       * Single declarative line.
+       */
+      headline?: string | null;
+      /**
+       * Body paragraph under the headline. Focused on "which clan doesn’t matter"; the parallel "joining is optional" angle lives in the openInvite interlude above.
+       */
+      body?: string | null;
+      /**
+       * Bullet points emphasizing the community-first stance.
+       */
+      bullets?:
+        | {
+            text?: string | null;
+            id?: string | null;
+          }[]
+        | null;
+      /**
+       * Quiet signature line under the bullets.
+       */
+      signature?: string | null;
+    };
+    /**
+     * The big primary CTA at the bottom of the page.
+     */
+    closingCta?: {
+      /**
+       * Headline above the CTA button.
+       */
+      headline?: string | null;
+      /**
+       * CTA button label.
+       */
+      ctaLabel?: string | null;
+      /**
+       * Where the CTA sends the user.
+       */
+      ctaUrl?: string | null;
+      /**
+       * Open the CTA link in a new browser tab (adds target="_blank" + safe rel). Turn on for off-site destinations like Discord deep links so visitors don't lose the clans page.
+       */
+      openInNewTab?: boolean | null;
+      /**
+       * Mono signature line under the button.
+       */
+      signature?: string | null;
+    };
+    /**
+     * Document title + meta description.
+     */
+    seo?: {
+      title?: string | null;
+      description?: string | null;
+    };
+  };
   briefingsPage?: {
     /**
      * Small mono kicker above the headline. The active week label is appended automatically.
@@ -1707,6 +1889,70 @@ export interface Division2 {
   };
   updatedAt?: string | null;
   createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CommandStepBlock".
+ */
+export interface CommandStepBlock {
+  title: string;
+  body: string;
+  /**
+   * Slash-command rendered as a terminal-style code chip (e.g. /my account).
+   */
+  command: string;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'commandStep';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "InstructionStepBlock".
+ */
+export interface InstructionStepBlock {
+  title: string;
+  body: string;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'instructionStep';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CtaStepBlock".
+ */
+export interface CtaStepBlock {
+  title: string;
+  body: string;
+  /**
+   * CTA button label.
+   */
+  ctaLabel: string;
+  /**
+   * Where the CTA sends the user. Use the full URL for off-site (e.g. Discord deep link).
+   */
+  ctaUrl: string;
+  /**
+   * Open the CTA link in a new tab (adds target="_blank" + safe rel). Turn on for off-site destinations like Discord deep links.
+   */
+  openInNewTab?: boolean | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'ctaStep';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "OutcomeStepBlock".
+ */
+export interface OutcomeStepBlock {
+  title: string;
+  body: string;
+  /**
+   * Short mono badge shown top-right (e.g. ENLISTED, MEMBER, VERIFIED). Keep under 12 chars for layout.
+   */
+  statusLabel?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'outcomeStep';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1977,6 +2223,59 @@ export interface Division2Select<T extends boolean = true> {
               description?: T;
             };
       };
+  clansPage?:
+    | T
+    | {
+        heroKicker?: T;
+        heroTitle?: T;
+        heroAccent?: T;
+        intro?: T;
+        rosterSectionLabel?: T;
+        emptyRoster?: T;
+        howTo?:
+          | T
+          | {
+              sectionKicker?: T;
+              sectionTitle?: T;
+              steps?:
+                | T
+                | {
+                    commandStep?: T | CommandStepBlockSelect<T>;
+                    instructionStep?: T | InstructionStepBlockSelect<T>;
+                    ctaStep?: T | CtaStepBlockSelect<T>;
+                    outcomeStep?: T | OutcomeStepBlockSelect<T>;
+                  };
+            };
+        callout?:
+          | T
+          | {
+              kicker?: T;
+              headline?: T;
+              body?: T;
+              bullets?:
+                | T
+                | {
+                    text?: T;
+                    id?: T;
+                  };
+              signature?: T;
+            };
+        closingCta?:
+          | T
+          | {
+              headline?: T;
+              ctaLabel?: T;
+              ctaUrl?: T;
+              openInNewTab?: T;
+              signature?: T;
+            };
+        seo?:
+          | T
+          | {
+              title?: T;
+              description?: T;
+            };
+      };
   briefingsPage?:
     | T
     | {
@@ -2025,6 +2324,51 @@ export interface Division2Select<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CommandStepBlock_select".
+ */
+export interface CommandStepBlockSelect<T extends boolean = true> {
+  title?: T;
+  body?: T;
+  command?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "InstructionStepBlock_select".
+ */
+export interface InstructionStepBlockSelect<T extends boolean = true> {
+  title?: T;
+  body?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CtaStepBlock_select".
+ */
+export interface CtaStepBlockSelect<T extends boolean = true> {
+  title?: T;
+  body?: T;
+  ctaLabel?: T;
+  ctaUrl?: T;
+  openInNewTab?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "OutcomeStepBlock_select".
+ */
+export interface OutcomeStepBlockSelect<T extends boolean = true> {
+  title?: T;
+  body?: T;
+  statusLabel?: T;
+  id?: T;
+  blockName?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

@@ -1,4 +1,99 @@
-import type { GlobalConfig } from 'payload'
+import type { Block, GlobalConfig } from 'payload'
+
+/* ───────────────────────── How-to step blocks ─────────────────────────
+   The /division-2/clans How-To section is a list of heterogeneous steps:
+   most are plain instruction text, one carries a slash-command chip, one
+   carries an outbound CTA link. Modeled as three discrete blocks so the
+   admin form only renders the fields that apply to the variant the editor
+   picks, and the generated TypeScript is a clean discriminated union. */
+
+const CommandStepBlock: Block = {
+  slug: 'commandStep',
+  interfaceName: 'CommandStepBlock',
+  labels: { singular: 'Command Step', plural: 'Command Steps' },
+  fields: [
+    { name: 'title', type: 'text', required: true },
+    { name: 'body', type: 'textarea', required: true },
+    {
+      name: 'command',
+      type: 'text',
+      required: true,
+      admin: {
+        description:
+          'Slash-command rendered as a terminal-style code chip (e.g. /my account).',
+      },
+    },
+  ],
+}
+
+const InstructionStepBlock: Block = {
+  slug: 'instructionStep',
+  interfaceName: 'InstructionStepBlock',
+  labels: { singular: 'Instruction Step', plural: 'Instruction Steps' },
+  fields: [
+    { name: 'title', type: 'text', required: true },
+    { name: 'body', type: 'textarea', required: true },
+  ],
+}
+
+const OutcomeStepBlock: Block = {
+  slug: 'outcomeStep',
+  interfaceName: 'OutcomeStepBlock',
+  labels: { singular: 'Outcome Step', plural: 'Outcome Steps' },
+  fields: [
+    { name: 'title', type: 'text', required: true },
+    { name: 'body', type: 'textarea', required: true },
+    {
+      name: 'statusLabel',
+      type: 'text',
+      defaultValue: 'ENLISTED',
+      admin: {
+        description:
+          'Short mono badge shown top-right (e.g. ENLISTED, MEMBER, VERIFIED). Keep under 12 chars for layout.',
+      },
+    },
+  ],
+}
+
+const CtaStepBlock: Block = {
+  slug: 'ctaStep',
+  interfaceName: 'CtaStepBlock',
+  labels: { singular: 'CTA Step', plural: 'CTA Steps' },
+  fields: [
+    { name: 'title', type: 'text', required: true },
+    { name: 'body', type: 'textarea', required: true },
+    {
+      type: 'row',
+      fields: [
+        {
+          name: 'ctaLabel',
+          type: 'text',
+          required: true,
+          admin: { width: '40%', description: 'CTA button label.' },
+        },
+        {
+          name: 'ctaUrl',
+          type: 'text',
+          required: true,
+          admin: {
+            width: '60%',
+            description:
+              'Where the CTA sends the user. Use the full URL for off-site (e.g. Discord deep link).',
+          },
+        },
+      ],
+    },
+    {
+      name: 'openInNewTab',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: {
+        description:
+          'Open the CTA link in a new tab (adds target="_blank" + safe rel). Turn on for off-site destinations like Discord deep links.',
+      },
+    },
+  ],
+}
 
 /**
  * Division 2 settings + editorial copy. Replaces the previous `settings`
@@ -559,6 +654,256 @@ export const Division2: GlobalConfig = {
                   type: 'textarea',
                   defaultValue:
                     'Active targeted-loot rotation for The Division 2 escalation — step through any day to see what drops from each mission.',
+                },
+              ],
+            },
+          ],
+        },
+
+        // ─── CLANS PAGE ─────────────────────────────────────────────────────
+        {
+          name: 'clansPage',
+          label: 'Clans Page',
+          fields: [
+            // Hero header
+            {
+              name: 'heroKicker',
+              type: 'text',
+              defaultValue: '// DIVISION 2 · CLANS',
+              admin: { description: 'Mono kicker above the headline. Clan count is appended automatically.' },
+            },
+            {
+              type: 'row',
+              fields: [
+                {
+                  name: 'heroTitle',
+                  type: 'text',
+                  defaultValue: 'REGIMENTAL',
+                  admin: {
+                    width: '50%',
+                    description: 'First word of the two-line headline — rendered in white.',
+                  },
+                },
+                {
+                  name: 'heroAccent',
+                  type: 'text',
+                  defaultValue: 'STANDARDS',
+                  admin: {
+                    width: '50%',
+                    description: 'Second word of the headline — rendered in RGA green with extra glow.',
+                  },
+                },
+              ],
+            },
+            {
+              name: 'intro',
+              type: 'textarea',
+              defaultValue:
+                'Three banners. One army. Pick any — what matters is being on Discord.',
+              admin: { description: 'Subtitle paragraph under the headline.' },
+            },
+
+            // Roster section label (above the three cards)
+            {
+              name: 'rosterSectionLabel',
+              type: 'text',
+              defaultValue: '// ACTIVE STANDARDS',
+              admin: { description: 'Mono label above the three clan cards.' },
+            },
+
+            // Empty state — shown when no clans are published
+            {
+              name: 'emptyRoster',
+              type: 'text',
+              defaultValue: '// NO STANDARDS ON FILE — ROSTER PENDING',
+              admin: {
+                description: 'Shown when no clans are published yet. The rest of the page still renders.',
+              },
+            },
+
+            // "How to Join" steps — heterogeneous blocks list
+            {
+              name: 'howTo',
+              type: 'group',
+              admin: {
+                description:
+                  'Enlistment protocol. Add as many steps as you like and reorder freely. Each step picks a variant: Command (slash-command chip), Instruction (plain text), or CTA (link button).',
+              },
+              fields: [
+                {
+                  type: 'row',
+                  fields: [
+                    {
+                      name: 'sectionKicker',
+                      type: 'text',
+                      defaultValue: '// JOIN PROTOCOL',
+                      admin: { width: '50%', description: 'Mono section kicker.' },
+                    },
+                    {
+                      name: 'sectionTitle',
+                      type: 'text',
+                      defaultValue: 'ENLISTMENT',
+                      admin: { width: '50%', description: 'Section display title.' },
+                    },
+                  ],
+                },
+                {
+                  name: 'steps',
+                  type: 'blocks',
+                  minRows: 1,
+                  blocks: [CommandStepBlock, InstructionStepBlock, CtaStepBlock, OutcomeStepBlock],
+                  defaultValue: [
+                    {
+                      blockType: 'ctaStep',
+                      title: 'Join the Discord',
+                      body: 'The community runs on Discord. Hop in first — everything else (clan invites, voice, events) flows from there.',
+                      ctaLabel: 'JOIN DISCORD',
+                      ctaUrl: 'https://dc.roguearmy.xyz',
+                      openInNewTab: true,
+                    },
+                    {
+                      blockType: 'commandStep',
+                      title: 'Link your account',
+                      body: 'Run this in Discord to link your Division 2 username:',
+                      command: '/my account',
+                    },
+                    {
+                      blockType: 'instructionStep',
+                      title: 'Send a clan request',
+                      body: 'Pick any clan above and send a join request in-game. SDC, RGA, or RGS — doesn’t matter which.',
+                    },
+                    {
+                      blockType: 'ctaStep',
+                      title: 'Tell staff in the channel',
+                      body: 'Drop a note in the Division 2 channel so staff know your request is incoming and can approve it.',
+                      ctaLabel: 'OPEN CHANNEL',
+                      ctaUrl: '',
+                      openInNewTab: true,
+                    },
+                    {
+                      blockType: 'outcomeStep',
+                      title: 'You’re in',
+                      body: 'Staff accepts your in-game request and pings you. Welcome to the fireteam.',
+                      statusLabel: 'ENLISTED',
+                    },
+                  ],
+                },
+              ],
+            },
+
+            // "What Really Matters" callout
+            {
+              name: 'callout',
+              type: 'group',
+              admin: { description: 'Friendly community message — the warm counterpoint to the procedural shell.' },
+              fields: [
+                {
+                  name: 'kicker',
+                  type: 'text',
+                  defaultValue: '// TRANSMISSION · ALL HANDS',
+                  admin: { description: 'Mono section kicker.' },
+                },
+                {
+                  name: 'headline',
+                  type: 'text',
+                  defaultValue: 'THE BANNER YOU CARRY DOESN’T MATTER.',
+                  admin: { description: 'Single declarative line.' },
+                },
+                {
+                  name: 'body',
+                  type: 'textarea',
+                  defaultValue:
+                    'What matters is who’s next to you in the fireteam — and that happens on Discord. SDC, RGA, RGS — we all friend up, run loot together, and call each other in for raids.',
+                  admin: {
+                    description:
+                      'Body paragraph under the headline. Focused on "which clan doesn’t matter"; the parallel "joining is optional" angle lives in the openInvite interlude above.',
+                  },
+                },
+                {
+                  name: 'bullets',
+                  type: 'array',
+                  admin: { description: 'Bullet points emphasizing the community-first stance.' },
+                  fields: [{ name: 'text', type: 'text' }],
+                  defaultValue: [
+                    { text: 'Discord is where it happens' },
+                    { text: 'Cross-clan friendships are the norm' },
+                    { text: 'Skill level isn’t the bar — vibes are' },
+                    { text: 'Show up, hop in voice, hang out' },
+                  ],
+                },
+                {
+                  name: 'signature',
+                  type: 'text',
+                  defaultValue: 'Rogue Army · where gaming meets friendship',
+                  admin: { description: 'Quiet signature line under the bullets.' },
+                },
+              ],
+            },
+
+            // Closing "Contact Staff" CTA
+            {
+              name: 'closingCta',
+              type: 'group',
+              admin: { description: 'The big primary CTA at the bottom of the page.' },
+              fields: [
+                {
+                  name: 'headline',
+                  type: 'text',
+                  defaultValue: 'READY TO JOIN A FIRETEAM?',
+                  admin: { description: 'Headline above the CTA button.' },
+                },
+                {
+                  type: 'row',
+                  fields: [
+                    {
+                      name: 'ctaLabel',
+                      type: 'text',
+                      defaultValue: 'CONTACT STAFF',
+                      admin: { width: '40%', description: 'CTA button label.' },
+                    },
+                    {
+                      name: 'ctaUrl',
+                      type: 'text',
+                      defaultValue: '/community/staff',
+                      admin: { width: '60%', description: 'Where the CTA sends the user.' },
+                    },
+                  ],
+                },
+                {
+                  name: 'openInNewTab',
+                  type: 'checkbox',
+                  defaultValue: false,
+                  admin: {
+                    description:
+                      'Open the CTA link in a new browser tab (adds target="_blank" + safe rel). Turn on for off-site destinations like Discord deep links so visitors don\'t lose the clans page.',
+                  },
+                },
+                {
+                  name: 'signature',
+                  type: 'text',
+                  defaultValue: '// ROGUE ARMY · DIV-2 OPS',
+                  admin: { description: 'Mono signature line under the button.' },
+                },
+              ],
+            },
+
+            // SEO
+            {
+              name: 'seo',
+              label: 'SEO',
+              type: 'group',
+              admin: { description: 'Document title + meta description.' },
+              fields: [
+                {
+                  name: 'title',
+                  type: 'text',
+                  defaultValue: 'Clans | Division 2 · Rogue Army',
+                },
+                {
+                  name: 'description',
+                  type: 'textarea',
+                  defaultValue:
+                    'Three active Division 2 clans on PC. Pick any — what matters is being on Discord with us.',
                 },
               ],
             },

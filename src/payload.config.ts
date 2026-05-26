@@ -18,6 +18,7 @@ import { Articles } from './collections/Articles'
 import { ReadProgress } from './collections/ReadProgress'
 import { Bookmarks } from './collections/Bookmarks'
 import { StaffProfiles } from './collections/StaffProfiles'
+import { Division2Clans } from './collections/Division2Clans'
 import { Division2 } from './globals/Division2'
 import { Homepage } from './globals/Homepage'
 import { Manifesto } from './globals/Manifesto'
@@ -69,7 +70,7 @@ export default buildConfig({
   // Within a group Payload lists collections first then globals, so StaffPage is
   // ordered before Manifesto so it sits right next to its sibling collection
   // (Staff Profiles) in the admin sidebar.
-  collections: [Articles, Series, Games, GameRoles, Topics, ContentTypes, StaffProfiles, Media, Users, Members, ReadProgress, Bookmarks],
+  collections: [Articles, Series, Games, GameRoles, Topics, ContentTypes, StaffProfiles, Division2Clans, Media, Users, Members, ReadProgress, Bookmarks],
   globals: [Homepage, StaffPage, Manifesto, Division2],
   editor: lexicalEditor({
     features: ({ defaultFeatures }) => [
