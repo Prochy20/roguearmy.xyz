@@ -11,6 +11,8 @@ Run:  python3 scripts/patch-hanson-czech.py
 Tune the geometry by editing the constants block below, then re-run.
 """
 
+import hashlib
+import re
 from pathlib import Path
 
 from fontTools.pens.boundsPen import BoundsPen
@@ -19,18 +21,22 @@ from fontTools.ttLib import TTFont
 
 ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "public" / "fonts" / "Hanson-Bold.otf"
-DST = ROOT / "public" / "fonts" / "Hanson-Bold-CzExt.otf"
+DST = ROOT / "public" / "fonts" / "Hanson-Bold-Czech.otf"
+FONTS_TS = ROOT / "src" / "app" / "fonts.ts"
+GLOBALS_CSS = ROOT / "src" / "app" / "globals.css"
 
 # ── Diacritic geometry (tweak visually, re-run) ──────────────────────────────
-# Ratios are fractions of the font's cap height. The caron is drawn as a solid
-# filled wedge (▼) rather than a thin chevron — it matches Hanson's heavy
-# display weight better and avoids winding-rule edge cases in concave outlines.
-CARON_WIDTH_RATIO  = 0.50   # wedge base width across the glyph
-CARON_HEIGHT_RATIO = 0.14   # wedge depth
-CARON_GAP_RATIO    = 0.015  # gap between actual glyph top and caron base
-RING_DIAMETER_RATIO = 0.26
+# Ratios are fractions of the font's cap height. The caron is drawn as a
+# constant-thickness V-chevron (ˇ): outer V edges at slope ±height/half,
+# inner V edges parallel-offset perpendicular by `stroke`. Match the stroke
+# ratio to Hanson's native acute weight so Č and Á read at the same mass.
+CARON_WIDTH_RATIO   = 0.46   # chevron width across the glyph
+CARON_HEIGHT_RATIO  = 0.20   # chevron depth (outer V tip to outer top)
+CARON_STROKE_RATIO  = 0.08   # perpendicular stroke thickness of the V
+CARON_GAP_RATIO     = 0.14   # gap between glyph top and outer V tip
+RING_DIAMETER_RATIO = 0.22
 RING_STROKE_RATIO   = 0.07
-RING_GAP_RATIO      = 0.02
+RING_GAP_RATIO      = 0.12
 
 # Compositions: (target_codepoint, base_codepoint, accent_kind, is_uppercase)
 COMPOSITIONS = [
@@ -58,13 +64,41 @@ GLYPH_NAME = {
 }
 
 
-def draw_caron(pen, cx, base_y, width, height):
-    """Solid filled wedge ▼ — top edge flat, bottom point at (cx, base_y)."""
+def draw_caron(pen, cx, base_y, width, height, stroke):
+    """Constant-thickness V-chevron (ˇ). Outer V tip at (cx, base_y),
+    flat top edge at y = base_y + height.
+
+    Geometry: outer V edge has slope ±height/half. The inner V edge is
+    parallel-offset perpendicular by `stroke`; in the y-axis that vertical
+    offset is stroke * arm_len / half, where arm_len = √(half² + height²).
+    """
     half = width / 2
     top = base_y + height
-    pen.moveTo((cx - half, top))      # top-left
-    pen.lineTo((cx + half, top))      # top-right
-    pen.lineTo((cx, base_y))          # bottom point
+    arm_len = (half ** 2 + height ** 2) ** 0.5
+
+    # Vertical shift of the inner V edge (where it crosses x=0).
+    c = stroke * arm_len / half
+    if c >= height:
+        # Stroke too thick — inner edge would cross above the outer top.
+        # Fall back to a solid wedge so we never produce a malformed glyph.
+        pen.moveTo((cx - half, top))
+        pen.lineTo((cx + half, top))
+        pen.lineTo((cx, base_y))
+        pen.closePath()
+        return
+
+    # Inner top x-offset from outer-top: where inner edge meets y = top.
+    inner_dx = abs((c - height) * half / height) - 0  # |(c-h)*half/h|... reduce
+    # Equivalent simpler form:
+    inner_dx = half - (height - c) * half / height
+    inner_bottom_y = base_y + c
+
+    pen.moveTo((cx - half, top))                              # outer top-left
+    pen.lineTo((cx, base_y))                                  # outer V tip (bottom)
+    pen.lineTo((cx + half, top))                              # outer top-right
+    pen.lineTo((cx + half - inner_dx, top))                   # inner top-right (move left along top edge)
+    pen.lineTo((cx, inner_bottom_y))                          # inner V tip (points up)
+    pen.lineTo((cx - half + inner_dx, top))                   # inner top-left
     pen.closePath()
 
 
@@ -91,7 +125,7 @@ def draw_ring(pen, cx, cy, diameter, stroke):
     pen.closePath()
 
 
-def patch(src_path: Path, dst_path: Path) -> None:
+def patch(src_path: Path, dst_path: Path) -> str:
     font = TTFont(str(src_path))
 
     os2 = font["OS/2"]
@@ -139,8 +173,9 @@ def patch(src_path: Path, dst_path: Path) -> None:
         if kind == "caron":
             w = cap_height * CARON_WIDTH_RATIO
             h = cap_height * CARON_HEIGHT_RATIO
+            s = cap_height * CARON_STROKE_RATIO
             gap = cap_height * CARON_GAP_RATIO
-            draw_caron(pen, accent_cx, base_top + gap, w, h)
+            draw_caron(pen, accent_cx, base_top + gap, w, h, s)
         elif kind == "ring":
             d = cap_height * RING_DIAMETER_RATIO
             s = cap_height * RING_STROKE_RATIO
