@@ -98,6 +98,12 @@
   --color-rga-dev: #ccff00;
   --color-rga-admin: #ff0066;
   --color-rga-mod: #ff8000;
+  /* Clan accents — used on /division-2/clans cards. Tuned to match the
+     Discord clan banner palette: RGA = neon green (reuses rga-green),
+     SDC = warm copper/bronze, RGS = deep azure with a gold highlight. */
+  --color-rga-amber: #ff9c2a;
+  --color-rga-azure: #2a6dff;
+  --color-rga-gold: #ffd166;
 
   /* ─────────────────────────────────────────────────────────────────────────
      BACKGROUND COLORS
@@ -121,6 +127,8 @@
   --color-glow-cyan: rgba(0, 255, 255, 0.5);
   --color-glow-magenta: rgba(255, 0, 255, 0.5);
   --color-glow-orange: rgba(255, 128, 0, 0.5);
+  --color-glow-amber: rgba(255, 156, 42, 0.5);
+  --color-glow-azure: rgba(42, 109, 255, 0.5);
 
   /* ─────────────────────────────────────────────────────────────────────────
      SOURCE BRAND COLORS — used on the /division-2/content firehose cards
@@ -638,6 +646,27 @@
     animation: none !important;
   }
 }
+
+/* Clan dossier cards — same "settle" feel as the staff cards, but slightly
+   taller initial offset so the three banners feel like they're being raised
+   into position rather than crossfading. */
+@keyframes rga-clan-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rga-clan-card {
+    animation: none !important;
+  }
+}
+
 
 /* Shared scanner machinery — used by StaffRadar (staff page) and WashingtonMap
    (briefings page). Naming: `rga-scanner-*` for cross-component primitives;
