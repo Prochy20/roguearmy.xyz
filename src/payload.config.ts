@@ -67,11 +67,21 @@ export default buildConfig({
   // CORS configuration - add your production domains here
   cors: [process.env.NEXT_PUBLIC_SERVER_URL || '', 'https://rga.local'].filter(Boolean),
 
-  // Order determines admin menu group ordering: Content, Taxonomies, Assets, Users.
-  // Within a group Payload lists collections first then globals, so StaffPage is
-  // ordered before Manifesto so it sits right next to its sibling collection
-  // (Staff Profiles) in the admin sidebar.
-  collections: [Articles, Series, Games, GameRoles, Topics, ContentTypes, StaffProfiles, Division2Clans, Media, Users, Members, ReadProgress, Bookmarks],
+  // Sidebar group order is driven by first-appearance across collections then
+  // globals — so the first collection in each group seeds its position in the
+  // nav. Order below produces: Editorial, Identity, Division 2, Taxonomies,
+  // Community, Assets, System. Within a group Payload lists collections first
+  // then globals, so the globals array order only matters between siblings in
+  // the same group (e.g. StaffPage before Manifesto under Identity).
+  collections: [
+    Articles, Series,                                // Editorial
+    StaffProfiles,                                   // Identity
+    Division2Clans,                                  // Division 2
+    Games, GameRoles, Topics, ContentTypes,          // Taxonomies
+    Members, Bookmarks, ReadProgress,                // Community
+    Media,                                           // Assets
+    Users,                                           // System
+  ],
   globals: [Homepage, StaffPage, Manifesto, Division2, SiteChrome],
   editor: lexicalEditor({
     features: ({ defaultFeatures }) => [

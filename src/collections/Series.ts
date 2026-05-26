@@ -4,7 +4,7 @@ export const Series: CollectionConfig = {
   slug: 'series',
   admin: {
     useAsTitle: 'name',
-    group: 'Content',
+    group: 'Editorial',
   },
   access: {
     read: () => true,

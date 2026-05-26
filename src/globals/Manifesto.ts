@@ -84,7 +84,7 @@ export const Manifesto: GlobalConfig = {
     read: () => true,
   },
   admin: {
-    group: 'Content',
+    group: 'Identity',
   },
   fields: [
     {

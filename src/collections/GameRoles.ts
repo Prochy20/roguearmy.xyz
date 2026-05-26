@@ -28,7 +28,7 @@ function normalizeRoles(value: unknown): RoleSnapshot[] {
 export const GameRoles: CollectionConfig = {
   slug: 'game-roles',
   labels: {
-    singular: 'Game Roles',
+    singular: 'Game Role',
     plural: 'Game Roles',
   },
   admin: {

@@ -3,12 +3,12 @@ import type { CollectionConfig } from 'payload'
 export const Members: CollectionConfig = {
   slug: 'members',
   labels: {
-    singular: 'Community Member',
-    plural: 'Community Members',
+    singular: 'Member',
+    plural: 'Members',
   },
   admin: {
     useAsTitle: 'username',
-    group: 'Users',
+    group: 'Community',
     description: 'Discord members who have authenticated via OAuth',
     defaultColumns: ['avatar', 'username', 'status', 'lastLogin'],
   },

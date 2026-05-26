@@ -7,7 +7,7 @@ export const ReadProgress: CollectionConfig = {
     plural: 'Read Progress',
   },
   admin: {
-    group: 'Users',
+    group: 'Community',
     description: 'Tracks article reading progress for members',
     defaultColumns: ['member', 'article', 'progress', 'completed', 'lastVisitedAt'],
   },

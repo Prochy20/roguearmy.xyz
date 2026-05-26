@@ -110,7 +110,7 @@ const CtaStepBlock: Block = {
  */
 export const Division2: GlobalConfig = {
   slug: 'division2',
-  label: 'Division 2',
+  label: 'Landing Page',
   admin: {
     group: 'Division 2',
     description:

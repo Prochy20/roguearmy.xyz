@@ -69,7 +69,7 @@ export const StaffProfiles: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'cached_displayName',
-    group: 'Content',
+    group: 'Identity',
     description: 'Operatives shown on /community/staff. Order ascending.',
     defaultColumns: ['order', 'cached_displayName', 'roleTitle', 'isPublic'],
   },

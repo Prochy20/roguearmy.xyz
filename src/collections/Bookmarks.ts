@@ -7,7 +7,7 @@ export const Bookmarks: CollectionConfig = {
     plural: 'Bookmarks',
   },
   admin: {
-    group: 'Users',
+    group: 'Community',
     description: 'Member bookmarked articles',
     defaultColumns: ['member', 'article', 'createdAt'],
   },

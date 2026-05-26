@@ -75,7 +75,7 @@ export const StaffPage: GlobalConfig = {
     read: () => true,
   },
   admin: {
-    group: 'Content',
+    group: 'Identity',
     description:
       'All copy + content for the /community/staff page. Roster operatives live in the Staff Profiles collection.',
   },

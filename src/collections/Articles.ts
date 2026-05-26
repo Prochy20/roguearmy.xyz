@@ -7,7 +7,7 @@ export const Articles: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'categorization.topic', 'articleContent.contentSource', 'categorization.games', '_status'],
-    group: 'Content',
+    group: 'Editorial',
     listSearchableFields: ['title', 'slug', 'perex'],
   },
   access: {

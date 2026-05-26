@@ -58,8 +58,8 @@ async function refreshLeaderCacheFromAshley(
 export const Division2Clans: CollectionConfig = {
   slug: 'division2-clans',
   labels: {
-    singular: 'Division 2 Clan',
-    plural: 'Division 2 Clans',
+    singular: 'Clan',
+    plural: 'Clans',
   },
   admin: {
     useAsTitle: 'name',

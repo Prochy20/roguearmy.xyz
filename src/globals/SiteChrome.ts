@@ -2,9 +2,9 @@ import type { GlobalConfig } from 'payload'
 
 export const SiteChrome: GlobalConfig = {
   slug: 'site-chrome',
-  label: 'Site Chrome',
+  label: 'Nav & Footer',
   admin: {
-    group: 'Settings',
+    group: 'System',
     description:
       'Footer tagline copy and the member-count floor used when Ashley is unreachable.',
   },
