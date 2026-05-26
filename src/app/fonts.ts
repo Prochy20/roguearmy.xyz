@@ -25,7 +25,10 @@ export const blackOpsOne = Black_Ops_One({
 })
 
 export const hansonBold = localFont({
-  src: '../../public/fonts/Hanson-Bold.otf',
+  // Patched build with Czech/Slovak diacritics composed from base glyphs + a
+  // drawn caron/ring. Regenerate via `python3 scripts/patch-hanson-czech.py`
+  // after replacing the source Hanson-Bold.otf.
+  src: '../../public/fonts/Hanson-Bold-CzExt.otf',
   weight: '700',
   style: 'normal',
   variable: '--font-hanson-bold',
