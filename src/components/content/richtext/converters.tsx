@@ -25,6 +25,7 @@ import { ACCENT_TOKENS, type AccentName } from '@/components/content/reader/acce
 import {
   ReaderImageFrame,
   ReaderCalloutBlock,
+  LINK_STYLES,
   type CalloutType,
 } from '@/components/content/reader/readerMarkdownComponents'
 
@@ -143,12 +144,14 @@ export function buildConverters({
   // to the first instance.
   const headingSeenIds = new Set<string>()
 
+  const link = LINK_STYLES[accent]
+
   /**
    * Renders an `<a>` based on the link's URL shape. Mirrors the markdown
    * link dispatcher:
-   *   1. Hash anchors (`#…`)        — in-document jumps, no icon.
-   *   2. External (http/https)      — accent-aware underline + ExternalLinkIcon.
-   *   3. Internal / relative        — quiet cyan underline.
+   *   1. Hash anchors (`#…`)        — in-document jumps, no icon, accent-soft.
+   *   2. External (http/https)      — accent underline + ExternalLinkIcon.
+   *   3. Internal / relative        — accent underline, no icon.
    * Citation chips (`data-cite-chip`) only appear in briefing markdown content
    * and never in Lexical, so the chip branch isn't reachable here.
    */
@@ -163,7 +166,10 @@ export function buildConverters({
   }): ReactNode {
     if (url.startsWith('#')) {
       return (
-        <a href={url} className="text-rga-cyan/85 transition-colors hover:text-rga-cyan">
+        <a
+          href={url}
+          className={`${link.textSoft} transition-colors ${link.textHoverStrong}`}
+        >
           {children}
         </a>
       )
@@ -175,7 +181,7 @@ export function buildConverters({
           href={url}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-rga-green underline decoration-rga-green/30 underline-offset-2 transition-colors hover:text-rga-green/85 hover:decoration-rga-green/60"
+          className={`${link.textRest} underline ${link.decorationRest} underline-offset-2 transition-colors ${link.textHoverSoft} ${link.decorationHover}`}
         >
           {children}
           <ExternalLinkIcon />
@@ -186,7 +192,7 @@ export function buildConverters({
       <a
         href={url}
         {...(newTab ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-        className="text-rga-cyan underline decoration-rga-cyan/30 underline-offset-2 transition-colors hover:text-rga-green hover:decoration-rga-green/50"
+        className={`${link.textRest} underline ${link.decorationRest} underline-offset-2 transition-colors ${link.textHoverSoft} ${link.decorationHover}`}
       >
         {children}
       </a>

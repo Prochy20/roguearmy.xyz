@@ -5,6 +5,74 @@ import type { Components } from 'react-markdown'
 import { ACCENT_TOKENS, type AccentName } from './accent'
 
 /**
+ * Per-accent link style rows. Spelled out literally because Tailwind v4
+ * can't resolve interpolated class names. Lives next to the markdown
+ * components (not in `accent.ts`) because the `decoration-*` utilities
+ * and the soft/strong hover pairs are specific to this consumer — keeping
+ * them local avoids bloating the shared accent token type.
+ *
+ * Fields:
+ *  - textRest / textHoverSoft: prose links (underlined). Hover fades to /85
+ *    so the change is felt without flipping color.
+ *  - textSoft / textHoverStrong: tactical markers (chip + hash anchor, no
+ *    underline). Resting at /85 and rising to full intensity on hover
+ *    inverts the prose pattern — markers feel quieter at rest.
+ *  - decorationRest / decorationHover: underline color tracking the text.
+ */
+export const LINK_STYLES: Record<
+  AccentName,
+  {
+    textRest: string
+    textHoverSoft: string
+    textSoft: string
+    textHoverStrong: string
+    decorationRest: string
+    decorationHover: string
+  }
+> = {
+  green: {
+    textRest: 'text-rga-green',
+    textHoverSoft: 'hover:text-rga-green/85',
+    textSoft: 'text-rga-green/85',
+    textHoverStrong: 'hover:text-rga-green',
+    decorationRest: 'decoration-rga-green/30',
+    decorationHover: 'hover:decoration-rga-green/60',
+  },
+  cyan: {
+    textRest: 'text-rga-cyan',
+    textHoverSoft: 'hover:text-rga-cyan/85',
+    textSoft: 'text-rga-cyan/85',
+    textHoverStrong: 'hover:text-rga-cyan',
+    decorationRest: 'decoration-rga-cyan/30',
+    decorationHover: 'hover:decoration-rga-cyan/60',
+  },
+  magenta: {
+    textRest: 'text-rga-magenta',
+    textHoverSoft: 'hover:text-rga-magenta/85',
+    textSoft: 'text-rga-magenta/85',
+    textHoverStrong: 'hover:text-rga-magenta',
+    decorationRest: 'decoration-rga-magenta/30',
+    decorationHover: 'hover:decoration-rga-magenta/60',
+  },
+  orange: {
+    textRest: 'text-rga-mod',
+    textHoverSoft: 'hover:text-rga-mod/85',
+    textSoft: 'text-rga-mod/85',
+    textHoverStrong: 'hover:text-rga-mod',
+    decorationRest: 'decoration-rga-mod/30',
+    decorationHover: 'hover:decoration-rga-mod/60',
+  },
+  red: {
+    textRest: 'text-red-400',
+    textHoverSoft: 'hover:text-red-400/85',
+    textSoft: 'text-red-400/85',
+    textHoverStrong: 'hover:text-red-400',
+    decorationRest: 'decoration-red-400/30',
+    decorationHover: 'hover:decoration-red-400/60',
+  },
+}
+
+/**
  * Reader-local markdown component overrides.
  *
  * Three elements get reshaped here:
@@ -116,16 +184,20 @@ export function createReaderMarkdownComponents(
     },
 
     // Anchor override — four flavors, dispatched in this order:
-    //   1. citation chips (`data-cite-chip`): the `[N]` superscripts. Always
-    //      render in cyan, no underline, no external icon — they're tactical
-    //      markers, not prose links. They may point at either an external
-    //      source URL or an in-page anchor; styling stays identical either way.
-    //   2. hash anchors (`#…`): in-document jumps. Quiet cyan, no icon.
-    //   3. external links (http/https): body citation phrases. Render in
-    //      rga-green with an external-link icon trailing the text.
-    //   4. other internal (e.g. `/path`): fall back to a quiet cyan underline.
+    //   1. citation chips (`data-cite-chip`): the `[N]` superscripts. No
+    //      underline, no external icon — they're tactical markers, not prose
+    //      links. They may point at either an external source URL or an
+    //      in-page anchor; styling stays identical either way.
+    //   2. hash anchors (`#…`): in-document jumps, no icon.
+    //   3. external links (http/https): body citation phrases. Underlined
+    //      with an external-link icon trailing the text.
+    //   4. other internal (e.g. `/path`): underlined, no icon.
+    //
+    // All four flavors track the page accent so a daily/orange briefing
+    // renders orange links instead of falling back to green/cyan.
     a: ({ href, children, ...props }) => {
       const url = typeof href === 'string' ? href : ''
+      const link = LINK_STYLES[accent]
       const isChip =
         (props as { 'data-cite-chip'?: string | boolean })['data-cite-chip'] !==
         undefined
@@ -137,7 +209,7 @@ export function createReaderMarkdownComponents(
             {...(isExternalChip
               ? { target: '_blank', rel: 'noopener noreferrer' }
               : {})}
-            className="text-rga-cyan/85 transition-colors hover:text-rga-cyan"
+            className={`${link.textSoft} transition-colors ${link.textHoverStrong}`}
             {...props}
           >
             {children}
@@ -148,7 +220,7 @@ export function createReaderMarkdownComponents(
         return (
           <a
             href={url}
-            className="text-rga-cyan/85 transition-colors hover:text-rga-cyan"
+            className={`${link.textSoft} transition-colors ${link.textHoverStrong}`}
             {...props}
           >
             {children}
@@ -162,7 +234,7 @@ export function createReaderMarkdownComponents(
             href={url}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-rga-green underline decoration-rga-green/30 underline-offset-2 transition-colors hover:text-rga-green/85 hover:decoration-rga-green/60"
+            className={`${link.textRest} underline ${link.decorationRest} underline-offset-2 transition-colors ${link.textHoverSoft} ${link.decorationHover}`}
             {...props}
           >
             {children}
@@ -173,7 +245,7 @@ export function createReaderMarkdownComponents(
       return (
         <a
           href={url || undefined}
-          className="text-rga-cyan underline decoration-rga-cyan/30 underline-offset-2 transition-colors hover:text-rga-green hover:decoration-rga-green/50"
+          className={`${link.textRest} underline ${link.decorationRest} underline-offset-2 transition-colors ${link.textHoverSoft} ${link.decorationHover}`}
           {...props}
         >
           {children}
