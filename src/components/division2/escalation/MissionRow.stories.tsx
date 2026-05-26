@@ -63,3 +63,23 @@ export const Empty: Story = {
     })
   },
 }
+
+/**
+ * Tuesday-morning rollover: today's data hasn't ingested, so the page is
+ * showing yesterday. The day-stepper replaces its `// TODAY` jump with a
+ * passive `// AWAITING TODAY` pill, and the forward arrow is suppressed so
+ * users can't step into the same ingest gap.
+ */
+export const AwaitingTodayIngest: Story = {
+  args: { awaitingTodayIngest: true },
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement)
+    await step('AWAITING TODAY pill replaces the TODAY jump', async () => {
+      await expect(canvas.getAllByText(/awaiting today/i).length).toBeGreaterThan(0)
+      await expect(canvas.queryByRole('link', { name: /jump to today/i })).toBeNull()
+    })
+    await step('Forward step is suppressed in the awaiting state', async () => {
+      await expect(canvas.queryByRole('link', { name: /next day/i })).toBeNull()
+    })
+  },
+}

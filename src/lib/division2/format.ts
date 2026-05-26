@@ -96,6 +96,58 @@ export function hoursSince(fetchedAt: string): number {
   return (Date.now() - then) / (1000 * 60 * 60)
 }
 
+/**
+ * Ashley ships `fetchedAt` as a Europe/Prague wall-clock timestamp formatted
+ * like an ISO UTC string (e.g. `"2026-05-25T11:00:00Z"` that actually means
+ * 11:00 CEST). Re-interpret those components as Prague local and return a
+ * true UTC ISO string. DST-safe via `Intl`.
+ */
+export function ashleyTimestampToUtcIso(raw: string): string {
+  const asIfUtc = new Date(raw)
+  if (Number.isNaN(asIfUtc.getTime())) return raw
+  const offsetMs = pragueOffsetMs(asIfUtc.getTime())
+  return new Date(asIfUtc.getTime() - offsetMs).toISOString()
+}
+
+/**
+ * Project the time-of-day of a true-UTC ISO onto today's date in UTC.
+ * Used by the awaiting-ingest banner: yesterday's sync wall-clock time is
+ * a better predictor of today's publish than any hardcoded constant — if
+ * upstream's cron shifts, the banner tracks the new cadence automatically.
+ */
+export function projectTimeOntoTodayUtc(referenceUtcIso: string): string {
+  const ref = new Date(referenceUtcIso)
+  if (Number.isNaN(ref.getTime())) return referenceUtcIso
+  const today = todayUtcIso()
+  const hh = String(ref.getUTCHours()).padStart(2, '0')
+  const mm = String(ref.getUTCMinutes()).padStart(2, '0')
+  const ss = String(ref.getUTCSeconds()).padStart(2, '0')
+  return `${today}T${hh}:${mm}:${ss}.000Z`
+}
+
+/** Milliseconds you'd add to a UTC instant to get the wall-clock in Prague. */
+function pragueOffsetMs(epochMs: number): number {
+  const dtf = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Europe/Prague',
+    year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', second: '2-digit',
+    hour12: false,
+  })
+  const parts = Object.fromEntries(
+    dtf.formatToParts(new Date(epochMs)).map((p) => [p.type, p.value]),
+  )
+  const hour = parts.hour === '24' ? '00' : parts.hour
+  const wallEpoch = Date.UTC(
+    Number(parts.year),
+    Number(parts.month) - 1,
+    Number(parts.day),
+    Number(hour),
+    Number(parts.minute),
+    Number(parts.second),
+  )
+  return wallEpoch - epochMs
+}
+
 /** Stale chip threshold — anything past 24h gets the warning. */
 export const STALE_HOURS_THRESHOLD = 24
 

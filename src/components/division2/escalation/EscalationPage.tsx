@@ -6,11 +6,15 @@ import { EscalationDayStepper, MissionRow } from './MissionRow'
 import { PrototypeCaches } from './PrototypeCaches'
 import { EscalationDiscordRow } from './EscalationDiscordRow'
 import {
+  ashleyTimestampToUtcIso,
+  formatDayShort,
   formatDayWithWeekday,
   hoursSince,
+  projectTimeOntoTodayUtc,
   STALE_HOURS_THRESHOLD,
   todayUtcIso,
 } from '@/lib/division2/format'
+import { UserLocalTime } from './UserLocalTime'
 import type { AshleyResult } from '@/lib/api/server'
 import type {
   EscalationDailyDetail,
@@ -32,6 +36,10 @@ interface EscalationPageProps {
   week: AshleyResult<EscalationWeekDetail>
   /** The day the page is meant to render (server-resolved, already clamped). */
   targetDay: string
+  /** True when the user landed on the default route (no explicit `?day`) but
+   *  today's data hadn't ingested yet, so we walked back to the last
+   *  available day. Drives the info banner + disables the `// TODAY` jump. */
+  awaitingTodayIngest: boolean
   /** Editable copy sourced from the Division 2 global. Fields fall back to
    *  built-in defaults if the admin clears them, so the page never goes blank. */
   content: EscalationPageContent | null | undefined
@@ -55,7 +63,13 @@ const DEFAULTS = {
  * notion of "weeks" in the URL or UI — everything is keyed on a single
  * `?day=YYYY-MM-DD` param.
  */
-export function EscalationPage({ daily, week, targetDay, content }: EscalationPageProps) {
+export function EscalationPage({
+  daily,
+  week,
+  targetDay,
+  awaitingTodayIngest,
+  content,
+}: EscalationPageProps) {
   // Hard fail only when BOTH the day and the week are unavailable — we have
   // nothing to render.
   if (!daily.ok && !week.ok) {
@@ -83,7 +97,10 @@ export function EscalationPage({ daily, week, targetDay, content }: EscalationPa
 
   const missions: EscalationMission[] =
     dailyData?.week.missions ?? weekData?.missions ?? []
-  const fetchedAt = dailyData?.fetchedAt ?? weekData?.fetchedAt ?? null
+  // Ashley ships fetchedAt as Prague wall-clock labeled as UTC; normalize
+  // to a real UTC instant before any formatting or staleness math runs.
+  const rawFetchedAt = dailyData?.fetchedAt ?? weekData?.fetchedAt ?? null
+  const fetchedAt = rawFetchedAt ? ashleyTimestampToUtcIso(rawFetchedAt) : null
   const items: EscalationLootItem[] = dailyData?.items ?? []
   const caches: EscalationPrototypeCache | null = dailyData?.prototypeCaches ?? null
 
@@ -174,10 +191,17 @@ export function EscalationPage({ daily, week, targetDay, content }: EscalationPa
       </header>
 
       <div className="flex flex-col gap-6 sm:gap-8">
+        {awaitingTodayIngest && (
+          <AwaitingIngestBanner
+            resolvedDay={resolvedDay}
+            referenceFetchedAt={fetchedAt}
+          />
+        )}
         <MissionRow
           missions={missions}
           dayLootByPosition={dayLootByPosition}
           selectedDay={resolvedDay}
+          awaitingTodayIngest={awaitingTodayIngest}
           sectionLabel={content?.missionsSectionLabel ?? undefined}
         />
         <PrototypeCaches
@@ -187,12 +211,71 @@ export function EscalationPage({ daily, week, targetDay, content }: EscalationPa
           blurb={content?.cachesBlurb ?? undefined}
         />
         <div className="flex justify-end pt-2">
-          <EscalationDayStepper selectedDay={resolvedDay} />
+          <EscalationDayStepper
+            selectedDay={resolvedDay}
+            awaitingTodayIngest={awaitingTodayIngest}
+          />
         </div>
         <EscalationDiscordRow content={content?.discord} />
       </div>
     </Shell>
   )
+}
+
+/**
+ * Info banner shown when the page fell back from today to the last available
+ * day. The expected publish time is anchored on the reference sync's
+ * wall-clock — upstream publishes daily on the same cadence, so projecting
+ * the prior sync's HH:MM onto today is a self-tuning predictor.
+ */
+function AwaitingIngestBanner({
+  resolvedDay,
+  referenceFetchedAt,
+}: {
+  resolvedDay: string
+  referenceFetchedAt: string | null
+}) {
+  const expectedUtcIso = referenceFetchedAt
+    ? projectTimeOntoTodayUtc(referenceFetchedAt)
+    : null
+  const expectedUtcLabel = expectedUtcIso
+    ? formatUtcHourLabel(expectedUtcIso)
+    : null
+  return (
+    <div
+      role="status"
+      className="flex flex-wrap items-center gap-x-4 gap-y-2 border border-rga-green/30 bg-rga-green/[0.04] px-4 py-3 font-mono text-[11px] uppercase tracking-[0.25em] text-rga-green sm:px-5"
+    >
+      <span
+        aria-hidden
+        className="inline-block h-2 w-2 rounded-[1px] bg-rga-green shadow-[0_0_8px_#00FF41]"
+      />
+      <span className="text-rga-green">// AWAITING TODAY&apos;S ROTATION</span>
+      <span className="text-text-secondary normal-case tracking-[0.05em]">
+        Today&apos;s drops haven&apos;t published upstream yet — viewing the
+        last available day ({formatDayShort(resolvedDay)}).
+      </span>
+      {expectedUtcIso && expectedUtcLabel && (
+        <span className="ml-auto text-rga-green/80">
+          // EXPECTED ≈{' '}
+          <UserLocalTime
+            utcIso={expectedUtcIso}
+            fallback={`${expectedUtcLabel} UTC`}
+          />{' '}
+          · {expectedUtcLabel} UTC
+        </span>
+      )}
+    </div>
+  )
+}
+
+/** "HH:MM" formatted in UTC from a true-UTC ISO. */
+function formatUtcHourLabel(iso: string): string {
+  const d = new Date(iso)
+  if (Number.isNaN(d.getTime())) return '—'
+  const h = String(d.getUTCHours()).padStart(2, '0')
+  const m = String(d.getUTCMinutes()).padStart(2, '0')
+  return `${h}:${m}`
 }
 
 function formatSynced(iso: string): string {

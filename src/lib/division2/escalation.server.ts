@@ -3,6 +3,7 @@ import 'server-only'
 import { unstable_cache } from 'next/cache'
 import { fetchAshleyService, type AshleyResult } from '@/lib/api/server'
 import type { components } from '@/lib/api/schema'
+import { currentWeekStartUtc } from '@/lib/division2/format'
 
 /**
  * Escalation read helpers.
@@ -31,6 +32,7 @@ export type EscalationLootTypeRef = components['schemas']['EscalationLootTypeRef
 
 const LIST_TTL = 30 * 60 // 30 min
 const ARCHIVED_TTL = 24 * 60 * 60 // 24 h
+const CURRENT_WEEK_TTL = 5 * 60 // 5 min — current week may still be ingesting
 const DAILY_TTL = 5 * 60 // 5 min — same cadence as the rotation
 const DAILY_HISTORIC_TTL = 24 * 60 * 60 // older dailies are immutable
 
@@ -38,6 +40,9 @@ const DAILY_HISTORIC_TTL = 24 * 60 * 60 // older dailies are immutable
 export function fetchWeekByStart(
   weekStart: string,
 ): Promise<AshleyResult<EscalationWeekDetail>> {
+  // Use the short TTL for the active week — a 404 here on Tuesday rollover
+  // must not stick around for 24h after upstream finally ingests.
+  const ttl = weekStart === currentWeekStartUtc() ? CURRENT_WEEK_TTL : ARCHIVED_TTL
   const cached = unstable_cache(
     () =>
       fetchAshleyService<EscalationWeekDetail>((c) =>
@@ -46,7 +51,7 @@ export function fetchWeekByStart(
         }),
       ),
     ['division2-escalation-week', weekStart],
-    { revalidate: ARCHIVED_TTL, tags: ['escalation', 'escalation-week'] },
+    { revalidate: ttl, tags: ['escalation', 'escalation-week'] },
   )
   return cached()
 }

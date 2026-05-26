@@ -22,6 +22,10 @@ interface MissionRowProps {
   /** Currently-displayed day (YYYY-MM-DD UTC). When set, the day-stepper
    *  renders and lets the user navigate by calendar day. */
   selectedDay?: string
+  /** When true, the `// TODAY` jump button is replaced with a passive
+   *  `// AWAITING` pill — clicking TODAY would just bounce back to the same
+   *  fallback day, so we surface the state instead of the trap. */
+  awaitingTodayIngest?: boolean
   /** Mono label rendered next to SEC_01. Sourced from the Division 2 global. */
   sectionLabel?: string
 }
@@ -40,11 +44,14 @@ export function MissionRow({
   missions,
   dayLootByPosition,
   selectedDay,
+  awaitingTodayIngest,
   sectionLabel,
 }: MissionRowProps) {
   if (missions.length === 0) return null
 
-  const stepper = selectedDay ? buildStepper(selectedDay) : null
+  const stepper = selectedDay
+    ? buildStepper(selectedDay, awaitingTodayIngest)
+    : null
   const label = sectionLabel?.trim() || '// ACTIVE MISSIONS'
 
   return (
@@ -137,6 +144,9 @@ interface StepperState {
   prev: { href: string; label: string } | null
   next: { href: string; label: string } | null
   today: { href: string } | null
+  /** True when today's data hasn't ingested — `today` is null and the bar
+   *  shows a passive AWAITING pill instead of the clickable TODAY link. */
+  awaitingToday: boolean
   current: { label: string; isToday: boolean }
 }
 
@@ -145,20 +155,30 @@ function urlForDay(day: string): string {
   return day === todayUtcIso() ? ESCALATION_BASE : `${ESCALATION_BASE}?day=${day}`
 }
 
-function buildStepper(selectedDay: string): StepperState {
+function buildStepper(
+  selectedDay: string,
+  awaitingTodayIngest = false,
+): StepperState {
   const today = todayUtcIso()
   const prevDay = previousDayUtc(selectedDay)
   const nextDay = nextDayUtc(selectedDay)
   const isToday = selectedDay === today
 
+  // When today hasn't ingested, the "next" days from the fallback point all
+  // the way up to today are part of the same ingest gap — stepping forward
+  // would just trigger the same walk-back. Suppress forward navigation
+  // entirely in that state.
+  const canStepForward = nextDay <= today && !awaitingTodayIngest
+
   return {
     prev: { href: urlForDay(prevDay), label: formatDayWithWeekday(prevDay) },
-    next:
-      nextDay <= today
-        ? { href: urlForDay(nextDay), label: formatDayWithWeekday(nextDay) }
-        : null,
-    // Quick jump back to today — only shown when not already there.
-    today: isToday ? null : { href: ESCALATION_BASE },
+    next: canStepForward
+      ? { href: urlForDay(nextDay), label: formatDayWithWeekday(nextDay) }
+      : null,
+    // Quick jump back to today — suppressed when today hasn't ingested,
+    // since clicking it would just fall back to the same day we're on.
+    today: isToday || awaitingTodayIngest ? null : { href: ESCALATION_BASE },
+    awaitingToday: awaitingTodayIngest,
     current: {
       label: formatDayWithWeekday(selectedDay),
       isToday,
@@ -172,8 +192,14 @@ function buildStepper(selectedDay: string): StepperState {
  * up. `scroll={false}` on every Link keeps the viewport anchored to the
  * current scroll position across day navigations.
  */
-export function EscalationDayStepper({ selectedDay }: { selectedDay: string }) {
-  const stepper = buildStepper(selectedDay)
+export function EscalationDayStepper({
+  selectedDay,
+  awaitingTodayIngest,
+}: {
+  selectedDay: string
+  awaitingTodayIngest?: boolean
+}) {
+  const stepper = buildStepper(selectedDay, awaitingTodayIngest)
   return <DayStepperBar stepper={stepper} />
 }
 
@@ -203,6 +229,19 @@ function DayStepperBar({ stepper }: { stepper: StepperState }) {
         >
           // TODAY
         </Link>
+      )}
+      {stepper.awaitingToday && (
+        <span
+          aria-label="Today's rotation has not been published yet"
+          title="Today's rotation has not been published upstream — expected around 10:00 CEST (08:00 UTC)"
+          className="inline-flex h-9 items-center justify-center gap-2 border border-rga-green/30 bg-rga-green/[0.05] px-3 font-mono text-[10px] tracking-[0.3em] text-rga-green/80"
+        >
+          <span
+            aria-hidden
+            className="inline-block h-1.5 w-1.5 rounded-[1px] bg-rga-green shadow-[0_0_6px_#00FF41]"
+          />
+          // AWAITING TODAY
+        </span>
       )}
     </div>
   )
