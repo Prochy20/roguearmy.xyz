@@ -4,38 +4,8 @@ interface WashingtonMapProps {
   className?: string
 }
 
-/**
- * Decorative monochrome map of Washington DC for the briefings hero.
- *
- * Aesthetic: stark white-on-black tactical schematic. Inspired by Stamen
- * Toner / NYT graphics-dept cartography — hairline strokes, maximum
- * contrast, restrained markers, single warm accent for landmarks.
- *
- * Layer stack:
- *   1. Mapbox `light-v11` base (white bg + dark roads), inverted + grayscaled
- *      to pure B&W — gives stark white-on-black streets with zero color.
- *   2. Soft edge fade dissolves the rectangle into the page background.
- *   3. SVG overlay: hairline frame + landmark pins (small dots + labels).
- *
- * Token read from `MAPBOX_TOKEN` (.env, server-side). Missing token →
- * graceful fallback: page renders with just the SVG overlay on dark bg.
- *
- * Landmarks are real DC (lon, lat) for their Division 2 in-game counterpart.
- * Projection uses the same `MAP` bbox as the Mapbox image URL — change one
- * and the dots follow automatically.
- */
-
-// Center is calibrated so that Lincoln Memorial lands at the VISIBLE
-// center of the on-screen map. The container is positioned `-right-[300px]`,
-// so the visible viewport is the left 50% of the map. To put Lincoln at the
-// visible midpoint (container x=25%, y=50%):
-//   centerLon = Lincoln.lon + 25% × lonSpan = -77.0502 + 0.045 = -77.005
-//   centerLat = Lincoln.lat = 38.8893
-// Capitol then sits near the visible right edge; its label points 'left'
-// to stay inside the viewport. Pentagon sits at y≈56%; combined with the
-// hero's `top-16` map position this leaves ~50px of margin at the bottom.
 const MAP = {
-  centerLon: -77.005,
+  centerLon: -77.0365,
   centerLat: 38.8893,
   zoom: 12.2,
   sizePx: 600,
@@ -65,15 +35,24 @@ function project(lon: number, lat: number): { x: number; y: number } {
   return { x: +x.toFixed(2), y: +y.toFixed(2) }
 }
 
+// Precomputed positions for the schematic overlay layers (arcs + Mall
+// axis). Recomputed automatically when MAP constants change.
+const OVERLAY = {
+  baseOfOps: project(-77.0365, 38.8977),
+  lincoln: project(-77.0502, 38.8893),
+  capitol: project(-77.0091, 38.8899),
+} as const
+
 function buildMapboxUrl(): string | null {
   const token = process.env.MAPBOX_TOKEN
   if (!token) return null
-  // streets-v12 has dense street labels at zoom 12+; invert + grayscale
-  // strips the color, leaving stark white-on-black typography-rich substrate.
+  // No `@2x` suffix: the map is heavily dimmed (opacity-50 + grayscale +
+  // scanline dithering), so retina pixel-density is invisible — and the
+  // 1x variant is ~4x lighter on bytes, meaningfully faster on first paint.
   return (
     `https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/` +
     `${MAP.centerLon},${MAP.centerLat},${MAP.zoom},0/` +
-    `${MAP.sizePx}x${MAP.sizePx}@2x?access_token=${token}`
+    `${MAP.sizePx}x${MAP.sizePx}?access_token=${token}`
   )
 }
 
@@ -143,30 +122,69 @@ export function WashingtonMap({ className }: WashingtonMapProps) {
         }}
       />
 
-      {/* Edge fade. Ellipse sized exactly to half the container so the
-          gradient hits solid #000 at the visible left edge (x=0%) — no
-          hard rectangular edge to clip against. Many soft stops give a
-          fluent, continuous dissolve from clear center to page-bg black. */}
+      {/* Edge fade + scanlines collapsed into a single div with two
+          background layers. First listed = top of the layer stack
+          (radial fade), second = below it (scanlines). Saves one
+          compositing layer vs. two stacked divs. */}
       <div
         className="absolute inset-0"
         style={{
-          background:
+          backgroundImage: [
             'radial-gradient(ellipse 50% 50% at 50% 50%, ' +
-            'transparent 0%, ' +
-            'transparent 18%, ' +
-            'rgba(0,0,0,0.04) 32%, ' +
-            'rgba(0,0,0,0.13) 44%, ' +
-            'rgba(0,0,0,0.28) 56%, ' +
-            'rgba(0,0,0,0.48) 68%, ' +
-            'rgba(0,0,0,0.68) 78%, ' +
-            'rgba(0,0,0,0.85) 88%, ' +
-            'rgba(0,0,0,0.95) 95%, ' +
-            '#000 100%)',
+              'transparent 0%, transparent 18%, ' +
+              'rgba(0,0,0,0.04) 32%, rgba(0,0,0,0.13) 44%, ' +
+              'rgba(0,0,0,0.28) 56%, rgba(0,0,0,0.48) 68%, ' +
+              'rgba(0,0,0,0.68) 78%, rgba(0,0,0,0.85) 88%, ' +
+              'rgba(0,0,0,0.95) 95%, #000 100%)',
+            'repeating-linear-gradient(0deg, ' +
+              'transparent 0px, transparent 2px, ' +
+              'rgba(0,0,0,0.32) 2px, rgba(0,0,0,0.32) 3px)',
+          ].join(', '),
         }}
       />
 
-      {/* SVG overlay — restrained pin set. */}
+      {/* SVG overlay — schematic layers (range arcs + Mall axis) under
+          the pin set, so pins read on top. */}
       <svg viewBox="0 0 100 100" className="absolute inset-0 h-full w-full">
+        {/* Operational range arcs from Base of Operations. Three
+            concentric dashed circles centered on the White House,
+            fading outward to imply "signal strength" diminishing with
+            distance. Anchors BoO as the visual gravity center. */}
+        <g fill="none" strokeWidth="0.08" strokeDasharray="0.6 0.5">
+          <circle
+            cx={OVERLAY.baseOfOps.x}
+            cy={OVERLAY.baseOfOps.y}
+            r="6"
+            stroke="rgba(255,140,30,0.22)"
+          />
+          <circle
+            cx={OVERLAY.baseOfOps.x}
+            cy={OVERLAY.baseOfOps.y}
+            r="12"
+            stroke="rgba(255,140,30,0.14)"
+          />
+          <circle
+            cx={OVERLAY.baseOfOps.x}
+            cy={OVERLAY.baseOfOps.y}
+            r="19"
+            stroke="rgba(255,140,30,0.08)"
+          />
+        </g>
+
+        {/* National Mall axis — dashed hairline tracing the Mall's
+            east-west spine from Lincoln to the Capitol. DC's single
+            most recognizable feature, made legible at a glance. */}
+        <line
+          x1={OVERLAY.lincoln.x}
+          y1={OVERLAY.lincoln.y}
+          x2={OVERLAY.capitol.x}
+          y2={OVERLAY.capitol.y}
+          stroke="rgba(255,150,40,0.24)"
+          strokeWidth="0.2"
+          strokeDasharray="0.5 0.7"
+          strokeLinecap="round"
+        />
+
         {LANDMARKS.map((lm) => {
           const { x, y } = project(lm.lon, lm.lat)
           return <Pin key={lm.label} x={x} y={y} label={lm.label} pos={lm.pos} />
@@ -250,18 +268,19 @@ function Pin({ x, y, label, pos }: { x: number; y: number; label: string; pos: L
       />
 
       {/* Pin dot — thin ring + small dim core. No glow, no halo. */}
-      <circle cx={x} cy={y} r={ringR} fill="none" stroke="rgba(255,140,30,0.45)" strokeWidth="0.1" />
+      <circle
+        cx={x}
+        cy={y}
+        r={ringR}
+        fill="none"
+        stroke="rgba(255,140,30,0.45)"
+        strokeWidth="0.1"
+      />
       <circle cx={x} cy={y} r={0.22} fill="rgba(255,160,50,0.7)" />
 
       {/* Card backdrop — solid-ish dark plate. Punches a quiet hole in
           the busy street substrate so the label reads at a glance. */}
-      <rect
-        x={cardX}
-        y={cardY}
-        width={cardW}
-        height={cardH}
-        fill="rgba(0,0,0,0.88)"
-      />
+      <rect x={cardX} y={cardY} width={cardW} height={cardH} fill="rgba(0,0,0,0.88)" />
 
       {/* Label text — warm amber, slightly brighter now that the
           backdrop gives it real contrast to land on. */}
