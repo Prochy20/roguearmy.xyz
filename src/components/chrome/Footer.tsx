@@ -78,7 +78,7 @@ function useSessionInfo() {
   return { sessionHash, elapsed }
 }
 
-export function Footer({ className }: { className?: string }) {
+export function Footer({ tagline, className }: { tagline: string; className?: string }) {
   const year = new Date().getFullYear()
   const { sessionHash, elapsed } = useSessionInfo()
 
@@ -153,8 +153,7 @@ export function Footer({ className }: { className?: string }) {
               <span className="text-rga-green text-glow-green">.</span>
             </div>
             <p className="font-body text-[13px] text-text-secondary mt-4 max-w-[440px] leading-relaxed">
-              Casual gaming community for adults 25+. 200 operators, six active
-              squads, one Discord that refuses to die quietly.
+              {tagline}
             </p>
           </div>
 

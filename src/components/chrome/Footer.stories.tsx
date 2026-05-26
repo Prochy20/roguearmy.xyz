@@ -10,9 +10,13 @@ const meta = {
     docs: {
       description: {
         component:
-          'Site footer with terminal-style navigation. Includes a live session-time tracker (advances client-side after hydration).',
+          'Site footer with terminal-style navigation. Includes a live session-time tracker (advances client-side after hydration). The tagline string is composed server-side from the SiteChrome global and the live Discord member count.',
       },
     },
+  },
+  args: {
+    tagline:
+      'Casual gaming community for adults 25+. 247+ operators on the one server that feels like home.',
   },
 } satisfies Meta<typeof Footer>
 
@@ -26,5 +30,12 @@ export const Default: Story = {
       const discord = canvas.getAllByRole('link').find((a) => a.getAttribute('href')?.includes('dc.roguearmy.xyz'))
       await expect(discord).toBeTruthy()
     })
+  },
+}
+
+export const AshleyDown: Story = {
+  args: {
+    tagline:
+      'Casual gaming community for adults 25+. The one server that feels like home.',
   },
 }
