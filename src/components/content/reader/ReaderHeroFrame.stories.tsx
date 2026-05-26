@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
+import { expect, within } from 'storybook/test'
 import { ReaderHeroFrame } from './ReaderHeroFrame'
 import type { AccentName } from './accent'
 
@@ -39,6 +40,25 @@ export const ArticleHero: Story = {
     kindLabel: 'BUILDS',
     periodLabel: 'MAY 20',
     bylineLabel: undefined,
+  },
+}
+
+/**
+ * Thumbnail URL is null OR the remote image failed to load. The interior
+ * swaps to the shared NoSignalPanel; corner ticks + film-strip metadata
+ * stay intact. Use the `accent` control to switch palettes.
+ */
+export const NoSignal: Story = {
+  args: {
+    thumbnailUrl: null,
+    fileNumber: 'IMG_7B2B',
+  },
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement)
+    await step('Hero renders NO SIGNAL marker and OFFLINE telemetry', async () => {
+      await expect(canvas.getByText('NO SIGNAL')).toBeInTheDocument()
+      await expect(canvas.getByText('OFFLINE')).toBeInTheDocument()
+    })
   },
 }
 

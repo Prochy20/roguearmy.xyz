@@ -1,15 +1,20 @@
 import { ACCENT_TOKENS, type AccentName } from './accent'
+import { ReaderHeroImage } from './ReaderHeroImage'
 
 interface ReaderHeroFrameProps {
   accent: AccentName
-  /** Always non-null at this layer — caller hides the whole block when missing. */
-  thumbnailUrl: string
+  /** Remote image URL. Nullable — when missing OR the load fails at runtime,
+   *  the frame renders a tactical NoSignalPanel placeholder in place of the
+   *  image, preserving the corner ticks + film-strip metadata. */
+  thumbnailUrl: string | null | undefined
   /** Short label rendered in the top-left documentary plate (e.g. WEEKLY, DAILY, ARTICLE). */
   kindLabel: string
   /** Pre-formatted period / publish date — e.g. "WEEK OF MAY 19" or "MAY 19 · TUE". */
   periodLabel: string
   /** Optional right-side byline label (e.g. "// AI · ASHLEY"). Hidden when omitted. */
   bylineLabel?: string
+  /** Optional filename stamp used by the NoSignal placeholder (e.g. `IMG_7B2B`). */
+  fileNumber?: string
 }
 
 /**
@@ -30,6 +35,7 @@ export function ReaderHeroFrame({
   kindLabel,
   periodLabel,
   bylineLabel,
+  fileNumber,
 }: ReaderHeroFrameProps) {
   const a = ACCENT_TOKENS[accent]
 
@@ -48,17 +54,12 @@ export function ReaderHeroFrame({
           background: a.radialGlow,
         }}
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        {/* Image + vignette OR NoSignalPanel — a client child owns the
+            onError state so the rest of the frame stays server-rendered. */}
+        <ReaderHeroImage
           src={thumbnailUrl}
-          alt=""
-          className="absolute inset-0 h-full w-full object-cover opacity-95"
-        />
-
-        {/* Vignette to ground the metadata bar against bright images */}
-        <div
-          aria-hidden
-          className="absolute inset-0 bg-linear-to-t from-void/85 via-void/10 to-transparent"
+          accent={accent}
+          fileNumber={fileNumber}
         />
 
         {/* Top-left documentary plate */}
