@@ -90,17 +90,18 @@ export function Footer({ tagline, className }: { tagline: string; className?: st
         className
       )}
     >
-      {/* Glitch separator line */}
-      <div className="relative h-4 w-full" aria-hidden="true">
-        <div
-          className="absolute top-1/2 left-0 right-0 h-px -translate-y-1/2"
-          style={{
-            background:
-              "linear-gradient(90deg, transparent 0%, rgba(0,255,65,0.4) 20%, rgba(0,255,255,0.3) 50%, rgba(0,255,65,0.4) 80%, transparent 100%)",
-            boxShadow: "0 0 20px rgba(0,255,65,0.2)",
-          }}
-        />
-      </div>
+      {/* Glitch separator line — the wrapping div has no height so the 1px
+          line sits flush at the footer's top edge instead of introducing a
+          16px vertical buffer between the previous section and the line. */}
+      <div
+        className="h-px w-full"
+        aria-hidden="true"
+        style={{
+          background:
+            "linear-gradient(90deg, transparent 0%, rgba(0,255,65,0.4) 20%, rgba(0,255,255,0.3) 50%, rgba(0,255,65,0.4) 80%, transparent 100%)",
+          boxShadow: "0 0 20px rgba(0,255,65,0.2)",
+        }}
+      />
 
       {/* Scanlines */}
       <div
