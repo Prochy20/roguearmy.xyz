@@ -64,11 +64,25 @@ export function BriefingsPage({
       >
         <div
           aria-hidden
-          className="rga-scanner-hover-zone pointer-events-auto absolute top-16 -right-[300px] hidden aspect-square w-[600px] rounded-full lg:block xl:top-20 xl:-right-[380px] xl:w-[760px] 2xl:top-24 2xl:-right-[460px] 2xl:w-[920px]"
+          className="rga-scanner-hover-zone pointer-events-auto absolute top-2 -right-[300px] hidden aspect-square w-[600px] rounded-full lg:block xl:top-4 xl:-right-[380px] xl:w-[760px] 2xl:top-6 2xl:-right-[460px] 2xl:w-[920px]"
         />
 
         <WashingtonMap
-          className="absolute top-16 -right-[300px] transition-transform duration-500 ease-out xl:top-20 xl:-right-[380px] 2xl:top-24 2xl:-right-[460px] motion-safe:[section:has(.rga-scanner-hover-zone:hover)_&]:translate-x-[calc(-1*var(--scanner-shove))]"
+          className="absolute top-2 -right-[300px] transition-transform duration-500 ease-out will-change-transform xl:top-4 xl:-right-[380px] 2xl:top-6 2xl:-right-[460px] motion-safe:[section:has(.rga-scanner-hover-zone:hover)_&]:translate-x-[calc(-1*var(--scanner-shove))]"
+        />
+
+        {/* Bottom edge fade — anchored to the section's bottom, NOT the
+            map's, so it dissolves the map's lower edge into page-bg at
+            every breakpoint. (The map's own radial fade hits #000 at
+            its container's y=100%, but the section clips the map well
+            before that — leaving a visible hard edge without this.) */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-44 hidden lg:block"
+          style={{
+            background:
+              'linear-gradient(to top, #000 0%, rgba(0,0,0,0.92) 22%, rgba(0,0,0,0.72) 45%, rgba(0,0,0,0.4) 70%, transparent 100%)',
+          }}
         />
 
         <div className="relative mx-auto flex w-full max-w-[1480px] flex-col gap-7 sm:gap-9">
