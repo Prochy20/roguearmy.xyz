@@ -69,17 +69,17 @@ export interface Config {
   collections: {
     articles: Article;
     series: Series;
+    'staff-profiles': StaffProfile;
+    'division2-clans': Division2Clan;
     games: Game;
     'game-roles': GameRole;
     topics: Topic;
     'content-types': ContentType;
-    'staff-profiles': StaffProfile;
-    'division2-clans': Division2Clan;
+    members: Member;
+    bookmarks: Bookmark;
+    'read-progress': ReadProgress;
     media: Media;
     users: User;
-    members: Member;
-    'read-progress': ReadProgress;
-    bookmarks: Bookmark;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -89,17 +89,17 @@ export interface Config {
   collectionsSelect: {
     articles: ArticlesSelect<false> | ArticlesSelect<true>;
     series: SeriesSelect<false> | SeriesSelect<true>;
+    'staff-profiles': StaffProfilesSelect<false> | StaffProfilesSelect<true>;
+    'division2-clans': Division2ClansSelect<false> | Division2ClansSelect<true>;
     games: GamesSelect<false> | GamesSelect<true>;
     'game-roles': GameRolesSelect<false> | GameRolesSelect<true>;
     topics: TopicsSelect<false> | TopicsSelect<true>;
     'content-types': ContentTypesSelect<false> | ContentTypesSelect<true>;
-    'staff-profiles': StaffProfilesSelect<false> | StaffProfilesSelect<true>;
-    'division2-clans': Division2ClansSelect<false> | Division2ClansSelect<true>;
+    members: MembersSelect<false> | MembersSelect<true>;
+    bookmarks: BookmarksSelect<false> | BookmarksSelect<true>;
+    'read-progress': ReadProgressSelect<false> | ReadProgressSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
-    members: MembersSelect<false> | MembersSelect<true>;
-    'read-progress': ReadProgressSelect<false> | ReadProgressSelect<true>;
-    bookmarks: BookmarksSelect<false> | BookmarksSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -317,34 +317,6 @@ export interface Series {
   createdAt: string;
 }
 /**
- * Pair Discord roles with games. Members holding any paired role count as playing that game.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "game-roles".
- */
-export interface GameRole {
-  id: string;
-  displayName?: string | null;
-  /**
-   * One GameRoles entry per game.
-   */
-  game: string | Game;
-  /**
-   * Discord roles paired with this game. Snapshot of {id, name, color} taken at save.
-   */
-  roles:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
  * Operatives shown on /community/staff. Order ascending.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -473,28 +445,32 @@ export interface Division2Clan {
   createdAt: string;
 }
 /**
+ * Pair Discord roles with games. Members holding any paired role count as playing that game.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users".
+ * via the `definition` "game-roles".
  */
-export interface User {
+export interface GameRole {
   id: string;
+  displayName?: string | null;
+  /**
+   * One GameRoles entry per game.
+   */
+  game: string | Game;
+  /**
+   * Discord roles paired with this game. Snapshot of {id, name, color} taken at save.
+   */
+  roles:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   updatedAt: string;
   createdAt: string;
-  email: string;
-  resetPasswordToken?: string | null;
-  resetPasswordExpiration?: string | null;
-  salt?: string | null;
-  hash?: string | null;
-  loginAttempts?: number | null;
-  lockUntil?: string | null;
-  sessions?:
-    | {
-        id: string;
-        createdAt?: string | null;
-        expiresAt: string;
-      }[]
-    | null;
-  password?: string | null;
 }
 /**
  * Discord members who have authenticated via OAuth
@@ -585,6 +561,19 @@ export interface Member {
   createdAt: string;
 }
 /**
+ * Member bookmarked articles
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "bookmarks".
+ */
+export interface Bookmark {
+  id: string;
+  member: string | Member;
+  article: string | Article;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * Tracks article reading progress for members
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -618,17 +607,28 @@ export interface ReadProgress {
   createdAt: string;
 }
 /**
- * Member bookmarked articles
- *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "bookmarks".
+ * via the `definition` "users".
  */
-export interface Bookmark {
+export interface User {
   id: string;
-  member: string | Member;
-  article: string | Article;
   updatedAt: string;
   createdAt: string;
+  email: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
+  password?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -663,6 +663,14 @@ export interface PayloadLockedDocument {
         value: string | Series;
       } | null)
     | ({
+        relationTo: 'staff-profiles';
+        value: string | StaffProfile;
+      } | null)
+    | ({
+        relationTo: 'division2-clans';
+        value: string | Division2Clan;
+      } | null)
+    | ({
         relationTo: 'games';
         value: string | Game;
       } | null)
@@ -679,12 +687,16 @@ export interface PayloadLockedDocument {
         value: string | ContentType;
       } | null)
     | ({
-        relationTo: 'staff-profiles';
-        value: string | StaffProfile;
+        relationTo: 'members';
+        value: string | Member;
       } | null)
     | ({
-        relationTo: 'division2-clans';
-        value: string | Division2Clan;
+        relationTo: 'bookmarks';
+        value: string | Bookmark;
+      } | null)
+    | ({
+        relationTo: 'read-progress';
+        value: string | ReadProgress;
       } | null)
     | ({
         relationTo: 'media';
@@ -693,18 +705,6 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'users';
         value: string | User;
-      } | null)
-    | ({
-        relationTo: 'members';
-        value: string | Member;
-      } | null)
-    | ({
-        relationTo: 'read-progress';
-        value: string | ReadProgress;
-      } | null)
-    | ({
-        relationTo: 'bookmarks';
-        value: string | Bookmark;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -800,6 +800,45 @@ export interface SeriesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "staff-profiles_select".
+ */
+export interface StaffProfilesSelect<T extends boolean = true> {
+  discordId?: T;
+  roleTitle?: T;
+  bio?: T;
+  isPublic?: T;
+  accent?: T;
+  order?: T;
+  cached_username?: T;
+  cached_displayName?: T;
+  cached_avatarUrl?: T;
+  cached_joinedAt?: T;
+  cached_accountCreatedAt?: T;
+  cached_at?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "division2-clans_select".
+ */
+export interface Division2ClansSelect<T extends boolean = true> {
+  name?: T;
+  tag?: T;
+  banner?: T;
+  accent?: T;
+  order?: T;
+  isPublished?: T;
+  leaderDiscordId?: T;
+  cached_leaderUsername?: T;
+  cached_leaderDisplayName?: T;
+  cached_leaderAvatarUrl?: T;
+  cached_leaderAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "games_select".
  */
 export interface GamesSelect<T extends boolean = true> {
@@ -845,40 +884,52 @@ export interface ContentTypesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "staff-profiles_select".
+ * via the `definition` "members_select".
  */
-export interface StaffProfilesSelect<T extends boolean = true> {
+export interface MembersSelect<T extends boolean = true> {
   discordId?: T;
-  roleTitle?: T;
-  bio?: T;
-  isPublic?: T;
-  accent?: T;
-  order?: T;
-  cached_username?: T;
-  cached_displayName?: T;
-  cached_avatarUrl?: T;
-  cached_joinedAt?: T;
-  cached_accountCreatedAt?: T;
-  cached_at?: T;
+  username?: T;
+  globalName?: T;
+  avatar?: T;
+  email?: T;
+  guildMember?:
+    | T
+    | {
+        nickname?: T;
+        roles?: T;
+        symbolicRoles?: T;
+        rolesSyncedAt?: T;
+        rolesSyncFailedAt?: T;
+        joinedDiscordAt?: T;
+      };
+  joinedAt?: T;
+  lastLogin?: T;
+  status?: T;
   updatedAt?: T;
   createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "division2-clans_select".
+ * via the `definition` "bookmarks_select".
  */
-export interface Division2ClansSelect<T extends boolean = true> {
-  name?: T;
-  tag?: T;
-  banner?: T;
-  accent?: T;
-  order?: T;
-  isPublished?: T;
-  leaderDiscordId?: T;
-  cached_leaderUsername?: T;
-  cached_leaderDisplayName?: T;
-  cached_leaderAvatarUrl?: T;
-  cached_leaderAt?: T;
+export interface BookmarksSelect<T extends boolean = true> {
+  member?: T;
+  article?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "read-progress_select".
+ */
+export interface ReadProgressSelect<T extends boolean = true> {
+  member?: T;
+  article?: T;
+  progress?: T;
+  firstVisitedAt?: T;
+  lastVisitedAt?: T;
+  timeSpent?: T;
+  completed?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -921,57 +972,6 @@ export interface UsersSelect<T extends boolean = true> {
         createdAt?: T;
         expiresAt?: T;
       };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "members_select".
- */
-export interface MembersSelect<T extends boolean = true> {
-  discordId?: T;
-  username?: T;
-  globalName?: T;
-  avatar?: T;
-  email?: T;
-  guildMember?:
-    | T
-    | {
-        nickname?: T;
-        roles?: T;
-        symbolicRoles?: T;
-        rolesSyncedAt?: T;
-        rolesSyncFailedAt?: T;
-        joinedDiscordAt?: T;
-      };
-  joinedAt?: T;
-  lastLogin?: T;
-  status?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "read-progress_select".
- */
-export interface ReadProgressSelect<T extends boolean = true> {
-  member?: T;
-  article?: T;
-  progress?: T;
-  firstVisitedAt?: T;
-  lastVisitedAt?: T;
-  timeSpent?: T;
-  completed?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "bookmarks_select".
- */
-export interface BookmarksSelect<T extends boolean = true> {
-  member?: T;
-  article?: T;
-  updatedAt?: T;
-  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
