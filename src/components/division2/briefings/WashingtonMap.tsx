@@ -35,8 +35,6 @@ function project(lon: number, lat: number): { x: number; y: number } {
   return { x: +x.toFixed(2), y: +y.toFixed(2) }
 }
 
-// Precomputed positions for the schematic overlay layers (arcs + Mall
-// axis). Recomputed automatically when MAP constants change.
 const OVERLAY = {
   baseOfOps: project(-77.0365, 38.8977),
   lincoln: project(-77.0502, 38.8893),
@@ -46,9 +44,6 @@ const OVERLAY = {
 function buildMapboxUrl(): string | null {
   const token = process.env.MAPBOX_TOKEN
   if (!token) return null
-  // No `@2x` suffix: the map is heavily dimmed (opacity-50 + grayscale +
-  // scanline dithering), so retina pixel-density is invisible — and the
-  // 1x variant is ~4x lighter on bytes, meaningfully faster on first paint.
   return (
     `https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/` +
     `${MAP.centerLon},${MAP.centerLat},${MAP.zoom},0/` +
@@ -65,36 +60,21 @@ interface Landmark {
   pos: LabelPos
 }
 
-// Label positions chosen so every card lands inside the visible half
-// (container x≈0-50%). Anything pointing 'right' from an east-side pin
-// would clip past the viewport edge — so eastern pins point 'left' or
-// 'below', and only western pins (Pentagon, Roosevelt) point 'right'.
 const LANDMARKS: ReadonlyArray<Landmark> = [
-  // White House — Base of Operations (player safe house). Card sits
-  // BELOW the pin so the dot itself anchors at the actual building
-  // location and the label reads beneath it.
   { lon: -77.0365, lat: 38.8977, label: 'BASE OF OPS', pos: 'below' },
-  // U.S. Capitol — Capitol Stronghold. Shortened to fit the layout;
-  // gamers will recognize the location from the pin. Label points 'left'
-  // because the pin sits at x≈48% — a 'right' or 'below'-centered card
-  // would clip past the visible viewport edge at x=50%.
+
   { lon: -77.0091, lat: 38.8899, label: 'CAPITOL', pos: 'left' },
-  // Capital One Arena — District Union Arena (early stronghold).
+
   { lon: -77.021, lat: 38.8985, label: 'DISTRICT UNION', pos: 'above' },
-  // Lincoln Memorial — open-world POI. Flipped to 'left' so the card
-  // doesn't collide with BASE OF OPS now sitting 'below' just NE.
+
   { lon: -77.0502, lat: 38.8893, label: 'LINCOLN', pos: 'left' },
-  // Jefferson Memorial — Tidal Basin raid.
+
   { lon: -77.0365, lat: 38.8814, label: 'TIDAL BASIN', pos: 'left' },
-  // Pentagon — DLC area. Westernmost pin in the lower band, so the
-  // label points into the map (right) rather than off-canvas.
+
   { lon: -77.0563, lat: 38.8719, label: 'PENTAGON', pos: 'right' },
-  // Roosevelt Island — Dark Zone. Westernmost pin; label points 'above'
-  // so it sits in a different y-row than BASE OF OPS just east. (Either
-  // 'left' or 'below' here causes the two cards to read as one continuous
-  // strip with a pin punctuation in the middle.)
+
   { lon: -77.0625, lat: 38.897, label: 'ROOSEVELT', pos: 'above' },
-  // The Wharf — open-world zone.
+
   { lon: -77.022, lat: 38.876, label: 'THE WHARF', pos: 'below' },
 ]
 
@@ -108,12 +88,6 @@ export function WashingtonMap({ className }: WashingtonMapProps) {
         className,
       )}
     >
-      {/* Monochrome base. `streets-v12` inverted + grayscaled gives stark
-          white-on-black with dense street typography. The `saturate(0)`
-          belt-and-suspenders with `grayscale(1)` to kill any color
-          contamination from streets-v12's more saturated palette.
-          `opacity-50` dims the streets layer only — the SVG overlay is a
-          sibling, so the orange pin/label chrome stays at full strength. */}
       <div
         className="absolute inset-0 bg-cover bg-center opacity-50"
         style={{
@@ -122,10 +96,6 @@ export function WashingtonMap({ className }: WashingtonMapProps) {
         }}
       />
 
-      {/* Edge fade + scanlines collapsed into a single div with two
-          background layers. First listed = top of the layer stack
-          (radial fade), second = below it (scanlines). Saves one
-          compositing layer vs. two stacked divs. */}
       <div
         className="absolute inset-0"
         style={{
@@ -143,13 +113,7 @@ export function WashingtonMap({ className }: WashingtonMapProps) {
         }}
       />
 
-      {/* SVG overlay — schematic layers (range arcs + Mall axis) under
-          the pin set, so pins read on top. */}
       <svg viewBox="0 0 100 100" className="absolute inset-0 h-full w-full">
-        {/* Operational range arcs from Base of Operations. Three
-            concentric dashed circles centered on the White House,
-            fading outward to imply "signal strength" diminishing with
-            distance. Anchors BoO as the visual gravity center. */}
         <g fill="none" strokeWidth="0.08" strokeDasharray="0.6 0.5">
           <circle
             cx={OVERLAY.baseOfOps.x}
@@ -171,9 +135,6 @@ export function WashingtonMap({ className }: WashingtonMapProps) {
           />
         </g>
 
-        {/* National Mall axis — dashed hairline tracing the Mall's
-            east-west spine from Lincoln to the Capitol. DC's single
-            most recognizable feature, made legible at a glance. */}
         <line
           x1={OVERLAY.lincoln.x}
           y1={OVERLAY.lincoln.y}
@@ -194,20 +155,6 @@ export function WashingtonMap({ className }: WashingtonMapProps) {
   )
 }
 
-/**
- * A landmark pin — outlined ring + filled core + a tactical card label.
- *
- * Anatomy:
- *   - Inner core dot + outer hairline ring (single accent: rga-mod orange)
- *   - Short leader line from the ring edge outward toward the label
- *   - Dark backdrop card sized via mono char-width approximation
- *   - Hairline orange under-rule on the card (the only chrome)
- *   - Label text on top — no heavy halo; card handles legibility
- *
- * Mono-width math: monospace chars are ~0.6em wide. We approximate the
- * label box from `label.length` so the card sits accurately around the
- * text without needing a layout pass.
- */
 function Pin({ x, y, label, pos }: { x: number; y: number; label: string; pos: LabelPos }) {
   const fontSize = 1.4
   const letterSpacing = 0.22
@@ -248,15 +195,11 @@ function Pin({ x, y, label, pos }: { x: number; y: number; label: string; pos: L
   const cardY =
     dir.dy > 0 ? leaderEnd.y : dir.dy < 0 ? leaderEnd.y - cardH : leaderEnd.y - cardH / 2
 
-  // Text sits in the card with its baseline centered. textAnchor='start'
-  // keeps letter-spacing stable across labels (no end-of-run drift).
   const textX = cardX + padX
   const textY = cardY + cardH / 2
 
   return (
     <g>
-      {/* Leader line — barely-there hairline. Just enough to tie the
-          card to the pin without competing with the rest of the hero. */}
       <line
         x1={leaderStart.x}
         y1={leaderStart.y}
