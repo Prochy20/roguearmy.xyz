@@ -135,7 +135,7 @@ export function BriefingDetailPage({
   )
 
   const body = (
-    <div className="flex flex-col gap-8 sm:gap-10">
+    <div className="briefing-locked-body flex flex-col gap-8 sm:gap-10">
       <ReaderDocStrip
         accent={accent}
         fields={[

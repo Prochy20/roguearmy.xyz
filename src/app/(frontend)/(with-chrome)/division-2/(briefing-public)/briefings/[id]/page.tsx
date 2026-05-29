@@ -1,9 +1,13 @@
+import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { EmptyDossier } from '@/components/division2/EmptyDossier'
 import { FailRow } from '@/components/ui/FailRow'
 import { BriefingDetailPage } from '@/components/division2/briefings/BriefingDetailPage'
+import { BriefingTeaserView } from '@/components/division2/briefings/BriefingTeaserView'
 import { getMemberAuth } from '@/lib/auth/session.server'
+import { checkRoleGate } from '@/lib/auth/roleGate'
 import { hasBriefingsAccess } from '@/lib/auth/badges'
+import { formatDayShort } from '@/lib/division2/format'
 import {
   buildBriefingDesignator,
   countMarkdownWords,
@@ -26,21 +30,61 @@ import {
 // read inside `getMemberAuth()` each opt this route out of static
 // prerendering. Data freshness comes from the `unstable_cache` TTL on
 // `fetchBriefingById`, not the route-level dynamic mode.
+//
+// This page lives outside the `(gated)` route group so anonymous visitors
+// can land on a shareable preview (`BriefingTeaserView`) and receive proper
+// OG/JSON-LD metadata. All auth states resolve inside this file — the
+// previous layout-level gate no longer covers this route.
+
+const siteUrl = 'https://roguearmy.xyz'
 
 interface PageProps {
   params: Promise<{ id: string }>
   searchParams: Promise<{ as?: string }>
 }
 
-export async function generateMetadata({ params }: PageProps) {
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params
   const result = await fetchBriefingById(id)
   if (!result.ok || !result.data) {
     return { title: 'Briefing | Division 2 · Rogue Army' }
   }
+  const briefing = result.data
+  const canonicalPath = `/division-2/briefings/${id}`
+  const hasThumb = Boolean(briefing.thumbnailUrl)
+  const imageUrl = briefing.thumbnailUrl ?? '/images/banner.jpg'
+  // YouTube thumbnails are 1280×720; the site banner fallback is 960×540.
+  // Declare the true dimensions so unfurlers reserve correct space.
+  const imageWidth = hasThumb ? 1280 : 960
+  const imageHeight = hasThumb ? 720 : 540
+
   return {
-    title: `${result.data.title} | Division 2 · Rogue Army`,
-    description: result.data.perex,
+    title: `${briefing.title} | Division 2 · Rogue Army`,
+    description: briefing.perex,
+    alternates: { canonical: canonicalPath },
+    openGraph: {
+      type: 'article',
+      url: canonicalPath,
+      siteName: 'Rogue Army',
+      title: briefing.title,
+      description: briefing.perex,
+      publishedTime: briefing.periodEnd,
+      modifiedTime: briefing.updatedAt,
+      images: [
+        {
+          url: imageUrl,
+          width: imageWidth,
+          height: imageHeight,
+          alt: briefing.title,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: briefing.title,
+      description: briefing.perex,
+      images: [imageUrl],
+    },
   }
 }
 
@@ -71,6 +115,90 @@ export default async function Division2BriefingDetailPage({
   if (!briefingResult.data) notFound()
 
   const briefing = briefingResult.data
+  const designator = buildBriefingDesignator(briefing)
+  const periodLabel = formatPeriodLabel(briefing)
+  const dateLabel = formatDateLabel(briefing)
+  const wordCount = countMarkdownWords(briefing.content)
+  const readMinutes = Math.max(1, Math.floor(wordCount / 200))
+
+  // JSON-LD is rendered for every viewer — describes the URL, not the
+  // session. Paywall declaration tells crawlers the body is gated; the
+  // `.briefing-locked-body` selector resolves in both the teaser and the
+  // full detail page (the class was added to BriefingDetailPage for parity).
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: briefing.title,
+    description: briefing.perex,
+    image: [briefing.thumbnailUrl ?? `${siteUrl}/images/banner.jpg`],
+    datePublished: briefing.periodEnd,
+    dateModified: briefing.updatedAt,
+    author: { '@id': `${siteUrl}/#organization` },
+    publisher: { '@id': `${siteUrl}/#organization` },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `${siteUrl}/division-2/briefings/${id}`,
+    },
+    isAccessibleForFree: false,
+    hasPart: {
+      '@type': 'WebPageElement',
+      isAccessibleForFree: false,
+      cssSelector: '.briefing-locked-body',
+    },
+  }
+
+  const jsonLdTag = (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{
+        __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c'),
+      }}
+    />
+  )
+
+  // Anonymous: shareable hero-only preview with magenta auth CTA. Skip the
+  // recent/weekly fetches — they're only needed for the full reader chrome.
+  if (!auth.authenticated) {
+    return (
+      <>
+        {jsonLdTag}
+        <BriefingTeaserView
+          briefing={briefing}
+          designator={designator}
+          periodLabel={periodLabel}
+          dateLabel={dateLabel}
+          readMinutes={readMinutes}
+        />
+      </>
+    )
+  }
+
+  // Logged-in tiers: previously handled by `(gated)/layout.tsx`. Since this
+  // page now sits outside that layout, resolve the gate state here so the
+  // FEATURE_PENDING / ROLE_REQUIRED dossiers still render for non-allowed
+  // members.
+  const gate = await checkRoleGate('division2Role')
+  if (gate.state === 'unconfigured') {
+    return (
+      <>
+        {jsonLdTag}
+        <FailWrapper>
+          <EmptyDossier kind="FEATURE_PENDING" />
+        </FailWrapper>
+      </>
+    )
+  }
+  if (gate.state === 'denied') {
+    return (
+      <>
+        {jsonLdTag}
+        <FailWrapper>
+          <EmptyDossier kind="ROLE_REQUIRED" />
+        </FailWrapper>
+      </>
+    )
+  }
+
   const hasAccess = hasBriefingsAccess(auth.symbolicRoles, {
     devOverride: isPreviewingAsMember ? 'member' : null,
   })
@@ -78,16 +206,16 @@ export default async function Division2BriefingDetailPage({
   // Gate: non-boosters never read daily briefings via direct URL.
   if (briefing.frequency === 'daily' && !hasAccess) {
     return (
-      <FailWrapper>
-        <EmptyDossier kind="BOOSTER_REQUIRED" />
-      </FailWrapper>
+      <>
+        {jsonLdTag}
+        <FailWrapper>
+          <EmptyDossier kind="BOOSTER_REQUIRED" />
+        </FailWrapper>
+      </>
     )
   }
 
   const { transformed, sections } = transformBriefingBody(briefing)
-  const wordCount = countMarkdownWords(briefing.content)
-  const readMinutes = Math.max(1, Math.floor(wordCount / 200))
-  const designator = buildBriefingDesignator(briefing)
   // Daily briefings are booster-gated. Weekly are public. The MEMBERS ONLY tag
   // mirrors the same boolean that powered the gate above.
   const isMembersOnly = briefing.frequency === 'daily'
@@ -97,7 +225,9 @@ export default async function Division2BriefingDetailPage({
     fetchWeeklyBriefings({ limit: 20 }),
   ])
 
-  const neighbors = recent.ok ? findNeighbors(recent.data, briefing, hasAccess) : { prev: null, next: null }
+  const neighbors = recent.ok
+    ? findNeighbors(recent.data, briefing, hasAccess)
+    : { prev: null, next: null }
   const weekPeriodStart = resolveWeekPeriodStart(
     briefing,
     weeklies.ok ? weeklies.data.items : [],
@@ -107,19 +237,22 @@ export default async function Division2BriefingDetailPage({
     : []
 
   return (
-    <BriefingDetailPage
-      briefing={briefing}
-      transformedContent={transformed}
-      sections={sections}
-      designator={designator}
-      wordCount={wordCount}
-      readMinutes={readMinutes}
-      isMembersOnly={isMembersOnly}
-      weekPeriodStart={weekPeriodStart}
-      prev={neighbors.prev}
-      next={neighbors.next}
-      related={related}
-    />
+    <>
+      {jsonLdTag}
+      <BriefingDetailPage
+        briefing={briefing}
+        transformedContent={transformed}
+        sections={sections}
+        designator={designator}
+        wordCount={wordCount}
+        readMinutes={readMinutes}
+        isMembersOnly={isMembersOnly}
+        weekPeriodStart={weekPeriodStart}
+        prev={neighbors.prev}
+        next={neighbors.next}
+        related={related}
+      />
+    </>
   )
 }
 
@@ -228,4 +361,26 @@ function resolveWeekPeriodStart(briefing: Briefing, weeklies: Briefing[]): strin
       w.periodStart <= briefing.periodStart && briefing.periodStart <= w.periodEnd,
   )
   return containing?.periodStart ?? briefing.periodStart
+}
+
+/**
+ * Format the period for the hero metadata strip (compact form).
+ * Weekly → "MAY 19 → MAY 25". Daily → "MAY 19".
+ */
+function formatPeriodLabel(briefing: Briefing): string {
+  if (briefing.frequency === 'weekly') {
+    return `${formatDayShort(briefing.periodStart)} → ${formatDayShort(briefing.periodEnd)}`
+  }
+  return formatDayShort(briefing.periodStart)
+}
+
+/**
+ * Format the date for the byline row (more readable than the period strip).
+ * Weekly → "WEEK OF MAY 19". Daily → "MAY 19".
+ */
+function formatDateLabel(briefing: Briefing): string {
+  if (briefing.frequency === 'weekly') {
+    return `WEEK OF ${formatDayShort(briefing.periodStart)}`
+  }
+  return formatDayShort(briefing.periodStart)
 }
