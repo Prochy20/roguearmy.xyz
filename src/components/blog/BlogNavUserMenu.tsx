@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { ChevronDown, ExternalLink } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { UserAvatar } from '@/components/auth/UserAvatar'
+import { useAuth } from '@/components/auth/AuthProvider'
 import { useBlogAuth } from '@/contexts/BlogAuthContext'
 import {
   DropdownMenu,
@@ -16,6 +17,7 @@ import {
 
 export function BlogNavUserMenu() {
   const { member } = useBlogAuth()
+  const { logout } = useAuth()
 
   if (!member) {
     return null
@@ -110,14 +112,15 @@ export function BlogNavUserMenu() {
 
         <DropdownMenuSeparator className="bg-rga-green/10" />
 
-        {/* Logout */}
-        <DropdownMenuItem asChild>
-          <Link
-            href="/auth/logout"
-            className="px-4 py-2 text-sm text-red-400 hover:text-red-300 cursor-pointer"
-          >
-            Logout
-          </Link>
+        {/* Logout — POSTs via AuthProvider.logout, never a GET. */}
+        <DropdownMenuItem
+          onSelect={(event) => {
+            event.preventDefault()
+            void logout()
+          }}
+          className="px-4 py-2 text-sm text-red-400 hover:text-red-300 cursor-pointer"
+        >
+          Logout
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
