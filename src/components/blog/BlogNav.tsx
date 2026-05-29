@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { motion } from 'motion/react'
 import { BlogNavLinks } from './BlogNavLinks'
 import { BlogNavSearch } from './BlogNavSearch'
@@ -10,14 +11,13 @@ import { BlogNavMenuTrigger } from './BlogNavMenuTrigger'
 import { useScrollVisibility } from './useScrollVisibility'
 import { useBlogAuth } from '@/contexts/BlogAuthContext'
 
-interface BlogNavProps {
-  /** Enable hide-on-scroll behavior (for article detail pages) */
-  hideOnScroll?: boolean
-  /** Whether the user is authenticated */
-  isAuthenticated?: boolean
-}
+// Hide-on-scroll is only enabled on article detail pages (`/blog/:topic/:slug`).
+// List pages keep the nav permanently sticky.
+const ARTICLE_DETAIL_REGEX = /^\/blog\/[^/]+\/[^/]+$/
 
-export function BlogNav({ hideOnScroll = false }: BlogNavProps) {
+export function BlogNav() {
+  const pathname = usePathname()
+  const hideOnScroll = ARTICLE_DETAIL_REGEX.test(pathname)
   const isVisible = useScrollVisibility({ enabled: hideOnScroll })
   const { isAuthenticated } = useBlogAuth()
 
