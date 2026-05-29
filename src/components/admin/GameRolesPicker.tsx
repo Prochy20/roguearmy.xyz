@@ -33,7 +33,7 @@ function failureMessage(code: string): string {
 
 export const GameRolesPicker: JSONFieldClientComponent = ({ path, field }) => {
   const { value, setValue } = useField<RoleSnapshot[]>({ path })
-  const selected: RoleSnapshot[] = Array.isArray(value) ? value : []
+  const selected = useMemo<RoleSnapshot[]>(() => (Array.isArray(value) ? value : []), [value])
 
   const [liveRoles, setLiveRoles] = useState<DiscordRole[] | null>(null)
   const [loading, setLoading] = useState(true)

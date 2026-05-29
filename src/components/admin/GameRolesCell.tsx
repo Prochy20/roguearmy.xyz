@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { DefaultCellComponentProps } from 'payload'
 import type { components } from '@/lib/api/schema'
 
@@ -32,7 +32,10 @@ function getLiveRoleIds(): Promise<Set<string> | null> {
 }
 
 export const GameRolesCell: React.FC<DefaultCellComponentProps> = ({ cellData }) => {
-  const roles: RoleSnapshot[] = Array.isArray(cellData) ? (cellData as RoleSnapshot[]) : []
+  const roles = useMemo<RoleSnapshot[]>(
+    () => (Array.isArray(cellData) ? (cellData as RoleSnapshot[]) : []),
+    [cellData],
+  )
   const [missingCount, setMissingCount] = useState<number | null>(null)
   const [liveAvailable, setLiveAvailable] = useState<boolean>(true)
 
