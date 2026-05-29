@@ -46,12 +46,6 @@ export function ErrorPage({
   // Default showRetryButton to true if reset is provided
   const shouldShowRetry = showRetryButton ?? !!reset
 
-  const colorGradients = {
-    red: "from-red-500/20 via-transparent to-rga-magenta/10",
-    cyan: "from-rga-cyan/20 via-transparent to-rga-green/10",
-    magenta: "from-rga-magenta/20 via-transparent to-rga-cyan/10",
-  }
-
   const chromaColor = {
     red: "text-red-500",
     cyan: "text-rga-cyan",
@@ -78,7 +72,7 @@ export function ErrorPage({
 
       {/* Color gradient overlay */}
       <div
-        className={`absolute inset-0 bg-gradient-radial ${colorGradients[config.color]} opacity-50`}
+        className="absolute inset-0 opacity-50"
         style={{
           background: `radial-gradient(ellipse at 50% 30%, ${config.glitchColors[0]}15 0%, transparent 50%),
                        radial-gradient(ellipse at 80% 80%, ${config.glitchColors[1]}10 0%, transparent 40%)`,
