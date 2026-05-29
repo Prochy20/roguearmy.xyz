@@ -14,24 +14,44 @@ import { join } from 'node:path'
 
 export type LootIconCategory = 'weapon_types' | 'gear_slots' | 'brands'
 
-interface AssetMap {
+export type AssetMapCategory =
+  | 'brands'
+  | 'gear_slots'
+  | 'weapon_types'
+  | 'talents'
+  | 'weapon_talents'
+
+/**
+ * Canonical shape of `public/division2/data/asset_map.json`.
+ *
+ * Single source of truth for both the server-side icon loader (this file)
+ * and the BFF route at `app/api/division2/assets/route.ts`. Categories are
+ * optional so a missing-file fallback (`{}` cast to this shape) doesn't lie
+ * to TypeScript; consumers should default each category with `?? {}`.
+ */
+export interface AssetMapFile {
+  version?: number
+  built_at?: string
+  source_built_at?: string | null
+  sanitize?: unknown
   brands?: Record<string, string>
   gear_slots?: Record<string, string>
   weapon_types?: Record<string, string>
   talents?: Record<string, string>
   weapon_talents?: Record<string, string>
+  missing?: Partial<Record<AssetMapCategory, string[]>>
 }
 
 const MAP_PATH = join(process.cwd(), 'public', 'division2', 'data', 'asset_map.json')
 
-let cachedMap: AssetMap | null = null
+let cachedMap: AssetMapFile | null = null
 let cachedLookup: Map<string, { url: string; category: LootIconCategory }> | null = null
 
-function loadMap(): AssetMap {
+function loadMap(): AssetMapFile {
   if (cachedMap) return cachedMap
   try {
     const raw = readFileSync(MAP_PATH, 'utf8')
-    cachedMap = JSON.parse(raw) as AssetMap
+    cachedMap = JSON.parse(raw) as AssetMapFile
   } catch {
     cachedMap = {}
   }
