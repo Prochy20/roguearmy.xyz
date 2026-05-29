@@ -2,6 +2,10 @@ import type { CollectionConfig } from 'payload'
 import { publicRead } from '@/access'
 import { setPublishedAt } from '@/hooks/articles/setPublishedAt'
 import { calculateReadingTime } from '@/hooks/articles/calculateReadingTime'
+import {
+  revalidateArticlesAfterChange,
+  revalidateArticlesAfterDelete,
+} from '@/hooks/articles/revalidateArticles'
 
 export const Articles: CollectionConfig = {
   slug: 'articles',
@@ -35,6 +39,8 @@ export const Articles: CollectionConfig = {
       },
     ],
     beforeChange: [setPublishedAt],
+    afterChange: [revalidateArticlesAfterChange],
+    afterDelete: [revalidateArticlesAfterDelete],
     afterRead: [calculateReadingTime],
   },
   fields: [
