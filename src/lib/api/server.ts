@@ -7,7 +7,7 @@ import {
   setAshleyTokens,
   clearAshleyCookies,
 } from '@/lib/auth/cookies'
-import { createAshleyUserClient, getAshleyServiceClient } from './client'
+import { createAshleyUserClient, getAshleyServiceClient } from './ashley-factories'
 
 /**
  * Discriminated error categories returned by safeAshleyCall.

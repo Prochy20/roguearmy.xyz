@@ -2,7 +2,7 @@ import 'server-only'
 
 import { after } from 'next/server'
 import type { Payload } from 'payload'
-import { createAshleyUserClient } from '@/lib/api/client'
+import { createAshleyUserClient } from '@/lib/api/ashley-factories'
 import {
   isQuarantined,
   normalizeSymbolicRoles,

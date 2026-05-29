@@ -1,4 +1,12 @@
 import { cookies } from 'next/headers'
+import {
+  ASHLEY_ACCESS_COOKIE,
+  ASHLEY_REFRESH_COOKIE,
+  ASHLEY_COOKIE_MAX_AGE,
+} from './constants'
+
+// Re-export so existing callers don't need to update import paths.
+export { ASHLEY_ACCESS_COOKIE, ASHLEY_REFRESH_COOKIE }
 
 export const MEMBER_SESSION_COOKIE = 'rga_member_session'
 export const OAUTH_STATE_COOKIE = 'rga_oauth_state'
@@ -46,16 +54,6 @@ export async function clearOAuthStateCookie(): Promise<void> {
   const cookieStore = await cookies()
   cookieStore.delete(OAUTH_STATE_COOKIE)
 }
-
-// Ashley backend tokens (sidecar to the local Discord session).
-// Cookie expiry is intentionally longer than the JWT lifetime — JWT freshness
-// is enforced by Ashley returning 401, which the BFF turns into a refresh.
-// If the cookie expired with the JWT, the browser would stop sending it and
-// refresh would be impossible.
-export const ASHLEY_ACCESS_COOKIE = 'rga_ashley_access'
-export const ASHLEY_REFRESH_COOKIE = 'rga_ashley_refresh'
-
-const ASHLEY_COOKIE_MAX_AGE = 60 * 60 * 24 * 30 // 30 days
 
 export async function setAshleyTokens(accessToken: string, refreshToken: string): Promise<void> {
   const cookieStore = await cookies()

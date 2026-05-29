@@ -13,7 +13,7 @@ import {
   clearReturnToCookie,
   setAshleyTokens,
 } from '@/lib/auth'
-import { getAshleyServiceClient, createAshleyUserClient } from '@/lib/api/client'
+import { getAshleyServiceClient, createAshleyUserClient } from '@/lib/api/ashley-factories'
 import {
   hasBoosterDecoration,
   isQuarantined,

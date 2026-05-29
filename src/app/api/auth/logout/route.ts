@@ -4,7 +4,7 @@ import {
   clearAshleyCookies,
   getAshleyAccessCookie,
 } from '@/lib/auth'
-import { createAshleyUserClient } from '@/lib/api/client'
+import { createAshleyUserClient } from '@/lib/api/ashley-factories'
 
 // Best-effort revoke the Ashley session, then clear local Ashley cookies.
 // Always succeeds — if Ashley is unreachable, the lingering server-side

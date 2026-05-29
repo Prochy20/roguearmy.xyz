@@ -1,11 +1,12 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import {
+  ASHLEY_ACCESS_COOKIE,
+  ASHLEY_REFRESH_COOKIE,
+  ASHLEY_COOKIE_MAX_AGE,
+} from '@/lib/auth/constants'
 
 const INTERNAL_PATHS = ['/brand', '/twitch']
-
-const ASHLEY_ACCESS_COOKIE = 'rga_ashley_access'
-const ASHLEY_REFRESH_COOKIE = 'rga_ashley_refresh'
-const ASHLEY_COOKIE_MAX_AGE = 60 * 60 * 24 * 30 // 30 days, must mirror cookies.ts
 
 // Refresh the Ashley access token if it expires within this many seconds.
 // A generous buffer means in-flight requests on slow networks don't race
