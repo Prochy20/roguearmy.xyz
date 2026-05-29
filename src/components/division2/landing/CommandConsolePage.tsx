@@ -4,6 +4,7 @@ import { todayUtcIso } from '@/lib/division2/format'
 import type { LandingState } from '@/lib/division2/landing.server'
 import type { Division2 } from '@/payload-types'
 import { BriefingPanel } from './BriefingPanel'
+import { DivisionLogo } from './DivisionLogo'
 import { IntelFeedPanel } from './IntelFeedPanel'
 import { LootStripPanel } from './LootStripPanel'
 import { RaidsPanel, type RaidsScheduleEntry } from './RaidsPanel'
@@ -123,114 +124,136 @@ export function CommandConsolePage({
     content?.raids?.discordUrl?.trim() || DEFAULTS.raids.discordUrl
 
   return (
-    <Shell>
-      <header className="flex flex-col gap-7 sm:gap-9">
-        <StatRibbon
-          prefix={ribbonPrefix}
-          fields={[
-            { label: 'LOCAL', value: `${today} UTC`, accent: 'green' },
-            { label: 'TOOLS', value: state.ribbon.toolsLabel, accent: 'green' },
-            {
-              label: 'LAST SYNC',
-              value: state.ribbon.lastSyncLabel ?? '—',
-            },
-          ]}
-          pill={
-            state.ribbon.pill === 'OPERATIONAL'
-              ? { text: 'OPERATIONAL', ok: true, accent: 'green' }
-              : { text: state.ribbon.pill, ok: false }
-          }
+    <div>
+      {/* Hero section — lives OUTSIDE Shell so the DivisionLogo can escape
+          the max-width container with its negative-right offset. Matches the
+          scanner-family pattern used by BriefingsPage (WashingtonMap) and
+          StaffManifestHeader (StaffRadar): an absolutely-positioned
+          `.rga-scanner-hover-zone` sibling drives a CSS `:has()`-triggered
+          translate on both the decoration and the headline column. */}
+      <section
+        className="relative overflow-hidden px-4 pt-20 pb-10 sm:px-8 sm:pt-24 sm:pb-12 lg:px-16 lg:pt-32 lg:pb-14 [--scanner-shove:140px] xl:[--scanner-shove:180px] 2xl:[--scanner-shove:220px]"
+        aria-label="Command Console hero"
+      >
+        <div
+          aria-hidden
+          className="rga-scanner-hover-zone pointer-events-auto absolute top-8 -right-[220px] hidden aspect-square w-[440px] rounded-full lg:block xl:top-10 xl:-right-[280px] xl:w-[560px] 2xl:top-12 2xl:-right-[340px] 2xl:w-[680px]"
         />
 
-        <div className="flex min-w-0 flex-col gap-7">
-          <div className="font-mono text-[11px] uppercase tracking-[0.35em] text-rga-mod">
-            {heroKicker} · STATUS · {state.ribbon.pill}
-          </div>
+        <DivisionLogo
+          className="absolute top-8 -right-[220px] transition-transform duration-500 ease-out will-change-transform xl:top-10 xl:-right-[280px] 2xl:top-12 2xl:-right-[340px] motion-safe:[section:has(.rga-scanner-hover-zone:hover)_&]:translate-x-[calc(-1*var(--scanner-shove))]"
+        />
 
-          <h1
-            className="font-display uppercase leading-[0.85] tracking-[0.005em] text-balance break-words"
-            style={{ fontSize: 'clamp(48px, 9vw, 144px)' }}
-          >
-            <HeroGlitch
-              className="block"
-              minInterval={4}
-              maxInterval={10}
-              intensity={8}
-              dataCorruption
-              scanlines
+        <div className="relative mx-auto flex w-full max-w-[1480px] flex-col gap-7 sm:gap-9">
+          <StatRibbon
+            prefix={ribbonPrefix}
+            fields={[
+              { label: 'LOCAL', value: `${today} UTC`, accent: 'green' },
+              { label: 'TOOLS', value: state.ribbon.toolsLabel, accent: 'green' },
+              {
+                label: 'LAST SYNC',
+                value: state.ribbon.lastSyncLabel ?? '—',
+              },
+            ]}
+            pill={
+              state.ribbon.pill === 'OPERATIONAL'
+                ? { text: 'OPERATIONAL', ok: true, accent: 'green' }
+                : { text: state.ribbon.pill, ok: false }
+            }
+          />
+
+          <div className="flex min-w-0 flex-col gap-7 transition-transform duration-500 ease-out motion-safe:[section:has(.rga-scanner-hover-zone:hover)_&]:translate-x-[calc(-1*var(--scanner-shove))]">
+            <div className="font-mono text-[11px] uppercase tracking-[0.35em] text-rga-mod">
+              {heroKicker} · STATUS · {state.ribbon.pill}
+            </div>
+
+            <h1
+              className="font-display uppercase leading-[0.85] tracking-[0.005em] text-balance break-words"
+              style={{ fontSize: 'clamp(48px, 9vw, 144px)' }}
             >
-              <span className="text-text-primary">{heroTitle}</span>
-            </HeroGlitch>
-            <HeroGlitch
-              className="block"
-              minInterval={5}
-              maxInterval={12}
-              intensity={7}
-              dataCorruption={false}
-              colors={['#ff8000', '#ffae42']}
-            >
-              <span
-                className="text-rga-mod"
-                style={{
-                  textShadow:
-                    '0 0 36px rgba(255,128,0,0.45), 0 0 80px rgba(255,128,0,0.18)',
-                }}
+              <HeroGlitch
+                className="block"
+                minInterval={4}
+                maxInterval={10}
+                intensity={8}
+                dataCorruption
+                scanlines
               >
-                {heroAccent}
-              </span>
-            </HeroGlitch>
-          </h1>
+                <span className="text-text-primary">{heroTitle}</span>
+              </HeroGlitch>
+              <HeroGlitch
+                className="block"
+                minInterval={5}
+                maxInterval={12}
+                intensity={7}
+                dataCorruption={false}
+                colors={['#ff8000', '#ffae42']}
+              >
+                <span
+                  className="text-rga-mod"
+                  style={{
+                    textShadow:
+                      '0 0 36px rgba(255,128,0,0.45), 0 0 80px rgba(255,128,0,0.18)',
+                  }}
+                >
+                  {heroAccent}
+                </span>
+              </HeroGlitch>
+            </h1>
 
-          <p className="max-w-2xl text-base leading-relaxed text-text-secondary sm:text-lg">
-            {intro}
-          </p>
+            <p className="max-w-2xl text-base leading-relaxed text-text-secondary sm:text-lg">
+              {intro}
+            </p>
+          </div>
         </div>
-      </header>
+      </section>
 
-      {/* SEC_01 — live intel feed */}
-      {contentPeek && contentPeek.length > 0 && (
-        <IntelFeedPanel articles={contentPeek} now={now} />
-      )}
+      <Shell>
+        {/* SEC_01 — live intel feed */}
+        {contentPeek && contentPeek.length > 0 && (
+          <IntelFeedPanel articles={contentPeek} now={now} />
+        )}
 
-      {/* SEC_02 — today's escalation: targeted drops + vendor caches */}
-      {escalationPeek && escalationPeek.missions.length > 0 && (
-        <LootStripPanel
-          missions={escalationPeek.missions}
-          items={escalationPeek.items}
-          caches={escalationPeek.caches}
-          targetDay={escalationPeek.targetDay}
+        {/* SEC_02 — today's escalation: targeted drops + vendor caches */}
+        {escalationPeek && escalationPeek.missions.length > 0 && (
+          <LootStripPanel
+            missions={escalationPeek.missions}
+            items={escalationPeek.items}
+            caches={escalationPeek.caches}
+            targetDay={escalationPeek.targetDay}
+          />
+        )}
+
+        {/* SEC_03 — latest weekly briefing + (boosters) 3 most-recent dailies
+            or (non-boosters) the BoosterPerksWidget pitching the daily perk. */}
+        {briefingPeek && (
+          <BriefingPanel
+            briefing={briefingPeek}
+            dailies={state.peeks.dailies}
+            hasAccess={hasAccess}
+            perks={perks}
+          />
+        )}
+
+        {/* SEC_04 — weekly raids (Discord-routed) */}
+        <RaidsPanel
+          raids={state.peeks.raids}
+          headlineTitle={raidsHeadlineTitle}
+          headlineAccent={raidsHeadlineAccent}
+          blurb={raidsBlurb}
+          rotationLabel={raidsRotationLabel}
+          schedule={schedule}
+          discordUrl={raidsDiscordUrl}
+          ctaLabel={raidsCtaLabel}
         />
-      )}
-
-      {/* SEC_03 — latest weekly briefing + (boosters) 3 most-recent dailies
-          or (non-boosters) the BoosterPerksWidget pitching the daily perk. */}
-      {briefingPeek && (
-        <BriefingPanel
-          briefing={briefingPeek}
-          dailies={state.peeks.dailies}
-          hasAccess={hasAccess}
-          perks={perks}
-        />
-      )}
-
-      {/* SEC_04 — weekly raids (Discord-routed) */}
-      <RaidsPanel
-        raids={state.peeks.raids}
-        headlineTitle={raidsHeadlineTitle}
-        headlineAccent={raidsHeadlineAccent}
-        blurb={raidsBlurb}
-        rotationLabel={raidsRotationLabel}
-        schedule={schedule}
-        discordUrl={raidsDiscordUrl}
-        ctaLabel={raidsCtaLabel}
-      />
-    </Shell>
+      </Shell>
+    </div>
   )
 }
 
 function Shell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-10 px-4 pt-20 pb-20 sm:gap-14 sm:px-8 sm:pt-24 sm:pb-28 lg:px-16 lg:pt-32 lg:pb-36">
+    <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-10 px-4 pb-20 sm:gap-14 sm:px-8 sm:pb-28 lg:px-16 lg:pb-36">
       {children}
     </div>
   )
