@@ -176,7 +176,7 @@ export function BriefingTeaserView({
                     [CLEARANCE: DISCORD MEMBER]
                   </motion.div>
 
-                  <p className="mx-auto mb-8 max-w-md leading-relaxed text-rga-gray">
+                  <p className="mx-auto mb-8 max-w-md leading-relaxed text-text-secondary">
                     This Division 2 briefing is restricted to verified Rogue Army operatives.
                     Join our Discord server and authenticate to decrypt contents.
                   </p>
@@ -202,7 +202,7 @@ export function BriefingTeaserView({
                     <div className="absolute bottom-0 right-0 h-3 w-3 border-b border-r border-rga-magenta/50 transition-all duration-300 group-hover:h-4 group-hover:w-4 group-hover:border-rga-magenta" />
                   </button>
 
-                  <p className="mt-6 text-sm text-rga-gray/50">
+                  <p className="mt-6 text-sm text-text-secondary/50">
                     Not in our Discord yet?{' '}
                     <a
                       href="https://dc.roguearmy.xyz"
@@ -225,7 +225,7 @@ export function BriefingTeaserView({
                       animate={{ opacity: [0.4, 1, 0.4] }}
                       transition={{ duration: 2, repeat: Infinity }}
                     />
-                    <span className="font-mono text-[10px] uppercase tracking-wider text-rga-gray/40">
+                    <span className="font-mono text-[10px] uppercase tracking-wider text-text-secondary/40">
                       Awaiting authentication
                     </span>
                   </motion.div>
