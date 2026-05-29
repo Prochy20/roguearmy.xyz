@@ -121,7 +121,7 @@ export function useTOC({
       observer?.disconnect()
       headingElements.clear()
     }
-  }, [headings, rootMargin])
+  }, [headings, rootMargin, updateActiveId])
 
   const scrollToHeading = useCallback((id: string) => {
     const element = document.getElementById(id)
