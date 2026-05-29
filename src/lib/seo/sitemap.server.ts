@@ -1,12 +1,11 @@
 import 'server-only'
 import type { MetadataRoute } from 'next'
-import { getPayload } from 'payload'
+import { getPayload, type CollectionSlug } from 'payload'
 import config from '@payload-config'
 import { absoluteUrl } from './siteUrl'
 import { fetchAllBriefings } from '@/lib/division2/briefing.server'
 
 type SitemapEntry = MetadataRoute.Sitemap[number]
-type ChangeFrequency = NonNullable<SitemapEntry['changeFrequency']>
 
 /* ── Date helpers ────────────────────────────────────────────────────────── */
 
@@ -42,15 +41,13 @@ function maxDate(...candidates: Array<Date | null>): Date {
 /** Cheapest possible "when was this collection last touched" probe. */
 async function getCollectionLastTouched(
   payload: Awaited<ReturnType<typeof getPayload>>,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  collection: any,
+  collection: CollectionSlug,
 ): Promise<Date | null> {
   const res = await payload.find({
     collection,
     limit: 1,
     sort: '-updatedAt',
     depth: 0,
-    pagination: false,
   })
   const top = res.docs[0] as { updatedAt?: string } | undefined
   return toDate(top?.updatedAt)
@@ -171,10 +168,10 @@ async function buildBriefingEntries(): Promise<SitemapEntry[]> {
     console.error('[sitemap] fetchAllBriefings failed:', result.error)
     return []
   }
-  return result.data.map((briefing) => ({
+  return result.data.map<SitemapEntry>((briefing) => ({
     url: absoluteUrl(briefing.canonicalPath),
     lastModified: toDate(briefing.updatedAt) ?? dailyRolled(),
-    changeFrequency: 'monthly' as ChangeFrequency,
+    changeFrequency: 'monthly',
     priority: 0.6,
   }))
 }
