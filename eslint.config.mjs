@@ -16,6 +16,10 @@ const eslintConfig = [
       '@typescript-eslint/ban-ts-comment': 'warn',
       '@typescript-eslint/no-empty-object-type': 'warn',
       '@typescript-eslint/no-explicit-any': 'warn',
+      // `// LABEL` is an intentional cyberpunk/terminal styling prefix used
+      // throughout the design system (mono + uppercase + wide tracking), not
+      // a misplaced JS comment.
+      'react/jsx-no-comment-textnodes': 'off',
       '@typescript-eslint/no-unused-vars': [
         'warn',
         {
