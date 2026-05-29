@@ -50,7 +50,7 @@ export default function SeriesDetailLoading() {
 
           {/* Scroll indicator skeleton */}
           <div className="absolute bottom-8 right-8 hidden md:block">
-            <div className="flex flex-col items-center gap-2 text-rga-gray/20">
+            <div className="flex flex-col items-center gap-2 text-text-secondary/20">
               <Skeleton className="w-12 h-3" />
               <Skeleton className="w-px h-12" />
             </div>
@@ -87,7 +87,7 @@ function SeriesArticleCardSkeleton({ index }: { index: number }) {
         <div className="relative flex gap-4 p-4 border border-rga-gray/20 bg-bg-elevated">
           {/* Order number */}
           <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center border border-rga-gray/20 rounded-sm">
-            <span className="text-rga-gray/40 font-mono text-lg">{index + 1}</span>
+            <span className="text-text-secondary/40 font-mono text-lg">{index + 1}</span>
           </div>
 
           {/* Thumbnail - hidden on mobile */}

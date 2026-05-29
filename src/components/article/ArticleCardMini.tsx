@@ -112,14 +112,14 @@ export function ArticleCardMini({ article, index = 0, progress }: ArticleCardMin
               </HoverGlitch>
 
               {/* Meta row - pushed to bottom */}
-              <div className="flex items-center gap-2 text-[11px] text-rga-gray/60 mt-2">
+              <div className="flex items-center gap-2 text-[11px] text-text-secondary/60 mt-2">
                 <div className="flex items-center gap-1">
                   <Clock className="w-3 h-3" />
                   <span>{article.readingTime} min</span>
                 </div>
                 {article.games.length > 0 && (
                   <>
-                    <span className="text-rga-gray/30">·</span>
+                    <span className="text-text-secondary/30">·</span>
                     <span className="truncate">{article.games[0].name}</span>
                   </>
                 )}

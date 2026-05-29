@@ -71,7 +71,7 @@ export function SeriesCard({
                 />
               ) : (
                 <div className="absolute inset-0 bg-bg-surface flex items-center justify-center">
-                  <BookOpen className="w-12 h-12 text-rga-gray/20" />
+                  <BookOpen className="w-12 h-12 text-text-secondary/20" />
                 </div>
               )}
 
@@ -111,7 +111,7 @@ export function SeriesCard({
 
               {/* Description */}
               {description && (
-                <p className="text-rga-gray text-sm line-clamp-2 mb-4">
+                <p className="text-text-secondary text-sm line-clamp-2 mb-4">
                   {description}
                 </p>
               )}
@@ -123,7 +123,7 @@ export function SeriesCard({
                   totalCount={articleCount}
                 />
               ) : (
-                <div className="text-xs text-rga-gray/40 uppercase tracking-wider">
+                <div className="text-xs text-text-secondary/40 uppercase tracking-wider">
                   Not started
                 </div>
               )}

@@ -23,7 +23,7 @@ export function SeriesGrid({ series }: SeriesGridProps) {
   if (series.length === 0) {
     return (
       <div className="text-center py-16">
-        <p className="text-rga-gray/60">No series available yet.</p>
+        <p className="text-text-secondary/60">No series available yet.</p>
       </div>
     )
   }

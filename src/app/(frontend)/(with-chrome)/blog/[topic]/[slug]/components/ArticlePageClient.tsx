@@ -94,7 +94,7 @@ export function ArticlePageClient({
             <div className="flex items-center gap-2">
               <p className="text-base font-semibold text-rga-cyan">Preview Mode</p>
               <span className="text-rga-cyan/50">—</span>
-              <p className="text-sm text-rga-gray">Changes sync in real-time</p>
+              <p className="text-sm text-text-secondary">Changes sync in real-time</p>
             </div>
             {isLoading && (
               <RefreshCw className="w-4 h-4 text-rga-cyan animate-spin ml-2" />

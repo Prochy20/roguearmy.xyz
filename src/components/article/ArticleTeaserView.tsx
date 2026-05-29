@@ -99,7 +99,7 @@ export function ArticleTeaserView({ article }: ArticleTeaserViewProps) {
                 {article.topic.name}
               </CyberTag>
               {article.games.map((game) => (
-                <CyberTag key={game.id} color="gray" className="text-sm text-rga-gray">
+                <CyberTag key={game.id} color="gray" className="text-sm text-text-secondary">
                   {game.name}
                 </CyberTag>
               ))}
@@ -130,7 +130,7 @@ export function ArticleTeaserView({ article }: ArticleTeaserViewProps) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.5 }}
-              className="flex flex-wrap items-center gap-4 text-sm text-rga-gray/60"
+              className="flex flex-wrap items-center gap-4 text-sm text-text-secondary/60"
             >
               <div className="flex items-center gap-2">
                 <Calendar className="w-4 h-4" />
@@ -161,7 +161,7 @@ export function ArticleTeaserView({ article }: ArticleTeaserViewProps) {
               transition={{ duration: 0.5, delay: 0.6 }}
               className="mb-12"
             >
-              <p className="text-lg md:text-xl text-rga-gray leading-relaxed">
+              <p className="text-lg md:text-xl text-text-secondary leading-relaxed">
                 {article.perex}
               </p>
             </motion.div>
@@ -271,7 +271,7 @@ export function ArticleTeaserView({ article }: ArticleTeaserViewProps) {
                     </motion.div>
 
                     {/* Description */}
-                    <p className="text-rga-gray mb-8 max-w-md mx-auto leading-relaxed">
+                    <p className="text-text-secondary mb-8 max-w-md mx-auto leading-relaxed">
                       This intelligence briefing is restricted to verified Rogue Army operatives.
                       Join our Discord server and authenticate to decrypt contents.
                     </p>
@@ -302,7 +302,7 @@ export function ArticleTeaserView({ article }: ArticleTeaserViewProps) {
                     </button>
 
                     {/* Join Discord link */}
-                    <p className="text-rga-gray/50 text-sm mt-6">
+                    <p className="text-text-secondary/50 text-sm mt-6">
                       Not in our Discord yet?{' '}
                       <a
                         href="https://dc.roguearmy.xyz"
@@ -326,7 +326,7 @@ export function ArticleTeaserView({ article }: ArticleTeaserViewProps) {
                         animate={{ opacity: [0.4, 1, 0.4] }}
                         transition={{ duration: 2, repeat: Infinity }}
                       />
-                      <span className="font-mono text-[10px] text-rga-gray/40 tracking-wider uppercase">
+                      <span className="font-mono text-[10px] text-text-secondary/40 tracking-wider uppercase">
                         Awaiting authentication
                       </span>
                     </motion.div>

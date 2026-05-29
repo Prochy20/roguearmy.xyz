@@ -30,8 +30,8 @@ export function SeriesProgressBar({
     <div className={cn('space-y-1', className)}>
       {showLabel && (
         <div className="flex items-center justify-between text-xs">
-          <span className="text-rga-gray/60 uppercase tracking-wider">Progress</span>
-          <span className={cn('font-mono', isComplete ? 'text-rga-green' : 'text-rga-gray')}>
+          <span className="text-text-secondary/60 uppercase tracking-wider">Progress</span>
+          <span className={cn('font-mono', isComplete ? 'text-rga-green' : 'text-text-secondary')}>
             {completedCount}/{totalCount}
           </span>
         </div>

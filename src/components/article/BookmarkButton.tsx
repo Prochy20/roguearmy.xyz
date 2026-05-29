@@ -66,7 +66,7 @@ export function BookmarkButton({ articleId, size = 'sm', className }: BookmarkBu
               sizeClasses[size],
               bookmarked
                 ? 'text-rga-cyan bg-rga-cyan/10 hover:bg-rga-cyan/20'
-                : 'text-rga-gray/60 hover:text-rga-cyan/80 hover:bg-rga-cyan/5',
+                : 'text-text-secondary/60 hover:text-rga-cyan/80 hover:bg-rga-cyan/5',
               className
             )}
           >

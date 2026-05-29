@@ -52,11 +52,11 @@ export function BookmarkDrawerItem({
         onClick={onNavigate}
         className="flex-1 min-w-0"
       >
-        <p className="text-sm text-rga-gray hover:text-white transition-colors line-clamp-2">
+        <p className="text-sm text-text-secondary hover:text-white transition-colors line-clamp-2">
           {article.title}
         </p>
         {article.topic && (
-          <p className={cn('text-xs mt-0.5', tint?.textMuted || 'text-rga-gray/40')}>
+          <p className={cn('text-xs mt-0.5', tint?.textMuted || 'text-text-secondary/40')}>
             {article.topic.name}
           </p>
         )}
@@ -73,7 +73,7 @@ export function BookmarkDrawerItem({
             e.stopPropagation()
             onRemove()
           }}
-          className="p-1 text-rga-gray/40 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100"
+          className="p-1 text-text-secondary/40 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100"
           aria-label={`Remove "${article.title}" from bookmarks`}
         >
           <X className="w-4 h-4" />

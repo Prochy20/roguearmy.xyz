@@ -85,7 +85,7 @@ export function SeriesArticleCard({
                   ? 'border-rga-green/30 text-rga-green bg-rga-green/5'
                   : readStatus === 'in_progress'
                     ? 'border-rga-cyan/30 text-rga-cyan bg-rga-cyan/5'
-                    : 'border-rga-gray/20 text-rga-gray/60'
+                    : 'border-rga-gray/20 text-text-secondary/60'
               )}
             >
               {order}
@@ -112,17 +112,17 @@ export function SeriesArticleCard({
               </HoverGlitch>
 
               {/* Perex */}
-              <p className="text-rga-gray text-sm line-clamp-1 mb-2">
+              <p className="text-text-secondary text-sm line-clamp-1 mb-2">
                 {article.perex}
               </p>
 
               {/* Meta row */}
-              <div className="flex items-center gap-3 text-xs text-rga-gray/60">
+              <div className="flex items-center gap-3 text-xs text-text-secondary/60">
                 <div className="flex items-center gap-1">
                   <Clock className="w-3 h-3" />
                   <span>{article.readingTime} min</span>
                 </div>
-                <CyberTag color="gray" className="text-rga-gray/70">
+                <CyberTag color="gray" className="text-text-secondary/70">
                   {article.topic.name}
                 </CyberTag>
               </div>

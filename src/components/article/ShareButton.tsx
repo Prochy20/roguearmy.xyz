@@ -99,7 +99,7 @@ export function ShareButton({
               sizeClasses[size],
               copied
                 ? 'text-rga-cyan bg-rga-cyan/10'
-                : 'text-rga-gray/60 hover:text-rga-cyan/80 hover:bg-rga-cyan/5',
+                : 'text-text-secondary/60 hover:text-rga-cyan/80 hover:bg-rga-cyan/5',
               className
             )}
           >

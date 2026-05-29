@@ -88,7 +88,7 @@ export function BookmarksDrawer() {
                 'relative flex items-center gap-1.5 px-2 py-1.5 rounded-lg transition-colors',
                 isOpen
                   ? 'bg-bg-elevated text-rga-cyan'
-                  : 'hover:bg-bg-elevated text-rga-gray hover:text-white'
+                  : 'hover:bg-bg-elevated text-text-secondary hover:text-white'
               )}
               aria-label="Bookmarks"
             >
@@ -113,7 +113,7 @@ export function BookmarksDrawer() {
             <Bookmark className="w-5 h-5 text-rga-cyan" />
             <span className="text-white font-medium">Bookmarks</span>
             {bookmarks.length > 0 && (
-              <span className="text-xs text-rga-gray/60">{bookmarks.length} saved</span>
+              <span className="text-xs text-text-secondary/60">{bookmarks.length} saved</span>
             )}
           </div>
         </DrawerHeader>
@@ -133,7 +133,7 @@ export function BookmarksDrawer() {
                     'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors whitespace-nowrap',
                     isActive
                       ? 'bg-rga-cyan/20 text-rga-cyan'
-                      : 'text-rga-gray hover:text-white hover:bg-bg-surface'
+                      : 'text-text-secondary hover:text-white hover:bg-bg-surface'
                   )}
                 >
                   {tab.label}
@@ -157,17 +157,17 @@ export function BookmarksDrawer() {
         <DrawerContent>
           {isLoading || progressLoading ? (
             <div className="px-4 py-12 text-center">
-              <div className="animate-pulse text-rga-gray/40 text-sm">Loading...</div>
+              <div className="animate-pulse text-text-secondary/40 text-sm">Loading...</div>
             </div>
           ) : bookmarks.length === 0 ? (
             <div className="px-4 py-12 text-center">
-              <BookmarkX className="w-10 h-10 mx-auto mb-3 text-rga-gray/30" />
-              <p className="text-rga-gray/60 text-sm">No bookmarks yet</p>
-              <p className="text-rga-gray/40 text-xs mt-1">Save articles to read later</p>
+              <BookmarkX className="w-10 h-10 mx-auto mb-3 text-text-secondary/30" />
+              <p className="text-text-secondary/60 text-sm">No bookmarks yet</p>
+              <p className="text-text-secondary/40 text-xs mt-1">Save articles to read later</p>
             </div>
           ) : filteredBookmarks.length === 0 ? (
             <div className="px-4 py-12 text-center">
-              <p className="text-rga-gray/60 text-sm">No {filter.replace('_', ' ')} bookmarks</p>
+              <p className="text-text-secondary/60 text-sm">No {filter.replace('_', ' ')} bookmarks</p>
               <button
                 onClick={() => setFilter('all')}
                 className="text-rga-cyan text-xs mt-2 hover:underline"

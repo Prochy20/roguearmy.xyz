@@ -42,7 +42,7 @@ export function SeriesHero({
           />
         ) : (
           <div className="absolute inset-0 bg-bg-surface flex items-center justify-center">
-            <BookOpen className="w-32 h-32 text-rga-gray/5" />
+            <BookOpen className="w-32 h-32 text-text-secondary/5" />
           </div>
         )}
 
@@ -120,7 +120,7 @@ export function SeriesHero({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
-              className="text-rga-gray text-lg md:text-xl max-w-2xl mb-8"
+              className="text-text-secondary text-lg md:text-xl max-w-2xl mb-8"
             >
               {description}
             </motion.p>
@@ -153,7 +153,7 @@ export function SeriesHero({
           <motion.div
             animate={{ y: [0, 8, 0] }}
             transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-            className="flex flex-col items-center gap-2 text-rga-gray/40"
+            className="flex flex-col items-center gap-2 text-text-secondary/40"
           >
             <span className="text-xs uppercase tracking-widest font-mono rotate-90 origin-center translate-x-4">
               Scroll
@@ -165,7 +165,7 @@ export function SeriesHero({
 
       {/* Articles section indicator */}
       <div className="absolute bottom-0 left-0 right-0 py-4 text-center">
-        <span className="text-xs font-mono uppercase tracking-widest text-rga-gray/40">
+        <span className="text-xs font-mono uppercase tracking-widest text-text-secondary/40">
           Articles in this series
         </span>
       </div>

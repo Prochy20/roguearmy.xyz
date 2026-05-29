@@ -98,7 +98,7 @@ export function ArticleCard({ article, index = 0, progress, isAuthenticated = fa
                 </CyberTag>
                 {/* Show first game if available */}
                 {article.games.length > 0 && (
-                  <CyberTag color="gray" className="text-rga-gray/80">
+                  <CyberTag color="gray" className="text-text-secondary/80">
                     {article.games[0].name}
                   </CyberTag>
                 )}
@@ -117,16 +117,16 @@ export function ArticleCard({ article, index = 0, progress, isAuthenticated = fa
               </HoverGlitch>
 
               {/* Perex */}
-              <p className="text-rga-gray text-sm md:text-base line-clamp-2 mb-4">
+              <p className="text-text-secondary text-sm md:text-base line-clamp-2 mb-4">
                 {article.perex}
               </p>
 
               {/* Metadata Row */}
-              <div className="flex items-center gap-x-4 gap-y-2 text-xs text-rga-gray/60 mt-auto">
+              <div className="flex items-center gap-x-4 gap-y-2 text-xs text-text-secondary/60 mt-auto">
                 {/* Left side: Content Type, Date, Reading Time */}
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-2 flex-1">
                   {/* Content Type - subtle pill */}
-                  <span className="px-2 py-0.5 rounded bg-white/5 text-rga-gray/50 uppercase tracking-wider text-[10px]">
+                  <span className="px-2 py-0.5 rounded bg-white/5 text-text-secondary/50 uppercase tracking-wider text-[10px]">
                     {article.contentType.name}
                   </span>
 

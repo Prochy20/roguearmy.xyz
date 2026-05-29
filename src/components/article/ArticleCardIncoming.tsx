@@ -112,14 +112,14 @@ export function ArticleCardIncoming({ article, index = 0, progress, isAuthentica
               </div>
 
               {/* Perex - 2 lines, muted */}
-              <p className="text-rga-gray/70 text-xs leading-relaxed line-clamp-2 mb-auto">
+              <p className="text-text-secondary/70 text-xs leading-relaxed line-clamp-2 mb-auto">
                 {article.perex}
               </p>
 
               {/* Footer - metadata & actions */}
               <div className="flex items-center justify-between gap-2 pt-3 mt-2 border-t border-white/5">
                 {/* Reading time */}
-                <div className="flex items-center gap-1.5 text-[11px] text-rga-gray/50 font-mono">
+                <div className="flex items-center gap-1.5 text-[11px] text-text-secondary/50 font-mono">
                   <Clock className="w-3 h-3" />
                   <span>{article.readingTime} min</span>
                 </div>

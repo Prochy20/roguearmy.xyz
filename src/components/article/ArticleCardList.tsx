@@ -113,19 +113,19 @@ export function ArticleCardList({ article, index = 0, progress, isAuthenticated 
               </HoverGlitch>
 
               {/* Perex - single line */}
-              <p className="text-rga-gray text-sm line-clamp-1 mb-2">
+              <p className="text-text-secondary text-sm line-clamp-1 mb-2">
                 {article.perex}
               </p>
 
               {/* Meta row - organized layout */}
-              <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-xs text-rga-gray/60">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-xs text-text-secondary/60">
                 {/* Row 1 on mobile / Left group on desktop: Topic + Game */}
                 <div className="flex items-center gap-1.5">
                   <CyberTag color={cornerColor} className={cn(tint.text, 'text-[10px] py-0.5')}>
                     {article.topic.name}
                   </CyberTag>
                   {article.games.length > 0 && (
-                    <CyberTag color="gray" className="text-rga-gray/80 text-[10px] py-0.5">
+                    <CyberTag color="gray" className="text-text-secondary/80 text-[10px] py-0.5">
                       {article.games[0].name}
                     </CyberTag>
                   )}
@@ -133,7 +133,7 @@ export function ArticleCardList({ article, index = 0, progress, isAuthenticated 
 
                 {/* Row 2 on mobile / Right group on desktop: Type + Time */}
                 <div className="flex items-center gap-2">
-                  <span className="px-2 py-0.5 rounded bg-white/5 text-rga-gray/50 uppercase tracking-wider text-[10px]">
+                  <span className="px-2 py-0.5 rounded bg-white/5 text-text-secondary/50 uppercase tracking-wider text-[10px]">
                     {article.contentType.name}
                   </span>
                   <div className="flex items-center gap-1">

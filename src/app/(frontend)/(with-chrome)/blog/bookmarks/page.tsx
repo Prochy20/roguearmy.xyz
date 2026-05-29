@@ -104,7 +104,7 @@ export default function BookmarksPage() {
                   YOUR BOOKMARKS
                 </HeroGlitch>
               </h1>
-              <p className="text-rga-gray max-w-2xl">
+              <p className="text-text-secondary max-w-2xl">
                 Your saved articles for later reading. Bookmark guides and content you want to
                 come back to, and access them anytime from here.
               </p>
@@ -156,11 +156,11 @@ function EmptyState() {
       className="flex flex-col items-center justify-center py-16 text-center"
     >
       <div className="relative mb-6">
-        <BookmarkX className="w-16 h-16 text-rga-gray/20" />
+        <BookmarkX className="w-16 h-16 text-text-secondary/20" />
         <div className="absolute inset-0 bg-rga-cyan/5 blur-xl rounded-full" />
       </div>
       <h2 className="text-xl font-display text-white mb-2">No bookmarks yet</h2>
-      <p className="text-rga-gray/60 max-w-md mb-6">
+      <p className="text-text-secondary/60 max-w-md mb-6">
         Save articles you want to read later by clicking the bookmark icon on any article card
         or article page.
       </p>
