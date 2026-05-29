@@ -101,7 +101,7 @@ export function BlogSeriesPage({ series, filterOptions, isAuthenticated = false 
                   ARTICLE SERIES
                 </HeroGlitch>
               </h1>
-              <p className="text-rga-gray max-w-2xl">
+              <p className="text-text-secondary max-w-2xl">
                 Deep-dive guide collections organized by topic. Work through each
                 series at your own pace{isAuthenticated ? ' and track your progress' : ''}.
               </p>

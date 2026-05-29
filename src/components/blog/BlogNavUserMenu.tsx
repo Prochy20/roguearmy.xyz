@@ -31,12 +31,12 @@ export function BlogNavUserMenu() {
             username={member.username}
             size="sm"
           />
-          <span className="hidden md:inline text-rga-gray text-sm max-w-[120px] truncate">
+          <span className="hidden md:inline text-text-secondary text-sm max-w-[120px] truncate">
             {member.globalName || member.username}
           </span>
           <ChevronDown
             className={cn(
-              'w-4 h-4 text-rga-gray transition-transform',
+              'w-4 h-4 text-text-secondary transition-transform',
               'group-data-[state=open]:rotate-180'
             )}
           />
@@ -52,7 +52,7 @@ export function BlogNavUserMenu() {
           <p className="text-white text-sm font-medium truncate">
             {member.globalName || member.username}
           </p>
-          <p className="text-rga-gray/60 text-xs truncate">@{member.username}</p>
+          <p className="text-text-secondary/60 text-xs truncate">@{member.username}</p>
         </DropdownMenuLabel>
 
         <DropdownMenuSeparator className="bg-rga-green/10" />
@@ -62,7 +62,7 @@ export function BlogNavUserMenu() {
           <DropdownMenuItem asChild>
             <Link
               href="/blog"
-              className="px-4 py-2 text-sm text-rga-gray hover:text-white cursor-pointer"
+              className="px-4 py-2 text-sm text-text-secondary hover:text-white cursor-pointer"
             >
               Articles
             </Link>
@@ -70,7 +70,7 @@ export function BlogNavUserMenu() {
           <DropdownMenuItem asChild>
             <Link
               href="/blog/series"
-              className="px-4 py-2 text-sm text-rga-gray hover:text-white cursor-pointer"
+              className="px-4 py-2 text-sm text-text-secondary hover:text-white cursor-pointer"
             >
               Series
             </Link>
@@ -81,7 +81,7 @@ export function BlogNavUserMenu() {
         <DropdownMenuItem asChild>
           <Link
             href="/blog/bookmarks"
-            className="px-4 py-2 text-sm text-rga-gray hover:text-white cursor-pointer"
+            className="px-4 py-2 text-sm text-text-secondary hover:text-white cursor-pointer"
           >
             Bookmarks
           </Link>
@@ -90,7 +90,7 @@ export function BlogNavUserMenu() {
         <DropdownMenuItem asChild>
           <Link
             href="/blog/history"
-            className="px-4 py-2 text-sm text-rga-gray hover:text-white cursor-pointer"
+            className="px-4 py-2 text-sm text-text-secondary hover:text-white cursor-pointer"
           >
             Reading History
           </Link>
@@ -101,7 +101,7 @@ export function BlogNavUserMenu() {
             href="https://dc.roguearmy.xyz"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 px-4 py-2 text-sm text-rga-gray hover:text-white cursor-pointer"
+            className="flex items-center gap-2 px-4 py-2 text-sm text-text-secondary hover:text-white cursor-pointer"
           >
             Discord
             <ExternalLink className="w-3 h-3" />

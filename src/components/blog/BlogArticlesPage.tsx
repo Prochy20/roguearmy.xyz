@@ -135,7 +135,7 @@ export function BlogArticlesPage({
                   BLOG
                 </HeroGlitch>
               </h1>
-              <p className="text-rga-gray max-w-2xl">
+              <p className="text-text-secondary max-w-2xl">
                 Guides, builds, and community updates. Stay ahead with the
                 latest strategies and news from the Rogue Army.
               </p>

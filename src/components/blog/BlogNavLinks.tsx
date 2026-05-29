@@ -24,7 +24,7 @@ export function BlogNavLinks() {
               'px-3 py-1.5 text-sm transition-colors',
               isActive
                 ? 'text-rga-green font-medium'
-                : 'text-rga-gray hover:text-white'
+                : 'text-text-secondary hover:text-white'
             )}
           >
             {link.label}

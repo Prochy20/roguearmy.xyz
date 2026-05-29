@@ -43,7 +43,7 @@ export function FilterPills<T extends string | null>(props: FilterPillsProps<T>)
     const { value, onChange } = props as FilterPillsSingleProps<T>
     return (
       <div className="space-y-2.5">
-        <label className="text-xs text-rga-gray/70 uppercase tracking-wider flex items-center gap-1.5">
+        <label className="text-xs text-text-secondary/70 uppercase tracking-wider flex items-center gap-1.5">
           {icon}
           {label}
         </label>
@@ -56,7 +56,7 @@ export function FilterPills<T extends string | null>(props: FilterPillsProps<T>)
                 'px-2.5 py-1 text-xs rounded-full border transition-all',
                 value === option.value
                   ? 'border-rga-green bg-rga-green/20 text-rga-green'
-                  : 'border-rga-gray/30 text-rga-gray hover:border-rga-gray/50'
+                  : 'border-rga-gray/30 text-text-secondary hover:border-rga-gray/50'
               )}
             >
               {option.label}
@@ -71,7 +71,7 @@ export function FilterPills<T extends string | null>(props: FilterPillsProps<T>)
   const { values, onChange } = props as FilterPillsMultiProps<T & string>
   return (
     <div className="space-y-2.5">
-      <label className="text-xs text-rga-gray/70 uppercase tracking-wider flex items-center gap-1.5">
+      <label className="text-xs text-text-secondary/70 uppercase tracking-wider flex items-center gap-1.5">
         {icon}
         {label}
       </label>
@@ -92,7 +92,7 @@ export function FilterPills<T extends string | null>(props: FilterPillsProps<T>)
                 'px-2.5 py-1 text-xs rounded-full border transition-all',
                 isActive
                   ? 'border-rga-green bg-rga-green/20 text-rga-green'
-                  : 'border-rga-gray/30 text-rga-gray hover:border-rga-gray/50'
+                  : 'border-rga-gray/30 text-text-secondary hover:border-rga-gray/50'
               )}
             >
               {option.label}

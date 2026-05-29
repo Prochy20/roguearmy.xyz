@@ -275,7 +275,7 @@ function EndOfFeed() {
       animate={{ opacity: 1 }}
       className="text-center py-8"
     >
-      <div className="inline-flex items-center gap-3 text-rga-gray/40 text-sm">
+      <div className="inline-flex items-center gap-3 text-text-secondary/40 text-sm">
         <span className="w-8 h-px bg-rga-gray/20" />
         <span>End of feed</span>
         <span className="w-8 h-px bg-rga-gray/20" />

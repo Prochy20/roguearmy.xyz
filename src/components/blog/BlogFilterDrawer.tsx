@@ -47,7 +47,7 @@ export function BlogFilterDrawer({
           {activeCount > 0 && (
             <button
               onClick={handleClearAll}
-              className="text-xs text-rga-gray hover:text-rga-green transition-colors flex items-center gap-1"
+              className="text-xs text-text-secondary hover:text-rga-green transition-colors flex items-center gap-1"
             >
               <X className="w-3 h-3" />
               Clear all ({activeCount})
@@ -55,7 +55,7 @@ export function BlogFilterDrawer({
           )}
           <button
             onClick={() => onOpenChange(false)}
-            className="p-1 text-rga-gray hover:text-white transition-colors"
+            className="p-1 text-text-secondary hover:text-white transition-colors"
             aria-label="Close"
           >
             <X className="w-5 h-5" />

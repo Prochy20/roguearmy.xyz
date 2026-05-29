@@ -105,7 +105,7 @@ function RowLabel({ item, onNavigate }: RowLabelProps) {
     'rga-nav-label font-display leading-none uppercase transition-colors duration-200',
     item.available
       ? 'text-[#e8efe2]/85 group-hover:text-rga-green group-focus-within:text-rga-green'
-      : 'text-rga-gray/60 cursor-not-allowed',
+      : 'text-text-secondary/60 cursor-not-allowed',
   )
   const labelStyle = {
     fontSize: 'clamp(32px, 7.2vw, 64px)',
