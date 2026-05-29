@@ -518,6 +518,52 @@ function fetchBriefingPrefixIndex(): Promise<
   return cached()
 }
 
+/**
+ * Walk the full Ashley corpus for both frequencies and return every published
+ * briefing. Backs the sitemap — we need *all* canonical URLs, not just the
+ * recent window. Caps at the same MAX_PAGES safety belt as the prefix index;
+ * cached on the same `briefing-list` tag so unpublish events invalidate both.
+ */
+export async function fetchAllBriefings(): Promise<AshleyResult<Briefing[]>> {
+  const cached = unstable_cache(
+    async (): Promise<AshleyResult<Briefing[]>> => {
+      const seen = new Set<string>()
+      const items: Briefing[] = []
+      for (const frequency of ['weekly', 'daily'] as const) {
+        for (let page = 0; page < PREFIX_INDEX_MAX_PAGES; page++) {
+          const result = await fetchAshleyService<RawDigestList>((c) =>
+            c.GET('/api/content/digests', {
+              params: {
+                query: {
+                  topic: TOPIC,
+                  frequency,
+                  limit: PREFIX_INDEX_PAGE_SIZE,
+                  offset: page * PREFIX_INDEX_PAGE_SIZE,
+                },
+              },
+            }),
+          )
+          if (!result.ok) return result
+          const rawItems = result.data.items ?? []
+          for (const raw of rawItems) {
+            const briefing = normalizeBriefing(raw)
+            if (!briefing) continue
+            if (seen.has(briefing.id)) continue
+            seen.add(briefing.id)
+            items.push(briefing)
+          }
+          if (rawItems.length < PREFIX_INDEX_PAGE_SIZE) break
+        }
+      }
+      items.sort((a, b) => b.periodStart.localeCompare(a.periodStart))
+      return { ok: true, data: items }
+    },
+    ['division2-briefing-all'],
+    { revalidate: HOT_TTL, tags: ['briefing', 'briefing-list'] },
+  )
+  return cached()
+}
+
 /* ── Detail-page derived helpers ─────────────────────────────────────────── */
 
 import type { ReaderSection } from '@/lib/content/markdown-sections'
