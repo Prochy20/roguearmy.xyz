@@ -56,3 +56,6 @@ temp/
 
 # Storybook
 storybook-static/
+
+# Other
+specs/
