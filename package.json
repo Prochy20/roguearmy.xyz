@@ -23,7 +23,8 @@
     "test": "pnpm run test:int && pnpm run test:e2e",
     "test:e2e": "cross-env NODE_OPTIONS=\"--no-deprecation --no-experimental-strip-types\" pnpm exec playwright test",
     "test:int": "cross-env NODE_OPTIONS=--no-deprecation vitest run --config ./vitest.config.mts --project int",
-    "test:storybook": "cross-env NODE_OPTIONS=--no-deprecation vitest run --config ./vitest.config.mts --project storybook"
+    "test:storybook": "cross-env NODE_OPTIONS=--no-deprecation vitest run --config ./vitest.config.mts --project storybook",
+    "backfill:reading-time": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/backfill-reading-time.ts"
   },
   "dependencies": {
     "@payloadcms/db-mongodb": "3.69.0",
