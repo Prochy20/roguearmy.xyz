@@ -74,9 +74,8 @@ export function ProgressionBand({ level }: ProgressionBandProps) {
             // brief
           </span>
           <p className="font-mono text-xs leading-relaxed text-text-muted">
-            XP accrues from sustained activity — voice presence, message
-            contributions, raid attendance. Standing advances tier automatically
-            and ranks against the rest of the formation.
+            XP accrues from sustained activity — voice presence, messages and overall contributions.
+            Standing advances tier automatically and ranks against the rest of the formation.
           </p>
         </div>
 
