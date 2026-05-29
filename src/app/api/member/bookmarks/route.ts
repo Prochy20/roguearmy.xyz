@@ -1,8 +1,36 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import config from '@payload-config'
-import { getSessionCookie, verifyMemberToken } from '@/lib/auth'
+import { getMemberAuth } from '@/lib/auth/session.server'
 import type { Article, Topic, Media, Game, ContentType } from '@/payload-types'
+
+// Canonical auth resolution: getMemberAuth runs the role-sync side effect so
+// quarantined members hit 403 even on this route (which previously trusted
+// the JWT and never re-checked status with Ashley).
+async function resolveCaller(): Promise<
+  { ok: true; memberId: string } | { ok: false; response: NextResponse }
+> {
+  const auth = await getMemberAuth()
+
+  if (auth.status === 'banned') {
+    return {
+      ok: false,
+      response: NextResponse.json({ error: 'Account quarantined' }, { status: 403 }),
+    }
+  }
+
+  if (!auth.authenticated || !auth.memberId) {
+    return {
+      ok: false,
+      response: NextResponse.json(
+        { error: 'Not authenticated', reason: auth.reason ?? 'not_authenticated' },
+        { status: 401 },
+      ),
+    }
+  }
+
+  return { ok: true, memberId: auth.memberId }
+}
 
 /**
  * GET /api/member/bookmarks
@@ -10,33 +38,11 @@ import type { Article, Topic, Media, Game, ContentType } from '@/payload-types'
  * Optional query param: ?articleId=X to check if specific article is bookmarked
  */
 export async function GET(request: NextRequest) {
-  const token = await getSessionCookie()
-
-  if (!token) {
-    return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
-  }
-
-  const session = await verifyMemberToken(token)
-
-  if (!session) {
-    return NextResponse.json({ error: 'Invalid session' }, { status: 401 })
-  }
+  const caller = await resolveCaller()
+  if (!caller.ok) return caller.response
+  const { memberId } = caller
 
   const payload = await getPayload({ config })
-
-  // Check if member is still active
-  try {
-    const member = await payload.findByID({
-      collection: 'members',
-      id: session.memberId,
-    })
-
-    if (!member || member.status !== 'active') {
-      return NextResponse.json({ error: 'Member not found or inactive' }, { status: 403 })
-    }
-  } catch {
-    return NextResponse.json({ error: 'Member not found' }, { status: 404 })
-  }
 
   // Check for specific article ID
   const articleId = request.nextUrl.searchParams.get('articleId')
@@ -47,7 +53,7 @@ export async function GET(request: NextRequest) {
       collection: 'bookmarks',
       where: {
         and: [
-          { member: { equals: session.memberId } },
+          { member: { equals: memberId } },
           { article: { equals: articleId } },
         ],
       },
@@ -64,7 +70,7 @@ export async function GET(request: NextRequest) {
   // Return all bookmarks with populated article data
   const result = await payload.find({
     collection: 'bookmarks',
-    where: { member: { equals: session.memberId } },
+    where: { member: { equals: memberId } },
     limit: 1000,
     depth: 2, // Populate article and its relationships
     sort: '-createdAt', // Most recent first
@@ -119,33 +125,11 @@ export async function GET(request: NextRequest) {
  * Body: { articleId: string }
  */
 export async function POST(request: NextRequest) {
-  const token = await getSessionCookie()
-
-  if (!token) {
-    return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
-  }
-
-  const session = await verifyMemberToken(token)
-
-  if (!session) {
-    return NextResponse.json({ error: 'Invalid session' }, { status: 401 })
-  }
+  const caller = await resolveCaller()
+  if (!caller.ok) return caller.response
+  const { memberId } = caller
 
   const payload = await getPayload({ config })
-
-  // Check if member is still active
-  try {
-    const member = await payload.findByID({
-      collection: 'members',
-      id: session.memberId,
-    })
-
-    if (!member || member.status !== 'active') {
-      return NextResponse.json({ error: 'Member not found or inactive' }, { status: 403 })
-    }
-  } catch {
-    return NextResponse.json({ error: 'Member not found' }, { status: 404 })
-  }
 
   // Parse request body
   let body: { articleId?: string }
@@ -176,7 +160,7 @@ export async function POST(request: NextRequest) {
     collection: 'bookmarks',
     where: {
       and: [
-        { member: { equals: session.memberId } },
+        { member: { equals: memberId } },
         { article: { equals: articleId } },
       ],
     },
@@ -194,7 +178,7 @@ export async function POST(request: NextRequest) {
   const bookmark = await payload.create({
     collection: 'bookmarks',
     data: {
-      member: session.memberId,
+      member: memberId,
       article: articleId,
     },
   })
@@ -208,33 +192,11 @@ export async function POST(request: NextRequest) {
  * Body: { articleId: string }
  */
 export async function DELETE(request: NextRequest) {
-  const token = await getSessionCookie()
-
-  if (!token) {
-    return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
-  }
-
-  const session = await verifyMemberToken(token)
-
-  if (!session) {
-    return NextResponse.json({ error: 'Invalid session' }, { status: 401 })
-  }
+  const caller = await resolveCaller()
+  if (!caller.ok) return caller.response
+  const { memberId } = caller
 
   const payload = await getPayload({ config })
-
-  // Check if member is still active
-  try {
-    const member = await payload.findByID({
-      collection: 'members',
-      id: session.memberId,
-    })
-
-    if (!member || member.status !== 'active') {
-      return NextResponse.json({ error: 'Member not found or inactive' }, { status: 403 })
-    }
-  } catch {
-    return NextResponse.json({ error: 'Member not found' }, { status: 404 })
-  }
 
   // Parse request body
   let body: { articleId?: string }
@@ -255,7 +217,7 @@ export async function DELETE(request: NextRequest) {
     collection: 'bookmarks',
     where: {
       and: [
-        { member: { equals: session.memberId } },
+        { member: { equals: memberId } },
         { article: { equals: articleId } },
       ],
     },

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import config from '@payload-config'
-import { getSessionCookie, verifyMemberToken } from '@/lib/auth'
+import { getMemberAuth } from '@/lib/auth/session.server'
 
 const COMPLETION_THRESHOLD = 85
 const MAX_RETRIES = 3
@@ -11,39 +11,45 @@ interface WriteConflictError extends Error {
   code?: number
 }
 
+// Canonical auth resolution: getMemberAuth runs the role-sync side effect so
+// quarantined members hit 403 even on this route (which previously trusted
+// the JWT and never re-checked status with Ashley).
+async function resolveCaller(): Promise<
+  { ok: true; memberId: string } | { ok: false; response: NextResponse }
+> {
+  const auth = await getMemberAuth()
+
+  if (auth.status === 'banned') {
+    return {
+      ok: false,
+      response: NextResponse.json({ error: 'Account quarantined' }, { status: 403 }),
+    }
+  }
+
+  if (!auth.authenticated || !auth.memberId) {
+    return {
+      ok: false,
+      response: NextResponse.json(
+        { error: 'Not authenticated', reason: auth.reason ?? 'not_authenticated' },
+        { status: 401 },
+      ),
+    }
+  }
+
+  return { ok: true, memberId: auth.memberId }
+}
+
 /**
  * GET /api/read-progress
  * Fetch progress for the authenticated member
  * Optional query param: ?articleId=X to get progress for a specific article
  */
 export async function GET(request: NextRequest) {
-  const token = await getSessionCookie()
-
-  if (!token) {
-    return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
-  }
-
-  const session = await verifyMemberToken(token)
-
-  if (!session) {
-    return NextResponse.json({ error: 'Invalid session' }, { status: 401 })
-  }
+  const caller = await resolveCaller()
+  if (!caller.ok) return caller.response
+  const { memberId } = caller
 
   const payload = await getPayload({ config })
-
-  // Check if member is still active
-  try {
-    const member = await payload.findByID({
-      collection: 'members',
-      id: session.memberId,
-    })
-
-    if (!member || member.status !== 'active') {
-      return NextResponse.json({ error: 'Member not found or inactive' }, { status: 403 })
-    }
-  } catch {
-    return NextResponse.json({ error: 'Member not found' }, { status: 404 })
-  }
 
   // Check for specific article ID
   const articleId = request.nextUrl.searchParams.get('articleId')
@@ -53,11 +59,11 @@ export async function GET(request: NextRequest) {
     where: articleId
       ? {
           and: [
-            { member: { equals: session.memberId } },
+            { member: { equals: memberId } },
             { article: { equals: articleId } },
           ],
         }
-      : { member: { equals: session.memberId } },
+      : { member: { equals: memberId } },
     limit: articleId ? 1 : 1000,
     depth: 0,
   })
@@ -78,33 +84,11 @@ export async function GET(request: NextRequest) {
  * Body: { articleId, progress, timeSpent }
  */
 export async function PATCH(request: NextRequest) {
-  const token = await getSessionCookie()
-
-  if (!token) {
-    return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
-  }
-
-  const session = await verifyMemberToken(token)
-
-  if (!session) {
-    return NextResponse.json({ error: 'Invalid session' }, { status: 401 })
-  }
+  const caller = await resolveCaller()
+  if (!caller.ok) return caller.response
+  const { memberId } = caller
 
   const payload = await getPayload({ config })
-
-  // Check if member is still active
-  try {
-    const member = await payload.findByID({
-      collection: 'members',
-      id: session.memberId,
-    })
-
-    if (!member || member.status !== 'active') {
-      return NextResponse.json({ error: 'Member not found or inactive' }, { status: 403 })
-    }
-  } catch {
-    return NextResponse.json({ error: 'Member not found' }, { status: 404 })
-  }
 
   // Parse request body
   let body: { articleId?: string; progress?: number; timeSpent?: number }
@@ -144,7 +128,7 @@ export async function PATCH(request: NextRequest) {
       const existingResult = await payload.find({
         collection: 'read-progress',
         where: {
-          member: { equals: session.memberId },
+          member: { equals: memberId },
           article: { equals: articleId },
         },
         limit: 1,
@@ -175,7 +159,7 @@ export async function PATCH(request: NextRequest) {
       const created = await payload.create({
         collection: 'read-progress',
         data: {
-          member: session.memberId,
+          member: memberId,
           article: articleId,
           progress,
           timeSpent: timeSpent || 0,
