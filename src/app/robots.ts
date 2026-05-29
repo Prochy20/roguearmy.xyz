@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next'
-import { absoluteUrl, getSiteUrl } from '@/lib/seo/siteUrl'
+import { absoluteUrl } from '@/lib/seo/siteUrl'
 
 export default function robots(): MetadataRoute.Robots {
   // Gated and per-user routes are listed explicitly so crawl budget isn't
@@ -41,7 +41,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: '/',
       },
     ],
-    host: getSiteUrl(),
     sitemap: absoluteUrl('/sitemap.xml'),
   }
 }
