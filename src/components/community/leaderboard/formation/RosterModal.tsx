@@ -308,7 +308,7 @@ function EmptyState({ query }: { query: string }) {
       </div>
       <p className="font-mono text-sm leading-relaxed text-text-secondary">
         <span className="text-rga-magenta">{`>`}</span> NO OPERATIVES MATCH{' '}
-        <span className="text-text-primary">"{query}"</span>. ADJUST THE SCAN.
+        <span className="text-text-primary">&ldquo;{query}&rdquo;</span>. ADJUST THE SCAN.
       </p>
     </div>
   )
