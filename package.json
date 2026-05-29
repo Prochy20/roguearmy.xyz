@@ -69,6 +69,7 @@
     "unist-util-visit": "^5.0.0"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "3.3.3",
     "@playwright/test": "1.56.1",
     "@storybook/addon-docs": "^10.4.0",
     "@storybook/addon-vitest": "^10.4.0",
