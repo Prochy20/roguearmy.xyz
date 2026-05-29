@@ -92,9 +92,9 @@ const CALLOUT_CONFIG: Record<
     label: 'Note',
     borderColor: 'border-l-rga-gray',
     bgColor: 'bg-rga-gray/5',
-    iconColor: 'text-rga-gray',
-    labelColor: 'text-rga-gray/50',
-    bracketColor: 'text-rga-gray/40',
+    iconColor: 'text-text-secondary',
+    labelColor: 'text-text-secondary/50',
+    bracketColor: 'text-text-secondary/40',
   },
 }
 

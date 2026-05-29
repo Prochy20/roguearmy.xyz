@@ -166,7 +166,7 @@ export function VideoEmbed({ url, title }: VideoEmbedProps) {
             <PlatformIcon platform={parsed.platform} />
             {platformLabel}
           </span>
-          <span className="text-[9px] font-mono uppercase tracking-[0.1em] text-rga-gray/50">
+          <span className="text-[9px] font-mono uppercase tracking-[0.1em] text-text-secondary/50">
             {contentTypeLabel}
           </span>
         </div>
@@ -194,7 +194,7 @@ export function VideoEmbed({ url, title }: VideoEmbedProps) {
 
       {/* Optional title caption */}
       {title && (
-        <p className="mt-3 text-center text-sm text-rga-gray italic">
+        <p className="mt-3 text-center text-sm text-text-secondary italic">
           {title}
         </p>
       )}

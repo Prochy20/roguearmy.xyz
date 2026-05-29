@@ -435,10 +435,10 @@ export function buildConverters({
         text = <strong className="text-white font-medium mx-[0.1em]">{text}</strong>
       }
       if (node.format & 2) {
-        text = <em className="text-rga-gray italic">{text}</em>
+        text = <em className="text-text-secondary italic">{text}</em>
       }
       if (node.format & 4) {
-        text = <del className="text-rga-gray/60 line-through decoration-rga-gray/40">{text}</del>
+        text = <del className="text-text-secondary/60 line-through decoration-rga-gray/40">{text}</del>
       }
       if (node.format & 8) {
         text = <u className="underline underline-offset-2 decoration-rga-cyan/30">{text}</u>

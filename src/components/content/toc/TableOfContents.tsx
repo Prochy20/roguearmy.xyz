@@ -196,7 +196,7 @@ export function TableOfContents({ headings, className, articleRef }: TableOfCont
         {/* Back button - inside the panel */}
         <Link
           href="/blog"
-          className="group flex items-center gap-2 text-rga-gray hover:text-rga-green transition-colors"
+          className="group flex items-center gap-2 text-text-secondary hover:text-rga-green transition-colors"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           <span className="font-mono text-xs uppercase tracking-wider">Back to articles</span>

@@ -19,7 +19,7 @@ const markdownComponents: Components = {
     <h3 className="text-sm font-semibold text-white mt-3 mb-1">{children}</h3>
   ),
   p: ({ children }) => (
-    <p className="my-2 text-rga-gray/80">{children}</p>
+    <p className="my-2 text-text-secondary/80">{children}</p>
   ),
   ul: ({ children }) => (
     <ul className="my-2 space-y-1 [&_ul]:mt-1 [&_ul]:mb-0 [&_ul]:ml-4">{children}</ul>
@@ -28,7 +28,7 @@ const markdownComponents: Components = {
     <ol className="my-2 space-y-1 list-decimal list-inside [&_ol]:mt-1 [&_ol]:mb-0 [&_ol]:ml-4">{children}</ol>
   ),
   li: ({ children }) => (
-    <li className="flex items-start gap-2 text-rga-gray/80">
+    <li className="flex items-start gap-2 text-text-secondary/80">
       <span className="text-[#0079BF] mt-1.5 shrink-0">
         <span className="block w-1.5 h-1.5 bg-[#0079BF] rounded-full" />
       </span>
@@ -101,7 +101,7 @@ function TrelloIcon({ className = 'w-3 h-3' }: { className?: string }) {
  */
 function LoadingSkeleton() {
   return (
-    <div className="flex flex-col items-center justify-center py-16 gap-4 text-rga-gray/50">
+    <div className="flex flex-col items-center justify-center py-16 gap-4 text-text-secondary/50">
       <div className="animate-pulse text-[#0079BF]">
         <TrelloIcon className="w-10 h-10" />
       </div>
@@ -118,11 +118,11 @@ function ErrorFallback({ url, error }: { url: string; error: string }) {
 
   return (
     <div className="flex flex-col items-center justify-center py-16 gap-4">
-      <div className="text-rga-gray/30">
+      <div className="text-text-secondary/30">
         <TrelloIcon className="w-8 h-8" />
       </div>
       <div className="text-center">
-        <p className="text-sm text-rga-gray/70 mb-2">{error}</p>
+        <p className="text-sm text-text-secondary/70 mb-2">{error}</p>
         {parsed && (
           <a
             href={parsed.originalUrl}
@@ -148,7 +148,7 @@ function DueDate({ due, dueComplete }: { due: string; dueComplete: boolean }) {
   const isDueSoon = !dueComplete && !isOverdue && dueDate.getTime() - now.getTime() < 24 * 60 * 60 * 1000
 
   let bgColor = 'bg-rga-gray/20'
-  let textColor = 'text-rga-gray'
+  let textColor = 'text-text-secondary'
 
   if (dueComplete) {
     bgColor = 'bg-green-500/20'
@@ -193,8 +193,8 @@ function ChecklistProgress({ name, checkItems }: { name: string; checkItems: { s
   return (
     <div className="space-y-1">
       <div className="flex items-center justify-between text-xs">
-        <span className="text-rga-gray/70 truncate">{name}</span>
-        <span className="text-rga-gray/50 ml-2 shrink-0">{completed}/{total}</span>
+        <span className="text-text-secondary/70 truncate">{name}</span>
+        <span className="text-text-secondary/50 ml-2 shrink-0">{completed}/{total}</span>
       </div>
       <div className="h-1.5 bg-rga-gray/20 rounded-full overflow-hidden">
         <div
@@ -350,7 +350,7 @@ export function TrelloCard({ url, caption }: TrelloCardProps) {
             <TrelloIcon />
             Trello
           </span>
-          <span className="text-[9px] font-mono uppercase tracking-[0.1em] text-rga-gray/50">
+          <span className="text-[9px] font-mono uppercase tracking-[0.1em] text-text-secondary/50">
             Card
           </span>
         </div>
@@ -365,7 +365,7 @@ export function TrelloCard({ url, caption }: TrelloCardProps) {
 
       {/* Optional caption */}
       {caption && (
-        <p className="mt-3 text-center text-sm text-rga-gray italic">
+        <p className="mt-3 text-center text-sm text-text-secondary italic">
           {caption}
         </p>
       )}

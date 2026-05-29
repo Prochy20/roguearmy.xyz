@@ -30,7 +30,7 @@ export const TOCItem = forwardRef<HTMLButtonElement, TOCItemProps>(
           // Active state
           isActive
             ? 'text-rga-green border-l-rga-green'
-            : 'text-rga-gray/70 border-l-transparent hover:text-rga-cyan hover:border-l-rga-cyan/50'
+            : 'text-text-secondary/70 border-l-transparent hover:text-rga-cyan hover:border-l-rga-cyan/50'
         )}
       >
         <span

@@ -245,7 +245,7 @@ export const markdownComponents: Partial<Components> = {
 
   // Blockquotes
   blockquote: ({ children }) => (
-    <blockquote className="my-6 border-l-4 border-rga-green bg-bg-surface/50 py-3 px-5 text-rga-gray italic rounded-r-lg">
+    <blockquote className="my-6 border-l-4 border-rga-green bg-bg-surface/50 py-3 px-5 text-text-secondary italic rounded-r-lg">
       {children}
     </blockquote>
   ),
@@ -293,7 +293,7 @@ export const markdownComponents: Partial<Components> = {
         className="rounded-lg border border-rga-green/20 w-full shadow-lg shadow-rga-green/5"
       />
       {alt && (
-        <figcaption className="mt-3 text-center text-sm text-rga-gray italic">
+        <figcaption className="mt-3 text-center text-sm text-text-secondary italic">
           {alt}
         </figcaption>
       )}
@@ -338,11 +338,11 @@ export const markdownComponents: Partial<Components> = {
   ),
 
   // Emphasis/Italic
-  em: ({ children }) => <em className="text-rga-gray italic">{children}</em>,
+  em: ({ children }) => <em className="text-text-secondary italic">{children}</em>,
 
   // Strikethrough (GFM)
   del: ({ children }) => (
-    <del className="text-rga-gray/60 line-through decoration-rga-gray/40">{children}</del>
+    <del className="text-text-secondary/60 line-through decoration-rga-gray/40">{children}</del>
   ),
 
   // Callouts/Admonitions (:::info, :::warning, etc.)

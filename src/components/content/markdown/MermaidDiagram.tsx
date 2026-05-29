@@ -242,7 +242,7 @@ export function MermaidDiagram({ code }: MermaidDiagramProps) {
             <div className="w-3 h-3 bg-rga-green rounded-full animate-pulse" />
             <div className="absolute inset-0 w-3 h-3 bg-rga-cyan rounded-full animate-ping opacity-40" />
           </div>
-          <span className="text-rga-gray/60 text-xs font-mono uppercase tracking-widest">
+          <span className="text-text-secondary/60 text-xs font-mono uppercase tracking-widest">
             Rendering
           </span>
           <div className="flex gap-1">
@@ -269,7 +269,7 @@ export function MermaidDiagram({ code }: MermaidDiagramProps) {
             <p className="text-xs font-mono uppercase tracking-wider mb-2 text-rga-magenta/60">
               Diagram Error
             </p>
-            <p className="text-sm text-rga-gray">{error}</p>
+            <p className="text-sm text-text-secondary">{error}</p>
           </div>
         </div>
       </div>

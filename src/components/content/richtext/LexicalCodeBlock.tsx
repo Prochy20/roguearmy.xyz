@@ -141,7 +141,7 @@ export function LexicalCodeBlock({ code, language }: LexicalCodeBlockProps) {
     return (
       <div className="my-6 overflow-hidden rounded-lg border border-rga-green/20 bg-bg-surface/50">
         <div className="px-4 py-2 border-b border-rga-green/20 flex items-center justify-between bg-bg-surface/80">
-          <span className="text-xs font-mono text-rga-gray">{displayLanguage}</span>
+          <span className="text-xs font-mono text-text-secondary">{displayLanguage}</span>
         </div>
         <div className="p-4 animate-pulse">
           <div className="h-4 bg-rga-gray/10 rounded w-3/4 mb-2" />
@@ -159,7 +159,7 @@ export function LexicalCodeBlock({ code, language }: LexicalCodeBlockProps) {
         <span className="text-xs font-mono text-rga-cyan">{displayLanguage}</span>
         <button
           onClick={handleCopy}
-          className="flex items-center gap-1.5 px-2 py-1 text-xs text-rga-gray hover:text-rga-green transition-colors rounded hover:bg-rga-green/10"
+          className="flex items-center gap-1.5 px-2 py-1 text-xs text-text-secondary hover:text-rga-green transition-colors rounded hover:bg-rga-green/10"
           title="Copy code"
         >
           {copied ? (

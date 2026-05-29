@@ -94,7 +94,7 @@ export function MobileTOC({ headings, className }: MobileTOCProps) {
           aria-expanded={isOpen}
           aria-controls="mobile-toc-content"
         >
-          <span className="font-mono text-xs text-rga-gray/60">
+          <span className="font-mono text-xs text-text-secondary/60">
             {headings.length} sections
           </span>
 

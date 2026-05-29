@@ -106,7 +106,7 @@ function getPlatformColors(platform: SocialPlatform): { bg: string; text: string
  */
 function LoadingSkeleton({ platform }: { platform: SocialPlatform }) {
   return (
-    <div className="flex flex-col items-center justify-center py-20 gap-4 text-rga-gray/50">
+    <div className="flex flex-col items-center justify-center py-20 gap-4 text-text-secondary/50">
       <div className="animate-pulse">
         <PlatformIcon platform={platform} className="w-10 h-10" />
       </div>
@@ -121,11 +121,11 @@ function LoadingSkeleton({ platform }: { platform: SocialPlatform }) {
 function ErrorFallback({ parsed }: { parsed: ParsedSocialUrl }) {
   return (
     <div className="flex flex-col items-center justify-center py-16 gap-4">
-      <div className="text-rga-gray/30">
+      <div className="text-text-secondary/30">
         <PlatformIcon platform={parsed.platform} className="w-8 h-8" />
       </div>
       <div className="text-center">
-        <p className="text-sm text-rga-gray/70 mb-2">Unable to load embed</p>
+        <p className="text-sm text-text-secondary/70 mb-2">Unable to load embed</p>
         <a
           href={parsed.originalUrl}
           target="_blank"
@@ -226,7 +226,7 @@ export function SocialEmbed({ url, caption }: SocialEmbedProps) {
             <PlatformIcon platform={parsed.platform} />
             {platformLabel}
           </span>
-          <span className="text-[9px] font-mono uppercase tracking-[0.1em] text-rga-gray/50">
+          <span className="text-[9px] font-mono uppercase tracking-[0.1em] text-text-secondary/50">
             {contentTypeLabel}
           </span>
         </div>
@@ -245,7 +245,7 @@ export function SocialEmbed({ url, caption }: SocialEmbedProps) {
 
       {/* Optional caption */}
       {caption && (
-        <p className="mt-3 text-center text-sm text-rga-gray italic">
+        <p className="mt-3 text-center text-sm text-text-secondary italic">
           {caption}
         </p>
       )}
