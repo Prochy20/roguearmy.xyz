@@ -523,12 +523,18 @@ function fetchBriefingPrefixIndex(): Promise<
  * briefing. Backs the sitemap — we need *all* canonical URLs, not just the
  * recent window. Caps at the same MAX_PAGES safety belt as the prefix index;
  * cached on the same `briefing-list` tag so unpublish events invalidate both.
+ *
+ * Failures degrade per-frequency: if `weekly` errors mid-walk we still
+ * return whatever was collected plus everything `daily` yields. Only an
+ * empty corpus from *both* frequencies surfaces as an error — that way a
+ * flaky upstream can't wipe the sitemap.
  */
 export async function fetchAllBriefings(): Promise<AshleyResult<Briefing[]>> {
   const cached = unstable_cache(
     async (): Promise<AshleyResult<Briefing[]>> => {
       const seen = new Set<string>()
       const items: Briefing[] = []
+      const errors: string[] = []
       for (const frequency of ['weekly', 'daily'] as const) {
         for (let page = 0; page < PREFIX_INDEX_MAX_PAGES; page++) {
           const result = await fetchAshleyService<RawDigestList>((c) =>
@@ -543,7 +549,10 @@ export async function fetchAllBriefings(): Promise<AshleyResult<Briefing[]>> {
               },
             }),
           )
-          if (!result.ok) return result
+          if (!result.ok) {
+            errors.push(`${frequency}@${page}: ${result.error.code}`)
+            break
+          }
           const rawItems = result.data.items ?? []
           for (const raw of rawItems) {
             const briefing = normalizeBriefing(raw)
@@ -554,6 +563,15 @@ export async function fetchAllBriefings(): Promise<AshleyResult<Briefing[]>> {
           }
           if (rawItems.length < PREFIX_INDEX_PAGE_SIZE) break
         }
+      }
+      if (items.length === 0 && errors.length > 0) {
+        return {
+          ok: false,
+          error: { code: 'unavailable', message: errors.join('; ') },
+        }
+      }
+      if (errors.length > 0) {
+        console.warn('[briefing] fetchAllBriefings partial failure:', errors)
       }
       items.sort((a, b) => b.periodStart.localeCompare(a.periodStart))
       return { ok: true, data: items }
