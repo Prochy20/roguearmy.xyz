@@ -21,6 +21,7 @@ import {
   mapPayloadColorToTint,
 } from './articles'
 import { getDocumentContent } from './outline'
+import { resolveSeriesForArticle } from './series.resolver'
 
 /** Wiki body fetched + cached for the reader pipeline. */
 export interface WikiBody {
@@ -143,32 +144,8 @@ export async function getArticleBySlug(slug: string): Promise<Article | null> {
 
   const article = result.docs[0]
 
-  // Check if article is in any series
-  const seriesResult = await payload.find({
-    collection: 'series',
-    where: {
-      articles: { contains: article.id },
-    },
-    depth: 0,
-    limit: 1,
-  })
-
-  let seriesInfo: { name: string; slug: string; order: number } | undefined
-
-  if (seriesResult.docs.length > 0) {
-    const series = seriesResult.docs[0]
-    const articleIds = (series.articles || []).map((a) =>
-      typeof a === 'string' ? a : a.id
-    )
-    const orderIndex = articleIds.indexOf(article.id)
-    if (orderIndex !== -1) {
-      seriesInfo = {
-        name: series.name,
-        slug: series.slug,
-        order: orderIndex + 1,
-      }
-    }
-  }
+  const seriesInfo =
+    (await resolveSeriesForArticle(payload, article.id)) ?? undefined
 
   return transformPayloadArticle(article, seriesInfo)
 }
@@ -314,32 +291,8 @@ export async function getArticleBySlugWithDraft(
 
   const rawArticle = result.docs[0]
 
-  // Check if article is in any series
-  const seriesResult = await payload.find({
-    collection: 'series',
-    where: {
-      articles: { contains: rawArticle.id },
-    },
-    depth: 0,
-    limit: 1,
-  })
-
-  let seriesInfo: { name: string; slug: string; order: number } | undefined
-
-  if (seriesResult.docs.length > 0) {
-    const series = seriesResult.docs[0]
-    const articleIds = (series.articles || []).map((a) =>
-      typeof a === 'string' ? a : a.id
-    )
-    const orderIndex = articleIds.indexOf(rawArticle.id)
-    if (orderIndex !== -1) {
-      seriesInfo = {
-        name: series.name,
-        slug: series.slug,
-        order: orderIndex + 1,
-      }
-    }
-  }
+  const seriesInfo =
+    (await resolveSeriesForArticle(payload, rawArticle.id)) ?? undefined
 
   return {
     article: transformPayloadArticle(rawArticle, seriesInfo),
@@ -432,32 +385,8 @@ export async function getArticleByTopicAndSlug(
 
   const article = result.docs[0]
 
-  // Check if article is in any series
-  const seriesResult = await payload.find({
-    collection: 'series',
-    where: {
-      articles: { contains: article.id },
-    },
-    depth: 0,
-    limit: 1,
-  })
-
-  let seriesInfo: { name: string; slug: string; order: number } | undefined
-
-  if (seriesResult.docs.length > 0) {
-    const series = seriesResult.docs[0]
-    const articleIds = (series.articles || []).map((a) =>
-      typeof a === 'string' ? a : a.id
-    )
-    const orderIndex = articleIds.indexOf(article.id)
-    if (orderIndex !== -1) {
-      seriesInfo = {
-        name: series.name,
-        slug: series.slug,
-        order: orderIndex + 1,
-      }
-    }
-  }
+  const seriesInfo =
+    (await resolveSeriesForArticle(payload, article.id)) ?? undefined
 
   return transformPayloadArticle(article, seriesInfo)
 }
@@ -527,32 +456,8 @@ export async function getArticleByTopicAndSlugWithDraft(
 
   const rawArticle = result.docs[0]
 
-  // Check if article is in any series
-  const seriesResult = await payload.find({
-    collection: 'series',
-    where: {
-      articles: { contains: rawArticle.id },
-    },
-    depth: 0,
-    limit: 1,
-  })
-
-  let seriesInfo: { name: string; slug: string; order: number } | undefined
-
-  if (seriesResult.docs.length > 0) {
-    const series = seriesResult.docs[0]
-    const articleIds = (series.articles || []).map((a) =>
-      typeof a === 'string' ? a : a.id
-    )
-    const orderIndex = articleIds.indexOf(rawArticle.id)
-    if (orderIndex !== -1) {
-      seriesInfo = {
-        name: series.name,
-        slug: series.slug,
-        order: orderIndex + 1,
-      }
-    }
-  }
+  const seriesInfo =
+    (await resolveSeriesForArticle(payload, rawArticle.id)) ?? undefined
 
   return {
     article: transformPayloadArticle(rawArticle, seriesInfo),
