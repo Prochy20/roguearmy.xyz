@@ -69,9 +69,14 @@ export async function fetchWikiBody(
 // ============================================================================
 
 /**
- * Get all published articles from Payload
+ * Get all published articles from Payload.
+ *
+ * Cached cross-request with the `articles` tag; busted by Article afterChange
+ * / afterDelete hooks so editors see fresh data immediately on save. The
+ * 5-min TTL is the upper bound for stale reads when the bust hook is
+ * skipped (e.g., direct Mongo edits).
  */
-export async function getPublishedArticles(): Promise<Article[]> {
+async function getPublishedArticlesImpl(): Promise<Article[]> {
   const payload = await getPayload({ config })
 
   // First get all series to build article -> series mapping
@@ -109,6 +114,12 @@ export async function getPublishedArticles(): Promise<Article[]> {
     transformPayloadArticle(article, articleSeriesMap.get(article.id))
   )
 }
+
+export const getPublishedArticles = unstable_cache(
+  getPublishedArticlesImpl,
+  ['articles', 'published'],
+  { revalidate: 300, tags: ['articles'] },
+)
 
 /**
  * Get a single article by slug
@@ -163,9 +174,14 @@ export async function getArticleBySlug(slug: string): Promise<Article | null> {
 }
 
 /**
- * Get filter options (games, topics, content types, series) from Payload
+ * Get filter options (games, topics, content types, series) from Payload.
+ *
+ * Cached cross-request with the `articles` tag so series article-counts stay
+ * coherent with the published article list when articles are added/removed.
+ * Taxonomy edits (games/topics/content-types) are admin-only and rare; the
+ * 5-min TTL is acceptable for those.
  */
-export async function getFilterOptions(): Promise<FilterOptions> {
+async function getFilterOptionsImpl(): Promise<FilterOptions> {
   const payload = await getPayload({ config })
 
   const [gamesResult, topicsResult, contentTypesResult, seriesResult] = await Promise.all([
@@ -200,6 +216,12 @@ export async function getFilterOptions(): Promise<FilterOptions> {
     })),
   }
 }
+
+export const getFilterOptions = unstable_cache(
+  getFilterOptionsImpl,
+  ['articles', 'filter-options'],
+  { revalidate: 300, tags: ['articles'] },
+)
 
 /**
  * Get series navigation for an article
