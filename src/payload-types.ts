@@ -554,9 +554,13 @@ export interface Member {
    */
   lastLogin: string;
   /**
-   * Auto-managed by role sync: DISCORD_ROLE_QUARANTINE → Banned; role removed → Active. Manual edits will be overwritten on the next page load.
+   * Auto-managed read-only field. Reflects DISCORD_ROLE_QUARANTINE state OR the `adminBanned` flag below. Do not edit directly — set `adminBanned` to ban a member from the admin panel.
    */
   status: 'active' | 'banned' | 'left_server';
+  /**
+   * Hard ban applied by an admin. When true, the member is banned regardless of Discord role state. Use this to ban a member who has not yet been quarantined on Discord, or to keep someone banned even if their Discord role is removed.
+   */
+  adminBanned?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -905,6 +909,7 @@ export interface MembersSelect<T extends boolean = true> {
   joinedAt?: T;
   lastLogin?: T;
   status?: T;
+  adminBanned?: T;
   updatedAt?: T;
   createdAt?: T;
 }

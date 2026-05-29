@@ -26,6 +26,7 @@ interface MemberSyncSnapshot {
   rolesSyncedAt: number | null
   rolesSyncFailedAt: number | null
   status: 'active' | 'banned' | 'left_server' | string
+  adminBanned: boolean
 }
 
 export function readMemberSnapshot(member: {
@@ -37,12 +38,14 @@ export function readMemberSnapshot(member: {
       }
     | null
   status?: string | null
+  adminBanned?: boolean | null
 }): MemberSyncSnapshot {
   return {
     symbolicRoles: normalizeSymbolicRoles(member.guildMember?.symbolicRoles),
     rolesSyncedAt: parseDateMs(member.guildMember?.rolesSyncedAt),
     rolesSyncFailedAt: parseDateMs(member.guildMember?.rolesSyncFailedAt),
     status: member.status ?? 'active',
+    adminBanned: Boolean(member.adminBanned),
   }
 }
 
@@ -59,6 +62,23 @@ function shouldAttemptSync(snap: MemberSyncSnapshot): boolean {
   return true
 }
 
+// In-flight role-sync promises keyed by memberId. Collapses concurrent
+// requests for the same member into a single Ashley round-trip — without
+// this, N parallel hits all pass shouldAttemptSync (the DB timestamp is
+// still stale until after() flushes) and stampede Ashley.
+//
+// Module-level state is intentional: it's the deduplication scope we want.
+// In a multi-instance runtime each instance has its own map; per-instance
+// dedup is strictly better than none.
+const inflightSyncs = new Map<string, Promise<RoleSyncOutcome>>()
+
+interface SyncMemberRolesArgs {
+  payload: Payload
+  memberId: string
+  ashleyAccessToken: string | undefined
+  snapshot: MemberSyncSnapshot
+}
+
 /**
  * Refresh a member's symbolic roles from Ashley if the snapshot is stale and
  * we're past the failure backoff window. Persists the new snapshot and any
@@ -67,13 +87,21 @@ function shouldAttemptSync(snap: MemberSyncSnapshot): boolean {
  *
  * Fail-open by design: when Ashley is down or returns no access cookie, the
  * existing snapshot is returned untouched and the caller carries on.
+ *
+ * Concurrent calls for the same memberId share a single in-flight promise.
  */
-export async function syncMemberRoles(args: {
-  payload: Payload
-  memberId: string
-  ashleyAccessToken: string | undefined
-  snapshot: MemberSyncSnapshot
-}): Promise<RoleSyncOutcome> {
+export function syncMemberRoles(args: SyncMemberRolesArgs): Promise<RoleSyncOutcome> {
+  const existing = inflightSyncs.get(args.memberId)
+  if (existing) return existing
+
+  const promise = syncMemberRolesUncached(args).finally(() => {
+    inflightSyncs.delete(args.memberId)
+  })
+  inflightSyncs.set(args.memberId, promise)
+  return promise
+}
+
+async function syncMemberRolesUncached(args: SyncMemberRolesArgs): Promise<RoleSyncOutcome> {
   const { payload, memberId, ashleyAccessToken, snapshot } = args
 
   if (!shouldAttemptSync(snapshot)) {
@@ -117,7 +145,7 @@ export async function syncMemberRoles(args: {
     return { kind: 'failed' }
   }
 
-  const statusOverride = computeStatusOverride(fetched, snapshot.status)
+  const statusOverride = computeStatusOverride(fetched, snapshot.status, snapshot.adminBanned)
   const now = new Date().toISOString()
 
   // Defer the writeback so it doesn't block the response. The current request
@@ -153,20 +181,22 @@ export async function syncMemberRoles(args: {
 /**
  * Recompute status from a fresh role snapshot.
  *
- * Per the design call: Discord is the source of truth for moderation state.
+ * Per the design call: Discord is the source of truth for moderation state,
+ * but admins can also impose a hard ban via the `adminBanned` flag which
+ * wins over Discord state.
+ *  - adminBanned=true → status flips to 'banned' (admin override)
  *  - QUARANTINE present → status flips to 'banned'
- *  - QUARANTINE absent  → if currently 'banned', auto-restore to 'active'
+ *  - QUARANTINE absent and not adminBanned → if currently 'banned', auto-restore to 'active'
  *  - 'left_server' is owned by the OAuth callback (guild membership check) and
  *    must not be overwritten by role-sync.
- *
- * Manual admin bans set via the Payload panel will be cleared here when the
- * user has no QUARANTINE role — accepted tradeoff documented in the auth design.
  */
 function computeStatusOverride(
   roles: readonly SymbolicRole[],
   currentStatus: string,
+  adminBanned: boolean,
 ): 'banned' | 'active' | null {
   if (currentStatus === 'left_server') return null
+  if (adminBanned) return currentStatus === 'banned' ? null : 'banned'
   if (isQuarantined(roles)) return currentStatus === 'banned' ? null : 'banned'
   if (currentStatus === 'banned') return 'active'
   return null

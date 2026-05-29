@@ -160,7 +160,8 @@ export const Members: CollectionConfig = {
       },
     },
 
-    // Status (for banning)
+    // Status (effective, read-only). Computed by role sync from
+    // DISCORD_ROLE_QUARANTINE OR the `adminBanned` flag below.
     {
       name: 'status',
       type: 'select',
@@ -172,8 +173,22 @@ export const Members: CollectionConfig = {
         { label: 'Left Server', value: 'left_server' },
       ],
       admin: {
+        readOnly: true,
         description:
-          'Auto-managed by role sync: DISCORD_ROLE_QUARANTINE → Banned; role removed → Active. Manual edits will be overwritten on the next page load.',
+          'Auto-managed read-only field. Reflects DISCORD_ROLE_QUARANTINE state OR the `adminBanned` flag below. Do not edit directly — set `adminBanned` to ban a member from the admin panel.',
+      },
+    },
+    {
+      name: 'adminBanned',
+      type: 'checkbox',
+      defaultValue: false,
+      access: {
+        // Only authenticated admins flip this; reads gated by collection-level access.
+        update: ({ req: { user } }) => Boolean(user),
+      },
+      admin: {
+        description:
+          'Hard ban applied by an admin. When true, the member is banned regardless of Discord role state. Use this to ban a member who has not yet been quarantined on Discord, or to keep someone banned even if their Discord role is removed.',
       },
     },
   ],
