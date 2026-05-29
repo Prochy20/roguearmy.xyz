@@ -1,50 +1,13 @@
-import type { CollectionConfig, FieldAccess } from 'payload'
+import type { CollectionConfig } from 'payload'
 import { APIError } from 'payload'
+import { memberOnly, publicRead } from '@/access'
 import type { AvatarBundle } from '@/lib/discord/avatar'
 
 /**
- * Members-only field gate. The page surface hides leader info from anonymous
- * visitors via `isAuthenticated` filtering, but the REST/GraphQL API would
- * still expose these fields without this guard. Belt-and-suspenders so a
- * direct hit on `/api/division2-clans` matches the page's contract.
+ * Leader-cache refresh is delegated to `@/lib/discord/syncCache` and
+ * dynamically imported inside the hook to keep `server-only` modules out of
+ * the Payload importmap pass. See StaffProfiles for the same pattern.
  */
-const memberOnly: FieldAccess = ({ req }) => Boolean(req.user)
-
-/**
- * Refresh leader cache fields from Ashley. Mirrors StaffProfiles —
- * dynamic imports keep `server-only` modules out of the importmap pass.
- */
-type RefreshOutcome =
-  | { kind: 'ok' }
-  | { kind: 'ashley_down' }
-  | { kind: 'member_not_found' }
-
-async function refreshLeaderCacheFromAshley(
-  data: Record<string, unknown>,
-  discordId: string,
-): Promise<RefreshOutcome> {
-  const [{ fetchAshleyService }, { pickBestAvatar }] = await Promise.all([
-    import('@/lib/api/server'),
-    import('@/lib/discord/avatar'),
-  ])
-  const result = await fetchAshleyService((client) =>
-    client.GET('/api/community/members/lookup', {
-      params: { query: { ids: discordId } },
-    }),
-  )
-  if (!result.ok) return { kind: 'ashley_down' }
-  const member = result.data?.[0]
-  if (!member) return { kind: 'member_not_found' }
-
-  data.cached_leaderUsername = (member.username ?? null) as string | null
-  data.cached_leaderDisplayName = member.displayName
-  data.cached_leaderAvatarUrl = pickBestAvatar(
-    member.serverAvatarUrls as AvatarBundle,
-    member.avatarUrls as AvatarBundle,
-  )
-  data.cached_leaderAt = new Date().toISOString()
-  return { kind: 'ok' }
-}
 
 /**
  * In-game Division 2 clans listed on `/division-2/clans`. Each row pairs the
@@ -69,7 +32,7 @@ export const Division2Clans: CollectionConfig = {
     defaultColumns: ['order', 'name', 'tag', 'accent', 'isPublished'],
   },
   access: {
-    read: () => true,
+    read: publicRead,
   },
   defaultSort: 'order',
   hooks: {
@@ -91,7 +54,20 @@ export const Division2Clans: CollectionConfig = {
         const idChanged =
           operation === 'create' || originalDoc?.leaderDiscordId !== newId
 
-        const outcome = await refreshLeaderCacheFromAshley(data, newId)
+        const [{ refreshDiscordCacheFields }, { pickBestAvatar }] = await Promise.all([
+          import('@/lib/discord/syncCache'),
+          import('@/lib/discord/avatar'),
+        ])
+
+        const outcome = await refreshDiscordCacheFields(data, newId, (target, member) => {
+          target.cached_leaderUsername = member.username ?? null
+          target.cached_leaderDisplayName = member.displayName
+          target.cached_leaderAvatarUrl = pickBestAvatar(
+            member.serverAvatarUrls as AvatarBundle,
+            member.avatarUrls as AvatarBundle,
+          )
+          target.cached_leaderAt = new Date().toISOString()
+        })
         if (outcome.kind === 'ok') return data
 
         if (idChanged) {

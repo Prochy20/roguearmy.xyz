@@ -1,56 +1,16 @@
 import type { CollectionConfig } from 'payload'
 import { APIError } from 'payload'
+import { publicRead } from '@/access'
 import type { AvatarBundle } from '@/lib/discord/avatar'
 
 /**
- * Fetch a slim member DTO by discordId and write it into `data` so the
- * cached_* fields stay aligned with Discord. Used by the beforeChange hook
- * when a row is created or the discordId is changed.
- *
- * Returns a discriminated outcome so the hook can decide whether to fail
- * the save (new row / changed id — we need a valid Ashley member to back
- * this row) or warn and continue (same id, just a manual re-save to
- * refresh the cache — the lazy TTL on /community/staff will retry).
- *
- * The Ashley client + avatar helper are dynamically imported because
- * `@/lib/api/server` and `@/lib/discord/avatar` are marked `server-only`;
- * eager-importing them at the top of this collection file breaks the
- * Payload importmap generator, which loads collection configs outside a
- * server-component context.
+ * The Discord cache refresh is delegated to `@/lib/discord/syncCache` and
+ * dynamically imported inside the hook. The dynamic import is structural,
+ * not a stylistic preference: `@/lib/api/server` and `@/lib/discord/avatar`
+ * are marked `server-only`, and eager-importing them at the top of this
+ * collection file breaks the Payload importmap generator (which loads
+ * collection configs outside a server-component context).
  */
-type RefreshOutcome =
-  | { kind: 'ok' }
-  | { kind: 'ashley_down' }
-  | { kind: 'member_not_found' }
-
-async function refreshCacheFromAshley(
-  data: Record<string, unknown>,
-  discordId: string,
-): Promise<RefreshOutcome> {
-  const [{ fetchAshleyService }, { pickBestAvatar }] = await Promise.all([
-    import('@/lib/api/server'),
-    import('@/lib/discord/avatar'),
-  ])
-  const result = await fetchAshleyService((client) =>
-    client.GET('/api/community/members/lookup', {
-      params: { query: { ids: discordId } },
-    }),
-  )
-  if (!result.ok) return { kind: 'ashley_down' }
-  const member = result.data?.[0]
-  if (!member) return { kind: 'member_not_found' }
-
-  data.cached_username = (member.username ?? null) as string | null
-  data.cached_displayName = member.displayName
-  data.cached_avatarUrl = pickBestAvatar(
-    member.serverAvatarUrls as AvatarBundle,
-    member.avatarUrls as AvatarBundle,
-  )
-  data.cached_joinedAt = member.joinedAt ?? null
-  data.cached_accountCreatedAt = member.accountCreatedAt ?? null
-  data.cached_at = new Date().toISOString()
-  return { kind: 'ok' }
-}
 
 /**
  * Staff profiles for the /community/staff manifest. Each row pairs an editorial
@@ -74,7 +34,7 @@ export const StaffProfiles: CollectionConfig = {
     defaultColumns: ['order', 'cached_displayName', 'roleTitle', 'isPublic'],
   },
   access: {
-    read: () => true,
+    read: publicRead,
   },
   defaultSort: 'order',
   hooks: {
@@ -98,7 +58,22 @@ export const StaffProfiles: CollectionConfig = {
         const idChanged =
           operation === 'create' || originalDoc?.discordId !== newId
 
-        const outcome = await refreshCacheFromAshley(data, newId)
+        const [{ refreshDiscordCacheFields }, { pickBestAvatar }] = await Promise.all([
+          import('@/lib/discord/syncCache'),
+          import('@/lib/discord/avatar'),
+        ])
+
+        const outcome = await refreshDiscordCacheFields(data, newId, (target, member) => {
+          target.cached_username = member.username ?? null
+          target.cached_displayName = member.displayName
+          target.cached_avatarUrl = pickBestAvatar(
+            member.serverAvatarUrls as AvatarBundle,
+            member.avatarUrls as AvatarBundle,
+          )
+          target.cached_joinedAt = member.joinedAt ?? null
+          target.cached_accountCreatedAt = member.accountCreatedAt ?? null
+          target.cached_at = new Date().toISOString()
+        })
         if (outcome.kind === 'ok') return data
 
         if (idChanged) {
