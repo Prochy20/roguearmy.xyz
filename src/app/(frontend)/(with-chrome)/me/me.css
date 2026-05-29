@@ -1,0 +1,51 @@
+@keyframes me-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes me-dot-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+.me-fade {
+  opacity: 0;
+  animation: me-fade-in 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+}
+
+.me-fade--01 {
+  animation-delay: 0.05s;
+}
+
+.me-fade--02 {
+  animation-delay: 0.2s;
+}
+
+.me-fade--03 {
+  animation-delay: 0.35s;
+}
+
+.me-dot-pulse {
+  animation: me-dot-pulse 2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .me-fade {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+  .me-dot-pulse {
+    animation: none !important;
+  }
+}
