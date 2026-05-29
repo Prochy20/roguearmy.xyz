@@ -79,10 +79,10 @@ export function IdentityCard({
         <div className="grid grid-cols-1 gap-8 p-5 sm:p-7 lg:grid-cols-[236px_1fr] lg:gap-10 lg:p-10">
           <div className="flex flex-col gap-3">
             <CredentialAvatar src={avatarUrl} alt={codename} corner={theme.corner} />
-            <StatusPill label="ON DUTY" value="ACTIVE" tone="green" />
             {isBooster && (
               <StatusPill label="BOOSTER" value="ACTIVE" tone="magenta" pulse={false} />
             )}
+            <StatusPill label="ON DUTY" value="ACTIVE" tone="green" />
           </div>
 
           <div className="flex min-w-0 flex-col gap-6">
