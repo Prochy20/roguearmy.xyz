@@ -1,7 +1,7 @@
-import Link from 'next/link'
 import { BoosterPerksWidget } from '@/components/division2/briefings/BoosterPerksWidget'
 import { BriefingCard } from '@/components/division2/briefings/BriefingCard'
 import { CyberCorners } from '@/components/ui/CyberCorners'
+import { PanelHeader } from '@/components/division2/landing/PanelHeader'
 import {
   formatDayShort,
   normalizeDayIso,
@@ -70,6 +70,7 @@ export function BriefingPanel({
             href: `/division-2/briefings/${briefing.id}`,
             label: 'READ FULL BRIEFING →',
           }}
+          accent="cyan"
         />
       </div>
       <CyberCorners color="cyan" size="md">
@@ -171,38 +172,3 @@ function SubsectionHeader({
   )
 }
 
-function PanelHeader({
-  code,
-  label,
-  meta,
-  cta,
-}: {
-  code: string
-  label: string
-  meta?: string
-  cta: { href: string; label: string }
-}) {
-  return (
-    <header className="flex flex-wrap items-end justify-between gap-3 border-b border-text-muted/15 pb-3">
-      <div className="flex flex-wrap items-baseline gap-3 font-mono">
-        <span className="text-[10px] tracking-[0.4em] text-rga-cyan">
-          {code}
-        </span>
-        <span className="text-[10px] tracking-[0.3em] text-text-muted">
-          {label}
-        </span>
-        {meta && (
-          <span className="text-[9px] tracking-[0.3em] text-text-muted/70">
-            {meta}
-          </span>
-        )}
-      </div>
-      <Link
-        href={cta.href}
-        className="font-mono text-[10px] uppercase tracking-[0.3em] text-rga-cyan transition-colors hover:text-text-primary"
-      >
-        {cta.label}
-      </Link>
-    </header>
-  )
-}

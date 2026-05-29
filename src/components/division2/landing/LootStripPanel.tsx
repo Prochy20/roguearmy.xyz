@@ -1,6 +1,6 @@
-import Link from 'next/link'
 import { LootIcon } from '@/components/division2/escalation/LootIcon'
 import { SpecimenFrame } from '@/components/division2/escalation/SpecimenFrame'
+import { PanelHeader } from '@/components/division2/landing/PanelHeader'
 import { formatDayWithWeekday } from '@/lib/division2/format'
 import type {
   EscalationLootItem,
@@ -78,6 +78,7 @@ export function LootStripPanel({
           label="// TODAY · DROPS + VENDOR"
           meta={formatDayWithWeekday(targetDay)}
           cta={{ href: '/division-2/escalation', label: 'OPEN ESCALATION →' }}
+          accent="mod"
         />
       </div>
 
@@ -127,36 +128,3 @@ function shuffle<T>(arr: T[]): T[] {
   return out
 }
 
-function PanelHeader({
-  code,
-  label,
-  meta,
-  cta,
-}: {
-  code: string
-  label: string
-  meta?: string
-  cta: { href: string; label: string }
-}) {
-  return (
-    <header className="flex flex-wrap items-end justify-between gap-3 border-b border-text-muted/15 pb-3">
-      <div className="flex flex-wrap items-baseline gap-3 font-mono">
-        <span className="text-[10px] tracking-[0.4em] text-rga-mod">{code}</span>
-        <span className="text-[10px] tracking-[0.3em] text-text-muted">
-          {label}
-        </span>
-        {meta && (
-          <span className="text-[9px] tracking-[0.3em] text-text-muted/70">
-            {meta}
-          </span>
-        )}
-      </div>
-      <Link
-        href={cta.href}
-        className="font-mono text-[10px] uppercase tracking-[0.3em] text-rga-mod transition-colors hover:text-text-primary"
-      >
-        {cta.label}
-      </Link>
-    </header>
-  )
-}

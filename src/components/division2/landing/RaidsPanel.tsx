@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { CyberCorners, CyberTag } from '@/components/ui/CyberCorners'
+import { PanelHeader } from '@/components/division2/landing/PanelHeader'
 import { formatDayShort, weekdayShort } from '@/lib/division2/format'
 import type { Raid } from '@/lib/division2/raids.server'
 
@@ -86,6 +87,8 @@ export function RaidsPanel({
               : 'OPEN CHANNEL TO RSVP'
           }
           cta={{ href: ctaHref, label: `${ctaLabel} →` }}
+          accent="green"
+          external
         />
       </div>
 
@@ -338,40 +341,3 @@ function formatTime(d: Date): string {
   return `${h}:${m} UTC`
 }
 
-function PanelHeader({
-  code,
-  label,
-  meta,
-  cta,
-}: {
-  code: string
-  label: string
-  meta?: string
-  cta: { href: string; label: string }
-}) {
-  return (
-    <header className="flex flex-wrap items-end justify-between gap-3 border-b border-text-muted/15 pb-3">
-      <div className="flex flex-wrap items-baseline gap-3 font-mono">
-        <span className="text-[10px] tracking-[0.4em] text-rga-green">
-          {code}
-        </span>
-        <span className="text-[10px] tracking-[0.3em] text-text-muted">
-          {label}
-        </span>
-        {meta && (
-          <span className="text-[9px] tracking-[0.3em] text-text-muted/70">
-            {meta}
-          </span>
-        )}
-      </div>
-      <a
-        href={cta.href}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="font-mono text-[10px] uppercase tracking-[0.3em] text-rga-green transition-colors hover:text-text-primary"
-      >
-        {cta.label}
-      </a>
-    </header>
-  )
-}
