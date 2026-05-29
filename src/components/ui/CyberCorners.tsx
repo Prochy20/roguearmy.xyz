@@ -217,7 +217,7 @@ const tagColorConfig: Record<
   },
   gray: {
     bg: 'bg-rga-gray/50',
-    text: 'text-rga-gray',
+    text: 'text-text-secondary',
     glow: '',
     gradient: 'from-rga-gray/10 to-transparent',
   },

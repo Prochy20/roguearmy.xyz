@@ -44,7 +44,7 @@ const colorStyles: Record<ButtonColor, {
     accent: 'bg-rga-gray/30',
     accentHover: 'group-hover:bg-rga-gray/50',
     scanLine: 'via-rga-gray/20',
-    textHover: 'hover:text-rga-gray',
+    textHover: 'hover:text-text-secondary',
   },
 }
 
@@ -161,7 +161,7 @@ export const CyberButton = forwardRef<
   const baseClasses = cn(
     'group relative inline-flex items-center gap-2 px-4 py-2',
     'bg-void/70 backdrop-blur-md',
-    'text-rga-gray/80 transition-all duration-300',
+    'text-text-secondary/80 transition-all duration-300',
     styles.textHover,
     className
   )
