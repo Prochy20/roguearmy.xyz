@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { publicRead } from '@/access'
 
 export const Games: CollectionConfig = {
   slug: 'games',
@@ -8,7 +9,7 @@ export const Games: CollectionConfig = {
     group: 'Taxonomies',
   },
   access: {
-    read: () => true,
+    read: publicRead,
   },
   hooks: {
     afterDelete: [

@@ -1,4 +1,5 @@
 import type { GlobalConfig } from 'payload'
+import { publicRead, adminOnly } from '@/access'
 
 export const SiteChrome: GlobalConfig = {
   slug: 'site-chrome',
@@ -9,8 +10,8 @@ export const SiteChrome: GlobalConfig = {
       'Footer tagline copy and the member-count floor used when Ashley is unreachable.',
   },
   access: {
-    read: () => true,
-    update: ({ req: { user } }) => Boolean(user),
+    read: publicRead,
+    update: adminOnly,
   },
   fields: [
     {

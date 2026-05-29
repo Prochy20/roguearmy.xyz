@@ -1,4 +1,5 @@
 import type { GlobalConfig } from 'payload'
+import { publicRead } from '@/access'
 
 /**
  * Build a minimal Lexical document containing a single paragraph of plain
@@ -72,7 +73,7 @@ const ICON_OPTIONS = [
 export const StaffPage: GlobalConfig = {
   slug: 'staff-page',
   access: {
-    read: () => true,
+    read: publicRead,
   },
   admin: {
     group: 'Identity',

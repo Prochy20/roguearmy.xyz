@@ -1,4 +1,5 @@
 import type { Block, GlobalConfig } from 'payload'
+import { publicRead, adminOnly } from '@/access'
 
 /* ───────────────────────── How-to step blocks ─────────────────────────
    The /division-2/clans How-To section is a list of heterogeneous steps:
@@ -117,8 +118,8 @@ export const Division2: GlobalConfig = {
       'Access gate + editable copy for the Division 2 tools. Clearing the gate role disables the section for all members.',
   },
   access: {
-    read: () => true,
-    update: ({ req: { user } }) => Boolean(user),
+    read: publicRead,
+    update: adminOnly,
   },
   fields: [
     {

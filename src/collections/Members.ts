@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { adminOnly } from '@/access'
 
 export const Members: CollectionConfig = {
   slug: 'members',
@@ -19,10 +20,10 @@ export const Members: CollectionConfig = {
   // not break the auth flow. Without these locks, the Payload REST mount
   // at /api/payload/members would let anyone read PII or flip status.
   access: {
-    read: ({ req: { user } }) => Boolean(user),
-    create: ({ req: { user } }) => Boolean(user),
-    update: ({ req: { user } }) => Boolean(user),
-    delete: ({ req: { user } }) => Boolean(user),
+    read: adminOnly,
+    create: adminOnly,
+    update: adminOnly,
+    delete: adminOnly,
   },
   fields: [
     // Discord Identity

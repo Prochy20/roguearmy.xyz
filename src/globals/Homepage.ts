@@ -1,4 +1,5 @@
 import type { GlobalConfig } from 'payload'
+import { publicRead } from '@/access'
 
 export const Homepage: GlobalConfig = {
   slug: 'homepage',
@@ -6,7 +7,7 @@ export const Homepage: GlobalConfig = {
     group: 'System',
   },
   access: {
-    read: () => true,
+    read: publicRead,
   },
   fields: [
     {

@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { publicRead } from '@/access'
 
 type RoleSnapshot = {
   id: string
@@ -41,7 +42,7 @@ export const GameRoles: CollectionConfig = {
     description: 'Pair Discord roles with games. Members holding any paired role count as playing that game.',
   },
   access: {
-    read: () => true,
+    read: publicRead,
   },
   hooks: {
     beforeValidate: [

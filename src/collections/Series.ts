@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { publicRead } from '@/access'
 
 export const Series: CollectionConfig = {
   slug: 'series',
@@ -7,7 +8,7 @@ export const Series: CollectionConfig = {
     group: 'Editorial',
   },
   access: {
-    read: () => true,
+    read: publicRead,
   },
   fields: [
     {

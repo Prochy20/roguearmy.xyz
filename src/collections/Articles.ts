@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { publicRead } from '@/access'
 import { setPublishedAt } from '@/hooks/articles/setPublishedAt'
 import { calculateReadingTime } from '@/hooks/articles/calculateReadingTime'
 
@@ -11,7 +12,7 @@ export const Articles: CollectionConfig = {
     listSearchableFields: ['title', 'slug', 'perex'],
   },
   access: {
-    read: () => true,
+    read: publicRead,
   },
   versions: {
     drafts: true,

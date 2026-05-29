@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { adminOnly } from '@/access'
 
 export const Bookmarks: CollectionConfig = {
   slug: 'bookmarks',
@@ -13,10 +14,10 @@ export const Bookmarks: CollectionConfig = {
   },
   access: {
     // Only admins via admin panel
-    read: ({ req }) => Boolean(req.user),
+    read: adminOnly,
     create: () => false, // API only
     update: () => false, // No updates needed (toggle = delete + create)
-    delete: ({ req }) => Boolean(req.user), // Only admins can delete
+    delete: adminOnly, // Only admins can delete
   },
   indexes: [
     {

@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { publicRead } from '@/access'
 
 export const Media: CollectionConfig = {
   slug: 'media',
@@ -6,7 +7,7 @@ export const Media: CollectionConfig = {
     group: 'Assets',
   },
   access: {
-    read: () => true,
+    read: publicRead,
   },
   fields: [
     {

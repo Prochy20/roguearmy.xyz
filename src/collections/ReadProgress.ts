@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { adminOnly } from '@/access'
 
 export const ReadProgress: CollectionConfig = {
   slug: 'read-progress',
@@ -12,16 +13,13 @@ export const ReadProgress: CollectionConfig = {
     defaultColumns: ['member', 'article', 'progress', 'completed', 'lastVisitedAt'],
   },
   access: {
-    // Members can only read their own records
-    read: ({ req }) => {
-      // Allow admin full access
-      if (req.user) return true
-      return false
-    },
+    // Admin-only read (members access their own records only via the BFF
+    // routes under /api/member/read-progress, which scope the query manually).
+    read: adminOnly,
     // Only create/update via API (not admin)
     create: () => false,
     update: () => false,
-    delete: ({ req }) => Boolean(req.user), // Only admins can delete
+    delete: adminOnly, // Only admins can delete
   },
   // Compound unique index on (member, article) - enforced at DB adapter level
   dbName: 'readProgress',
