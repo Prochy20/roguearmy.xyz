@@ -1,7 +1,10 @@
 import type { CollectionConfig } from 'payload'
 import { publicRead } from '@/access'
 import { setPublishedAt } from '@/hooks/articles/setPublishedAt'
-import { calculateReadingTime } from '@/hooks/articles/calculateReadingTime'
+import {
+  calculateReadingTime,
+  calculateReadingTimeBeforeChange,
+} from '@/hooks/articles/calculateReadingTime'
 import {
   revalidateArticlesAfterChange,
   revalidateArticlesAfterDelete,
@@ -38,7 +41,7 @@ export const Articles: CollectionConfig = {
         return data
       },
     ],
-    beforeChange: [setPublishedAt],
+    beforeChange: [setPublishedAt, calculateReadingTimeBeforeChange],
     afterChange: [revalidateArticlesAfterChange],
     afterDelete: [revalidateArticlesAfterDelete],
     afterRead: [calculateReadingTime],
