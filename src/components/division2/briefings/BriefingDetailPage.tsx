@@ -24,6 +24,7 @@ import type {
   Briefing,
   BriefingDetail,
 } from '@/lib/division2/briefing.server'
+import type { BriefingProgress } from '@/lib/progress.server'
 
 interface BriefingDetailPageProps {
   briefing: BriefingDetail
@@ -45,6 +46,11 @@ interface BriefingDetailPageProps {
   next: Briefing | null
   /** Up to 3 other briefings to surface as cards below the sources table. */
   related: Briefing[]
+  /**
+   * Briefing-id → progress map covering only the `related` cards. `null`
+   * for anonymous viewers. Plain object so it crosses the prop boundary.
+   */
+  briefingProgress: Record<string, BriefingProgress> | null
 }
 
 /**
@@ -71,6 +77,7 @@ export function BriefingDetailPage({
   prev,
   next,
   related,
+  briefingProgress,
 }: BriefingDetailPageProps) {
   const accent = frequencyAccent(briefing.frequency)
   const periodLabel = formatPeriodLabel(briefing)
@@ -164,7 +171,11 @@ export function BriefingDetailPage({
       </article>
       <BriefingSources accent={accent} articles={briefing.articles} />
       {related.length > 0 && (
-        <RelatedBriefings accent={accent} briefings={related} />
+        <RelatedBriefings
+          accent={accent}
+          briefings={related}
+          briefingProgress={briefingProgress}
+        />
       )}
     </div>
   )
@@ -252,9 +263,11 @@ function formatDateLabel(briefing: BriefingDetail): string {
 function RelatedBriefings({
   accent,
   briefings,
+  briefingProgress,
 }: {
   accent: AccentName
   briefings: Briefing[]
+  briefingProgress: Record<string, BriefingProgress> | null
 }) {
   return (
     <section className="mt-12 flex flex-col gap-5">
@@ -283,7 +296,11 @@ function RelatedBriefings({
       </header>
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {briefings.map((briefing) => (
-          <BriefingCard key={briefing.id} briefing={briefing} />
+          <BriefingCard
+            key={briefing.id}
+            briefing={briefing}
+            progress={briefingProgress?.[briefing.id] ?? null}
+          />
         ))}
       </div>
     </section>

@@ -4,7 +4,9 @@ import { EmptyDossier } from '@/components/division2/EmptyDossier'
 import { FailRow } from '@/components/ui/FailRow'
 import { BriefingDetailPage } from '@/components/division2/briefings/BriefingDetailPage'
 import { BriefingTeaserView } from '@/components/division2/briefings/BriefingTeaserView'
+import { ReadProgressTracker } from '@/components/article/ReadProgressTracker'
 import { getMemberAuth } from '@/lib/auth/session.server'
+import { getMemberBriefingProgressMap } from '@/lib/progress.server'
 import { checkRoleGate } from '@/lib/auth/roleGate'
 import { hasBriefingsAccess } from '@/lib/auth/badges'
 import { formatDayShort } from '@/lib/division2/format'
@@ -250,9 +252,29 @@ export default async function Division2BriefingDetailPage({
     ? findRelated(recent.data, briefing, hasAccess)
     : []
 
+  // Related-deck progress: surfaces the same READ %/✓ chip on the
+  // "Continue reading" cards below the sources table. Serialized as a plain
+  // object because Maps don't survive the server → client prop boundary.
+  const briefingProgress =
+    auth.memberId && related.length > 0
+      ? Object.fromEntries(
+          await getMemberBriefingProgressMap(
+            auth.memberId,
+            related.map((r) => r.id),
+          ),
+        )
+      : null
+
   return (
     <>
       {jsonLdTag}
+      {auth.memberId && (
+        <ReadProgressTracker
+          targetType="briefing"
+          targetId={briefing.id}
+          selector=".briefing-body"
+        />
+      )}
       <BriefingDetailPage
         briefing={briefing}
         transformedContent={transformed}
@@ -265,6 +287,7 @@ export default async function Division2BriefingDetailPage({
         prev={neighbors.prev}
         next={neighbors.next}
         related={related}
+        briefingProgress={briefingProgress}
       />
     </>
   )

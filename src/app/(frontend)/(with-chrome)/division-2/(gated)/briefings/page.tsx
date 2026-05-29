@@ -2,6 +2,7 @@ import { BriefingsPage } from '@/components/division2/briefings/BriefingsPage'
 import type { WeekStepperState } from '@/components/division2/briefings/WeekStepper'
 import { cachedFindGlobal } from '@/lib/payload/cached'
 import { getMemberAuth } from '@/lib/auth/session.server'
+import { getMemberBriefingProgressMap } from '@/lib/progress.server'
 import { hasBriefingsAccess } from '@/lib/auth/badges'
 import {
   fetchRecentDailyBriefings,
@@ -75,6 +76,19 @@ export default async function Division2BriefingsPage({ searchParams }: PageProps
   const stepper = buildStepper(weekStartsInData, activeWeekStart)
   const isLatestWeek = activeWeekStart === weekStartsInData[0]
 
+  // Member-scoped progress for the visible week's briefings. Serialized as a
+  // plain object so it survives the server → client prop boundary into the
+  // cards. Anonymous viewers get null and see today's chip-less cards.
+  const briefingProgress =
+    auth.memberId && briefingsForWeek.length > 0
+      ? Object.fromEntries(
+          await getMemberBriefingProgressMap(
+            auth.memberId,
+            briefingsForWeek.map((b) => b.id),
+          ),
+        )
+      : null
+
   return (
     <BriefingsPage
       weekly={weekliesResult}
@@ -84,6 +98,7 @@ export default async function Division2BriefingsPage({ searchParams }: PageProps
       stepper={stepper}
       isLatestWeek={isLatestWeek}
       content={division2.briefingsPage ?? null}
+      briefingProgress={briefingProgress}
     />
   )
 }

@@ -2,6 +2,12 @@ import Link from 'next/link'
 import { BriefingThumbnail } from './BriefingThumbnail'
 import { formatDayShort, weekdayShort } from '@/lib/division2/format'
 import type { Briefing } from '@/lib/division2/briefing.server'
+import type { BriefingProgress } from '@/lib/progress.server'
+
+/** Minimal progress shape the card consumes. Derived from the canonical
+ * server type via `Pick` so the two can't drift — `import type` keeps the
+ * server-only module out of the client bundle. */
+export type BriefingCardProgress = Pick<BriefingProgress, 'progress' | 'completed'>
 
 interface BriefingCardProps {
   briefing: Briefing
@@ -12,6 +18,12 @@ interface BriefingCardProps {
    * footprint reads as a featured headline instead of a stretched square.
    */
   tone?: 'standard' | 'lead'
+  /**
+   * Member's saved reading state for this briefing. `null` or `undefined`
+   * (anonymous viewer / never visited) renders no progress affordance —
+   * card looks identical to its zero-progress state.
+   */
+  progress?: BriefingCardProgress | null
 }
 
 const STRIPE_BG =
@@ -31,10 +43,18 @@ const STRIPE_BG =
  *   • agent telemetry footer with `▸ @ASHLEY · 7D AGO · N SRC · BRF_xxxx.md`
  *   • subtle diagonal-stripe ground + corner quote glyph
  */
-export function BriefingCard({ briefing, tone = 'standard' }: BriefingCardProps) {
+export function BriefingCard({
+  briefing,
+  tone = 'standard',
+  progress,
+}: BriefingCardProps) {
   const isWeekly = briefing.frequency === 'weekly'
   const isLead = tone === 'lead'
   const accent = accentClasses(isWeekly ? 'cyan' : 'mod')
+  // Treat zero-progress records as "no progress" for display purposes — the
+  // tracker writes a row on the first scroll event, but readers haven't
+  // visually "started" the briefing if they bounced before scrolling.
+  const hasProgress = Boolean(progress && (progress.progress > 0 || progress.completed))
   const fileNumber = buildFileNumber(briefing)
   const age = formatAge(briefing.periodStart)
   const dateStamp = isWeekly
@@ -139,10 +159,30 @@ export function BriefingCard({ briefing, tone = 'standard' }: BriefingCardProps)
             <span aria-hidden className="text-text-muted/40">·</span>
             <span>{briefing.articleCount} SRC</span>
             <span aria-hidden className="text-text-muted/40">·</span>
-            <span>
-              <span className="text-rga-mod">{fileNumber}</span>
-              <span className="text-text-muted/60">.md</span>
-            </span>
+            {/* Tail slot: BRF doc-id by default, READ chip swaps in when the
+                member has progress on this briefing. Keeps the row at a
+                constant 4 items — never wraps in the 4-col grid. BRF is
+                pure flavor (no link, no action) so swapping it for state
+                trades nothing the reader can use. */}
+            {hasProgress && progress ? (
+              <span>
+                READ{' '}
+                {progress.completed ? (
+                  <span className="text-rga-green" aria-label="Read">
+                    ✓
+                  </span>
+                ) : (
+                  <span className={accent.openText}>
+                    {Math.round(progress.progress)}%
+                  </span>
+                )}
+              </span>
+            ) : (
+              <span>
+                <span className="text-rga-mod">{fileNumber}</span>
+                <span className="text-text-muted/60">.md</span>
+              </span>
+            )}
           </div>
         </div>
       </div>

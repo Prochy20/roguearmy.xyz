@@ -10,6 +10,7 @@ import { BoosterPerksWidget } from './BoosterPerksWidget'
 import { formatDayShort } from '@/lib/division2/format'
 import type { AshleyResult } from '@/lib/api/server'
 import type { BriefingList, Briefing } from '@/lib/division2/briefing.server'
+import type { BriefingProgress } from '@/lib/progress.server'
 import type { Division2 } from '@/payload-types'
 
 type BriefingsPageContent = NonNullable<Division2['briefingsPage']>
@@ -27,6 +28,12 @@ interface BriefingsPageProps {
   /** True when the active week is the newest data-bearing week — drives the LATEST hero. */
   isLatestWeek: boolean
   content: BriefingsPageContent | null | undefined
+  /**
+   * Briefing-id → progress map for the visible week. `null` for anonymous
+   * viewers (no progress chip shown). Plain object (not Map) so it crosses
+   * the server → client prop boundary cleanly.
+   */
+  briefingProgress: Record<string, BriefingProgress> | null
 }
 
 const DEFAULTS = {
@@ -45,6 +52,7 @@ export function BriefingsPage({
   stepper,
   isLatestWeek,
   content,
+  briefingProgress,
 }: BriefingsPageProps) {
   const heroKicker = content?.heroKicker?.trim() || DEFAULTS.heroKicker
   const heroTitle = content?.heroTitle?.trim() || DEFAULTS.heroTitle
@@ -135,6 +143,7 @@ export function BriefingsPage({
           hasAccess={hasAccess}
           content={content}
           isLatestWeek={isLatestWeek}
+          briefingProgress={briefingProgress}
         />
 
         {stepper && (
@@ -154,6 +163,7 @@ interface BriefingsBodyProps {
   hasAccess: boolean
   content: BriefingsPageContent | null | undefined
   isLatestWeek: boolean
+  briefingProgress: Record<string, BriefingProgress> | null
 }
 
 function BriefingsBody({
@@ -163,6 +173,7 @@ function BriefingsBody({
   hasAccess,
   content,
   isLatestWeek,
+  briefingProgress,
 }: BriefingsBodyProps) {
   if (!weekly.ok) {
     return (
@@ -195,7 +206,11 @@ function BriefingsBody({
           brackets. */}
       {showLeadHero && lead && (
         <Section sec="SEC_01" label="// LATEST" accent="green">
-          <BriefingCard briefing={lead} tone="lead" />
+          <BriefingCard
+            briefing={lead}
+            tone="lead"
+            progress={briefingProgress?.[lead.id] ?? null}
+          />
         </Section>
       )}
 
@@ -214,7 +229,11 @@ function BriefingsBody({
             {gridItems.length > 0 ? (
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3 xl:grid-cols-4">
                 {gridItems.map((b) => (
-                  <BriefingCard key={b.id} briefing={b} />
+                  <BriefingCard
+                    key={b.id}
+                    briefing={b}
+                    progress={briefingProgress?.[b.id] ?? null}
+                  />
                 ))}
               </div>
             ) : (
