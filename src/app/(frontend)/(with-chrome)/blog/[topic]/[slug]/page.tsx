@@ -208,7 +208,7 @@ export default async function BlogArticlePage({ params, searchParams }: ArticleP
 
   return (
     <>
-      {memberId && <ReadProgressTracker articleId={article.id} />}
+      {memberId && <ReadProgressTracker targetType="article" targetId={article.id} />}
       <ArticleDetailPage
         article={article}
         bodySource={bodySource}

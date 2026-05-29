@@ -2,22 +2,33 @@
 
 import { useEffect, useRef, useCallback } from 'react'
 
+type TargetType = 'article' | 'briefing'
+
 interface ReadProgressTrackerProps {
-  /** Article ID to track progress for */
-  articleId: string
+  /** Which content type this tracker is mounted on. */
+  targetType: TargetType
+  /** Article ID (Payload) or briefing UUID (Ashley). */
+  targetId: string
+  /**
+   * CSS selector for the element whose scroll progress should be tracked.
+   * Defaults to `.article-content` — the blog body wrapper. Briefing detail
+   * passes `.briefing-body`.
+   */
+  selector?: string
 }
 
 const DEBOUNCE_MS = 10_000 // 10 seconds
 const PROGRESS_CHANGE_THRESHOLD = 10 // 10% change triggers sync
+const DEFAULT_SELECTOR = '.article-content'
 
 /**
  * Headless client component that tracks reading progress.
  * Does NOT render anything - purely for persistence.
  *
  * Tracks:
- * - Scroll progress (0-100%)
+ * - Scroll progress (0-100%) within the element matching `selector`
  * - Time spent on page (seconds)
- * - Completed status (at 85% threshold)
+ * - Completed status (at 85% threshold, computed server-side)
  *
  * Syncs to API:
  * - Every 10 seconds
@@ -25,19 +36,22 @@ const PROGRESS_CHANGE_THRESHOLD = 10 // 10% change triggers sync
  * - On visibility change (tab switch)
  * - On beforeunload (page close)
  */
-export function ReadProgressTracker({ articleId }: ReadProgressTrackerProps) {
+export function ReadProgressTracker({
+  targetType,
+  targetId,
+  selector = DEFAULT_SELECTOR,
+}: ReadProgressTrackerProps) {
   const progressRef = useRef(0)
   const lastSyncedProgressRef = useRef(0)
   const timeSpentRef = useRef(0)
-  const lastSyncTimeRef = useRef(Date.now())
   const isVisibleRef = useRef(true)
   const isSyncingRef = useRef(false) // Mutex to prevent concurrent syncs
   const syncTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const timeTrackingIntervalRef = useRef<NodeJS.Timeout | null>(null)
+  const warnedMissingSelectorRef = useRef(false)
 
   // Sync progress to API
   const syncProgress = useCallback(async (force = false) => {
-    // Skip if already syncing (mutex)
     if (isSyncingRef.current) {
       return
     }
@@ -45,12 +59,10 @@ export function ReadProgressTracker({ articleId }: ReadProgressTrackerProps) {
     const currentProgress = progressRef.current
     const progressDiff = Math.abs(currentProgress - lastSyncedProgressRef.current)
 
-    // Only sync if forced or progress changed significantly
     if (!force && progressDiff < PROGRESS_CHANGE_THRESHOLD) {
       return
     }
 
-    // Don't sync if no progress
     if (currentProgress === 0 && timeSpentRef.current === 0) {
       return
     }
@@ -61,7 +73,8 @@ export function ReadProgressTracker({ articleId }: ReadProgressTrackerProps) {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          articleId,
+          targetType,
+          targetId,
           progress: Math.round(currentProgress),
           timeSpent: Math.round(timeSpentRef.current),
         }),
@@ -70,19 +83,28 @@ export function ReadProgressTracker({ articleId }: ReadProgressTrackerProps) {
       })
 
       lastSyncedProgressRef.current = currentProgress
-      timeSpentRef.current = 0 // Reset time spent after sync
-      lastSyncTimeRef.current = Date.now()
+      timeSpentRef.current = 0
     } catch (error) {
       console.error('Failed to sync read progress:', error)
     } finally {
       isSyncingRef.current = false
     }
-  }, [articleId])
+  }, [targetType, targetId])
 
-  // Calculate scroll progress based on article content element
+  // Calculate scroll progress based on the configured element
   const calculateProgress = useCallback(() => {
-    const article = document.querySelector('.article-content')
+    const article = document.querySelector(selector)
     if (!article) {
+      if (
+        process.env.NODE_ENV !== 'production' &&
+        !warnedMissingSelectorRef.current
+      ) {
+        warnedMissingSelectorRef.current = true
+        console.warn(
+          `[ReadProgressTracker] selector not found in DOM: "${selector}". ` +
+            `Progress will stay at 0%. Check the wrapper element on this page.`,
+        )
+      }
       progressRef.current = 0
       return
     }
@@ -90,9 +112,8 @@ export function ReadProgressTracker({ articleId }: ReadProgressTrackerProps) {
     const rect = article.getBoundingClientRect()
     const viewportHeight = window.innerHeight
 
-    // Calculate progress based on article content position
-    // 0% when top of article is at top of viewport
-    // 100% when bottom of article reaches bottom of viewport
+    // 0% when top of element is at top of viewport;
+    // 100% when bottom of element reaches bottom of viewport.
     const scrolledIntoArticle = -rect.top
     const readableDistance = article.clientHeight - viewportHeight
 
@@ -101,64 +122,54 @@ export function ReadProgressTracker({ articleId }: ReadProgressTrackerProps) {
       scrollProgress = (scrolledIntoArticle / readableDistance) * 100
       scrollProgress = Math.max(0, Math.min(100, scrollProgress))
     } else {
-      // Article is shorter than viewport
       scrollProgress = rect.top <= 0 ? 100 : 0
     }
 
     progressRef.current = scrollProgress
-  }, [])
+  }, [selector])
 
-  // Handle scroll with debounced sync
   const handleScroll = useCallback(() => {
     calculateProgress()
 
-    // Check if progress changed enough to sync
     const progressDiff = Math.abs(progressRef.current - lastSyncedProgressRef.current)
     if (progressDiff >= PROGRESS_CHANGE_THRESHOLD) {
       syncProgress()
     }
   }, [calculateProgress, syncProgress])
 
-  // Handle visibility change
   const handleVisibilityChange = useCallback(() => {
     if (document.visibilityState === 'hidden') {
       isVisibleRef.current = false
-      syncProgress(true) // Force sync when leaving
+      syncProgress(true)
     } else {
       isVisibleRef.current = true
     }
   }, [syncProgress])
 
-  // Handle beforeunload
   const handleBeforeUnload = useCallback(() => {
-    syncProgress(true) // Force sync before leaving
+    syncProgress(true)
   }, [syncProgress])
 
   useEffect(() => {
-    // Initial progress calculation
     calculateProgress()
 
-    // Track time spent while visible
     timeTrackingIntervalRef.current = setInterval(() => {
       if (isVisibleRef.current) {
         timeSpentRef.current += 1
       }
     }, 1000)
 
-    // Debounced sync interval
     syncTimeoutRef.current = setInterval(() => {
       if (isVisibleRef.current && timeSpentRef.current > 0) {
         syncProgress()
       }
     }, DEBOUNCE_MS)
 
-    // Event listeners
     window.addEventListener('scroll', handleScroll, { passive: true })
     document.addEventListener('visibilitychange', handleVisibilityChange)
     window.addEventListener('beforeunload', handleBeforeUnload)
 
     return () => {
-      // Cleanup
       window.removeEventListener('scroll', handleScroll)
       document.removeEventListener('visibilitychange', handleVisibilityChange)
       window.removeEventListener('beforeunload', handleBeforeUnload)
@@ -175,6 +186,5 @@ export function ReadProgressTracker({ articleId }: ReadProgressTrackerProps) {
     }
   }, [calculateProgress, handleScroll, handleVisibilityChange, handleBeforeUnload, syncProgress])
 
-  // Render nothing - this is a headless component
   return null
 }
