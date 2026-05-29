@@ -8,12 +8,13 @@ import { AuthProvider } from '@/components/auth/AuthProvider'
 import { getJwtSession } from '@/lib/auth/session.server'
 import { checkRoleGate, type RoleGateKey } from '@/lib/auth/roleGate'
 import type { RoleGateMap } from '@/lib/auth/roleGate.types'
+import { getSiteUrl } from '@/lib/seo/siteUrl'
 
 // Keys here are evaluated for every authenticated request to populate the
 // AuthProvider's `roleGates` map. Extend as new gated nav entries land.
 const NAV_ROLE_GATE_KEYS: RoleGateKey[] = ['division2Role']
 
-const siteUrl = 'https://roguearmy.xyz'
+const siteUrl = getSiteUrl()
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

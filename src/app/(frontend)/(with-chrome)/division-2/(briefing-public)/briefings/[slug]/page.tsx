@@ -26,6 +26,7 @@ import {
   buildCitationIndex,
   transformCitationMarkers,
 } from '@/lib/division2/briefing.citations'
+import { getSiteUrl } from '@/lib/seo/siteUrl'
 
 // Dynamic rendering is implicit: `params`, `searchParams`, and the cookie
 // read inside `getMemberAuth()` each opt this route out of static
@@ -37,7 +38,7 @@ import {
 // OG/JSON-LD metadata. All auth states resolve inside this file — the
 // previous layout-level gate no longer covers this route.
 
-const siteUrl = 'https://roguearmy.xyz'
+const siteUrl = getSiteUrl()
 
 interface PageProps {
   params: Promise<{ slug: string }>
