@@ -578,7 +578,7 @@ export interface Bookmark {
   createdAt: string;
 }
 /**
- * Tracks article reading progress for members
+ * Tracks reading progress for members across articles and briefings
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "read-progress".
@@ -586,17 +586,28 @@ export interface Bookmark {
 export interface ReadProgress {
   id: string;
   member: string | Member;
-  article: string | Article;
+  /**
+   * Which content type this progress record points at
+   */
+  targetType: 'article' | 'briefing';
+  /**
+   * ID of the article (Payload ID) or briefing (Ashley UUID)
+   */
+  targetId: string;
+  /**
+   * Linked article (article-type rows only)
+   */
+  article?: (string | null) | Article;
   /**
    * Scroll percentage (0-100)
    */
   progress: number;
   /**
-   * When the member first visited this article
+   * When the member first visited this target
    */
   firstVisitedAt: string;
   /**
-   * When the member last visited this article
+   * When the member last visited this target
    */
   lastVisitedAt: string;
   /**
@@ -929,6 +940,8 @@ export interface BookmarksSelect<T extends boolean = true> {
  */
 export interface ReadProgressSelect<T extends boolean = true> {
   member?: T;
+  targetType?: T;
+  targetId?: T;
   article?: T;
   progress?: T;
   firstVisitedAt?: T;

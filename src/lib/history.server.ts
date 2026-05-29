@@ -150,6 +150,7 @@ export async function getReadingHistoryMap(
     where: {
       and: [
         { member: { equals: memberId } },
+        { targetType: { equals: 'article' } },
         { completed: { equals: true } },
       ],
     },
@@ -159,8 +160,7 @@ export async function getReadingHistoryMap(
 
   const map = new Map<string, Date>()
   for (const doc of result.docs) {
-    const articleId = typeof doc.article === 'string' ? doc.article : doc.article.id
-    map.set(articleId, new Date(doc.lastVisitedAt))
+    map.set(doc.targetId, new Date(doc.lastVisitedAt))
   }
 
   return map
