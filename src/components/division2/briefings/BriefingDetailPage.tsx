@@ -216,7 +216,7 @@ function buildImageFileNumber(briefingId: string): string {
 function briefingToNeighbor(briefing: Briefing | null): ReaderFooterNeighbor | null {
   if (!briefing) return null
   return {
-    href: `/division-2/briefings/${briefing.id}`,
+    href: briefing.canonicalPath,
     label: briefing.frequency.toUpperCase(),
     sublabel: formatDayShort(briefing.periodStart),
   }

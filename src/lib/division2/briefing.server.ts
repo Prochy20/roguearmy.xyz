@@ -48,6 +48,10 @@ export interface Briefing {
   articleIds: string[]
   createdAt: string
   updatedAt: string
+  /** Slugified title, cosmetic — see `canonicalPath`. */
+  slug: string
+  /** Self-healing URL: `slug-{prefix}`. Prefix is 8 hex chars of the UUID. */
+  canonicalPath: string
 }
 
 export interface BriefingArticle {
@@ -113,6 +117,8 @@ function normalizeBriefing(raw: RawDigest): Briefing | null {
   const frequency = coerceFrequency(raw.frequency)
   if (!frequency) return null
 
+  const slug = slugifyTitle(raw.title)
+  const prefix = extractIdPrefix(raw.id)
   return {
     id: raw.id,
     topic: raw.topic,
@@ -131,6 +137,8 @@ function normalizeBriefing(raw: RawDigest): Briefing | null {
       : [],
     createdAt: raw.createdAt,
     updatedAt: raw.updatedAt,
+    slug,
+    canonicalPath: `/division-2/briefings/${slug}-${prefix}`,
   }
 }
 
@@ -365,6 +373,149 @@ function isCurrentOrFuture(isoDate: string): boolean {
   if (!isoDate) return false
   const today = new Date().toISOString().slice(0, 10)
   return isoDate >= today
+}
+
+/* ── Slug + canonical-path helpers ───────────────────────────────────────── */
+
+const SLUG_MAX_LEN = 60
+const PREFIX_LEN = 8
+// 8 hex chars at the start of every UUID. The trailing group anchors `$`
+// so the parse only accepts the canonical "name-{prefix}" shape.
+const TRAILING_PREFIX_RE = /-([0-9a-f]{8})$/i
+
+/**
+ * Slugify a briefing title for the cosmetic part of the URL.
+ * `&` → "and", em-dashes/colons/quotes drop to spaces, diacritics flattened,
+ * truncated at a word boundary when over `SLUG_MAX_LEN`. The id prefix in the
+ * canonical URL makes uniqueness collisions irrelevant, so this is allowed to
+ * be lossy.
+ */
+export function slugifyTitle(title: string | null | undefined): string {
+  if (typeof title !== 'string') return 'briefing'
+  const flattened = title
+    .normalize('NFKD')
+    .replace(/\p{M}+/gu, '')
+    .toLowerCase()
+    .replace(/&/g, ' and ')
+    .replace(/[^\p{L}\p{N}]+/gu, '-')
+    .replace(/^-+|-+$/g, '')
+  if (!flattened) return 'briefing'
+  if (flattened.length <= SLUG_MAX_LEN) return flattened
+  // Truncate at the last hyphen before the cap so we don't cut mid-word.
+  const hardCut = flattened.slice(0, SLUG_MAX_LEN)
+  const lastHyphen = hardCut.lastIndexOf('-')
+  return lastHyphen > 0 ? hardCut.slice(0, lastHyphen) : hardCut
+}
+
+/**
+ * First 8 hex chars of a UUID — the load-bearing part of the canonical URL.
+ * UUIDs are `xxxxxxxx-xxxx-...` so `slice(0, 8)` is always 8 contiguous hex
+ * digits regardless of casing. Falsy id → empty string (caller decides what
+ * to do; in practice `normalizeBriefing` rejects briefings with no id).
+ */
+export function extractIdPrefix(id: string | null | undefined): string {
+  if (typeof id !== 'string' || id.length < PREFIX_LEN) return ''
+  return id.slice(0, PREFIX_LEN).toLowerCase()
+}
+
+interface ParsedSlugSegment {
+  /** The 8-hex tail used for lookup. */
+  prefix: string
+  /** Everything before the trailing `-{prefix}`. Empty when only a prefix was given. */
+  providedSlug: string
+}
+
+/**
+ * Parse a URL segment of shape `some-slug-{prefix}` or `{prefix}` into its
+ * parts. Returns null when no valid 8-hex prefix is present at the tail —
+ * caller should 404. Empty `providedSlug` (bare prefix) is a legitimate input
+ * the handler will 301 onto the canonical form.
+ */
+export function parseSlugSegment(segment: string): ParsedSlugSegment | null {
+  if (typeof segment !== 'string' || !segment) return null
+  // Bare prefix: just 8 hex chars, nothing else.
+  if (/^[0-9a-f]{8}$/i.test(segment)) {
+    return { prefix: segment.toLowerCase(), providedSlug: '' }
+  }
+  const match = segment.match(TRAILING_PREFIX_RE)
+  if (!match) return null
+  const prefix = match[1].toLowerCase()
+  const providedSlug = segment.slice(0, segment.length - match[0].length)
+  return { prefix, providedSlug }
+}
+
+/**
+ * Resolve an 8-hex prefix to a full briefing detail.
+ *
+ * Backed by a full-corpus prefix→UUID index built by paginating Ashley's list
+ * endpoint at its per-page cap (100). The index is cached for HOT_TTL — fresh
+ * briefings become findable on the next refresh, and warm lookups are O(1).
+ * Pagination caps at PREFIX_INDEX_MAX_PAGES per frequency to bound cold-start
+ * cost; reach for a Payload-side index only if that ceiling ever bites.
+ */
+export async function fetchBriefingByPrefix(
+  prefix: string,
+): Promise<AshleyResult<BriefingDetail | null>> {
+  const normalizedPrefix = prefix.toLowerCase()
+  if (!/^[0-9a-f]{8}$/.test(normalizedPrefix)) {
+    return { ok: true, data: null }
+  }
+  const indexResult = await fetchBriefingPrefixIndex()
+  if (!indexResult.ok) return indexResult
+  const id = indexResult.data[normalizedPrefix]
+  if (!id) return { ok: true, data: null }
+  return fetchBriefingById(id)
+}
+
+// Ashley's list endpoint caps `limit` at 100 per the OpenAPI spec.
+const PREFIX_INDEX_PAGE_SIZE = 100
+// 100 pages × 100 items × 2 frequencies = 20k briefings ceiling (~50 years at
+// current production rate). The cap exists only as a safety belt against an
+// upstream bug returning a full page indefinitely.
+const PREFIX_INDEX_MAX_PAGES = 100
+
+/**
+ * Walk Ashley's list endpoint for both frequencies, building the full
+ * prefix→UUID map. Stops a frequency's walk when a page returns fewer items
+ * than the page size (end of corpus) or when MAX_PAGES is reached. Cached as
+ * a plain object so it survives `unstable_cache` serialization.
+ */
+function fetchBriefingPrefixIndex(): Promise<
+  AshleyResult<Record<string, string>>
+> {
+  const cached = unstable_cache(
+    async (): Promise<AshleyResult<Record<string, string>>> => {
+      const index: Record<string, string> = {}
+      for (const frequency of ['weekly', 'daily'] as const) {
+        for (let page = 0; page < PREFIX_INDEX_MAX_PAGES; page++) {
+          const result = await fetchAshleyService<RawDigestList>((c) =>
+            c.GET('/api/content/digests', {
+              params: {
+                query: {
+                  topic: TOPIC,
+                  frequency,
+                  limit: PREFIX_INDEX_PAGE_SIZE,
+                  offset: page * PREFIX_INDEX_PAGE_SIZE,
+                },
+              },
+            }),
+          )
+          if (!result.ok) return result
+          const rawItems = result.data.items ?? []
+          for (const raw of rawItems) {
+            if (typeof raw.id === 'string' && raw.id.length >= PREFIX_LEN) {
+              index[extractIdPrefix(raw.id)] = raw.id
+            }
+          }
+          if (rawItems.length < PREFIX_INDEX_PAGE_SIZE) break
+        }
+      }
+      return { ok: true, data: index }
+    },
+    ['division2-briefing-prefix-index'],
+    { revalidate: HOT_TTL, tags: ['briefing', 'briefing-list'] },
+  )
+  return cached()
 }
 
 /* ── Detail-page derived helpers ─────────────────────────────────────────── */

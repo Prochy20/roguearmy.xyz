@@ -67,7 +67,7 @@ export function BriefingPanel({
           label="// LATEST · WEEKLY BRIEFING"
           meta={period}
           cta={{
-            href: `/division-2/briefings/${briefing.id}`,
+            href: briefing.canonicalPath,
             label: 'READ FULL BRIEFING →',
           }}
           accent="cyan"

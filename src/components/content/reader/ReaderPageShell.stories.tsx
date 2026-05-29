@@ -103,8 +103,8 @@ function buildSlots(accent: AccentName) {
         backHref="/division-2/briefings?week=2026-05-19"
         backLabel="WEEK"
         backValue="MAY 19"
-        prev={{ href: '/division-2/briefings/d1', label: 'DAILY', sublabel: 'MAY 18' }}
-        next={{ href: '/division-2/briefings/d2', label: 'WEEKLY', sublabel: 'MAY 26' }}
+        prev={{ href: '/division-2/briefings/daily-may-18-d1d1d1d1', label: 'DAILY', sublabel: 'MAY 18' }}
+        next={{ href: '/division-2/briefings/weekly-may-26-d2d2d2d2', label: 'WEEKLY', sublabel: 'MAY 26' }}
       />
     ),
   }

@@ -63,7 +63,7 @@ export function BriefingCard({ briefing, tone = 'standard' }: BriefingCardProps)
 
   return (
     <Link
-      href={`/division-2/briefings/${briefing.id}`}
+      href={briefing.canonicalPath}
       prefetch={false}
       className={`group relative block h-full transition-colors ${wrapperLayout} ${
         isLead ? '' : `border ${accent.cardBorder} ${accent.cardBorderHover}`

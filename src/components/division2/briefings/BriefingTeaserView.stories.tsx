@@ -19,7 +19,7 @@ const meta = {
     layout: 'fullscreen',
     nextjs: {
       appDirectory: true,
-      navigation: { pathname: '/division-2/briefings/brf_weekly_20260519' },
+      navigation: { pathname: '/division-2/briefings/week-21-escalation-roll-up-a3f2c1b8' },
     },
   },
 } satisfies Meta<typeof BriefingTeaserView>

@@ -118,7 +118,7 @@ export const MOCK_WEEKS_LIST_FAIL: AshleyResult<EscalationWeekList> = {
 // ── Briefing ──────────────────────────────────────────────────────────────
 
 export const MOCK_BRIEFING_WEEKLY: Briefing = {
-  id: 'brf_weekly_20260519',
+  id: 'a3f2c1b8-1111-4222-9333-000000000001',
   topic: 'division-2',
   frequency: 'weekly',
   periodStart: '2026-05-19',
@@ -137,11 +137,13 @@ export const MOCK_BRIEFING_WEEKLY: Briefing = {
   articleIds: ['art_001', 'art_002', 'art_003'],
   createdAt: '2026-05-26T08:00:00.000Z',
   updatedAt: '2026-05-26T09:00:00.000Z',
+  slug: 'week-21-escalation-roll-up',
+  canonicalPath: '/division-2/briefings/week-21-escalation-roll-up-a3f2c1b8',
 }
 
 export const MOCK_BRIEFING_DAILY: Briefing = {
   ...MOCK_BRIEFING_WEEKLY,
-  id: 'brf_daily_20260521',
+  id: '7e9d2f04-2222-4333-9444-000000000002',
   frequency: 'daily',
   periodStart: '2026-05-21',
   periodEnd: '2026-05-21',
@@ -152,6 +154,8 @@ export const MOCK_BRIEFING_DAILY: Briefing = {
     'Two new YouTube guides on the Holster cache showed up overnight.',
   ],
   articleCount: 5,
+  slug: 'daily-briefing-05-21',
+  canonicalPath: '/division-2/briefings/daily-briefing-05-21-7e9d2f04',
 }
 
 export const MOCK_BRIEFING_ARTICLES: BriefingArticle[] = [

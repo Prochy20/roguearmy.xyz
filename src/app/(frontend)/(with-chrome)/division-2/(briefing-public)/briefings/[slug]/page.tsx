@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import { EmptyDossier } from '@/components/division2/EmptyDossier'
 import { FailRow } from '@/components/ui/FailRow'
 import { BriefingDetailPage } from '@/components/division2/briefings/BriefingDetailPage'
@@ -12,10 +12,11 @@ import {
   buildBriefingDesignator,
   countMarkdownWords,
   enumerateSections,
-  fetchBriefingById,
+  fetchBriefingByPrefix,
   fetchRecentBriefings,
   fetchWeeklyBriefings,
   injectSectionAnchors,
+  parseSlugSegment,
   promoteH1ToH2,
   type Briefing,
   type BriefingDetail,
@@ -39,18 +40,20 @@ import {
 const siteUrl = 'https://roguearmy.xyz'
 
 interface PageProps {
-  params: Promise<{ id: string }>
+  params: Promise<{ slug: string }>
   searchParams: Promise<{ as?: string }>
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { id } = await params
-  const result = await fetchBriefingById(id)
+  const { slug } = await params
+  const parsed = parseSlugSegment(slug)
+  if (!parsed) return { title: 'Briefing | Division 2 · Rogue Army' }
+  const result = await fetchBriefingByPrefix(parsed.prefix)
   if (!result.ok || !result.data) {
     return { title: 'Briefing | Division 2 · Rogue Army' }
   }
   const briefing = result.data
-  const canonicalPath = `/division-2/briefings/${id}`
+  const canonicalPath = briefing.canonicalPath
   const hasThumb = Boolean(briefing.thumbnailUrl)
   const imageUrl = briefing.thumbnailUrl ?? '/images/banner.jpg'
   // YouTube thumbnails are 1280×720; the site banner fallback is 960×540.
@@ -92,12 +95,15 @@ export default async function Division2BriefingDetailPage({
   params,
   searchParams,
 }: PageProps) {
-  const { id } = await params
+  const { slug } = await params
   const { as: rawAs } = await searchParams
   const isPreviewingAsMember = rawAs === 'member'
 
+  const parsed = parseSlugSegment(slug)
+  if (!parsed) notFound()
+
   const [briefingResult, auth] = await Promise.all([
-    fetchBriefingById(id),
+    fetchBriefingByPrefix(parsed.prefix),
     getMemberAuth(),
   ])
 
@@ -115,6 +121,13 @@ export default async function Division2BriefingDetailPage({
   if (!briefingResult.data) notFound()
 
   const briefing = briefingResult.data
+  // Self-healing canonical: bare-prefix and stale-slug inputs 301 to the
+  // current `briefing.canonicalPath`. Preserve `?as=` previews across the
+  // redirect so the booster-preview affordance survives canonicalization.
+  if (slug !== `${briefing.slug}-${parsed.prefix}`) {
+    const suffix = rawAs ? `?as=${encodeURIComponent(rawAs)}` : ''
+    redirect(`${briefing.canonicalPath}${suffix}`)
+  }
   const designator = buildBriefingDesignator(briefing)
   const periodLabel = formatPeriodLabel(briefing)
   const dateLabel = formatDateLabel(briefing)
@@ -137,7 +150,7 @@ export default async function Division2BriefingDetailPage({
     publisher: { '@id': `${siteUrl}/#organization` },
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `${siteUrl}/division-2/briefings/${id}`,
+      '@id': `${siteUrl}${briefing.canonicalPath}`,
     },
     isAccessibleForFree: false,
     hasPart: {
