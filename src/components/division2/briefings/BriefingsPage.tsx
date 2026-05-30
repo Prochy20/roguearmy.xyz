@@ -1,5 +1,6 @@
 import { FailRow } from '@/components/ui/FailRow'
 import { StatRibbon } from '@/components/ui/StatRibbon'
+import { D2_ROOT, BRIEFINGS_ROOT } from '@/components/ui/trail-roots'
 import { EmptyDossier } from '@/components/division2/EmptyDossier'
 import { GlitchOnChange } from '@/components/effects/GlitchOnChange'
 import { BriefingCard } from './BriefingCard'
@@ -37,7 +38,6 @@ interface BriefingsPageProps {
 }
 
 const DEFAULTS = {
-  heroKicker: '// DIVISION 2 · AI BRIEFINGS',
   heroTitle: 'AI',
   heroAccent: 'BRIEFINGS',
   intro:
@@ -54,20 +54,55 @@ export function BriefingsPage({
   content,
   briefingProgress,
 }: BriefingsPageProps) {
-  const heroKicker = content?.heroKicker?.trim() || DEFAULTS.heroKicker
   const heroTitle = content?.heroTitle?.trim() || DEFAULTS.heroTitle
   const heroAccent = content?.heroAccent?.trim() || DEFAULTS.heroAccent
   const intro = content?.intro?.trim() || DEFAULTS.intro
 
   return (
     <div>
+      {/* Sticky page chrome — ribbon clears the fixed Header on first paint
+          via mt-20 (= Header height) and sticks at the MENU-button vertical
+          center (top:18 = (h-20 - h-11) / 2) on scroll. z-40 sits below the
+          Header's z-50 so MENU stays on top if they ever overlap on narrow
+          viewports. The internal padding keeps the ribbon's right edge clear
+          of the MENU button on wide viewports — its visible width is
+          intentionally narrower than the H1 below. */}
+      <div className="sticky top-[18px] z-40 mx-auto w-full max-w-[1480px] mt-20 sm:mt-24 lg:mt-28 px-4 sm:px-8 lg:px-16">
+        <StatRibbon
+          trail={[D2_ROOT, BRIEFINGS_ROOT, { label: heroTitle }]}
+          fields={[
+            {
+              label: 'WEEK',
+              value: formatDayShort(activeWeekStart),
+              accent: 'green',
+            },
+            {
+              label: 'FILES',
+              value: String(briefingsForWeek.length).padStart(2, '0'),
+              accent: 'green',
+            },
+            {
+              label: 'TIER',
+              value: hasAccess ? 'BOOSTER' : 'MEMBER',
+              accent: hasAccess ? 'green' : 'mod',
+            },
+          ]}
+          pill={
+            weekly.ok
+              ? { text: 'LIVE', ok: true, accent: 'green' }
+              : { text: 'OFFLINE', ok: false }
+          }
+        />
+      </div>
+
       {/* Hero section — lives OUTSIDE the body Shell so the WashingtonMap can
           escape the max-width container with its negative-right offset. The
           `:has()` hover-zone pattern + --scanner-shove custom property mirror
           StaffManifestHeader (the radar's hero) so the two pages share the
-          same scanner-family interaction language. */}
+          same scanner-family interaction language. Top clearance is provided
+          by the sticky ribbon above (its mt-20 pushes everything below). */}
       <section
-        className="relative overflow-hidden px-4 pt-20 pb-10 sm:px-8 sm:pt-24 sm:pb-12 lg:px-16 lg:pt-28 lg:pb-14 [--scanner-shove:180px] xl:[--scanner-shove:230px] 2xl:[--scanner-shove:280px]"
+        className="relative overflow-hidden px-4 pt-7 pb-10 sm:px-8 sm:pt-9 sm:pb-12 lg:px-16 lg:pb-14 [--scanner-shove:180px] xl:[--scanner-shove:230px] 2xl:[--scanner-shove:280px]"
         aria-label="Briefings hero"
       >
         <div
@@ -94,37 +129,8 @@ export function BriefingsPage({
         />
 
         <div className="relative mx-auto flex w-full max-w-[1480px] flex-col gap-7 sm:gap-9">
-          {/* StatRibbon stays put on hover — it's page chrome, not hero
-              content. Only the headline + stepper slide with the map. */}
-          <StatRibbon
-            prefix="// BRIEFINGS"
-            fields={[
-              {
-                label: 'WEEK',
-                value: formatDayShort(activeWeekStart),
-                accent: 'green',
-              },
-              {
-                label: 'FILES',
-                value: String(briefingsForWeek.length).padStart(2, '0'),
-                accent: 'green',
-              },
-              {
-                label: 'TIER',
-                value: hasAccess ? 'BOOSTER' : 'MEMBER',
-                accent: hasAccess ? 'green' : 'mod',
-              },
-            ]}
-            pill={
-              weekly.ok
-                ? { text: 'LIVE', ok: true, accent: 'green' }
-                : { text: 'OFFLINE', ok: false }
-            }
-          />
-
           <div className="flex flex-col gap-7 sm:gap-9 transition-transform duration-500 ease-out motion-safe:[section:has(.rga-scanner-hover-zone:hover)_&]:translate-x-[calc(-1*var(--scanner-shove))]">
             <BriefingHero
-              kicker={heroKicker}
               title={heroTitle}
               accent={heroAccent}
               intro={intro}

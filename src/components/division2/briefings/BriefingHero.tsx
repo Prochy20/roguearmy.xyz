@@ -1,7 +1,8 @@
 import { HeroGlitch } from '@/components/effects/HeroGlitch'
 
 interface BriefingHeroProps {
-  kicker: string
+  /** Optional flavor/state qualifier. Location lives in the ribbon trail now. */
+  kicker?: string
   title: string
   accent: string
   intro: string
@@ -9,14 +10,19 @@ interface BriefingHeroProps {
 
 /**
  * Hero header for the briefings list page. Same layout language as the content
- * and escalation pages — kicker + two-tone display headline + intro paragraph.
+ * and escalation pages — optional kicker + two-tone display headline + intro
+ * paragraph. The kicker used to carry location ("// DIVISION 2 · WASHINGTON
+ * BRIEFINGS") which now lives in the StatRibbon trail; it survives only as a
+ * flavor slot for sibling pages (Content "LIVE INTEL", etc).
  */
 export function BriefingHero({ kicker, title, accent, intro }: BriefingHeroProps) {
   return (
     <div className="flex min-w-0 flex-col gap-7">
-      <div className="font-mono text-[11px] uppercase tracking-[0.35em] text-rga-mod">
-        {kicker}
-      </div>
+      {kicker && (
+        <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-text-muted">
+          {kicker}
+        </div>
+      )}
 
       <h1
         className="font-display uppercase leading-[0.85] tracking-[0.005em] text-balance break-words"
