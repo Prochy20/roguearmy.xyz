@@ -55,7 +55,6 @@ export interface ClosingCtaContent {
 }
 
 export interface ClansPageContent {
-  heroKicker: string
   heroTitle: string
   heroAccent: string
   intro: string

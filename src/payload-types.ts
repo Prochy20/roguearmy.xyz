@@ -1513,10 +1513,6 @@ export interface Division2 {
   };
   landingPage?: {
     /**
-     * Small mono kicker above the headline. The status token (STATUS · OPERATIONAL / DEGRADED / OFFLINE) is appended automatically.
-     */
-    heroKicker?: string | null;
-    /**
      * First word of the two-line headline — rendered in white.
      */
     heroTitle?: string | null;
@@ -1528,10 +1524,6 @@ export interface Division2 {
      * Paragraph under the headline.
      */
     intro?: string | null;
-    /**
-     * Mono prefix at the left of the StatRibbon. Fields (LOCAL, TOOLS, LAST SYNC) and the aggregate pill are appended automatically.
-     */
-    ribbonPrefix?: string | null;
     /**
      * WEEKLY RAIDS section (SEC_04). Routes operatives to Discord #events for RSVP via the Apollo bot. Every string here is admin-editable.
      */
@@ -1710,10 +1702,6 @@ export interface Division2 {
   };
   clansPage?: {
     /**
-     * Mono kicker above the headline. Clan count is appended automatically.
-     */
-    heroKicker?: string | null;
-    /**
      * First word of the two-line headline — rendered in white.
      */
     heroTitle?: string | null;
@@ -1811,10 +1799,6 @@ export interface Division2 {
     };
   };
   briefingsPage?: {
-    /**
-     * Small mono kicker above the headline. The active week label is appended automatically.
-     */
-    heroKicker?: string | null;
     /**
      * First word of the headline — rendered in white.
      */
@@ -2190,11 +2174,9 @@ export interface Division2Select<T extends boolean = true> {
   landingPage?:
     | T
     | {
-        heroKicker?: T;
         heroTitle?: T;
         heroAccent?: T;
         intro?: T;
-        ribbonPrefix?: T;
         raids?:
           | T
           | {
@@ -2271,7 +2253,6 @@ export interface Division2Select<T extends boolean = true> {
   clansPage?:
     | T
     | {
-        heroKicker?: T;
         heroTitle?: T;
         heroAccent?: T;
         intro?: T;
@@ -2324,7 +2305,6 @@ export interface Division2Select<T extends boolean = true> {
   briefingsPage?:
     | T
     | {
-        heroKicker?: T;
         heroTitle?: T;
         heroAccent?: T;
         intro?: T;

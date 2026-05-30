@@ -1,5 +1,6 @@
 import { HeroGlitch } from '@/components/effects/HeroGlitch'
 import { StatRibbon } from '@/components/ui/StatRibbon'
+import { RGA_ROOT } from '@/components/ui/trail-roots'
 import { todayUtcIso } from '@/lib/division2/format'
 import type { LandingState } from '@/lib/division2/landing.server'
 import type { Division2 } from '@/payload-types'
@@ -24,12 +25,10 @@ interface CommandConsolePageProps {
 }
 
 const DEFAULTS = {
-  heroKicker: '// DIVISION 2 · OPS · COMMAND',
   heroTitle: 'COMMAND',
   heroAccent: 'CONSOLE',
   intro:
     "The Division 2 ops console — live intel on the game in one panel. Today's escalation rotation, the latest content from across the community, and Ashley's weekly AI briefing.",
-  ribbonPrefix: '// DIVISION 2 · COMMAND',
   raids: {
     headlineTitle: 'WEEKLY',
     headlineAccent: 'RAIDS',
@@ -82,11 +81,9 @@ export function CommandConsolePage({
   hasAccess,
   perks,
 }: CommandConsolePageProps) {
-  const heroKicker = content?.heroKicker?.trim() || DEFAULTS.heroKicker
   const heroTitle = content?.heroTitle?.trim() || DEFAULTS.heroTitle
   const heroAccent = content?.heroAccent?.trim() || DEFAULTS.heroAccent
   const intro = content?.intro?.trim() || DEFAULTS.intro
-  const ribbonPrefix = content?.ribbonPrefix?.trim() || DEFAULTS.ribbonPrefix
 
   const today = todayUtcIso()
   const escalationPeek = state.peeks.escalation
@@ -125,14 +122,38 @@ export function CommandConsolePage({
 
   return (
     <div>
+      {/* Page chrome — at <lg renders inline, from lg+ sticks at MENU's
+          vertical center. Trail is 2-segment with RGA brand root + Division 2
+          leaf; D2_ROOT can't be used as the parent here because /division-2 IS
+          this page (would self-link). */}
+      <div className="mx-auto w-full max-w-[1480px] mt-20 sm:mt-24 lg:mt-32 px-4 sm:px-8 lg:sticky lg:top-[21px] lg:z-40 lg:mx-0 lg:max-w-none lg:pl-16 lg:pr-[140px]">
+        <StatRibbon
+          trail={[RGA_ROOT, { label: 'Division 2' }]}
+          fields={[
+            { label: 'LOCAL', value: `${today} UTC`, accent: 'green' },
+            { label: 'TOOLS', value: state.ribbon.toolsLabel, accent: 'green' },
+            {
+              label: 'LAST SYNC',
+              value: state.ribbon.lastSyncLabel ?? '—',
+            },
+          ]}
+          pill={
+            state.ribbon.pill === 'OPERATIONAL'
+              ? { text: 'OPERATIONAL', ok: true, accent: 'green' }
+              : { text: state.ribbon.pill, ok: false }
+          }
+        />
+      </div>
+
       {/* Hero section — lives OUTSIDE Shell so the DivisionLogo can escape
           the max-width container with its negative-right offset. Matches the
           scanner-family pattern used by BriefingsPage (WashingtonMap) and
           StaffManifestHeader (StaffRadar): an absolutely-positioned
           `.rga-scanner-hover-zone` sibling drives a CSS `:has()`-triggered
-          translate on both the decoration and the headline column. */}
+          translate on both the decoration and the headline column. Top
+          clearance is provided by the sticky ribbon above. */}
       <section
-        className="relative overflow-hidden px-4 pt-20 pb-10 sm:px-8 sm:pt-24 sm:pb-12 lg:px-16 lg:pt-32 lg:pb-14 [--scanner-shove:140px] xl:[--scanner-shove:180px] 2xl:[--scanner-shove:220px]"
+        className="relative overflow-hidden px-4 pt-7 pb-10 sm:px-8 sm:pt-9 sm:pb-12 lg:px-16 lg:pt-10 lg:pb-14 [--scanner-shove:140px] xl:[--scanner-shove:180px] 2xl:[--scanner-shove:220px]"
         aria-label="Command Console hero"
       >
         <div
@@ -145,28 +166,7 @@ export function CommandConsolePage({
         />
 
         <div className="relative mx-auto flex w-full max-w-[1480px] flex-col gap-7 sm:gap-9">
-          <StatRibbon
-            prefix={ribbonPrefix}
-            fields={[
-              { label: 'LOCAL', value: `${today} UTC`, accent: 'green' },
-              { label: 'TOOLS', value: state.ribbon.toolsLabel, accent: 'green' },
-              {
-                label: 'LAST SYNC',
-                value: state.ribbon.lastSyncLabel ?? '—',
-              },
-            ]}
-            pill={
-              state.ribbon.pill === 'OPERATIONAL'
-                ? { text: 'OPERATIONAL', ok: true, accent: 'green' }
-                : { text: state.ribbon.pill, ok: false }
-            }
-          />
-
           <div className="flex min-w-0 flex-col gap-7 transition-transform duration-500 ease-out motion-safe:[section:has(.rga-scanner-hover-zone:hover)_&]:translate-x-[calc(-1*var(--scanner-shove))]">
-            <div className="font-mono text-[11px] uppercase tracking-[0.35em] text-rga-mod">
-              {heroKicker} · STATUS · {state.ribbon.pill}
-            </div>
-
             <h1
               className="font-display uppercase leading-[0.85] tracking-[0.005em] text-balance break-words"
               style={{ fontSize: 'clamp(48px, 9vw, 144px)' }}

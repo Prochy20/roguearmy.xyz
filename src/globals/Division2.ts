@@ -148,16 +148,11 @@ export const Division2: GlobalConfig = {
           name: 'landingPage',
           label: 'Landing Page',
           fields: [
-            // Hero header
-            {
-              name: 'heroKicker',
-              type: 'text',
-              defaultValue: '// DIVISION 2 · OPS · COMMAND',
-              admin: {
-                description:
-                  'Small mono kicker above the headline. The status token (STATUS · OPERATIONAL / DEGRADED / OFFLINE) is appended automatically.',
-              },
-            },
+            // Hero header — location moved to the StatRibbon trail (RGA ›
+            // Division 2). The `heroKicker` + `ribbonPrefix` fields that used
+            // to drive the kicker line and ribbon prefix were removed; old
+            // documents will still have these properties in MongoDB but the
+            // schema no longer surfaces or reads them.
             {
               type: 'row',
               fields: [
@@ -188,17 +183,6 @@ export const Division2: GlobalConfig = {
               defaultValue:
                 "The Division 2 ops console — live intel on the game in one panel. Today's escalation rotation, the latest content from across the community, and Ashley's weekly AI briefing.",
               admin: { description: 'Paragraph under the headline.' },
-            },
-
-            // StatRibbon
-            {
-              name: 'ribbonPrefix',
-              type: 'text',
-              defaultValue: '// DIVISION 2 · COMMAND',
-              admin: {
-                description:
-                  'Mono prefix at the left of the StatRibbon. Fields (LOCAL, TOOLS, LAST SYNC) and the aggregate pill are appended automatically.',
-              },
             },
 
             // Raids — SEC_04
@@ -666,13 +650,9 @@ export const Division2: GlobalConfig = {
           name: 'clansPage',
           label: 'Clans Page',
           fields: [
-            // Hero header
-            {
-              name: 'heroKicker',
-              type: 'text',
-              defaultValue: '// DIVISION 2 · CLANS',
-              admin: { description: 'Mono kicker above the headline. Clan count is appended automatically.' },
-            },
+            // Hero header — location moved to the StatRibbon trail
+            // (Division 2 › Clans); the `heroKicker` field that used to drive
+            // the duplicate kicker line above the headline was removed.
             {
               type: 'row',
               fields: [
@@ -916,16 +896,9 @@ export const Division2: GlobalConfig = {
           name: 'briefingsPage',
           label: 'Briefings Page',
           fields: [
-            // Hero header
-            {
-              name: 'heroKicker',
-              type: 'text',
-              defaultValue: '// DIVISION 2 · AI BRIEFINGS',
-              admin: {
-                description:
-                  'Small mono kicker above the headline. The active week label is appended automatically.',
-              },
-            },
+            // Hero header — location moved to the StatRibbon trail
+            // (Division 2 › Briefings › <city>); the `heroKicker` field that
+            // used to drive the kicker line above the headline was removed.
             {
               type: 'row',
               fields: [

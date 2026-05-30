@@ -132,7 +132,6 @@ function buildContent(
   }
 
   return {
-    heroKicker: r.heroKicker ?? '// DIVISION 2 · CLANS',
     heroTitle: r.heroTitle ?? 'REGIMENTAL',
     heroAccent: r.heroAccent ?? 'STANDARDS',
     intro: r.intro ?? 'Three banners. One army. Pick any — what matters is being on Discord.',
