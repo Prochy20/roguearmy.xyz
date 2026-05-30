@@ -1,6 +1,6 @@
 import { StatRibbon } from '@/components/ui/StatRibbon'
+import { BLOG_ROOT } from '@/components/ui/trail-roots'
 import { ReaderPageShell } from '@/components/content/reader/ReaderPageShell'
-import { ReaderBreadcrumb } from '@/components/content/reader/ReaderBreadcrumb'
 import { ReaderHeroFrame } from '@/components/content/reader/ReaderHeroFrame'
 import { ReaderTitleBlock } from '@/components/content/reader/ReaderTitleBlock'
 import { ReaderDocStrip } from '@/components/content/reader/ReaderDocStrip'
@@ -85,41 +85,38 @@ export function ArticleDetailPage({
         ? 'mod'
         : 'green'
 
+  const stickyChrome = (
+    <StatRibbon
+      trail={[
+        BLOG_ROOT,
+        {
+          label: article.topic.name,
+          href: `/blog/${article.topic.slug}`,
+        },
+        { label: `${article.slug.toUpperCase()}.md`, accent: ribbonFieldAccent },
+      ]}
+      fields={[
+        {
+          label: 'READ',
+          value: `${readMinutes} MIN`,
+          accent: ribbonFieldAccent,
+        },
+        {
+          label: 'PUBLISHED',
+          value: publishedShort,
+          accent: 'green',
+        },
+      ]}
+      pill={
+        article.visibility === 'members_only'
+          ? { text: 'MEMBERS', ok: true, accent: 'magenta' }
+          : { text: 'PUBLIC', ok: true, accent: 'green' }
+      }
+    />
+  )
+
   const header = (
     <>
-      <StatRibbon
-        prefix={`// ${article.topic.name.toUpperCase()} · ARTICLE`}
-        fields={[
-          {
-            label: 'TOPIC',
-            value: article.topic.name.toUpperCase(),
-            accent: ribbonFieldAccent,
-          },
-          {
-            label: 'READ',
-            value: `${readMinutes} MIN`,
-            accent: ribbonFieldAccent,
-          },
-          {
-            label: 'PUBLISHED',
-            value: publishedShort,
-            accent: 'green',
-          },
-        ]}
-        pill={
-          article.visibility === 'members_only'
-            ? { text: 'MEMBERS', ok: true, accent: 'magenta' }
-            : { text: 'PUBLIC', ok: true, accent: 'green' }
-        }
-      />
-      <ReaderBreadcrumb
-        accent={accent}
-        trail={[
-          { href: '/blog', label: 'BLOG' },
-          { href: `/blog/${article.topic.slug}`, label: article.topic.name.toUpperCase() },
-        ]}
-        designator={designator}
-      />
       <ReaderTitleBlock
         accent={accent}
         title={article.title}
@@ -199,6 +196,7 @@ export function ArticleDetailPage({
   return (
     <ReaderPageShell
       accent={accent}
+      stickyChrome={stickyChrome}
       header={header}
       toc={
         sections.length > 0 ? (
