@@ -11,6 +11,8 @@ import { ReaderToc } from './ReaderToc'
 import { ReaderReadingWidget } from './ReaderReadingWidget'
 import { ReaderShortcuts } from './ReaderShortcuts'
 import { ReaderDetailFooter } from './ReaderDetailFooter'
+import { StatRibbon } from '@/components/ui/StatRibbon'
+import { BLOG_ROOT } from '@/components/ui/trail-roots'
 import type { AccentName } from './accent'
 
 const SAMPLE_SECTIONS = [
@@ -163,5 +165,61 @@ export const NoToc: Story = {
   render: (args) => {
     const slots = buildSlots(args.accent)
     return <ReaderPageShell {...args} {...slots} toc={null} />
+  },
+}
+
+/**
+ * New `stickyChrome` slot — pages pass a `StatRibbon` (or any chrome row) and
+ * the shell renders it OUTSIDE the body's max-w grid so it can stretch toward
+ * the fixed Header's MENU button. At <lg it renders inline; from lg+ it
+ * sticks at the MENU-button vertical center (top:21) and remains in view
+ * while the reader scrolls. Drop ReaderBreadcrumb from the header slot — the
+ * trail leaf carries the doc identifier instead.
+ */
+export const WithStickyChrome: Story = {
+  render: (args) => {
+    const slots = buildSlots(args.accent)
+    return (
+      <ReaderPageShell
+        {...args}
+        {...slots}
+        // Replace the legacy header that opened with ReaderBreadcrumb — the
+        // new pattern moves location into the trail and the designator into
+        // its leaf, so the header slot is title + hero only.
+        header={
+          <>
+            <ReaderTitleBlock
+              accent={args.accent}
+              title="WEEK 21 · ESCALATION ROLL-UP"
+              perex="Five missions, new vendor caches, and the meta shift."
+              dateLabel="WEEK OF MAY 19"
+              readMinutes={8}
+              actions={<ReaderActions accent={args.accent} />}
+            />
+            <ReaderHeroFrame
+              accent={args.accent}
+              thumbnailUrl="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1600&q=70"
+              kindLabel="WEEKLY"
+              periodLabel="MAY 19 → MAY 25"
+              bylineLabel="// AI · ASHLEY"
+            />
+          </>
+        }
+        stickyChrome={
+          <StatRibbon
+            trail={[
+              BLOG_ROOT,
+              { label: 'Builds', href: '/blog/builds' },
+              { label: 'WK21_2026.md', accent: 'cyan' },
+            ]}
+            fields={[
+              { label: 'READ', value: '8 MIN', accent: 'cyan' },
+              { label: 'PUBLISHED', value: 'May 19', accent: 'green' },
+            ]}
+            pill={{ text: 'PUBLIC', ok: true, accent: 'green' }}
+          />
+        }
+      />
+    )
   },
 }
