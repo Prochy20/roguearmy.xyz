@@ -3,6 +3,7 @@ import type { components } from '@/lib/api/schema'
 import { CyberButton } from '@/components/ui/CyberButton'
 import { DiscordIcon } from '@/components/ui/DiscordIcon'
 import { StatRibbon } from '@/components/ui/StatRibbon'
+import { RGA_ROOT } from '@/components/ui/trail-roots'
 import { HeroGlitch } from '@/components/effects/HeroGlitch'
 
 type CommunityStats = components['schemas']['CommunityStatsDto']
@@ -26,28 +27,38 @@ const COPY = {
 
 export function Hero({ stats }: HeroProps) {
   return (
-    <section
-      className="relative overflow-hidden border-b border-[rgba(255,255,255,0.06)] px-4 pt-20 pb-20 sm:px-8 sm:pt-24 sm:pb-28 lg:px-16 lg:pt-32 lg:pb-36"
-      aria-labelledby="community-hero-headline"
-    >
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10"
-        style={{
-          background: `
-            radial-gradient(ellipse 60% 45% at 20% 30%, rgba(0,255,65,0.08) 0%, transparent 55%),
-            radial-gradient(ellipse 40% 30% at 85% 75%, rgba(0,255,255,0.06) 0%, transparent 50%)
-          `,
-        }}
-      />
-
-      <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-8 sm:gap-10">
+    <>
+      {/* Page chrome — at <lg inline, from lg+ sticks at MENU's vertical
+          center. The community Hero used to host the SnapshotRibbon as the
+          first item in its flex column; now the ribbon lives in this
+          page-level sticky wrapper so it stays in view while the hero scrolls
+          away. Trail: RGA › Community. */}
+      <div className="mx-auto w-full max-w-[1480px] mt-20 sm:mt-24 lg:mt-32 px-4 sm:px-8 lg:sticky lg:top-[21px] lg:z-40 lg:mx-0 lg:max-w-none lg:pl-16 lg:pr-[140px]">
         <SnapshotRibbon stats={stats} />
+      </div>
 
-        <div className="flex min-w-0 flex-col gap-7">
-          <div className="font-mono text-[11px] tracking-[0.35em] text-rga-green uppercase">
-            {COPY.kicker}
-          </div>
+      <section
+        className="relative overflow-hidden border-b border-[rgba(255,255,255,0.06)] px-4 pt-7 pb-20 sm:px-8 sm:pt-9 sm:pb-28 lg:px-16 lg:pt-10 lg:pb-36"
+        aria-labelledby="community-hero-headline"
+      >
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 -z-10"
+          style={{
+            background: `
+              radial-gradient(ellipse 60% 45% at 20% 30%, rgba(0,255,65,0.08) 0%, transparent 55%),
+              radial-gradient(ellipse 40% 30% at 85% 75%, rgba(0,255,255,0.06) 0%, transparent 50%)
+            `,
+          }}
+        />
+
+        <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-8 sm:gap-10">
+          <div className="flex min-w-0 flex-col gap-7">
+            {/* Brand tagline kicker stays — it's identity copy, not location.
+                Demoted from text-rga-green to muted to defer to the trail. */}
+            <div className="font-mono text-[10px] tracking-[0.3em] text-text-muted uppercase">
+              {COPY.kicker}
+            </div>
 
           <h1
             id="community-hero-headline"
@@ -115,6 +126,7 @@ export function Hero({ stats }: HeroProps) {
         </div>
       </div>
     </section>
+    </>
   )
 }
 
@@ -125,7 +137,7 @@ function SnapshotRibbon({ stats }: { stats: AshleyResult<CommunityStats> }) {
 
   return (
     <StatRibbon
-      prefix="// SNAPSHOT"
+      trail={[RGA_ROOT, { label: 'Community' }]}
       fields={[
         { label: 'MEMBERS', value: formatNumber(totalMembers), accent: 'green' },
         { label: 'JOINED · 14D', value: formatNumber(joinedLast14d), accent: 'cyan' },

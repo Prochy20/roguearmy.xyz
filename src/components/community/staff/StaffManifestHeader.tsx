@@ -1,4 +1,5 @@
 import { StatRibbon } from '@/components/ui/StatRibbon'
+import { RGA_ROOT, COMMUNITY_ROOT } from '@/components/ui/trail-roots'
 import { HeroGlitch } from '@/components/effects/HeroGlitch'
 import type { StaffPage } from '@/payload-types'
 import { StaffRadar } from './StaffRadar'
@@ -26,8 +27,30 @@ export function StaffManifestHeader({
   showMemberSurface,
 }: StaffManifestHeaderProps) {
   return (
+    <>
+      {/* Page chrome — at <lg inline, from lg+ sticks at MENU's vertical
+          center. Trail: RGA › Community › Staff. */}
+      <div className="mx-auto w-full max-w-[1480px] mt-20 sm:mt-24 lg:mt-28 px-4 sm:px-8 lg:sticky lg:top-[21px] lg:z-40 lg:mx-0 lg:max-w-none lg:pl-16 lg:pr-[140px]">
+        <StatRibbon
+          trail={[RGA_ROOT, COMMUNITY_ROOT, { label: 'Staff' }]}
+          fields={[
+            { label: 'RECORDS', value: String(rosterCount).padStart(2, '0'), accent: 'green' },
+            { label: 'SYNCED', value: formatSyncStamp(lastSyncedAt), accent: 'cyan' },
+            {
+              label: 'CLEARANCE',
+              value: showMemberSurface ? 'MEMBER' : 'OPEN',
+              accent: showMemberSurface ? 'cyan' : 'green',
+            },
+          ]}
+          pill={{
+            text: showMemberSurface ? 'UNLOCKED' : 'PUBLIC',
+            ok: true,
+          }}
+        />
+      </div>
+
     <section
-      className="relative overflow-hidden border-b border-[rgba(255,255,255,0.06)] px-4 pt-20 pb-16 sm:px-8 sm:pt-24 sm:pb-20 lg:px-16 lg:pt-28 lg:pb-24 [--scanner-shove:132px] xl:[--scanner-shove:168px] 2xl:[--scanner-shove:204px]"
+      className="relative overflow-hidden border-b border-[rgba(255,255,255,0.06)] px-4 pt-7 pb-16 sm:px-8 sm:pt-9 sm:pb-20 lg:px-16 lg:pt-10 lg:pb-24 [--scanner-shove:132px] xl:[--scanner-shove:168px] 2xl:[--scanner-shove:204px]"
       aria-labelledby="staff-manifest-headline"
     >
       <div
@@ -63,26 +86,9 @@ export function StaffManifestHeader({
       />
 
       <div className="relative mx-auto flex w-full max-w-[1480px] flex-col gap-8 sm:gap-10">
-        <StatRibbon
-          prefix="// MANIFEST"
-          fields={[
-            { label: 'RECORDS', value: String(rosterCount).padStart(2, '0'), accent: 'green' },
-            { label: 'SYNCED', value: formatSyncStamp(lastSyncedAt), accent: 'cyan' },
-            {
-              label: 'CLEARANCE',
-              value: showMemberSurface ? 'MEMBER' : 'OPEN',
-              accent: showMemberSurface ? 'cyan' : 'green',
-            },
-          ]}
-          pill={{
-            text: showMemberSurface ? 'UNLOCKED' : 'PUBLIC',
-            ok: true,
-          }}
-        />
-
         <div className="flex min-w-0 flex-col gap-7 transition-transform duration-500 ease-out motion-safe:[section:has(.rga-scanner-hover-zone:hover)_&]:translate-x-[calc(-1*var(--scanner-shove))]">
           {content?.kicker && (
-            <div className="font-mono text-[11px] tracking-[0.35em] text-rga-cyan uppercase">
+            <div className="font-mono text-[10px] tracking-[0.3em] text-text-muted uppercase">
               {content.kicker}
             </div>
           )}
@@ -152,5 +158,6 @@ export function StaffManifestHeader({
         </div>
       </div>
     </section>
+    </>
   )
 }
