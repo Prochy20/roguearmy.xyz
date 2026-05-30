@@ -22,8 +22,9 @@ export interface TrailSegment {
 
 export interface StatRibbonProps {
   /**
-   * @deprecated Use `trail` instead. Kept temporarily while sibling pages
-   * (content, clans, escalation, manifesto, …) migrate in phase 2.
+   * @deprecated Use `trail` instead. Kept exclusively for `ContentPage`,
+   * which still drives a single-segment prefix; remove this prop once that
+   * page migrates to a trail.
    */
   prefix?: string
   trail?: TrailSegment[]

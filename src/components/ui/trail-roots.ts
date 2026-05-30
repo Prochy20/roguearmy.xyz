@@ -24,3 +24,24 @@ export const ESCALATION_ROOT: TrailSegment = {
   label: 'Escalation',
   href: '/division-2/escalation',
 }
+
+/** Brand root for non-D2 surfaces (manifesto, community, staff). */
+export const RGA_ROOT: TrailSegment = {
+  label: 'Rogue Army',
+  href: '/',
+}
+
+export const BLOG_ROOT: TrailSegment = {
+  label: 'Blog',
+  href: '/blog',
+}
+
+export const MANIFESTO_ROOT: TrailSegment = {
+  label: 'Manifesto',
+  href: '/manifesto',
+}
+
+export const COMMUNITY_ROOT: TrailSegment = {
+  label: 'Community',
+  href: '/community',
+}
