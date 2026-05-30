@@ -1,6 +1,7 @@
 import { FailRow } from '@/components/ui/FailRow'
 import { EmptyDossier } from '@/components/division2/EmptyDossier'
 import { StatRibbon } from '@/components/ui/StatRibbon'
+import { D2_ROOT, ESCALATION_ROOT } from '@/components/ui/trail-roots'
 import { HeroGlitch } from '@/components/effects/HeroGlitch'
 import { EscalationDayStepper, MissionRow } from './MissionRow'
 import { PrototypeCaches } from './PrototypeCaches'
@@ -45,7 +46,9 @@ interface EscalationPageProps {
 }
 
 const DEFAULTS = {
-  heroKicker: '// DIVISION 2 · ESCALATION · TARGETED LOOT',
+  // Location used to live here ("// DIVISION 2 · ESCALATION · …") — moved to
+  // the StatRibbon trail. The kicker is now just a flavor line.
+  heroKicker: '// TARGETED LOOT',
   heroTitle: 'ESCALATION',
   heroAccent: 'PROTOCOL',
   intro:
@@ -123,16 +126,21 @@ export function EscalationPage({
   const intro = content?.intro?.trim() || DEFAULTS.intro
 
   return (
-    <Shell>
-      <header className="flex flex-col gap-7 sm:gap-9">
+    <>
+      {/* Page chrome — at <lg ribbon renders inline (no stick) to save scarce
+          vertical space on phones/tablets. From lg+ it sticks at MENU's
+          vertical center and stretches almost to MENU's left bracket
+          (pr:140 = MENU footprint + 8px gap). The trail leaf carries the
+          weekday + date so the legacy DAY field is gone — same info would
+          appear twice in one ribbon row. */}
+      <div className="mx-auto w-full max-w-[1480px] mt-20 sm:mt-24 lg:mt-32 px-4 sm:px-8 lg:sticky lg:top-[21px] lg:z-40 lg:mx-0 lg:max-w-none lg:pl-16 lg:pr-[140px]">
         <StatRibbon
-          prefix="// SNAPSHOT"
+          trail={[
+            D2_ROOT,
+            ESCALATION_ROOT,
+            { label: formatDayWithWeekday(resolvedDay).toUpperCase() },
+          ]}
           fields={[
-            {
-              label: 'DAY',
-              value: formatDayWithWeekday(resolvedDay).toUpperCase(),
-              accent: 'green',
-            },
             { label: 'MISSIONS', value: missions.length || '—', accent: 'green' },
             { label: 'SYNCED', value: syncedLabel },
           ]}
@@ -142,79 +150,87 @@ export function EscalationPage({
               : { text: statusToken, ok: true, accent: 'green' }
           }
         />
+      </div>
 
-        <div className="flex min-w-0 flex-col gap-7">
-          <div className="font-mono text-[11px] uppercase tracking-[0.35em] text-rga-mod">
-            {heroKicker} · {statusToken} ·{' '}
-            {formatDayWithWeekday(resolvedDay).toUpperCase()}
-          </div>
+      {/* Mirrors `Shell` (used by the error cases below) minus the full Header
+          clearance — the sticky ribbon above already pushes content past the
+          fixed nav, so we only need a small breathing gap. */}
+      <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-10 px-4 pt-7 pb-20 sm:gap-14 sm:px-8 sm:pt-9 sm:pb-28 lg:px-16 lg:pt-10 lg:pb-36">
+        <header className="flex flex-col gap-7 sm:gap-9">
+          <div className="flex min-w-0 flex-col gap-7">
+            {heroKicker && (
+              <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-text-muted">
+                {heroKicker}
+              </div>
+            )}
 
-          <h1
-            className="font-display uppercase leading-[0.85] tracking-[0.005em] text-balance break-words"
-            style={{ fontSize: 'clamp(48px, 9vw, 144px)' }}
-          >
-            <HeroGlitch
-              className="block"
-              minInterval={4}
-              maxInterval={10}
-              intensity={8}
-              dataCorruption
-              scanlines
+            <h1
+              className="font-display uppercase leading-[0.85] tracking-[0.005em] text-balance break-words"
+              style={{ fontSize: 'clamp(48px, 9vw, 144px)' }}
             >
-              <span className="text-text-primary">{heroTitle}</span>
-            </HeroGlitch>
-            <HeroGlitch
-              className="block"
-              minInterval={5}
-              maxInterval={12}
-              intensity={7}
-              dataCorruption={false}
-              colors={['#ff8000', '#ffae42']}
-            >
-              <span
-                className="text-rga-mod"
-                style={{
-                  textShadow:
-                    '0 0 36px rgba(255,128,0,0.45), 0 0 80px rgba(255,128,0,0.18)',
-                }}
+              <HeroGlitch
+                className="block"
+                minInterval={4}
+                maxInterval={10}
+                intensity={8}
+                dataCorruption
+                scanlines
               >
-                {heroAccent}
-              </span>
-            </HeroGlitch>
-          </h1>
+                <span className="text-text-primary">{heroTitle}</span>
+              </HeroGlitch>
+              <HeroGlitch
+                className="block"
+                minInterval={5}
+                maxInterval={12}
+                intensity={7}
+                dataCorruption={false}
+                colors={['#ff8000', '#ffae42']}
+              >
+                <span
+                  className="text-rga-mod"
+                  style={{
+                    textShadow:
+                      '0 0 36px rgba(255,128,0,0.45), 0 0 80px rgba(255,128,0,0.18)',
+                  }}
+                >
+                  {heroAccent}
+                </span>
+              </HeroGlitch>
+            </h1>
 
-          <p className="max-w-2xl text-base leading-relaxed text-text-secondary sm:text-lg">
-            {intro}
-          </p>
-        </div>
-      </header>
+            <p className="max-w-2xl text-base leading-relaxed text-text-secondary sm:text-lg">
+              {intro}
+            </p>
+          </div>
+        </header>
 
-      <div className="flex flex-col gap-6 sm:gap-8">
-        {awaitingTodayIngest && (
-          <AwaitingIngestBanner resolvedDay={resolvedDay} />
-        )}
-        <MissionRow
-          missions={missions}
-          dayLootByPosition={dayLootByPosition}
-          selectedDay={resolvedDay}
-          awaitingTodayIngest={awaitingTodayIngest}
-          sectionLabel={content?.missionsSectionLabel ?? undefined}
-        />
-        <PrototypeCaches
-          caches={caches}
-          glitchKey={resolvedDay}
-          sectionLabel={content?.cachesSectionLabel ?? undefined}
-          blurb={content?.cachesBlurb ?? undefined}
-        />
-        <div className="flex justify-end pt-2">
-          <EscalationDayStepper
+        <div className="flex flex-col gap-6 sm:gap-8">
+          {awaitingTodayIngest && (
+            <AwaitingIngestBanner resolvedDay={resolvedDay} />
+          )}
+          <MissionRow
+            missions={missions}
+            dayLootByPosition={dayLootByPosition}
             selectedDay={resolvedDay}
             awaitingTodayIngest={awaitingTodayIngest}
+            sectionLabel={content?.missionsSectionLabel ?? undefined}
           />
+          <PrototypeCaches
+            caches={caches}
+            glitchKey={resolvedDay}
+            sectionLabel={content?.cachesSectionLabel ?? undefined}
+            blurb={content?.cachesBlurb ?? undefined}
+          />
+          <div className="flex justify-end pt-2">
+            <EscalationDayStepper
+              selectedDay={resolvedDay}
+              awaitingTodayIngest={awaitingTodayIngest}
+            />
+          </div>
+          <EscalationDiscordRow content={content?.discord} />
         </div>
-        <EscalationDiscordRow content={content?.discord} />
       </div>
-    </Shell>
+    </>
   )
 }
 
