@@ -1,6 +1,6 @@
 import { StatRibbon } from '@/components/ui/StatRibbon'
+import { D2_ROOT, BRIEFINGS_ROOT } from '@/components/ui/trail-roots'
 import { ReaderPageShell } from '@/components/content/reader/ReaderPageShell'
-import { ReaderBreadcrumb } from '@/components/content/reader/ReaderBreadcrumb'
 import { ReaderHeroFrame } from '@/components/content/reader/ReaderHeroFrame'
 import { ReaderTitleBlock } from '@/components/content/reader/ReaderTitleBlock'
 import { ReaderActions } from '@/components/content/reader/ReaderActions'
@@ -89,39 +89,43 @@ export function BriefingDetailPage({
   const ribbonFieldAccent: 'cyan' | 'mod' = accent === 'cyan' ? 'cyan' : 'mod'
   const updatedShort = briefing.updatedAt.slice(0, 10)
 
+  const stickyChrome = (
+    <StatRibbon
+      trail={[
+        D2_ROOT,
+        BRIEFINGS_ROOT,
+        { label: `${designator}.md`, accent: ribbonFieldAccent },
+      ]}
+      fields={[
+        {
+          label: 'FREQ',
+          value: briefing.frequency.toUpperCase(),
+          accent: ribbonFieldAccent,
+        },
+        { label: 'PERIOD', value: periodLabel, accent: ribbonFieldAccent },
+        {
+          label: 'SOURCES',
+          value: briefing.articleCount.toString(),
+          accent: ribbonFieldAccent,
+        },
+        {
+          label: 'UPDATED',
+          value: /^\d{4}-\d{2}-\d{2}$/.test(updatedShort)
+            ? formatDayShort(updatedShort)
+            : '—',
+          accent: 'green',
+        },
+      ]}
+      pill={
+        isMembersOnly
+          ? { text: 'MEMBERS', ok: true, accent: 'magenta' }
+          : { text: 'PUBLIC', ok: true, accent: 'green' }
+      }
+    />
+  )
+
   const header = (
     <>
-      <StatRibbon
-        prefix={`// DIVISION 2 · BRIEFING · ${briefing.frequency.toUpperCase()}`}
-        fields={[
-          { label: 'PERIOD', value: periodLabel, accent: ribbonFieldAccent },
-          {
-            label: 'SOURCES',
-            value: briefing.articleCount.toString(),
-            accent: ribbonFieldAccent,
-          },
-          {
-            label: 'UPDATED',
-            value: /^\d{4}-\d{2}-\d{2}$/.test(updatedShort)
-              ? formatDayShort(updatedShort)
-              : '—',
-            accent: 'green',
-          },
-        ]}
-        pill={
-          isMembersOnly
-            ? { text: 'MEMBERS', ok: true, accent: 'magenta' }
-            : { text: 'PUBLIC', ok: true, accent: 'green' }
-        }
-      />
-      <ReaderBreadcrumb
-        accent={accent}
-        trail={[
-          { href: '/division-2', label: 'DIVISION 2' },
-          { href: '/division-2/briefings', label: 'BRIEFINGS' },
-        ]}
-        designator={designator}
-      />
       <ReaderTitleBlock
         accent={accent}
         title={briefing.title}
@@ -183,6 +187,7 @@ export function BriefingDetailPage({
   return (
     <ReaderPageShell
       accent={accent}
+      stickyChrome={stickyChrome}
       header={header}
       toc={
         sections.length > 0 ? (

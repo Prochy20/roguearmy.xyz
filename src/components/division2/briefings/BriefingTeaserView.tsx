@@ -7,7 +7,7 @@ import { HeroGlitch } from '@/components/effects/HeroGlitch'
 import { CyberCorners } from '@/components/ui/CyberCorners'
 import { DiscordIcon } from '@/components/ui/DiscordIcon'
 import { StatRibbon } from '@/components/ui/StatRibbon'
-import { ReaderBreadcrumb } from '@/components/content/reader/ReaderBreadcrumb'
+import { D2_ROOT, BRIEFINGS_ROOT } from '@/components/ui/trail-roots'
 import { ReaderTitleBlock } from '@/components/content/reader/ReaderTitleBlock'
 import { ReaderHeroFrame } from '@/components/content/reader/ReaderHeroFrame'
 import { ReaderActions } from '@/components/content/reader/ReaderActions'
@@ -56,11 +56,24 @@ export function BriefingTeaserView({
   }
 
   return (
-    <div className="relative mx-auto w-full max-w-[1080px] px-4 pt-20 pb-24 sm:px-8 sm:pt-24 sm:pb-28 lg:px-12 lg:pt-28 lg:pb-36">
-      <div className="flex flex-col gap-7 sm:gap-9 lg:gap-10">
+    <div className="relative mx-auto w-full max-w-[1080px] px-4 pb-24 sm:px-8 sm:pb-28 lg:px-12 lg:pb-36">
+      {/* Sticky ribbon — same chrome treatment as the full BriefingDetailPage,
+          driven by ReaderPageShell's stickyChrome slot there. Mirrored here
+          because the teaser bypasses ReaderPageShell (custom locked-body
+          treatment). */}
+      <div className="sticky top-[18px] z-40 mt-20 sm:mt-24 lg:mt-28">
         <StatRibbon
-          prefix={`// DIVISION 2 · BRIEFING · ${briefing.frequency.toUpperCase()}`}
+          trail={[
+            D2_ROOT,
+            BRIEFINGS_ROOT,
+            { label: `${designator}.md`, accent: ribbonFieldAccent },
+          ]}
           fields={[
+            {
+              label: 'FREQ',
+              value: briefing.frequency.toUpperCase(),
+              accent: ribbonFieldAccent,
+            },
             { label: 'PERIOD', value: periodLabel, accent: ribbonFieldAccent },
             {
               label: 'SOURCES',
@@ -77,14 +90,9 @@ export function BriefingTeaserView({
           ]}
           pill={{ text: 'LOCKED', ok: false, accent: 'magenta' }}
         />
-        <ReaderBreadcrumb
-          accent={accent}
-          trail={[
-            { href: '/division-2', label: 'DIVISION 2' },
-            { href: '/division-2/briefings', label: 'BRIEFINGS' },
-          ]}
-          designator={designator}
-        />
+      </div>
+
+      <div className="flex flex-col gap-7 sm:gap-9 lg:gap-10 pt-7 sm:pt-9 lg:pt-10">
         <ReaderTitleBlock
           accent={accent}
           title={briefing.title}
