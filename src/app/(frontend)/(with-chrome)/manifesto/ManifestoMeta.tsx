@@ -73,7 +73,7 @@ export const ManifestoMeta = memo(function ManifestoMeta({
   }, [])
 
   return (
-    <aside className="hidden lg:flex sticky top-7 self-start flex-col gap-5 font-mono">
+    <aside className="hidden lg:flex sticky top-24 self-start flex-col gap-5 font-mono">
       {/* Document info card */}
       <div className="border border-rga-green/[0.12] bg-black/40 p-4">
         <div className="text-[10px] tracking-[0.35em] text-rga-green mb-3">

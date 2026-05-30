@@ -123,8 +123,12 @@ export function ManifestoTOC({
 
   return (
     <>
-      {/* Desktop: sticky sidebar, scrollable when content overflows */}
-      <div ref={scrollContainerRef} className="hidden lg:block sticky top-7 self-start max-h-[calc(100vh-3.5rem)] overflow-y-auto scrollbar-on-hover">
+      {/* Desktop: sticky sidebar, scrollable when content overflows. top-24
+          (= 96px) matches the reader rails in ReaderPageShell so the side
+          panels clear the page-level sticky ribbon (which ends around y=59)
+          with breathing room. max-h budget shrinks accordingly to keep the
+          bottom edge ~32px above the viewport floor. */}
+      <div ref={scrollContainerRef} className="hidden lg:block sticky top-24 self-start max-h-[calc(100vh-8rem)] overflow-y-auto scrollbar-on-hover">
         {content}
       </div>
 

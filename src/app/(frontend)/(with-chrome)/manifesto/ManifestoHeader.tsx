@@ -53,15 +53,15 @@ export function ManifestoHeader({ doc }: ManifestoHeaderProps) {
             </div>
           )}
 
-        {/* Title */}
-        <h1
-          className="font-display text-[clamp(64px,10vw,168px)] leading-[0.86] tracking-[-0.005em] uppercase text-white m-0"
-          style={{
-            textShadow: '-2px 0 rgba(0,255,255,0.33), 2px 0 rgba(255,0,255,0.33)',
-          }}
-        >
-          {doc.title}
-        </h1>
+          {/* Title */}
+          <h1
+            className="font-display text-[clamp(64px,10vw,168px)] leading-[0.86] tracking-[-0.005em] uppercase text-white m-0"
+            style={{
+              textShadow: '-2px 0 rgba(0,255,255,0.33), 2px 0 rgba(255,0,255,0.33)',
+            }}
+          >
+            {doc.title}
+          </h1>
 
           {/* Subtitle */}
           {doc.subtitle && (
