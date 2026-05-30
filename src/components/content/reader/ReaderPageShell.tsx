@@ -4,6 +4,13 @@ import { ACCENT_TOKENS, type AccentName } from './accent'
 
 interface ReaderPageShellProps {
   accent: AccentName
+  /**
+   * Optional sticky chrome row (typically a StatRibbon) rendered above the
+   * header. Clears the fixed Header via mt-20 on first paint, then sticks at
+   * the MENU-button vertical center (top:18) on scroll. When omitted, the
+   * header slot picks up the usual pt-20 clearance instead.
+   */
+  stickyChrome?: ReactNode
   /** Full-width chrome above the 3-col body (breadcrumb, tag row, title, hero). */
   header: ReactNode
   /** Left rail. Null hides it and stretches the body column. */
@@ -35,6 +42,7 @@ interface ReaderPageShellProps {
  */
 export function ReaderPageShell({
   accent,
+  stickyChrome,
   header,
   toc,
   body,
@@ -71,8 +79,16 @@ export function ReaderPageShell({
         }}
       />
 
-      <div className="relative z-10 mx-auto w-full max-w-[1440px] px-4 pt-20 pb-24 sm:px-8 sm:pt-24 sm:pb-28 lg:px-12 lg:pt-28 lg:pb-36">
-        <div className="flex flex-col gap-12 sm:gap-14 lg:gap-16">
+      <div className="relative z-10 mx-auto w-full max-w-[1440px] px-4 pb-24 sm:px-8 sm:pb-28 lg:px-12 lg:pb-36">
+        {stickyChrome && (
+          <div className="sticky top-[18px] z-40 mt-20 sm:mt-24 lg:mt-28">
+            {stickyChrome}
+          </div>
+        )}
+
+        <div
+          className={`flex flex-col gap-12 sm:gap-14 lg:gap-16 ${stickyChrome ? 'pt-7 sm:pt-9 lg:pt-10' : 'pt-20 sm:pt-24 lg:pt-28'}`}
+        >
           {/* Full-width chrome (breadcrumb, tag row, title, byline, hero). */}
           <div className="flex flex-col gap-7 sm:gap-9 lg:gap-10">{header}</div>
 
