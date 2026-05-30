@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { HeroGlitch } from '@/components/effects/HeroGlitch'
 import { StatRibbon } from '@/components/ui/StatRibbon'
+import { D2_ROOT } from '@/components/ui/trail-roots'
 import { CyberButton } from '@/components/ui/CyberButton'
 import { GlowButton } from '@/components/ui/GlowButton'
 import { SectionHeader } from '@/components/community/SectionHeader'
@@ -73,64 +74,71 @@ interface ClansPageProps {
 }
 
 export function ClansPage({ isAuthenticated, clans, content }: ClansPageProps) {
+  const countLabel = String(clans.length).padStart(2, '0')
   return (
-    <Shell>
-      <Hero content={content} clanCount={clans.length} />
+    <>
+      {/* Page chrome — at <lg renders inline (no stick) to save vertical space
+          on phones/tablets. From lg+ sticks at MENU's vertical center and
+          stretches almost to MENU's left bracket. Trail is 2-segment
+          (Division 2 › Clans) — clans is a section root, so the leaf IS the
+          page identity, no sub-view distinguisher needed. */}
+      <div className="mx-auto w-full max-w-[1480px] mt-20 sm:mt-24 lg:mt-32 px-4 sm:px-8 lg:sticky lg:top-[21px] lg:z-40 lg:mx-0 lg:max-w-none lg:pl-16 lg:pr-[140px]">
+        <StatRibbon
+          trail={[D2_ROOT, { label: 'Clans' }]}
+          fields={[
+            { label: 'STANDARDS', value: countLabel, accent: 'green' },
+            { label: 'ACCESS', value: 'PUBLIC', accent: 'green' },
+          ]}
+          pill={{ text: 'RECRUITING', ok: true, accent: 'green' }}
+        />
+      </div>
 
-      <RosterGrid
-        label={content.rosterSectionLabel}
-        clans={clans}
-        showLeader={isAuthenticated}
-        empty={content.emptyRoster}
-      />
+      <Shell>
+        <Hero content={content} />
 
-      <HowToSection howTo={content.howTo} />
+        <RosterGrid
+          label={content.rosterSectionLabel}
+          clans={clans}
+          showLeader={isAuthenticated}
+          empty={content.emptyRoster}
+        />
 
-      <Doctrine callout={content.callout} />
+        <HowToSection howTo={content.howTo} />
 
-      <ClosingCta cta={content.closingCta} />
-    </Shell>
+        <Doctrine callout={content.callout} />
+
+        <ClosingCta cta={content.closingCta} />
+      </Shell>
+    </>
   )
 }
 
 /* ───────────────────────── Shell ─────────────────────────
    Same shell dims as /division-2 (CommandConsolePage) and /division-2/escalation
    so a member crossing from those pages into /clans gets identical chrome:
-   max-w-[1480px], responsive padding, and section gap. */
+   max-w-[1480px], responsive padding, and section gap. Top padding is small
+   (pt-7…) because the sticky ribbon above already clears the fixed Header. */
 
 function Shell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-10 px-4 pt-20 pb-20 sm:gap-14 sm:px-8 sm:pt-24 sm:pb-28 lg:px-16 lg:pt-32 lg:pb-36">
+    <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-10 px-4 pt-7 pb-20 sm:gap-14 sm:px-8 sm:pt-9 sm:pb-28 lg:px-16 lg:pt-10 lg:pb-36">
       {children}
     </div>
   )
 }
 
 /* ───────────────────────── Hero ─────────────────────────
-   Same hero contract as the D2 console (StatRibbon → kicker → two-line
-   HeroGlitch headline → intro), but swapped from D2-section orange to RGA
-   brand green — this page is the public-facing recruitment entry, so it
-   reads as brand-first rather than tool-section-first. */
+   Two-line HeroGlitch headline + intro — RGA brand green to read as
+   recruitment-facing brand rather than D2 tool-section. The page-level
+   StatRibbon trail (Division 2 › Clans) lives in the sticky chrome above; the
+   hero's old location-carrying kicker is dropped (was a literal duplicate of
+   the trail). `content.heroKicker` is no longer rendered — the field stays in
+   the Payload schema for migration, scheduled for phase 2 cleanup. */
 
-function Hero({ content, clanCount }: { content: ClansPageContent; clanCount: number }) {
-  const countLabel = String(clanCount).padStart(2, '0')
-
+function Hero({ content }: { content: ClansPageContent }) {
   return (
     <header className="flex flex-col gap-7 sm:gap-9">
-      <StatRibbon
-        prefix="// DIVISION 2 · CLANS"
-        fields={[
-          { label: 'STANDARDS', value: countLabel, accent: 'green' },
-          { label: 'ACCESS', value: 'PUBLIC', accent: 'green' },
-        ]}
-        pill={{ text: 'RECRUITING', ok: true, accent: 'green' }}
-      />
-
       <div className="flex min-w-0 flex-col gap-7">
-        <div className="font-mono text-[11px] uppercase tracking-[0.35em] text-rga-green">
-          {content.heroKicker} · {countLabel} STANDARDS
-        </div>
-
         <h1
           className="font-display uppercase leading-[0.85] tracking-[0.005em] text-balance break-words"
           style={{ fontSize: 'clamp(48px, 9vw, 144px)' }}
