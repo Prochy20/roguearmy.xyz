@@ -10,7 +10,6 @@ import {
   formatDayShort,
   formatDayWithWeekday,
   hoursSince,
-  projectTimeOntoTodayUtc,
   STALE_HOURS_THRESHOLD,
   todayUtcIso,
 } from '@/lib/division2/format'
@@ -192,10 +191,7 @@ export function EscalationPage({
 
       <div className="flex flex-col gap-6 sm:gap-8">
         {awaitingTodayIngest && (
-          <AwaitingIngestBanner
-            resolvedDay={resolvedDay}
-            referenceFetchedAt={fetchedAt}
-          />
+          <AwaitingIngestBanner resolvedDay={resolvedDay} />
         )}
         <MissionRow
           missions={missions}
@@ -224,23 +220,15 @@ export function EscalationPage({
 
 /**
  * Info banner shown when the page fell back from today to the last available
- * day. The expected publish time is anchored on the reference sync's
- * wall-clock — upstream publishes daily on the same cadence, so projecting
- * the prior sync's HH:MM onto today is a self-tuning predictor.
+ * day. Expected publish time is anchored on upstream's UTC cadence; per-user
+ * local-time rendering is handled by `UserLocalTime` on the client.
  */
-function AwaitingIngestBanner({
-  resolvedDay,
-  referenceFetchedAt,
-}: {
-  resolvedDay: string
-  referenceFetchedAt: string | null
-}) {
-  const expectedUtcIso = referenceFetchedAt
-    ? projectTimeOntoTodayUtc(referenceFetchedAt)
-    : null
-  const expectedUtcLabel = expectedUtcIso
-    ? formatUtcHourLabel(expectedUtcIso)
-    : null
+const EXPECTED_PUBLISH_HOUR_UTC = 9
+
+function AwaitingIngestBanner({ resolvedDay }: { resolvedDay: string }) {
+  const hh = String(EXPECTED_PUBLISH_HOUR_UTC).padStart(2, '0')
+  const expectedUtcIso = `${todayUtcIso()}T${hh}:00:00.000Z`
+  const expectedUtcLabel = formatUtcHourLabel(expectedUtcIso)
   return (
     <div
       role="status"
@@ -255,16 +243,14 @@ function AwaitingIngestBanner({
         Today&apos;s drops haven&apos;t published upstream yet — viewing the
         last available day ({formatDayShort(resolvedDay)}).
       </span>
-      {expectedUtcIso && expectedUtcLabel && (
-        <span className="ml-auto text-rga-green/80">
-          // EXPECTED ≈{' '}
-          <UserLocalTime
-            utcIso={expectedUtcIso}
-            fallback={`${expectedUtcLabel} UTC`}
-          />{' '}
-          · {expectedUtcLabel} UTC
-        </span>
-      )}
+      <span className="ml-auto text-rga-green/80">
+        // EXPECTED ≈{' '}
+        <UserLocalTime
+          utcIso={expectedUtcIso}
+          fallback={`${expectedUtcLabel} UTC`}
+        />{' '}
+        · {expectedUtcLabel} UTC
+      </span>
     </div>
   )
 }
