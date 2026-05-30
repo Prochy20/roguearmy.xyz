@@ -56,12 +56,12 @@ export function BriefingTeaserView({
   }
 
   return (
-    <div className="relative mx-auto w-full max-w-[1080px] px-4 pb-24 sm:px-8 sm:pb-28 lg:px-12 lg:pb-36">
-      {/* Sticky ribbon — same chrome treatment as the full BriefingDetailPage,
-          driven by ReaderPageShell's stickyChrome slot there. Mirrored here
-          because the teaser bypasses ReaderPageShell (custom locked-body
-          treatment). */}
-      <div className="sticky top-[18px] z-40 mt-20 sm:mt-24 lg:mt-28">
+    <div className="relative">
+      {/* Page chrome — mirrors the ReaderPageShell stickyChrome slot used by
+          BriefingDetailPage. Lives OUTSIDE the max-w-[1080px] content column
+          so at lg+ its right edge can reach MENU's left bracket. At <lg the
+          ribbon renders inline (no stick) to save vertical space. */}
+      <div className="mx-auto w-full max-w-[1080px] mt-20 sm:mt-24 lg:mt-28 px-4 sm:px-8 lg:sticky lg:top-[21px] lg:z-40 lg:mx-0 lg:max-w-none lg:pl-12 lg:pr-[140px]">
         <StatRibbon
           trail={[
             D2_ROOT,
@@ -92,6 +92,7 @@ export function BriefingTeaserView({
         />
       </div>
 
+      <div className="mx-auto w-full max-w-[1080px] px-4 pb-24 sm:px-8 sm:pb-28 lg:px-12 lg:pb-36">
       <div className="flex flex-col gap-7 sm:gap-9 lg:gap-10 pt-7 sm:pt-9 lg:pt-10">
         <ReaderTitleBlock
           accent={accent}
@@ -242,6 +243,7 @@ export function BriefingTeaserView({
             </CyberCorners>
           </motion.div>
         </div>
+      </div>
       </div>
     </div>
   )
