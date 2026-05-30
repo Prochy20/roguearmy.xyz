@@ -79,13 +79,19 @@ export function ReaderPageShell({
         }}
       />
 
-      <div className="relative z-10 mx-auto w-full max-w-[1440px] px-4 pb-24 sm:px-8 sm:pb-28 lg:px-12 lg:pb-36">
-        {stickyChrome && (
-          <div className="sticky top-[18px] z-40 mt-20 sm:mt-24 lg:mt-28">
-            {stickyChrome}
-          </div>
-        )}
+      {/* Sticky chrome lives OUTSIDE the max-w-[1440px] body column so its
+          right edge can reach close to the fixed Header's MENU button instead
+          of being inset by the body grid. At <lg it renders inline (no stick)
+          to save vertical space on small screens. From lg+ it sticks at MENU's
+          vertical center (top:21) and stretches almost to MENU's left bracket
+          (pr:140 = MENU footprint ~132 + 8px gap). */}
+      {stickyChrome && (
+        <div className="mx-auto w-full max-w-[1440px] mt-20 sm:mt-24 lg:mt-28 px-4 sm:px-8 lg:sticky lg:top-[21px] lg:z-40 lg:mx-0 lg:max-w-none lg:pl-12 lg:pr-[140px]">
+          {stickyChrome}
+        </div>
+      )}
 
+      <div className="relative z-10 mx-auto w-full max-w-[1440px] px-4 pb-24 sm:px-8 sm:pb-28 lg:px-12 lg:pb-36">
         <div
           className={`flex flex-col gap-12 sm:gap-14 lg:gap-16 ${stickyChrome ? 'pt-7 sm:pt-9 lg:pt-10' : 'pt-20 sm:pt-24 lg:pt-28'}`}
         >

@@ -60,14 +60,12 @@ export function BriefingsPage({
 
   return (
     <div>
-      {/* Sticky page chrome — ribbon clears the fixed Header on first paint
-          via mt-20 (= Header height) and sticks at the MENU-button vertical
-          center (top:18 = (h-20 - h-11) / 2) on scroll. z-40 sits below the
-          Header's z-50 so MENU stays on top if they ever overlap on narrow
-          viewports. The internal padding keeps the ribbon's right edge clear
-          of the MENU button on wide viewports — its visible width is
-          intentionally narrower than the H1 below. */}
-      <div className="sticky top-[18px] z-40 mx-auto w-full max-w-[1480px] mt-20 sm:mt-24 lg:mt-28 px-4 sm:px-8 lg:px-16">
+      {/* Page chrome — at <lg the ribbon renders inline (no stick) so it
+          doesn't eat scarce vertical space on phones/tablets. From lg+ it
+          sticks at the MENU button's vertical center (top:21 = MENU center 40
+          minus half ribbon height ~19) and its right edge approaches MENU's
+          left bracket (pr:140 = MENU footprint ~132 + 8px visual gap). */}
+      <div className="mx-auto w-full max-w-[1480px] mt-20 sm:mt-24 lg:mt-28 px-4 sm:px-8 lg:sticky lg:top-[21px] lg:z-40 lg:mx-0 lg:max-w-none lg:pl-16 lg:pr-[140px]">
         <StatRibbon
           trail={[D2_ROOT, BRIEFINGS_ROOT, { label: heroTitle }]}
           fields={[
