@@ -19,3 +19,8 @@ export const BRIEFINGS_ROOT: TrailSegment = {
   label: 'Briefings',
   href: '/division-2/briefings',
 }
+
+export const ESCALATION_ROOT: TrailSegment = {
+  label: 'Escalation',
+  href: '/division-2/escalation',
+}
