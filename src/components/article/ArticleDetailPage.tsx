@@ -73,7 +73,18 @@ export function ArticleDetailPage({
   const accent = tintToAccent(article.topic.tint)
   const readMinutes = Math.max(1, article.readingTime)
   const publishedShort = formatArticleDate(article.publishedAt)
-  const designator = article.topic.slug.toUpperCase()
+  // Doc identifiers — `topicCode` is the topic slug (used in body's DOC
+  // strip) and `articleCode` is the article slug (used in trail leaf so the
+  // leaf is unique per URL, not per topic). The trail leaf gets a length
+  // budget because article slugs can grow long; the body strip has more
+  // visual room and can carry the untruncated code.
+  const topicCode = article.topic.slug.toUpperCase()
+  const articleCode = article.slug.toUpperCase()
+  const TRAIL_LEAF_MAX = 18
+  const trailLeafCode =
+    articleCode.length > TRAIL_LEAF_MAX
+      ? `${articleCode.slice(0, TRAIL_LEAF_MAX - 1)}…`
+      : articleCode
 
   // StatRibbon's local accent vocabulary is { green, cyan, mod, magenta } —
   // map the reader accent onto its closest sibling for the ribbon's numeric
@@ -93,7 +104,7 @@ export function ArticleDetailPage({
           label: article.topic.name,
           href: `/blog/${article.topic.slug}`,
         },
-        { label: `${article.slug.toUpperCase()}.md`, accent: ribbonFieldAccent },
+        { label: `${trailLeafCode}.md`, accent: ribbonFieldAccent },
       ]}
       fields={[
         {
@@ -151,7 +162,7 @@ export function ArticleDetailPage({
       <ReaderDocStrip
         accent={accent}
         fields={[
-          { label: 'DOC', value: designator, tone: 'accent' },
+          { label: 'DOC', value: topicCode, tone: 'accent' },
           {
             label: 'CLASS',
             value: article.topic.name.toUpperCase(),
