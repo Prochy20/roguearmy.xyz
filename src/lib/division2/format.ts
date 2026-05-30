@@ -109,22 +109,6 @@ export function ashleyTimestampToUtcIso(raw: string): string {
   return new Date(asIfUtc.getTime() - offsetMs).toISOString()
 }
 
-/**
- * Project the time-of-day of a true-UTC ISO onto today's date in UTC.
- * Used by the awaiting-ingest banner: yesterday's sync wall-clock time is
- * a better predictor of today's publish than any hardcoded constant — if
- * upstream's cron shifts, the banner tracks the new cadence automatically.
- */
-export function projectTimeOntoTodayUtc(referenceUtcIso: string): string {
-  const ref = new Date(referenceUtcIso)
-  if (Number.isNaN(ref.getTime())) return referenceUtcIso
-  const today = todayUtcIso()
-  const hh = String(ref.getUTCHours()).padStart(2, '0')
-  const mm = String(ref.getUTCMinutes()).padStart(2, '0')
-  const ss = String(ref.getUTCSeconds()).padStart(2, '0')
-  return `${today}T${hh}:${mm}:${ss}.000Z`
-}
-
 /** Milliseconds you'd add to a UTC instant to get the wall-clock in Prague. */
 function pragueOffsetMs(epochMs: number): number {
   const dtf = new Intl.DateTimeFormat('en-US', {
