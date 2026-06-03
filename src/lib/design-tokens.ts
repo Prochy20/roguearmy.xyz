@@ -16,6 +16,19 @@ export const BRAND_COLORS: ColorSwatch[] = [
   { name: 'Magenta', hex: '#FF00FF', tailwind: 'rga-magenta', glow: true },
 ]
 
+/**
+ * Extended raw palette — tokens beyond the historical green/cyan/magenta
+ * trio. Power game brands (D2 orange), status messaging (warn yellow,
+ * error rose), and staff role accents (dev chartreuse). Same hex may
+ * back multiple Layer 2 aliases — see SEMANTIC_TOKENS below.
+ */
+export const EXTENDED_PALETTE: ColorSwatch[] = [
+  { name: 'Orange', hex: '#FF8000', tailwind: 'rga-mod', glow: true },
+  { name: 'Chartreuse', hex: '#CCFF00', tailwind: 'rga-dev', glow: true },
+  { name: 'Yellow', hex: '#FFE100', tailwind: 'rga-yellow', glow: true },
+  { name: 'Rose', hex: '#FF0066', tailwind: 'rga-admin', glow: true },
+]
+
 export const BG_COLORS: ColorSwatch[] = [
   { name: 'Void', hex: '#030303', tailwind: 'void' },
   { name: 'Primary', hex: '#0A0A0A', tailwind: 'bg-primary' },
@@ -33,6 +46,123 @@ export const GLOW_COLORS: ColorSwatch[] = [
   { name: 'Glow Green', hex: 'rgba(0,255,65,0.5)', tailwind: 'glow-green' },
   { name: 'Glow Cyan', hex: 'rgba(0,255,255,0.5)', tailwind: 'glow-cyan' },
   { name: 'Glow Magenta', hex: 'rgba(255,0,255,0.5)', tailwind: 'glow-magenta' },
+  { name: 'Glow Orange', hex: 'rgba(255,128,0,0.5)', tailwind: 'glow-orange' },
+  { name: 'Glow Yellow', hex: 'rgba(255,225,0,0.5)', tailwind: 'glow-yellow' },
+  { name: 'Glow Rose', hex: 'rgba(255,0,102,0.5)', tailwind: 'glow-rose' },
+  { name: 'Glow Chartreuse', hex: 'rgba(204,255,0,0.5)', tailwind: 'glow-chartreuse' },
+]
+
+/**
+ * Layer 2 semantic aliases. Components should prefer these over raw rga-*
+ * tokens whenever a semantic name exists — `text-status-warn` mluví za
+ * sebe, `text-rga-yellow` ne. Same hex may back multiple aliases
+ * intentionally (e.g. role-mod and game-d2 both resolve to orange) because
+ * the surfaces don't coexist on a single screen.
+ */
+export interface SemanticAlias {
+  alias: string
+  layer1: string
+  hex: string
+  purpose: string
+}
+
+export const SEMANTIC_TOKENS: SemanticAlias[] = [
+  {
+    alias: 'brand',
+    layer1: 'rga-green',
+    hex: '#00FF41',
+    purpose: 'RGA identity — logo, primary CTAs, selection, scrollbar.',
+  },
+  {
+    alias: 'status-ok',
+    layer1: 'rga-green',
+    hex: '#00FF41',
+    purpose: 'Active OK status. Pairs with status-info as the muted default.',
+  },
+  {
+    alias: 'status-warn',
+    layer1: 'rga-yellow',
+    hex: '#FFE100',
+    purpose: 'Soft attention — STALE data, MEMBERS-ONLY gates, hazard warnings.',
+  },
+  {
+    alias: 'status-error',
+    layer1: 'rga-admin',
+    hex: '#FF0066',
+    purpose: 'Hard failure — LOCKED, OFFLINE, broken data.',
+  },
+  {
+    alias: 'status-info',
+    layer1: '(muted gray)',
+    hex: 'oklch(0.65 0 0)',
+    purpose: 'Default pill state — TODAY, VIEWING, LIVE, PUBLIC. Muted, no pulse.',
+  },
+  {
+    alias: 'game-d2',
+    layer1: 'rga-mod',
+    hex: '#FF8000',
+    purpose: 'Division 2 body content brand — page titles, mission rows, intel feeds.',
+  },
+  {
+    alias: 'role-dev',
+    layer1: 'rga-dev',
+    hex: '#CCFF00',
+    purpose: 'Staff Developer role accent on /community/staff cards. Only use here.',
+  },
+  {
+    alias: 'role-mod',
+    layer1: 'rga-mod',
+    hex: '#FF8000',
+    purpose: 'Staff Moderator role accent. Same hex as game-d2 (different surfaces).',
+  },
+  {
+    alias: 'role-admin',
+    layer1: 'rga-admin',
+    hex: '#FF0066',
+    purpose: 'Staff Admin role accent. Same hex as status-error (different surfaces).',
+  },
+]
+
+/**
+ * Status pill modes used in chrome (StatRibbon). Renders one of three modes:
+ * `info` (muted, static dot — the default when nothing's wrong), `warn`
+ * (yellow + pulse — attention but data exists), `error` (rose + pulse —
+ * something broken). Magenta is no longer used for failure — it's
+ * reserved for decorative chromatic effects.
+ */
+export interface StatusPillMode {
+  mode: 'info' | 'warn' | 'error'
+  example: string
+  textClass: string
+  dotClass: string
+  description: string
+}
+
+export const STATUS_PILL_MODES: StatusPillMode[] = [
+  {
+    mode: 'info',
+    example: 'VIEWING',
+    textClass: 'text-text-secondary',
+    dotClass: 'bg-text-secondary',
+    description:
+      'Default state. Anything routine — TODAY, VIEWING, LIVE, ONLINE, PUBLIC, RECRUITING. No pulse, muted gray.',
+  },
+  {
+    mode: 'warn',
+    example: 'STALE',
+    textClass: 'text-rga-yellow',
+    dotClass: 'bg-rga-yellow shadow-[0_0_8px_#FFE100] animate-pulse',
+    description:
+      'Soft attention. Data exists but you should know — STALE, MEMBERS-ONLY, freshness lag. Yellow pulse.',
+  },
+  {
+    mode: 'error',
+    example: 'LOCKED',
+    textClass: 'text-rga-admin',
+    dotClass: 'bg-rga-admin shadow-[0_0_8px_#FF0066] animate-pulse',
+    description:
+      'Hard failure. Content gone or unreachable — LOCKED, OFFLINE, ERROR. Rose pulse.',
+  },
 ]
 
 export interface TypeSpec {
