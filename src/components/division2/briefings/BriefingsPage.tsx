@@ -277,7 +277,7 @@ function Section({
       ? 'text-rga-green'
       : accent === 'cyan'
         ? 'text-rga-cyan'
-        : 'text-rga-mod'
+        : 'text-game-d2'
   return (
     <section className="flex flex-col gap-4 sm:gap-5">
       <div className="flex flex-wrap items-end justify-between gap-3 border-b border-text-muted/15 pb-3">

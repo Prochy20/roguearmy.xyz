@@ -280,7 +280,7 @@ function RelatedBriefings({
         <div className="flex flex-wrap items-baseline gap-3 font-mono">
           <span
             className={`text-[10px] tracking-[0.4em] ${
-              accent === 'cyan' ? 'text-rga-cyan' : 'text-rga-mod'
+              accent === 'cyan' ? 'text-rga-cyan' : 'text-game-d2'
             }`}
             style={{
               textShadow:

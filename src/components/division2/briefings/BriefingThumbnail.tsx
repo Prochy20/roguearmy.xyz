@@ -41,7 +41,7 @@ export function BriefingThumbnail({ src, accent, fileNumber }: BriefingThumbnail
   const tintClass =
     accent === 'cyan'
       ? 'bg-linear-to-tr from-rga-cyan/18 via-transparent to-transparent'
-      : 'bg-linear-to-tr from-rga-mod/18 via-transparent to-transparent'
+      : 'bg-linear-to-tr from-game-d2/18 via-transparent to-transparent'
 
   return (
     <>

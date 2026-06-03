@@ -179,7 +179,7 @@ export function BriefingCard({
               </span>
             ) : (
               <span>
-                <span className="text-rga-mod">{fileNumber}</span>
+                <span className="text-game-d2">{fileNumber}</span>
                 <span className="text-text-muted/60">.md</span>
               </span>
             )}
@@ -199,7 +199,7 @@ export function BriefingCard({
  * outside it. Each tick slides slightly outward on group hover.
  */
 function CornerTicks({ accent }: { accent: 'cyan' | 'mod' }) {
-  const colorClass = accent === 'cyan' ? 'border-rga-cyan' : 'border-rga-mod'
+  const colorClass = accent === 'cyan' ? 'border-rga-cyan' : 'border-game-d2'
   // Bigger L-brackets for the lead — 24px wide arms with 2px stroke so they
   // read unambiguously as targeting corners even at a glance. Positioned
   // 10px outside each edge so they float in the section's gutter.
@@ -268,17 +268,17 @@ function accentClasses(accent: 'cyan' | 'mod') {
     } as const
   }
   return {
-    cardBorder: 'border-rga-mod/20',
-    cardBorderHover: 'hover:border-rga-mod/55',
-    cursorText: 'text-rga-mod',
-    openText: 'text-rga-mod',
-    headlineHover: 'group-hover:text-rga-mod',
-    pillBorder: 'border-rga-mod/55',
-    pillText: 'text-rga-mod',
-    pillHoverFill: 'group-hover:bg-rga-mod/15',
-    ctaBorder: 'border-rga-mod/55',
-    ctaText: 'text-rga-mod',
-    ctaHoverFill: 'group-hover:bg-rga-mod/15 group-hover:border-rga-mod',
+    cardBorder: 'border-game-d2/20',
+    cardBorderHover: 'hover:border-game-d2/55',
+    cursorText: 'text-game-d2',
+    openText: 'text-game-d2',
+    headlineHover: 'group-hover:text-game-d2',
+    pillBorder: 'border-game-d2/55',
+    pillText: 'text-game-d2',
+    pillHoverFill: 'group-hover:bg-game-d2/15',
+    ctaBorder: 'border-game-d2/55',
+    ctaText: 'text-game-d2',
+    ctaHoverFill: 'group-hover:bg-game-d2/15 group-hover:border-game-d2',
   } as const
 }
 

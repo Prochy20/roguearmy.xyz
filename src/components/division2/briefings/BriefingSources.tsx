@@ -217,9 +217,9 @@ function SourceRow({ accent, article, ordinal, isFirst }: SourceRowProps) {
     ? ''
     : accent === 'cyan'
       ? 'border-t border-rga-cyan/10'
-      : 'border-t border-rga-mod/10'
+      : 'border-t border-game-d2/10'
   const hoverClass =
-    accent === 'cyan' ? 'hover:bg-rga-cyan/5' : 'hover:bg-rga-mod/5'
+    accent === 'cyan' ? 'hover:bg-rga-cyan/5' : 'hover:bg-game-d2/5'
 
   const inner = (
     <>

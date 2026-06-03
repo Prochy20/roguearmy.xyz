@@ -40,7 +40,7 @@ export const Default: Story = {
 }
 
 /**
- * Daily briefings use the orange (`rga-mod`) reader accent instead of the
+ * Daily briefings use the orange (`game-d2`) reader accent instead of the
  * weekly cyan — the header chrome (StatRibbon, breadcrumb, hero frame)
  * picks up the new tint while the magenta auth card stays constant.
  */
