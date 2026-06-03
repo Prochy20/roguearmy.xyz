@@ -182,7 +182,7 @@ export function ContentFilterChips({ activeSource, activeMin }: ContentFilterChi
       {/* h-20 matches the chrome MENU button height. */}
       <div className="hidden min-h-20 flex-wrap items-center gap-x-2 gap-y-2 py-2 md:flex">
         <div className="flex items-center gap-2 pr-1">
-          <span className="font-mono text-[10px] tracking-[0.4em] text-rga-mod">SEC_02</span>
+          <span className="font-mono text-[10px] tracking-[0.4em] text-game-d2">SEC_02</span>
           <span className="font-mono text-[10px] tracking-[0.3em] text-text-muted/70">
             // FILTER
           </span>
@@ -344,7 +344,7 @@ function MobileFilterSheet({
     >
       <div className="flex h-20 shrink-0 items-center justify-between border-b border-text-muted/15 px-4 sm:px-7">
         <div className="flex items-center gap-2.5">
-          <span className="font-mono text-[10px] tracking-[0.4em] text-rga-mod">SEC_02</span>
+          <span className="font-mono text-[10px] tracking-[0.4em] text-game-d2">SEC_02</span>
           <span className="font-mono text-[10px] tracking-[0.3em] text-text-muted">
             // FILTER · MANUAL
           </span>
@@ -450,7 +450,7 @@ function MobileFilterSheet({
             <SheetHelpLine accent="TRACE" body="★4 and ★5 only — sharper signals, fewer items." />
             <SheetHelpLine accent="LOCK" body="★5 only — top-tier confirmed-relevant intel." />
             <p className="pt-1 text-text-muted/80">
-              The <span className="text-rga-mod">★N</span> chip on each card is the AI relevance
+              The <span className="text-game-d2">★N</span> chip on each card is the AI relevance
               score for that item.
             </p>
           </div>
@@ -472,7 +472,7 @@ function SheetGroup({
   return (
     <div className="flex flex-col gap-2.5">
       <div className="flex flex-col gap-1">
-        <span className="font-mono text-[10px] uppercase tracking-[0.35em] text-rga-mod">
+        <span className="font-mono text-[10px] uppercase tracking-[0.35em] text-game-d2">
           {label}
         </span>
         <span className="text-[11px] leading-relaxed text-text-secondary/85">{description}</span>

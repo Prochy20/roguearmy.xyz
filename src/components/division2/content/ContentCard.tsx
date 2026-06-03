@@ -206,7 +206,7 @@ export function ContentCard({ article, now }: ContentCardProps) {
                     className={[
                       'inline-flex items-center gap-1 tabular-nums',
                       article.relevance >= 5
-                        ? 'text-rga-mod'
+                        ? 'text-game-d2'
                         : article.relevance >= 4
                           ? 'text-text-primary/80'
                           : 'text-text-muted',

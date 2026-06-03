@@ -73,7 +73,7 @@ export function ContentPage({ initial, source, minRelevance, limit, content }: C
         />
 
         <div className="flex min-w-0 flex-col gap-7">
-          <div className="font-mono text-[11px] uppercase tracking-[0.35em] text-rga-mod">
+          <div className="font-mono text-[11px] uppercase tracking-[0.35em] text-game-d2">
             {heroKicker}
           </div>
 
@@ -100,7 +100,7 @@ export function ContentPage({ initial, source, minRelevance, limit, content }: C
               colors={['#ff8000', '#ffae42']}
             >
               <span
-                className="text-rga-mod"
+                className="text-game-d2"
                 style={{
                   textShadow: '0 0 36px rgba(255,128,0,0.45), 0 0 80px rgba(255,128,0,0.18)',
                 }}
@@ -128,7 +128,7 @@ export function ContentPage({ initial, source, minRelevance, limit, content }: C
         <div className="flex flex-col gap-3 border-b border-text-muted/15 pb-3">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div className="flex items-center gap-3">
-              <span className="font-mono text-[10px] tracking-[0.4em] text-rga-mod">SEC_03</span>
+              <span className="font-mono text-[10px] tracking-[0.4em] text-game-d2">SEC_03</span>
               <span className="font-mono text-[10px] tracking-[0.3em] text-text-muted">
                 {feedSectionLabel}
               </span>
@@ -144,10 +144,10 @@ export function ContentPage({ initial, source, minRelevance, limit, content }: C
                   <span className="tabular-nums text-text-secondary">{initial.data.total}</span>
                 </span>
                 <span aria-hidden className="h-3 w-px bg-text-muted/20" />
-                <span className="inline-flex items-center gap-1.5 text-rga-mod">
+                <span className="inline-flex items-center gap-1.5 text-game-d2">
                   <span
                     aria-hidden
-                    className="inline-block h-1.5 w-1.5 rounded-[1px] bg-rga-mod shadow-[0_0_8px_#FF8000]"
+                    className="inline-block h-1.5 w-1.5 rounded-[1px] bg-game-d2 shadow-[0_0_8px_#FF8000]"
                   />
                   LIVE
                 </span>
