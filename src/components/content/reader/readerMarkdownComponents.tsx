@@ -55,12 +55,12 @@ export const LINK_STYLES: Record<
     decorationHover: 'hover:decoration-rga-magenta/60',
   },
   orange: {
-    textRest: 'text-rga-mod',
-    textHoverSoft: 'hover:text-rga-mod/85',
-    textSoft: 'text-rga-mod/85',
-    textHoverStrong: 'hover:text-rga-mod',
-    decorationRest: 'decoration-rga-mod/30',
-    decorationHover: 'hover:decoration-rga-mod/60',
+    textRest: 'text-game-d2',
+    textHoverSoft: 'hover:text-game-d2/85',
+    textSoft: 'text-game-d2/85',
+    textHoverStrong: 'hover:text-game-d2',
+    decorationRest: 'decoration-game-d2/30',
+    decorationHover: 'hover:decoration-game-d2/60',
   },
   red: {
     textRest: 'text-red-400',

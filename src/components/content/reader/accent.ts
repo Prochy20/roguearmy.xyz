@@ -16,11 +16,12 @@
  *    today resolve to one of these five values via `mapPayloadColorToTint`
  *    in `src/lib/articles.ts`.
  *
- * Naming note: the `orange` row uses the brand `rga-mod` (rgb 255,128,0),
- * not Tailwind's `orange-500`. The accent is *named* orange because the
- * visual reads as orange to humans, but the underlying color tokens remain
- * `rga-mod` so it stays brand-aligned with everything else in the codebase
- * that still uses `'mod'` literals (BriefingCard, BriefingPanel, etc.).
+ * Naming note: the `orange` row resolves through the `game-d2` semantic
+ * token (`#FF8000`), not Tailwind's `orange-500`. The accent is *named*
+ * orange because the visual reads as orange to humans; under the hood it
+ * shares the Division 2 body brand, which is what daily briefings (the
+ * primary consumer) signal. CornerColor stays `'mod'` because that's the
+ * internal CyberCorners variant name backed by the same token.
  */
 export type AccentName = 'green' | 'cyan' | 'magenta' | 'orange' | 'red'
 
@@ -104,18 +105,18 @@ export const ACCENT_TOKENS: Record<AccentName, AccentTokens> = {
   },
   orange: {
     cornerColor: 'mod',
-    text: 'text-rga-mod',
-    textHover: 'hover:text-rga-mod',
-    textSoft: 'text-rga-mod/70',
-    bg: 'bg-rga-mod',
-    borderStrong: 'border-rga-mod/60',
-    borderSoft: 'border-rga-mod/25',
-    borderFaint: 'border-rga-mod/12',
+    text: 'text-game-d2',
+    textHover: 'hover:text-game-d2',
+    textSoft: 'text-game-d2/70',
+    bg: 'bg-game-d2',
+    borderStrong: 'border-game-d2/60',
+    borderSoft: 'border-game-d2/25',
+    borderFaint: 'border-game-d2/12',
     textGlow: '0 0 18px rgba(255,128,0,0.35)',
     boxGlow: '0 0 28px -6px rgba(255,128,0,0.45)',
     radialGlow:
       'radial-gradient(circle at center, rgba(255,128,0,0.10) 0%, rgba(0,0,0,0) 65%)',
-    bgWash: 'bg-rga-mod/5',
+    bgWash: 'bg-game-d2/5',
     rgb: '255,128,0',
   },
   red: {
