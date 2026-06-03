@@ -117,9 +117,16 @@ export function BriefingDetailPage({
       pill={{
         // Pill text classifies the briefing by required tier (daily =
         // booster content, weekly = open to all members). Mode flips to
-        // warn when the gate is active for the current viewer.
+        // a tier-attention mode when the gate is active for the current
+        // viewer — `booster` (magenta) for daily, `warn` (yellow) for
+        // member-tier weeklies. `booster` takes semantic precedence over
+        // `warn` because tier signaling dominates state signaling here.
         text: briefing.frequency === 'daily' ? 'BOOSTER' : 'MEMBER',
-        mode: isMembersOnly ? 'warn' : 'info',
+        mode: isMembersOnly
+          ? briefing.frequency === 'daily'
+            ? 'booster'
+            : 'warn'
+          : 'info',
       }}
     />
   )

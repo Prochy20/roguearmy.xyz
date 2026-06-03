@@ -157,7 +157,7 @@ function SubsectionHeader({
   accent: 'mod' | 'magenta'
 }) {
   const accentClass =
-    accent === 'mod' ? 'text-game-d2' : 'text-rga-magenta'
+    accent === 'mod' ? 'text-game-d2' : 'text-tier-booster'
   return (
     <div className="flex flex-wrap items-end justify-between gap-3 border-b border-text-muted/15 pb-3">
       <span className={`font-mono text-[10px] tracking-[0.32em] ${accentClass}`}>

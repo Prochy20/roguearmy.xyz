@@ -89,11 +89,12 @@ export function BriefingTeaserView({
             },
           ]}
           pill={{
-            // Locked-out viewer — pill names the tier needed to unlock
-            // (daily = booster, weekly = member). Error mode signals the
-            // gate is closed against the current user.
+            // Locked-out viewer — pill names the tier needed to unlock.
+            // `booster` (magenta) for daily-tier gates, `error` (rose)
+            // for member-tier gates. Booster overrides the generic error
+            // because tier identification is the more useful signal here.
             text: briefing.frequency === 'daily' ? 'BOOSTER' : 'MEMBER',
-            mode: 'error',
+            mode: briefing.frequency === 'daily' ? 'booster' : 'error',
           }}
         />
       </div>

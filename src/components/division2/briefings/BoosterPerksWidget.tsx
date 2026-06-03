@@ -36,7 +36,7 @@ export function BoosterPerksWidget({ perks }: BoosterPerksWidgetProps) {
 
   return (
     <div
-      className="relative border border-rga-magenta/25 bg-[rgba(8,8,8,0.95)]"
+      className="relative border border-tier-booster/25 bg-[rgba(8,8,8,0.95)]"
       style={{ backgroundImage: STRIPE_BG }}
     >
       <BracketStamp />
@@ -45,12 +45,12 @@ export function BoosterPerksWidget({ perks }: BoosterPerksWidgetProps) {
         {/* Header — bracket pill + status indicator */}
         <div className="flex flex-wrap items-center gap-3">
           {kicker && (
-            <span className="inline-flex items-center border border-rga-magenta/55 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.32em] text-rga-magenta">
+            <span className="inline-flex items-center border border-tier-booster/55 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.32em] text-tier-booster">
               {kicker}
             </span>
           )}
           <span className="ml-auto inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.3em] text-text-muted">
-            <span aria-hidden className="text-rga-magenta/70">◊</span>
+            <span aria-hidden className="text-tier-booster/70">◊</span>
             <span>COMMUNITY-FUNDED</span>
           </span>
         </div>
@@ -74,7 +74,7 @@ export function BoosterPerksWidget({ perks }: BoosterPerksWidgetProps) {
 
         {/* Two-column give/get split */}
         {(fundBullets.length > 0 || giveBackBullets.length > 0) && (
-          <div className="grid grid-cols-1 gap-6 border-t border-rga-magenta/15 pt-7 sm:gap-10 lg:grid-cols-2">
+          <div className="grid grid-cols-1 gap-6 border-t border-tier-booster/15 pt-7 sm:gap-10 lg:grid-cols-2">
             <Column
               label="// WHAT BOOSTS FUND"
               sublabel="DISCORD · COMMUNITY"
@@ -92,10 +92,10 @@ export function BoosterPerksWidget({ perks }: BoosterPerksWidgetProps) {
 
         {/* CTA + telemetry strip */}
         {ctaVisible && (
-          <div className="flex flex-col gap-5 border-t border-rga-magenta/15 pt-6 sm:flex-row sm:items-end sm:justify-between sm:gap-8">
+          <div className="flex flex-col gap-5 border-t border-tier-booster/15 pt-6 sm:flex-row sm:items-end sm:justify-between sm:gap-8">
             <div className="flex flex-col gap-1.5 font-mono text-[10px] uppercase tracking-[0.3em] text-text-muted">
               <span className="flex items-center gap-2">
-                <span aria-hidden className="text-rga-magenta">▸</span>
+                <span aria-hidden className="text-tier-booster">▸</span>
                 <span className="text-text-secondary">DISCORD NITRO TIER</span>
               </span>
               <span className="pl-5">
@@ -131,13 +131,13 @@ function Column({
   accent: 'magenta' | 'cyan'
 }) {
   if (items.length === 0) return null
-  const labelColor = accent === 'magenta' ? 'text-rga-magenta' : 'text-rga-cyan'
+  const labelColor = accent === 'magenta' ? 'text-tier-booster' : 'text-rga-cyan'
   const dotColor =
     accent === 'magenta'
-      ? 'bg-rga-magenta shadow-[0_0_8px_#FF00FF]'
+      ? 'bg-tier-booster shadow-[0_0_8px_#FF00FF]'
       : 'bg-rga-cyan shadow-[0_0_8px_#00FFFF]'
   const ruleColor =
-    accent === 'magenta' ? 'bg-rga-magenta/40' : 'bg-rga-cyan/40'
+    accent === 'magenta' ? 'bg-tier-booster/40' : 'bg-rga-cyan/40'
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center gap-3">
@@ -176,19 +176,19 @@ function BracketStamp() {
     <>
       <span
         aria-hidden
-        className="pointer-events-none absolute -top-2.5 -left-2.5 z-10 h-6 w-6 border-t-2 border-l-2 border-rga-magenta"
+        className="pointer-events-none absolute -top-2.5 -left-2.5 z-10 h-6 w-6 border-t-2 border-l-2 border-tier-booster"
       />
       <span
         aria-hidden
-        className="pointer-events-none absolute -top-2.5 -right-2.5 z-10 h-6 w-6 border-t-2 border-r-2 border-rga-magenta"
+        className="pointer-events-none absolute -top-2.5 -right-2.5 z-10 h-6 w-6 border-t-2 border-r-2 border-tier-booster"
       />
       <span
         aria-hidden
-        className="pointer-events-none absolute -bottom-2.5 -left-2.5 z-10 h-6 w-6 border-b-2 border-l-2 border-rga-magenta"
+        className="pointer-events-none absolute -bottom-2.5 -left-2.5 z-10 h-6 w-6 border-b-2 border-l-2 border-tier-booster"
       />
       <span
         aria-hidden
-        className="pointer-events-none absolute -bottom-2.5 -right-2.5 z-10 h-6 w-6 border-b-2 border-r-2 border-rga-magenta"
+        className="pointer-events-none absolute -bottom-2.5 -right-2.5 z-10 h-6 w-6 border-b-2 border-r-2 border-tier-booster"
       />
     </>
   )

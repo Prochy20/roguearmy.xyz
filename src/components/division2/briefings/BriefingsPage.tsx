@@ -80,6 +80,11 @@ export function BriefingsPage({
             {
               label: 'TIER',
               value: hasAccess ? 'BOOSTER' : 'MEMBER',
+              // BOOSTER tier identity rides the magenta tier-booster
+              // semantic; MEMBER is the baseline tier and stays neutral
+              // white. The pill above carries page data-state (LIVE /
+              // OFFLINE) — two orthogonal signals in two chrome slots.
+              accent: hasAccess ? ('booster' as const) : undefined,
             },
           ]}
           pill={
@@ -248,7 +253,7 @@ function BriefingsBody({
             <Section
               sec={showLeadHero ? 'SEC_03' : 'SEC_02'}
               label="// BOOSTER PERK"
-              accent="mod"
+              accent="magenta"
             >
               <BoosterPerksWidget perks={content?.perks ?? null} />
             </Section>
@@ -268,7 +273,7 @@ function Section({
 }: {
   sec: string
   label: string
-  accent: 'green' | 'cyan' | 'mod'
+  accent: 'green' | 'cyan' | 'mod' | 'magenta'
   meta?: React.ReactNode
   children: React.ReactNode
 }) {
@@ -277,7 +282,9 @@ function Section({
       ? 'text-rga-green'
       : accent === 'cyan'
         ? 'text-rga-cyan'
-        : 'text-game-d2'
+        : accent === 'magenta'
+          ? 'text-tier-booster'
+          : 'text-game-d2'
   return (
     <section className="flex flex-col gap-4 sm:gap-5">
       <div className="flex flex-wrap items-end justify-between gap-3 border-b border-text-muted/15 pb-3">
