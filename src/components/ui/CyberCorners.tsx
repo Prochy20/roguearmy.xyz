@@ -61,7 +61,7 @@ const colorMap: Record<CornerColor, { line: string; glow: string }> = {
     glow: 'shadow-[0_0_6px_rgba(255,0,102,0.5)]',
   },
   mod: {
-    line: 'bg-rga-mod',
+    line: 'bg-game-d2',
     glow: 'shadow-[0_0_6px_rgba(255,128,0,0.5)]',
   },
   'source-youtube': {
@@ -234,10 +234,10 @@ const tagColorConfig: Record<
     gradient: 'from-rga-admin/20 to-transparent',
   },
   mod: {
-    bg: 'bg-rga-mod',
-    text: 'text-rga-mod',
+    bg: 'bg-game-d2',
+    text: 'text-game-d2',
     glow: 'shadow-[0_0_16px_rgba(255,128,0,0.5)]',
-    gradient: 'from-rga-mod/20 to-transparent',
+    gradient: 'from-game-d2/20 to-transparent',
   },
   'source-youtube': {
     bg: 'bg-source-youtube',

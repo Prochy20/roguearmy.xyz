@@ -100,12 +100,17 @@
      both. */
   --color-rga-yellow: #FFE100;
   /* Role accents — used on staff-profile cards for Developer / Admin / Mod.
-     `rga-mod` is also the D2 game brand; `rga-admin` doubles as status-error.
+     `rga-orange` is also the D2 game brand; `rga-admin` doubles as status-error.
      Layer 2 aliases below give these their semantic names; the raw rga-*
      tokens stay for backward compat during the staged refactor. */
   --color-rga-dev: #ccff00;
   --color-rga-admin: #ff0066;
-  --color-rga-mod: #ff8000;
+  --color-rga-orange: #ff8000;
+  /* Deprecated alias — `rga-mod` is the legacy name for `rga-orange`. Kept
+     so Phase 3 (staff role rename) can migrate `text-rga-mod` → `text-role-mod`
+     in /community/staff/* without breaking visuals mid-flight. Removed in
+     Phase 4. See docs/design-system/MIGRATION.md. */
+  --color-rga-mod: var(--color-rga-orange);
   /* Clan accents — used on /division-2/clans cards. Tuned to match the
      Discord clan banner palette: RGA = neon green (reuses rga-green),
      SDC = warm copper/bronze, RGS = deep azure with a gold highlight. */
@@ -395,13 +400,13 @@
   /* Game — body content per-game brand. Each game has its own surface
      accent so the page body identifies which game the content is about,
      while the chrome stays RGA-neutral above. */
-  --color-game-d2: var(--color-rga-mod);
+  --color-game-d2: var(--color-rga-orange);
 
   /* Roles — staff card accents on /community/staff. Shared hexes with
      status-error (admin) and game-d2 (mod) are intentional; staff cards
      and D2/chrome surfaces never appear on the same screen. */
   --color-role-dev: var(--color-rga-dev);
-  --color-role-mod: var(--color-rga-mod);
+  --color-role-mod: var(--color-rga-orange);
   --color-role-admin: var(--color-rga-admin);
 }
 
