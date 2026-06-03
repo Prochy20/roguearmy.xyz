@@ -9,14 +9,14 @@ export function LeaderboardFailState({ error }: LeaderboardFailStateProps) {
   const { headline, body } = messageFor(error)
 
   return (
-    <CyberCorners color="magenta" size="lg" glow>
-      <div className="flex flex-col items-center gap-6 border border-[rgba(255,0,255,0.25)] bg-[rgba(255,0,255,0.03)] px-8 py-16 text-center sm:px-12 sm:py-24">
+    <CyberCorners color="rose" size="lg" glow>
+      <div className="flex flex-col items-center gap-6 border border-status-error/25 bg-status-error/[0.03] px-8 py-16 text-center sm:px-12 sm:py-24">
         <span
           aria-hidden
-          className="inline-block h-3 w-3 rounded-[1px] bg-rga-magenta shadow-[0_0_12px_#FF00FF]"
+          className="inline-block h-3 w-3 rounded-[1px] bg-status-error shadow-[0_0_12px_#FF0066]"
         />
         <div className="flex flex-col gap-3">
-          <div className="font-mono text-[10px] tracking-[0.4em] uppercase text-rga-magenta">
+          <div className="font-mono text-[10px] tracking-[0.4em] uppercase text-status-error">
             // FEED OFFLINE
           </div>
           <h3
@@ -30,7 +30,7 @@ export function LeaderboardFailState({ error }: LeaderboardFailStateProps) {
           {body}
         </p>
         {error.status ? (
-          <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-rga-magenta/70">
+          <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-status-error/70">
             {`// CODE ${error.status}`}
           </div>
         ) : null}

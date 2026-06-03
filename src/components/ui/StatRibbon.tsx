@@ -191,8 +191,8 @@ function StatusPill({
       dot: 'bg-rga-yellow shadow-[0_0_8px_#FFE100] animate-pulse',
     },
     error: {
-      text: 'text-rga-admin [text-shadow:0_0_10px_rgba(255,0,102,0.5)]',
-      dot: 'bg-rga-admin shadow-[0_0_8px_#FF0066] animate-pulse',
+      text: 'text-status-error [text-shadow:0_0_10px_rgba(255,0,102,0.5)]',
+      dot: 'bg-status-error shadow-[0_0_8px_#FF0066] animate-pulse',
     },
   } as const
   const style = modeMap[mode]

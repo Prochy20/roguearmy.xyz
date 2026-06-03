@@ -207,12 +207,12 @@ function FailBar({ fail }: { fail: AshleyError }) {
   return (
     <div className="pointer-events-none fixed inset-x-0 bottom-0 z-40 flex justify-center px-3 pb-3 sm:px-6 sm:pb-5">
       <div className="pointer-events-auto w-full max-w-[820px]">
-        <div className="flex flex-wrap items-center gap-3 border border-[rgba(255,0,255,0.25)] bg-[rgba(0,0,0,0.92)] px-4 py-3.5 backdrop-blur-md sm:px-6 sm:py-4">
+        <div className="flex flex-wrap items-center gap-3 border border-status-error/25 bg-[rgba(0,0,0,0.92)] px-4 py-3.5 backdrop-blur-md sm:px-6 sm:py-4">
           <span
             aria-hidden
-            className="inline-block h-2 w-2 shrink-0 rounded-[1px] bg-rga-magenta shadow-[0_0_8px_#FF00FF]"
+            className="inline-block h-2 w-2 shrink-0 rounded-[1px] bg-status-error shadow-[0_0_8px_#FF0066]"
           />
-          <span className="font-mono text-[10px] tracking-[0.3em] uppercase text-rga-magenta">
+          <span className="font-mono text-[10px] tracking-[0.3em] uppercase text-status-error">
             // {message}
           </span>
           {reLogin && (

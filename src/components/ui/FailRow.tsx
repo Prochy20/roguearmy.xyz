@@ -38,10 +38,10 @@ export function FailRow({
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-3 border border-[rgba(255,0,255,0.25)] bg-[rgba(255,0,255,0.03)] px-4 py-3 font-mono text-[11px] uppercase tracking-[0.25em] text-rga-magenta">
+    <div className="flex flex-wrap items-center gap-3 border border-status-error/25 bg-status-error/[0.03] px-4 py-3 font-mono text-[11px] uppercase tracking-[0.25em] text-status-error">
       <span
         aria-hidden
-        className="inline-block h-2 w-2 rounded-[1px] bg-rga-magenta shadow-[0_0_8px_#FF00FF]"
+        className="inline-block h-2 w-2 rounded-[1px] bg-status-error shadow-[0_0_8px_#FF0066]"
       />
       <span>// {message}</span>
       {action && (
