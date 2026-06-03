@@ -141,13 +141,13 @@ export function EscalationPage({
             { label: formatDayWithWeekday(resolvedDay).toUpperCase() },
           ]}
           fields={[
-            { label: 'MISSIONS', value: missions.length || '—', accent: 'green' },
+            { label: 'MISSIONS', value: missions.length || '—' },
             { label: 'SYNCED', value: syncedLabel },
           ]}
           pill={
             isStale
-              ? { text: 'STALE', ok: false }
-              : { text: statusToken, ok: true, accent: 'green' }
+              ? { text: 'STALE', mode: 'warn' }
+              : { text: statusToken, mode: 'info' }
           }
         />
       </div>

@@ -83,10 +83,11 @@ export function BriefingDetailPage({
   const periodLabel = formatPeriodLabel(briefing)
   const dateLabel = formatDateLabel(briefing)
 
-  // StatRibbon's local accent vocabulary is { green, cyan, mod, magenta } —
-  // map the reader-accent (cyan|orange) onto its closest sibling for the
-  // ribbon's numeric fields.
-  const ribbonFieldAccent: 'cyan' | 'mod' = accent === 'cyan' ? 'cyan' : 'mod'
+  // Chrome stays RGA-neutral, so game brand (mod/orange) doesn't reach the
+  // ribbon. Weekly briefings still pick up cyan on the leaf as an Ashley-output
+  // marker; daily falls back to neutral white. Body content below the ribbon
+  // keeps its frequency-driven orange accent.
+  const leafAccent: 'cyan' | undefined = accent === 'cyan' ? 'cyan' : undefined
   const updatedShort = briefing.updatedAt.slice(0, 10)
 
   const stickyChrome = (
@@ -94,33 +95,32 @@ export function BriefingDetailPage({
       trail={[
         D2_ROOT,
         BRIEFINGS_ROOT,
-        { label: `${designator}.md`, accent: ribbonFieldAccent },
+        { label: `${designator}.md`, accent: leafAccent },
       ]}
       fields={[
         {
           label: 'FREQ',
           value: briefing.frequency.toUpperCase(),
-          accent: ribbonFieldAccent,
         },
-        { label: 'PERIOD', value: periodLabel, accent: ribbonFieldAccent },
+        { label: 'PERIOD', value: periodLabel },
         {
           label: 'SOURCES',
           value: briefing.articleCount.toString(),
-          accent: ribbonFieldAccent,
         },
         {
           label: 'UPDATED',
           value: /^\d{4}-\d{2}-\d{2}$/.test(updatedShort)
             ? formatDayShort(updatedShort)
             : '—',
-          accent: 'green',
         },
       ]}
-      pill={
-        isMembersOnly
-          ? { text: 'MEMBERS', ok: true, accent: 'magenta' }
-          : { text: 'PUBLIC', ok: true, accent: 'green' }
-      }
+      pill={{
+        // Pill text classifies the briefing by required tier (daily =
+        // booster content, weekly = open to all members). Mode flips to
+        // warn when the gate is active for the current viewer.
+        text: briefing.frequency === 'daily' ? 'BOOSTER' : 'MEMBER',
+        mode: isMembersOnly ? 'warn' : 'info',
+      }}
     />
   )
 

@@ -46,7 +46,10 @@ export function BriefingTeaserView({
 }: BriefingTeaserViewProps) {
   const pathname = usePathname()
   const accent = frequencyAccent(briefing.frequency)
-  const ribbonFieldAccent: 'cyan' | 'mod' = accent === 'cyan' ? 'cyan' : 'mod'
+  // Chrome stays RGA-neutral. Weekly briefings tint the leaf cyan as an
+  // Ashley-output marker; daily falls back to neutral white. Fields stay
+  // uncolored. Body content below keeps its frequency-driven orange.
+  const leafAccent: 'cyan' | undefined = accent === 'cyan' ? 'cyan' : undefined
   const updatedShort = briefing.updatedAt.slice(0, 10)
   const fileNumber = `IMG_${briefing.id.replace(/-/g, '').slice(-4).toUpperCase()}`
 
@@ -66,29 +69,32 @@ export function BriefingTeaserView({
           trail={[
             D2_ROOT,
             BRIEFINGS_ROOT,
-            { label: `${designator}.md`, accent: ribbonFieldAccent },
+            { label: `${designator}.md`, accent: leafAccent },
           ]}
           fields={[
             {
               label: 'FREQ',
               value: briefing.frequency.toUpperCase(),
-              accent: ribbonFieldAccent,
             },
-            { label: 'PERIOD', value: periodLabel, accent: ribbonFieldAccent },
+            { label: 'PERIOD', value: periodLabel },
             {
               label: 'SOURCES',
               value: briefing.articleCount.toString(),
-              accent: ribbonFieldAccent,
             },
             {
               label: 'UPDATED',
               value: /^\d{4}-\d{2}-\d{2}$/.test(updatedShort)
                 ? formatDayShort(updatedShort)
                 : '—',
-              accent: 'green',
             },
           ]}
-          pill={{ text: 'LOCKED', ok: false, accent: 'magenta' }}
+          pill={{
+            // Locked-out viewer — pill names the tier needed to unlock
+            // (daily = booster, weekly = member). Error mode signals the
+            // gate is closed against the current user.
+            text: briefing.frequency === 'daily' ? 'BOOSTER' : 'MEMBER',
+            mode: 'error',
+          }}
         />
       </div>
 

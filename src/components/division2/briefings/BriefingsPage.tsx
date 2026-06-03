@@ -72,23 +72,20 @@ export function BriefingsPage({
             {
               label: 'WEEK',
               value: formatDayShort(activeWeekStart),
-              accent: 'green',
             },
             {
               label: 'FILES',
               value: String(briefingsForWeek.length).padStart(2, '0'),
-              accent: 'green',
             },
             {
               label: 'TIER',
               value: hasAccess ? 'BOOSTER' : 'MEMBER',
-              accent: hasAccess ? 'green' : 'mod',
             },
           ]}
           pill={
             weekly.ok
-              ? { text: 'LIVE', ok: true, accent: 'green' }
-              : { text: 'OFFLINE', ok: false }
+              ? { text: 'LIVE', mode: 'info' }
+              : { text: 'OFFLINE', mode: 'error' }
           }
         />
       </div>

@@ -130,8 +130,8 @@ export function CommandConsolePage({
         <StatRibbon
           trail={[RGA_ROOT, { label: 'Division 2' }]}
           fields={[
-            { label: 'LOCAL', value: `${today} UTC`, accent: 'green' },
-            { label: 'TOOLS', value: state.ribbon.toolsLabel, accent: 'green' },
+            { label: 'LOCAL', value: `${today} UTC` },
+            { label: 'TOOLS', value: state.ribbon.toolsLabel },
             {
               label: 'LAST SYNC',
               value: state.ribbon.lastSyncLabel ?? '—',
@@ -139,8 +139,8 @@ export function CommandConsolePage({
           ]}
           pill={
             state.ribbon.pill === 'OPERATIONAL'
-              ? { text: 'OPERATIONAL', ok: true, accent: 'green' }
-              : { text: state.ribbon.pill, ok: false }
+              ? { text: 'OPERATIONAL', mode: 'info' }
+              : { text: state.ribbon.pill, mode: 'error' }
           }
         />
       </div>

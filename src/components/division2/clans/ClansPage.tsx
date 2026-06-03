@@ -85,10 +85,10 @@ export function ClansPage({ isAuthenticated, clans, content }: ClansPageProps) {
         <StatRibbon
           trail={[D2_ROOT, { label: 'Clans' }]}
           fields={[
-            { label: 'STANDARDS', value: countLabel, accent: 'green' },
-            { label: 'ACCESS', value: 'PUBLIC', accent: 'green' },
+            { label: 'STANDARDS', value: countLabel },
+            { label: 'ACCESS', value: 'PUBLIC' },
           ]}
-          pill={{ text: 'RECRUITING', ok: true, accent: 'green' }}
+          pill={{ text: 'RECRUITING', mode: 'info' }}
         />
       </div>
 
