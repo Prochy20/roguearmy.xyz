@@ -127,6 +127,81 @@ export async function fetchAshleyUser<T>(
   }
 }
 
+/**
+ * Variant of `fetchAshleyUser` for endpoints that legitimately return 2xx
+ * with no body (e.g. `GET /api/afk/me` returns 200 + empty body when the
+ * user is active). The base helper treats `data === undefined` as a
+ * failure and misclassifies the response as 'unknown' with status 200 —
+ * surfacing a bogus "REQUEST REJECTED — CODE 200" in the UI.
+ *
+ * Returns `data: null` on any 2xx with no body. Otherwise mirrors
+ * `fetchAshleyUser`'s typed-data + error-classification path.
+ */
+export async function fetchAshleyUserNullable<T>(
+  accessToken: string | undefined,
+  fn: (client: Client<paths>) => Promise<AshleyCallResponse<T>>,
+): Promise<AshleyResult<T | null>> {
+  if (!accessToken) return { ok: false, error: { code: 'unauthenticated' } }
+  try {
+    const client = createAshleyUserClient(accessToken)
+    const { data, error, response } = await fn(client)
+    if (data !== undefined) return { ok: true, data }
+    const status = response?.status ?? 0
+    if (status >= 200 && status < 300) return { ok: true, data: null }
+    return { ok: false, error: classifyAshleyError(status, error) }
+  } catch {
+    return { ok: false, error: { code: 'unavailable', status: 0 } }
+  }
+}
+
+/**
+ * Variant of `safeAshleyCall` for endpoints that return 204 No Content (e.g.
+ * `DELETE /api/afk/me`). The base helper treats `data === undefined` as a
+ * failure, which is wrong for void endpoints — they succeed with no body.
+ *
+ * Resolves `ok: true, data: null` on any 2xx response. Otherwise mirrors
+ * `safeAshleyCall`'s refresh-on-401 + error-classification flow.
+ */
+export async function safeAshleyVoidCall(
+  fn: (client: Client<paths>) => Promise<AshleyCallResponse<unknown>>,
+): Promise<AshleyResult<null>> {
+  const accessToken = await getAshleyAccessCookie()
+  if (!accessToken) return { ok: false, error: { code: 'unauthenticated' } }
+
+  let result = await invokeVoid(fn, accessToken)
+  if (result.ok) return { ok: true, data: null }
+
+  if (result.status === 401) {
+    const refreshed = await tryRefreshAshleyTokens()
+    if (refreshed === 'cleared') return { ok: false, error: { code: 'unauthorized' } }
+    if (refreshed === 'transient') return { ok: false, error: { code: 'unavailable' } }
+
+    result = await invokeVoid(fn, refreshed)
+    if (result.ok) return { ok: true, data: null }
+  }
+
+  return { ok: false, error: classifyAshleyError(result.status, result.body) }
+}
+
+type VoidInvokeResult =
+  | { ok: true }
+  | { ok: false; status: number; body: unknown }
+
+async function invokeVoid(
+  fn: (client: Client<paths>) => Promise<AshleyCallResponse<unknown>>,
+  accessToken: string,
+): Promise<VoidInvokeResult> {
+  const client = createAshleyUserClient(accessToken)
+  try {
+    const { error, response } = await fn(client)
+    const status = response?.status ?? 0
+    if (status >= 200 && status < 300) return { ok: true }
+    return { ok: false, status, body: error }
+  } catch {
+    return { ok: false, status: 0, body: undefined }
+  }
+}
+
 type InvokeResult<T> =
   | { ok: true; value: T }
   | { ok: false; status: number; body: unknown }
