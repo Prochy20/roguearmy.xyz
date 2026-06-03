@@ -37,7 +37,7 @@ These are the seven hex values the system is built on. Prefer Layer 2 aliases in
 
 - **Green** `#00FF41` — RGA brand identity. Logo, primary CTAs, selection, scrollbar.
 - **Cyan** `#00FFFF` — alternative voice. No fixed semantic — use when green would be wrong or you need a second neon flavor.
-- **Magenta** `#FF00FF` — decorative only. Powers `text-chromatic`, RGB-shift glitch effects, gradient ends. **Not** used for status anymore.
+- **Magenta** `#FF00FF` — backs the `tier-booster` semantic (Discord-boost-gated perks, BOOSTER PERK widgets, the StatRibbon `booster` pill mode). Otherwise decorative — powers `text-chromatic`, RGB-shift glitch effects, gradient ends. Never a failure state.
 - **Orange** `#FF8000` — Division 2 game brand (`game-d2`) and Moderator staff role (`role-mod`). Same hex, different surfaces.
 - **Chartreuse** `#CCFF00` — exclusively for Developer staff role (`role-dev`). Don't repurpose.
 - **Yellow** `#FFE100` — Hazard Yellow. Status warning (`status-warn`) — STALE, MEMBERS-ONLY gates, soft attention.
@@ -139,7 +139,7 @@ The chrome ribbon (`StatRibbon`) carries a status pill that always renders, but 
   ))}
 </div>
 
-> **Magenta is no longer a pill color.** Previously every failure was magenta; now `status-error` is rose and magenta is reserved for decorative chromatic effects.
+> **Magenta is no longer a failure color.** Previously every failure was magenta; now `status-error` is rose. Magenta carries one pill semantic (`booster` — names the Discord-boost-gated tier, takes precedence over warn/error when the pill identifies BOOSTER) and is otherwise decorative.
 
 ## Chrome vs body layers
 

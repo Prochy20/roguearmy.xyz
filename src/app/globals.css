@@ -403,6 +403,13 @@
   --color-role-dev: var(--color-rga-chartreuse);
   --color-role-mod: var(--color-rga-orange);
   --color-role-admin: var(--color-rga-rose);
+
+  /* Tier — community membership tiers. `booster` (magenta) flags
+     Discord-server-boost-gated perks: daily briefings, BOOSTER PERK
+     widgets, the StatRibbon `booster` pill mode. Takes semantic
+     precedence over `status-warn` for booster-tier signaling — see
+     BriefingDetailPage. Magenta otherwise stays decorative. */
+  --color-tier-booster: var(--color-rga-magenta);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════

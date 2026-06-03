@@ -121,6 +121,12 @@ export const SEMANTIC_TOKENS: SemanticAlias[] = [
     hex: '#FF0066',
     purpose: 'Staff Admin role accent. Same hex as status-error (different surfaces).',
   },
+  {
+    alias: 'tier-booster',
+    layer1: 'rga-magenta',
+    hex: '#FF00FF',
+    purpose: 'Discord-server-boost-gated perks — daily briefings, BOOSTER PERK widgets, StatRibbon `booster` pill. Takes precedence over status-warn for booster-tier signaling.',
+  },
 ]
 
 /**
