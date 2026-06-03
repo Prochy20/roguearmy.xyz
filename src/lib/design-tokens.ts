@@ -137,7 +137,7 @@ export const SEMANTIC_TOKENS: SemanticAlias[] = [
  * reserved for decorative chromatic effects.
  */
 export interface StatusPillMode {
-  mode: 'info' | 'warn' | 'error'
+  mode: 'info' | 'warn' | 'error' | 'booster'
   example: string
   textClass: string
   dotClass: string
@@ -168,6 +168,14 @@ export const STATUS_PILL_MODES: StatusPillMode[] = [
     dotClass: 'bg-status-error shadow-[0_0_8px_#FF0066] animate-pulse',
     description:
       'Hard failure. Content gone or unreachable — LOCKED, OFFLINE, ERROR. Rose pulse.',
+  },
+  {
+    mode: 'booster',
+    example: 'BOOSTER',
+    textClass: 'text-tier-booster',
+    dotClass: 'bg-tier-booster shadow-[0_0_8px_#FF00FF] animate-pulse',
+    description:
+      'Booster-tier signaling. Names the Discord-boost-gated tier required — BOOSTER. Magenta pulse, takes precedence over warn/error.',
   },
 ]
 

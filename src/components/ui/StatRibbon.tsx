@@ -7,10 +7,11 @@ export interface StatRibbonField {
   /**
    * Fields are neutral white by default — reserve an accent for values that
    * are themselves a status or a categorical marker (cyan for analytics /
-   * Ashley-output content, green for OK state). Game brand colors (orange)
-   * never appear in chrome.
+   * Ashley-output content, green for OK state, booster for the viewer's
+   * tier identity when it's BOOSTER). Game brand colors (orange) never
+   * appear in chrome.
    */
-  accent?: 'green' | 'cyan'
+  accent?: 'green' | 'cyan' | 'booster'
 }
 
 export interface TrailSegment {
@@ -40,7 +41,7 @@ export interface StatRibbonProps {
    * `warn` is soft attention (STALE, MEMBERS-ONLY) in yellow, `error` is
    * hard failure (LOCKED, OFFLINE) in rose. See Foundations/Colors page.
    */
-  pill: { text: string; mode: 'info' | 'warn' | 'error' }
+  pill: { text: string; mode: 'info' | 'warn' | 'error' | 'booster' }
 }
 
 export function StatRibbon({ prefix, trail, fields, pill }: StatRibbonProps) {
@@ -157,7 +158,9 @@ function RibbonField({ field }: { field: StatRibbonField }) {
       ? 'text-rga-green [text-shadow:0_0_10px_rgba(0,255,65,0.5)]'
       : field.accent === 'cyan'
         ? 'text-rga-cyan [text-shadow:0_0_10px_rgba(0,255,255,0.5)]'
-        : 'text-text-primary'
+        : field.accent === 'booster'
+          ? 'text-tier-booster [text-shadow:0_0_10px_rgba(255,0,255,0.5)]'
+          : 'text-text-primary'
 
   return (
     <span className="inline-flex items-baseline gap-2">
@@ -168,18 +171,19 @@ function RibbonField({ field }: { field: StatRibbonField }) {
 }
 
 /**
- * Three-mode status pill. `info` is the silent default — muted gray, no
+ * Four-mode status pill. `info` is the silent default — muted gray, no
  * pulse, communicates "nothing to act on." `warn` is yellow + pulse for
  * soft attention (STALE, MEMBERS-ONLY). `error` is rose + pulse for hard
- * failure (LOCKED, OFFLINE). Magenta is no longer used for failure — it
- * lives in decorative chromatic effects only.
+ * failure (LOCKED, OFFLINE). `booster` is magenta + pulse for the
+ * Discord-booster tier — takes precedence over warn/error when the pill
+ * names BOOSTER as the required tier. Magenta otherwise stays decorative.
  */
 function StatusPill({
   text,
   mode,
 }: {
   text: string
-  mode: 'info' | 'warn' | 'error'
+  mode: 'info' | 'warn' | 'error' | 'booster'
 }) {
   const modeMap = {
     info: {
@@ -193,6 +197,10 @@ function StatusPill({
     error: {
       text: 'text-status-error [text-shadow:0_0_10px_rgba(255,0,102,0.5)]',
       dot: 'bg-status-error shadow-[0_0_8px_#FF0066] animate-pulse',
+    },
+    booster: {
+      text: 'text-tier-booster [text-shadow:0_0_10px_rgba(255,0,255,0.5)]',
+      dot: 'bg-tier-booster shadow-[0_0_8px_#FF00FF] animate-pulse',
     },
   } as const
   const style = modeMap[mode]

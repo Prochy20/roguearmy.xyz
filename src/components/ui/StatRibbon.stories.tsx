@@ -55,6 +55,22 @@ export const PillError: Story = {
   },
 }
 
+/**
+ * Booster mode — magenta pulse. Names the Discord-boost-gated tier
+ * required. Takes precedence over warn/error when the pill identifies
+ * BOOSTER as the gating tier (e.g. daily briefings).
+ */
+export const PillBooster: Story = {
+  args: {
+    prefix: '// BRIEFING',
+    fields: [
+      { label: 'FREQ', value: 'DAILY' },
+      { label: 'PERIOD', value: 'JUN 2' },
+    ],
+    pill: { text: 'BOOSTER', mode: 'booster' },
+  },
+}
+
 export const ManyFields: Story = {
   args: {
     prefix: '// OPERATIVE',
@@ -85,7 +101,7 @@ export const WithTrail: Story = {
     fields: [
       { label: 'week', value: 'MAY 25' },
       { label: 'files', value: '05' },
-      { label: 'tier', value: 'BOOSTER' },
+      { label: 'tier', value: 'BOOSTER', accent: 'booster' },
     ],
     pill: { text: 'LIVE', mode: 'info' },
   },
