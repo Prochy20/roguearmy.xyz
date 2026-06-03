@@ -5,7 +5,7 @@ export type PanelHeaderAccent = 'green' | 'cyan' | 'mod'
 const ACCENT_TEXT: Record<PanelHeaderAccent, string> = {
   green: 'text-rga-green',
   cyan: 'text-rga-cyan',
-  mod: 'text-rga-mod',
+  mod: 'text-game-d2',
 }
 
 interface PanelHeaderProps {

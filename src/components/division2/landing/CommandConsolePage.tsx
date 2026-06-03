@@ -190,7 +190,7 @@ export function CommandConsolePage({
                 colors={['#ff8000', '#ffae42']}
               >
                 <span
-                  className="text-rga-mod"
+                  className="text-game-d2"
                   style={{
                     textShadow:
                       '0 0 36px rgba(255,128,0,0.45), 0 0 80px rgba(255,128,0,0.18)',

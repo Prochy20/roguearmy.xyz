@@ -26,13 +26,13 @@ export function SpecimenFrame({
       ? 'border-rga-cyan/20'
       : color === 'magenta'
         ? 'border-rga-magenta/20'
-        : 'border-rga-mod/25'
+        : 'border-game-d2/25'
   const tickColor =
     color === 'cyan'
       ? 'border-rga-cyan/60'
       : color === 'magenta'
         ? 'border-rga-magenta/60'
-        : 'border-rga-mod/70'
+        : 'border-game-d2/70'
   const glow =
     color === 'cyan'
       ? 'radial-gradient(circle at center, rgba(0,255,255,0.10) 0%, rgba(0,0,0,0) 65%)'

@@ -64,7 +64,7 @@ export function LootStripPanel({
         >
           <span className="text-text-primary">ACTIVE </span>
           <span
-            className="text-rga-mod"
+            className="text-game-d2"
             style={{
               textShadow:
                 '0 0 24px rgba(255,128,0,0.32), 0 0 56px rgba(255,128,0,0.14)',
@@ -107,7 +107,7 @@ function SymbolSlot({
       <SpecimenFrame color="mod" pending={!loot} padPx={10}>
         {loot && <LootIcon slug={loot.slug} name={loot.name} size={56} />}
       </SpecimenFrame>
-      <span className="line-clamp-2 break-words text-center font-mono text-[10px] uppercase leading-snug tracking-[0.18em] text-rga-mod/85">
+      <span className="line-clamp-2 break-words text-center font-mono text-[10px] uppercase leading-snug tracking-[0.18em] text-game-d2/85">
         {name}
       </span>
     </div>

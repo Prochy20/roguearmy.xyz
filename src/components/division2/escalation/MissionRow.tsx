@@ -58,7 +58,7 @@ export function MissionRow({
     <section className="space-y-4">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div className="flex items-center gap-3">
-          <span className="font-mono text-[10px] tracking-[0.4em] text-rga-mod">SEC_01</span>
+          <span className="font-mono text-[10px] tracking-[0.4em] text-game-d2">SEC_01</span>
           <span className="font-mono text-[10px] tracking-[0.3em] text-text-muted">
             {label}
           </span>
@@ -74,7 +74,7 @@ export function MissionRow({
 
       <CyberCorners color="mod" size="md">
         <GlitchOnChange triggerKey={selectedDay ?? ''}>
-        <ul className="flex flex-col border border-rga-mod/15 bg-[rgba(0,0,0,0.5)]">
+        <ul className="flex flex-col border border-game-d2/15 bg-[rgba(0,0,0,0.5)]">
           {missions.map((mission, idx) => {
             const dayLoot = dayLootByPosition?.get(mission.position)
             return (
@@ -82,11 +82,11 @@ export function MissionRow({
                 key={`${mission.position}-${mission.slug}`}
                 className={
                   'grid grid-cols-[60px_minmax(0,1fr)] items-center gap-4 p-4 sm:grid-cols-[60px_96px_minmax(0,2fr)_minmax(0,2fr)] sm:gap-5 sm:p-5' +
-                  (idx > 0 ? ' border-t border-rga-mod/10' : '')
+                  (idx > 0 ? ' border-t border-game-d2/10' : '')
                 }
               >
                 {/* Position pill */}
-                <div className="font-mono text-sm tracking-[0.3em] text-rga-mod">
+                <div className="font-mono text-sm tracking-[0.3em] text-game-d2">
                   M_{String(mission.position + 1).padStart(2, '0')}
                 </div>
 
@@ -106,7 +106,7 @@ export function MissionRow({
                   </span>
                   {dayLoot ? (
                     <span
-                      className="flex items-center gap-2 break-words font-display text-xl uppercase leading-tight text-rga-mod sm:text-2xl"
+                      className="flex items-center gap-2 break-words font-display text-xl uppercase leading-tight text-game-d2 sm:text-2xl"
                       style={{ textShadow: '0 0 14px rgba(255,128,0,0.25)' }}
                     >
                       <span className="sm:hidden">
@@ -115,14 +115,14 @@ export function MissionRow({
                       <span className="min-w-0 break-words">{dayLoot.name}</span>
                     </span>
                   ) : (
-                    <span className="font-mono text-xs uppercase tracking-[0.25em] text-rga-mod/60">
+                    <span className="font-mono text-xs uppercase tracking-[0.25em] text-game-d2/60">
                       PENDING UPSTREAM
                     </span>
                   )}
                 </div>
 
                 {/* Mission column */}
-                <div className="col-span-2 flex min-w-0 flex-col gap-1 border-t border-rga-mod/10 pt-3 sm:col-span-1 sm:border-t-0 sm:pt-0">
+                <div className="col-span-2 flex min-w-0 flex-col gap-1 border-t border-game-d2/10 pt-3 sm:col-span-1 sm:border-t-0 sm:pt-0">
                   <span className="font-mono text-[10px] tracking-[0.35em] text-text-muted">
                     // RUN AT
                   </span>
@@ -210,7 +210,7 @@ function DayStepperBar({ stepper }: { stepper: StepperState }) {
       <div className="flex min-w-[160px] flex-col items-center gap-0.5 px-2">
         <span
           className={
-            stepper.current.isToday ? 'text-rga-mod' : 'text-text-secondary'
+            stepper.current.isToday ? 'text-game-d2' : 'text-text-secondary'
           }
         >
           {stepper.current.isToday
@@ -225,7 +225,7 @@ function DayStepperBar({ stepper }: { stepper: StepperState }) {
           scroll={false}
           prefetch={false}
           aria-label="Jump to today"
-          className="inline-flex h-9 items-center justify-center border border-rga-mod/40 bg-rga-mod/10 px-3 font-mono text-[10px] tracking-[0.3em] text-rga-mod transition-colors hover:border-rga-mod/80 hover:bg-rga-mod/20"
+          className="inline-flex h-9 items-center justify-center border border-game-d2/40 bg-game-d2/10 px-3 font-mono text-[10px] tracking-[0.3em] text-game-d2 transition-colors hover:border-game-d2/80 hover:bg-game-d2/20"
         >
           // TODAY
         </Link>
@@ -261,7 +261,7 @@ function StepArrow({
     return (
       <span
         aria-hidden
-        className="inline-flex h-9 w-9 items-center justify-center border border-rga-mod/10 bg-[rgba(0,0,0,0.4)] text-rga-mod/30"
+        className="inline-flex h-9 w-9 items-center justify-center border border-game-d2/10 bg-[rgba(0,0,0,0.4)] text-game-d2/30"
       >
         <Icon className="h-4 w-4" strokeWidth={1.5} />
       </span>
@@ -274,7 +274,7 @@ function StepArrow({
       scroll={false}
       prefetch={false}
       aria-label={`${srLabel} · ${target.label}`}
-      className="inline-flex h-9 w-9 items-center justify-center border border-rga-mod/25 bg-[rgba(0,0,0,0.4)] text-rga-mod transition-colors hover:border-rga-mod/70 hover:bg-rga-mod/10"
+      className="inline-flex h-9 w-9 items-center justify-center border border-game-d2/25 bg-[rgba(0,0,0,0.4)] text-game-d2 transition-colors hover:border-game-d2/70 hover:bg-game-d2/10"
     >
       <Icon className="h-4 w-4" strokeWidth={1.5} />
     </Link>

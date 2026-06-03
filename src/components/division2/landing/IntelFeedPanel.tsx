@@ -48,7 +48,7 @@ export function IntelFeedPanel({
         >
           <span className="text-text-primary">LIVE </span>
           <span
-            className="text-rga-mod"
+            className="text-game-d2"
             style={{
               textShadow:
                 '0 0 24px rgba(255,128,0,0.32), 0 0 56px rgba(255,128,0,0.14)',
@@ -66,18 +66,18 @@ export function IntelFeedPanel({
         />
       </div>
       <CyberCorners color="mod" size="md">
-        <div className="border border-rga-mod/20 bg-[rgba(0,0,0,0.5)]">
+        <div className="border border-game-d2/20 bg-[rgba(0,0,0,0.5)]">
           <ul className="flex flex-col">
             {top.map((article, idx) => (
               <li
                 key={article.id}
-                className={idx > 0 ? 'border-t border-rga-mod/10' : ''}
+                className={idx > 0 ? 'border-t border-game-d2/10' : ''}
               >
                 <a
                   href={article.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group/row grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4 px-5 py-3 transition-colors hover:bg-rga-mod/5"
+                  className="group/row grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4 px-5 py-3 transition-colors hover:bg-game-d2/5"
                 >
                   <span className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.3em] text-text-muted">
                     <span

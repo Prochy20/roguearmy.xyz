@@ -17,7 +17,7 @@ const meta = {
     square: true,
     padPx: 20,
     children: (
-      <span className="font-mono text-2xl tracking-[0.3em] uppercase text-rga-mod">SHOTGUN</span>
+      <span className="font-mono text-2xl tracking-[0.3em] uppercase text-game-d2">SHOTGUN</span>
     ),
   },
   parameters: { layout: 'centered' },
