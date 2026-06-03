@@ -86,15 +86,11 @@ export function ArticleDetailPage({
       ? `${articleCode.slice(0, TRAIL_LEAF_MAX - 1)}…`
       : articleCode
 
-  // StatRibbon's local accent vocabulary is { green, cyan, mod, magenta } —
-  // map the reader accent onto its closest sibling for the ribbon's numeric
-  // fields.
-  const ribbonFieldAccent: 'cyan' | 'mod' | 'green' =
-    accent === 'cyan'
-      ? 'cyan'
-      : accent === 'orange' || accent === 'red'
-        ? 'mod'
-        : 'green'
+  // Chrome stays RGA-neutral, so the leaf only takes cyan for cyan-accent
+  // articles (Ashley/analytics flavor). Orange/red article accents stay in
+  // the body — they don't reach the ribbon.
+  const leafAccent: 'cyan' | 'green' | undefined =
+    accent === 'cyan' ? 'cyan' : accent === 'green' ? 'green' : undefined
 
   const stickyChrome = (
     <StatRibbon
@@ -104,24 +100,22 @@ export function ArticleDetailPage({
           label: article.topic.name,
           href: `/blog/${article.topic.slug}`,
         },
-        { label: `${trailLeafCode}.md`, accent: ribbonFieldAccent },
+        { label: `${trailLeafCode}.md`, accent: leafAccent },
       ]}
       fields={[
         {
           label: 'READ',
           value: `${readMinutes} MIN`,
-          accent: ribbonFieldAccent,
         },
         {
           label: 'PUBLISHED',
           value: publishedShort,
-          accent: 'green',
         },
       ]}
       pill={
         article.visibility === 'members_only'
-          ? { text: 'MEMBERS', ok: true, accent: 'magenta' }
-          : { text: 'PUBLIC', ok: true, accent: 'green' }
+          ? { text: 'MEMBERS', mode: 'warn' }
+          : { text: 'PUBLIC', mode: 'info' }
       }
     />
   )

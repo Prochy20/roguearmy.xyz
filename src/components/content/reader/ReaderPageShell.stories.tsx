@@ -214,9 +214,9 @@ export const WithStickyChrome: Story = {
             ]}
             fields={[
               { label: 'READ', value: '8 MIN', accent: 'cyan' },
-              { label: 'PUBLISHED', value: 'May 19', accent: 'green' },
+              { label: 'PUBLISHED', value: 'May 19' },
             ]}
-            pill={{ text: 'PUBLIC', ok: true, accent: 'green' }}
+            pill={{ text: 'PUBLIC', mode: 'info' }}
           />
         }
       />

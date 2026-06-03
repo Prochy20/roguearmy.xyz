@@ -34,7 +34,7 @@ export function StaffManifestHeader({
         <StatRibbon
           trail={[RGA_ROOT, COMMUNITY_ROOT, { label: 'Staff' }]}
           fields={[
-            { label: 'RECORDS', value: String(rosterCount).padStart(2, '0'), accent: 'green' },
+            { label: 'RECORDS', value: String(rosterCount).padStart(2, '0') },
             { label: 'SYNCED', value: formatSyncStamp(lastSyncedAt), accent: 'cyan' },
             {
               label: 'CLEARANCE',
@@ -44,7 +44,7 @@ export function StaffManifestHeader({
           ]}
           pill={{
             text: showMemberSurface ? 'UNLOCKED' : 'PUBLIC',
-            ok: true,
+            mode: 'info',
           }}
         />
       </div>

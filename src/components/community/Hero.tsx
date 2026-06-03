@@ -139,11 +139,15 @@ function SnapshotRibbon({ stats }: { stats: AshleyResult<CommunityStats> }) {
     <StatRibbon
       trail={[RGA_ROOT, { label: 'Community' }]}
       fields={[
-        { label: 'MEMBERS', value: formatNumber(totalMembers), accent: 'green' },
+        { label: 'MEMBERS', value: formatNumber(totalMembers) },
         { label: 'JOINED · 14D', value: formatNumber(joinedLast14d), accent: 'cyan' },
         { label: 'TAKEN', value: formatTime(generatedAt) },
       ]}
-      pill={{ text: stats.ok ? 'LIVE' : 'OFFLINE', ok: stats.ok }}
+      pill={
+        stats.ok
+          ? { text: 'LIVE', mode: 'info' }
+          : { text: 'OFFLINE', mode: 'error' }
+      }
     />
   )
 }

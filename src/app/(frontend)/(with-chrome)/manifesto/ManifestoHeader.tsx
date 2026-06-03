@@ -26,10 +26,10 @@ export function ManifestoHeader({ doc }: ManifestoHeaderProps) {
             { label: doc.code, accent: 'green' },
           ]}
           fields={[
-            { label: 'VERSION', value: doc.version, accent: 'green' },
+            { label: 'VERSION', value: doc.version },
             { label: 'DOC', value: `${docPosition} OF ${DOC_ORDER.length}` },
           ]}
-          pill={{ text: 'RATIFIED', ok: true }}
+          pill={{ text: 'RATIFIED', mode: 'info' }}
         />
       </div>
 
