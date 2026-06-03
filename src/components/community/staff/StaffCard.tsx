@@ -18,18 +18,18 @@ const ACCENT_TEXT: Record<StaffAccent, string> = {
   green: 'text-rga-green',
   cyan: 'text-rga-cyan',
   magenta: 'text-rga-magenta',
-  dev: 'text-rga-dev',
-  admin: 'text-rga-admin',
-  mod: 'text-rga-mod',
+  dev: 'text-role-dev',
+  admin: 'text-role-admin',
+  mod: 'text-role-mod',
 }
 
 const ACCENT_FRAME: Record<StaffAccent, string> = {
   green: 'border-rga-green/15 group-hover/card:border-rga-green/40',
   cyan: 'border-rga-cyan/15 group-hover/card:border-rga-cyan/40',
   magenta: 'border-rga-magenta/15 group-hover/card:border-rga-magenta/40',
-  dev: 'border-rga-dev/15 group-hover/card:border-rga-dev/40',
-  admin: 'border-rga-admin/15 group-hover/card:border-rga-admin/40',
-  mod: 'border-rga-mod/15 group-hover/card:border-rga-mod/40',
+  dev: 'border-role-dev/15 group-hover/card:border-role-dev/40',
+  admin: 'border-role-admin/15 group-hover/card:border-role-admin/40',
+  mod: 'border-role-mod/15 group-hover/card:border-role-mod/40',
 }
 
 const ACCENT_GLOW_HOVER: Record<StaffAccent, string> = {
@@ -47,46 +47,46 @@ const ACCENT_TAPE_BG: Record<StaffAccent, string> = {
   cyan: 'bg-linear-to-b from-rga-cyan/15 via-rga-cyan/30 to-rga-cyan/15 border-rga-cyan/30',
   magenta:
     'bg-linear-to-b from-rga-magenta/15 via-rga-magenta/30 to-rga-magenta/15 border-rga-magenta/30',
-  dev: 'bg-linear-to-b from-rga-dev/15 via-rga-dev/30 to-rga-dev/15 border-rga-dev/30',
+  dev: 'bg-linear-to-b from-role-dev/15 via-role-dev/30 to-role-dev/15 border-role-dev/30',
   admin:
-    'bg-linear-to-b from-rga-admin/15 via-rga-admin/30 to-rga-admin/15 border-rga-admin/30',
-  mod: 'bg-linear-to-b from-rga-mod/15 via-rga-mod/30 to-rga-mod/15 border-rga-mod/30',
+    'bg-linear-to-b from-role-admin/15 via-role-admin/30 to-role-admin/15 border-role-admin/30',
+  mod: 'bg-linear-to-b from-role-mod/15 via-role-mod/30 to-role-mod/15 border-role-mod/30',
 }
 
 const ACCENT_TAPE_TEXT: Record<StaffAccent, string> = {
   green: 'text-rga-green',
   cyan: 'text-rga-cyan',
   magenta: 'text-rga-magenta',
-  dev: 'text-rga-dev',
-  admin: 'text-rga-admin',
-  mod: 'text-rga-mod',
+  dev: 'text-role-dev',
+  admin: 'text-role-admin',
+  mod: 'text-role-mod',
 }
 
 const ACCENT_DOT_BG: Record<StaffAccent, string> = {
   green: 'bg-rga-green',
   cyan: 'bg-rga-cyan',
   magenta: 'bg-rga-magenta',
-  dev: 'bg-rga-dev',
-  admin: 'bg-rga-admin',
-  mod: 'bg-rga-mod',
+  dev: 'bg-role-dev',
+  admin: 'bg-role-admin',
+  mod: 'bg-role-mod',
 }
 
 const ACCENT_SCAN_GRADIENT: Record<StaffAccent, string> = {
   green: 'bg-linear-to-r from-transparent via-rga-green/80 to-transparent',
   cyan: 'bg-linear-to-r from-transparent via-rga-cyan/80 to-transparent',
   magenta: 'bg-linear-to-r from-transparent via-rga-magenta/80 to-transparent',
-  dev: 'bg-linear-to-r from-transparent via-rga-dev/80 to-transparent',
-  admin: 'bg-linear-to-r from-transparent via-rga-admin/80 to-transparent',
-  mod: 'bg-linear-to-r from-transparent via-rga-mod/80 to-transparent',
+  dev: 'bg-linear-to-r from-transparent via-role-dev/80 to-transparent',
+  admin: 'bg-linear-to-r from-transparent via-role-admin/80 to-transparent',
+  mod: 'bg-linear-to-r from-transparent via-role-mod/80 to-transparent',
 }
 
 const ACCENT_DASH_BORDER: Record<StaffAccent, string> = {
   green: 'border-rga-green/25',
   cyan: 'border-rga-cyan/25',
   magenta: 'border-rga-magenta/25',
-  dev: 'border-rga-dev/25',
-  admin: 'border-rga-admin/25',
-  mod: 'border-rga-mod/25',
+  dev: 'border-role-dev/25',
+  admin: 'border-role-admin/25',
+  mod: 'border-role-mod/25',
 }
 
 const ACCENT_DM_BUTTON: Record<StaffAccent, string> = {
@@ -95,10 +95,10 @@ const ACCENT_DM_BUTTON: Record<StaffAccent, string> = {
   cyan: 'border-rga-cyan/30 text-rga-cyan hover:border-rga-cyan hover:bg-rga-cyan/10 hover:shadow-[0_0_16px_-4px_rgba(0,255,255,0.6)]',
   magenta:
     'border-rga-magenta/30 text-rga-magenta hover:border-rga-magenta hover:bg-rga-magenta/10 hover:shadow-[0_0_16px_-4px_rgba(255,0,255,0.6)]',
-  dev: 'border-rga-dev/30 text-rga-dev hover:border-rga-dev hover:bg-rga-dev/10 hover:shadow-[0_0_16px_-4px_rgba(204,255,0,0.6)]',
+  dev: 'border-role-dev/30 text-role-dev hover:border-role-dev hover:bg-role-dev/10 hover:shadow-[0_0_16px_-4px_rgba(204,255,0,0.6)]',
   admin:
-    'border-rga-admin/30 text-rga-admin hover:border-rga-admin hover:bg-rga-admin/10 hover:shadow-[0_0_16px_-4px_rgba(255,0,102,0.6)]',
-  mod: 'border-rga-mod/30 text-rga-mod hover:border-rga-mod hover:bg-rga-mod/10 hover:shadow-[0_0_16px_-4px_rgba(255,128,0,0.6)]',
+    'border-role-admin/30 text-role-admin hover:border-role-admin hover:bg-role-admin/10 hover:shadow-[0_0_16px_-4px_rgba(255,0,102,0.6)]',
+  mod: 'border-role-mod/30 text-role-mod hover:border-role-mod hover:bg-role-mod/10 hover:shadow-[0_0_16px_-4px_rgba(255,128,0,0.6)]',
 }
 
 export function StaffCard({ profile, index, showMemberSurface }: StaffCardProps) {

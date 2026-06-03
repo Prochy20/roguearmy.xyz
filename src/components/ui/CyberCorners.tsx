@@ -6,6 +6,7 @@ type CornerColor =
   | 'magenta'
   | 'orange'
   | 'red'
+  | 'rose'
   | 'gray'
   | 'dev'
   | 'admin'
@@ -48,16 +49,20 @@ const colorMap: Record<CornerColor, { line: string; glow: string }> = {
     line: 'bg-red-500',
     glow: 'shadow-[0_0_6px_rgba(239,68,68,0.5)]',
   },
+  rose: {
+    line: 'bg-status-error',
+    glow: 'shadow-[0_0_6px_rgba(255,0,102,0.5)]',
+  },
   gray: {
     line: 'bg-rga-gray/40',
     glow: '',
   },
   dev: {
-    line: 'bg-rga-dev',
+    line: 'bg-role-dev',
     glow: 'shadow-[0_0_6px_rgba(204,255,0,0.5)]',
   },
   admin: {
-    line: 'bg-rga-admin',
+    line: 'bg-role-admin',
     glow: 'shadow-[0_0_6px_rgba(255,0,102,0.5)]',
   },
   mod: {
@@ -215,6 +220,12 @@ const tagColorConfig: Record<
     glow: 'shadow-[0_0_16px_rgba(239,68,68,0.5)]',
     gradient: 'from-red-500/20 to-transparent',
   },
+  rose: {
+    bg: 'bg-status-error',
+    text: 'text-status-error',
+    glow: 'shadow-[0_0_16px_rgba(255,0,102,0.5)]',
+    gradient: 'from-status-error/20 to-transparent',
+  },
   gray: {
     bg: 'bg-rga-gray/50',
     text: 'text-text-secondary',
@@ -222,16 +233,16 @@ const tagColorConfig: Record<
     gradient: 'from-rga-gray/10 to-transparent',
   },
   dev: {
-    bg: 'bg-rga-dev',
-    text: 'text-rga-dev',
+    bg: 'bg-role-dev',
+    text: 'text-role-dev',
     glow: 'shadow-[0_0_16px_rgba(204,255,0,0.5)]',
-    gradient: 'from-rga-dev/20 to-transparent',
+    gradient: 'from-role-dev/20 to-transparent',
   },
   admin: {
-    bg: 'bg-rga-admin',
-    text: 'text-rga-admin',
+    bg: 'bg-role-admin',
+    text: 'text-role-admin',
     glow: 'shadow-[0_0_16px_rgba(255,0,102,0.5)]',
-    gradient: 'from-rga-admin/20 to-transparent',
+    gradient: 'from-role-admin/20 to-transparent',
   },
   mod: {
     bg: 'bg-game-d2',

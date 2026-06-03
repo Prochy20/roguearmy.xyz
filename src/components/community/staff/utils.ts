@@ -4,7 +4,8 @@ const ACCENTS: readonly StaffAccent[] = ['green', 'cyan', 'magenta'] as const
 
 /**
  * Raw "r,g,b" string per accent — handy for inline `rgba(...)` fills in SVG,
- * where Tailwind classes can't reach. Mirrors the rga-* palette used by the cards.
+ * where Tailwind classes can't reach. Keys mirror the `role-*` / `rga-*`
+ * palette used by the cards (dev = chartreuse, admin = rose, mod = orange).
  */
 export const ACCENT_RGB: Record<StaffAccent, string> = {
   green: '0,255,65',
