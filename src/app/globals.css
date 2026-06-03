@@ -99,18 +99,13 @@
      between D2 orange (30°) and chartreuse (72°) with safe distance from
      both. */
   --color-rga-yellow: #FFE100;
-  /* Role accents — used on staff-profile cards for Developer / Admin / Mod.
-     `rga-orange` is also the D2 game brand; `rga-admin` doubles as status-error.
-     Layer 2 aliases below give these their semantic names; the raw rga-*
-     tokens stay for backward compat during the staged refactor. */
-  --color-rga-dev: #ccff00;
-  --color-rga-admin: #ff0066;
+  /* Role / game / status raw palette. `rga-orange` doubles as the D2 game
+     brand (`game-d2`); `rga-rose` doubles as `status-error`. Layer 2
+     aliases below carry the semantic names — callsites should reference
+     those, not these raw rga-* tokens. */
+  --color-rga-chartreuse: #ccff00;
+  --color-rga-rose: #ff0066;
   --color-rga-orange: #ff8000;
-  /* Deprecated alias — `rga-mod` is the legacy name for `rga-orange`. Kept
-     so Phase 3 (staff role rename) can migrate `text-rga-mod` → `text-role-mod`
-     in /community/staff/* without breaking visuals mid-flight. Removed in
-     Phase 4. See docs/design-system/MIGRATION.md. */
-  --color-rga-mod: var(--color-rga-orange);
   /* Clan accents — used on /division-2/clans cards. Tuned to match the
      Discord clan banner palette: RGA = neon green (reuses rga-green),
      SDC = warm copper/bronze, RGS = deep azure with a gold highlight. */
@@ -394,7 +389,7 @@
      attention modes. */
   --color-status-ok: var(--color-rga-green);
   --color-status-warn: var(--color-rga-yellow);
-  --color-status-error: var(--color-rga-admin);
+  --color-status-error: var(--color-rga-rose);
   --color-status-info: oklch(0.65 0 0);
 
   /* Game — body content per-game brand. Each game has its own surface
@@ -405,9 +400,9 @@
   /* Roles — staff card accents on /community/staff. Shared hexes with
      status-error (admin) and game-d2 (mod) are intentional; staff cards
      and D2/chrome surfaces never appear on the same screen. */
-  --color-role-dev: var(--color-rga-dev);
+  --color-role-dev: var(--color-rga-chartreuse);
   --color-role-mod: var(--color-rga-orange);
-  --color-role-admin: var(--color-rga-admin);
+  --color-role-admin: var(--color-rga-rose);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════

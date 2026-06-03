@@ -23,10 +23,10 @@ export const BRAND_COLORS: ColorSwatch[] = [
  * back multiple Layer 2 aliases — see SEMANTIC_TOKENS below.
  */
 export const EXTENDED_PALETTE: ColorSwatch[] = [
-  { name: 'Orange', hex: '#FF8000', tailwind: 'rga-mod', glow: true },
-  { name: 'Chartreuse', hex: '#CCFF00', tailwind: 'rga-dev', glow: true },
+  { name: 'Orange', hex: '#FF8000', tailwind: 'rga-orange', glow: true },
+  { name: 'Chartreuse', hex: '#CCFF00', tailwind: 'rga-chartreuse', glow: true },
   { name: 'Yellow', hex: '#FFE100', tailwind: 'rga-yellow', glow: true },
-  { name: 'Rose', hex: '#FF0066', tailwind: 'rga-admin', glow: true },
+  { name: 'Rose', hex: '#FF0066', tailwind: 'rga-rose', glow: true },
 ]
 
 export const BG_COLORS: ColorSwatch[] = [
@@ -87,7 +87,7 @@ export const SEMANTIC_TOKENS: SemanticAlias[] = [
   },
   {
     alias: 'status-error',
-    layer1: 'rga-admin',
+    layer1: 'rga-rose',
     hex: '#FF0066',
     purpose: 'Hard failure — LOCKED, OFFLINE, broken data.',
   },
@@ -99,25 +99,25 @@ export const SEMANTIC_TOKENS: SemanticAlias[] = [
   },
   {
     alias: 'game-d2',
-    layer1: 'rga-mod',
+    layer1: 'rga-orange',
     hex: '#FF8000',
     purpose: 'Division 2 body content brand — page titles, mission rows, intel feeds.',
   },
   {
     alias: 'role-dev',
-    layer1: 'rga-dev',
+    layer1: 'rga-chartreuse',
     hex: '#CCFF00',
     purpose: 'Staff Developer role accent on /community/staff cards. Only use here.',
   },
   {
     alias: 'role-mod',
-    layer1: 'rga-mod',
+    layer1: 'rga-orange',
     hex: '#FF8000',
     purpose: 'Staff Moderator role accent. Same hex as game-d2 (different surfaces).',
   },
   {
     alias: 'role-admin',
-    layer1: 'rga-admin',
+    layer1: 'rga-rose',
     hex: '#FF0066',
     purpose: 'Staff Admin role accent. Same hex as status-error (different surfaces).',
   },
@@ -158,8 +158,8 @@ export const STATUS_PILL_MODES: StatusPillMode[] = [
   {
     mode: 'error',
     example: 'LOCKED',
-    textClass: 'text-rga-admin',
-    dotClass: 'bg-rga-admin shadow-[0_0_8px_#FF0066] animate-pulse',
+    textClass: 'text-status-error',
+    dotClass: 'bg-status-error shadow-[0_0_8px_#FF0066] animate-pulse',
     description:
       'Hard failure. Content gone or unreachable — LOCKED, OFFLINE, ERROR. Rose pulse.',
   },
