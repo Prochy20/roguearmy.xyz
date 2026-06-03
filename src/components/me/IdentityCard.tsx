@@ -1,6 +1,9 @@
 import Image from 'next/image'
+import Link from 'next/link'
 import { CyberCorners } from '@/components/ui/CyberCorners'
 import type { PrimaryBadge } from '@/lib/auth/badges'
+import { AfkTicker } from '@/components/afk/AfkTicker'
+import type { AfkRecord } from '@/components/afk/types'
 import { MetaCell } from './MetaCell'
 import { StatusPill } from './StatusPill'
 import { UtcClock } from './UtcClock'
@@ -20,6 +23,13 @@ interface IdentityCardProps {
   badge: PrimaryBadge
   /** True only when BOOSTER decoration applies alongside a non-BOOSTER primary badge. */
   isBooster: boolean
+  /** Active AFK record (null when active). */
+  afkRecord?: AfkRecord | null
+  /**
+   * True when /api/afk/me failed but the symbolic-role snapshot says the
+   * user is AFK. Drives a boolean-only "STATE UNRESOLVED" pill.
+   */
+  afkFallbackBoolean?: boolean
 }
 
 type BadgeKey = PrimaryBadge
@@ -64,6 +74,8 @@ export function IdentityCard({
   avatarUrl,
   badge,
   isBooster,
+  afkRecord = null,
+  afkFallbackBoolean = false,
 }: IdentityCardProps) {
   const theme = BADGE_THEME[badge] ?? BADGE_THEME.MEMBER
   const refTail = discordId.slice(-6)
@@ -82,7 +94,10 @@ export function IdentityCard({
             {isBooster && (
               <StatusPill label="BOOSTER" value="ACTIVE" tone="magenta" pulse={false} />
             )}
-            <StatusPill label="ON DUTY" value="ACTIVE" tone="green" />
+            <PresencePill
+              afkRecord={afkRecord}
+              afkFallbackBoolean={afkFallbackBoolean}
+            />
           </div>
 
           <div className="flex min-w-0 flex-col gap-6">
@@ -143,6 +158,48 @@ export function IdentityCard({
         </div>
       </div>
     </section>
+  )
+}
+
+function PresencePill({
+  afkRecord,
+  afkFallbackBoolean,
+}: {
+  afkRecord: AfkRecord | null
+  afkFallbackBoolean: boolean
+}) {
+  if (afkRecord) {
+    return (
+      <Link href="/afk" aria-label="Manage AFK status" className="flex flex-col gap-1.5">
+        <StatusPill
+          label="AFK"
+          value={<AfkTicker createdAt={afkRecord.createdAt} variant="compact" />}
+          tone="rose"
+        />
+        {afkRecord.reason && (
+          <span
+            className="truncate font-mono text-[11px] text-text-muted"
+            title={afkRecord.reason}
+          >
+            &gt; &quot;{afkRecord.reason}&quot;
+          </span>
+        )}
+      </Link>
+    )
+  }
+
+  if (afkFallbackBoolean) {
+    return (
+      <Link href="/afk" aria-label="Manage AFK status">
+        <StatusPill label="AFK" value="STATE UNRESOLVED" tone="rose" pulse={false} />
+      </Link>
+    )
+  }
+
+  return (
+    <Link href="/afk" aria-label="Open status console">
+      <StatusPill label="ACTIVE" value="OPEN CONSOLE →" tone="green" />
+    </Link>
   )
 }
 

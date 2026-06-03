@@ -54,6 +54,10 @@ export function isQuarantined(roles: readonly SymbolicRole[]): boolean {
   return roles.includes('DISCORD_ROLE_QUARANTINE')
 }
 
+export function isAfk(roles: readonly SymbolicRole[]): boolean {
+  return roles.includes('DISCORD_ROLE_AFK')
+}
+
 /**
  * Gate for premium briefing content (daily briefings) on /division-2/briefings.
  *

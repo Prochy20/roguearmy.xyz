@@ -2,12 +2,21 @@ import { redirect } from 'next/navigation'
 import { getMemberAuth } from '@/lib/auth/session.server'
 import { getAshleyAccessCookie } from '@/lib/auth/cookies'
 import { getDiscordAvatarUrl } from '@/lib/auth/discord'
-import { fetchAshleyUser, type AshleyResult } from '@/lib/api/server'
+import {
+  fetchAshleyUser,
+  fetchAshleyUserNullable,
+  type AshleyResult,
+} from '@/lib/api/server'
+import { isAfk } from '@/lib/auth/badges'
 import { IdentityCard } from '@/components/me/IdentityCard'
 import { ProgressionBand, type AshleyLevel } from '@/components/me/ProgressionBand'
 import { RoleStrip, type AshleyMe } from '@/components/me/RoleStrip'
 import { SectionHeader } from '@/components/me/SectionHeader'
+import { normalizeAfkRecord } from '@/components/afk/types'
+import type { components } from '@/lib/api/schema'
 import './me.css'
+
+type RawAfk = components['schemas']['AfkRecordResponseDto']
 
 export const metadata = {
   title: 'Operative File | Rogue Army',
@@ -21,10 +30,17 @@ export default async function MePage() {
   }
 
   const accessToken = await getAshleyAccessCookie()
-  const [ashleyMe, ashleyLevel] = await Promise.all([
+  const [ashleyMe, ashleyLevel, afkResult] = await Promise.all([
     fetchAshleyUser<AshleyMe>(accessToken, (c) => c.GET('/api/auth/me')),
     fetchAshleyUser<AshleyLevel>(accessToken, (c) => c.GET('/api/leveling/me')),
+    fetchAshleyUserNullable<RawAfk>(accessToken, (c) => c.GET('/api/afk/me')),
   ])
+
+  const afkRecord = afkResult.ok ? normalizeAfkRecord(afkResult.data) : null
+  // When the /api/afk/me fetch fails but the symbolic-role snapshot says
+  // the user is AFK, fall back to a boolean-only display (no reason, no
+  // live ticker). Beats lying that the user is active.
+  const afkFallbackBoolean = !afkResult.ok && isAfk(auth.symbolicRoles)
 
   const codename = (auth.member.globalName ?? auth.member.username).toUpperCase()
   const avatarUrl =
@@ -49,6 +65,8 @@ export default async function MePage() {
           avatarUrl={avatarUrl}
           badge={auth.primaryBadge}
           isBooster={auth.isBooster}
+          afkRecord={afkRecord}
+          afkFallbackBoolean={afkFallbackBoolean}
         />
       </section>
 

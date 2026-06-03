@@ -1,12 +1,13 @@
+import type { ReactNode } from 'react'
 import { cn } from '@/lib/utils'
 
-type PillTone = 'green' | 'magenta' | 'cyan'
+type PillTone = 'green' | 'magenta' | 'cyan' | 'rose'
 
 interface StatusPillProps {
   /** Left-aligned uppercase label (e.g. "ON DUTY", "AFK"). */
   label: string
-  /** Right-aligned secondary value (e.g. "ACTIVE", "12m"). */
-  value: string
+  /** Right-aligned secondary value (e.g. "ACTIVE", "12m", or a live ticker node). */
+  value: ReactNode
   /** Color of the dot, border, and label. */
   tone?: PillTone
   /** Pulse the dot. Suppressed under prefers-reduced-motion via me.css. */
@@ -32,6 +33,12 @@ const TONE: Record<PillTone, { hex: string; border: string; bg: string; text: st
     border: 'border-rga-cyan/35',
     bg: 'bg-[rgba(0,255,255,0.05)]',
     text: 'text-rga-cyan',
+  },
+  rose: {
+    hex: '#FF0066',
+    border: 'border-status-error/35',
+    bg: 'bg-status-error/[0.05]',
+    text: 'text-status-error',
   },
 }
 
