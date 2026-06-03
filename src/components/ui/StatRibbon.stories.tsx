@@ -8,11 +8,11 @@ const meta = {
   args: {
     prefix: '// SYNC',
     fields: [
-      { label: 'level', value: '27', accent: 'green' },
+      { label: 'level', value: '27' },
       { label: 'xp', value: '42,100', accent: 'cyan' },
-      { label: 'rank', value: '#2', accent: 'mod' },
+      { label: 'rank', value: '#2' },
     ],
-    pill: { text: 'ONLINE', ok: true, accent: 'green' },
+    pill: { text: 'ONLINE', mode: 'info' },
   },
   parameters: { layout: 'padded' },
 } satisfies Meta<typeof StatRibbon>
@@ -31,11 +31,27 @@ export const Default: Story = {
   },
 }
 
-export const StatusFailing: Story = {
+/**
+ * Warn mode — yellow pulse. Soft attention: data exists but you should know
+ * (STALE, MEMBERS-ONLY, freshness lag).
+ */
+export const PillWarn: Story = {
   args: {
     prefix: '// SYNC',
     fields: [{ label: 'last seen', value: '03:14:07 UTC' }],
-    pill: { text: 'STALE', ok: false, accent: 'magenta' },
+    pill: { text: 'STALE', mode: 'warn' },
+  },
+}
+
+/**
+ * Error mode — rose pulse. Hard failure: content gone or unreachable
+ * (LOCKED, OFFLINE, system error).
+ */
+export const PillError: Story = {
+  args: {
+    prefix: '// SYNC',
+    fields: [{ label: 'last seen', value: '—' }],
+    pill: { text: 'OFFLINE', mode: 'error' },
   },
 }
 
@@ -43,18 +59,18 @@ export const ManyFields: Story = {
   args: {
     prefix: '// OPERATIVE',
     fields: [
-      { label: 'tier', value: 'OPERATOR', accent: 'green' },
-      { label: 'level', value: '27', accent: 'green' },
+      { label: 'tier', value: 'OPERATOR' },
+      { label: 'level', value: '27' },
       { label: 'xp', value: '42,100', accent: 'cyan' },
-      { label: 'rank', value: '#2', accent: 'mod' },
+      { label: 'rank', value: '#2' },
       { label: 'streak', value: '14d', accent: 'cyan' },
     ],
-    pill: { text: 'SYNCED', ok: true, accent: 'green' },
+    pill: { text: 'SYNCED', mode: 'info' },
   },
 }
 
 /**
- * New `trail` API — clickable breadcrumb segments left of the cluster split,
+ * `trail` API — clickable breadcrumb segments left of the cluster split,
  * status fields + pill right. Leaf (last segment, no href) renders bright,
  * non-link.
  */
@@ -67,11 +83,11 @@ export const WithTrail: Story = {
       { label: 'Washington' },
     ],
     fields: [
-      { label: 'week', value: 'MAY 25', accent: 'green' },
-      { label: 'files', value: '05', accent: 'green' },
-      { label: 'tier', value: 'BOOSTER', accent: 'green' },
+      { label: 'week', value: 'MAY 25' },
+      { label: 'files', value: '05' },
+      { label: 'tier', value: 'BOOSTER' },
     ],
-    pill: { text: 'LIVE', ok: true, accent: 'green' },
+    pill: { text: 'LIVE', mode: 'info' },
   },
   play: async ({ canvasElement, step }) => {
     const canvas = within(canvasElement)
@@ -97,9 +113,9 @@ export const WithTrailMobile: Story = {
 }
 
 /**
- * Briefing-detail style: trail leaf is the designator with `.md` suffix,
- * tinted with the page's frequency accent (daily = mod, weekly = cyan) so it
- * reads as a doc identifier. Frequency itself moves into a tinted field.
+ * Weekly briefing detail style — leaf tinted cyan to read as an Ashley-output
+ * document identifier. Fields stay neutral; chrome doesn't take game color,
+ * so frequency is communicated by leaf tint + the `.md` text suffix.
  */
 export const WithTrailBriefingDetail: Story = {
   args: {
@@ -107,14 +123,25 @@ export const WithTrailBriefingDetail: Story = {
     trail: [
       { label: 'Division 2', href: '/division-2' },
       { label: 'Briefings', href: '/division-2/briefings' },
-      { label: 'D_2026-05-25.md', accent: 'mod' },
+      { label: 'W_2026-05-25.md', accent: 'cyan' },
     ],
     fields: [
-      { label: 'freq', value: 'DAILY', accent: 'mod' },
-      { label: 'period', value: 'MAY 25', accent: 'mod' },
-      { label: 'sources', value: '12', accent: 'mod' },
-      { label: 'updated', value: 'MAY 25', accent: 'green' },
+      { label: 'freq', value: 'WEEKLY' },
+      { label: 'period', value: 'MAY 25' },
+      { label: 'sources', value: '12' },
+      { label: 'updated', value: 'MAY 25' },
     ],
-    pill: { text: 'PUBLIC', ok: true, accent: 'green' },
+    pill: { text: 'PUBLIC', mode: 'info' },
+  },
+}
+
+/**
+ * Same chrome, members-only briefing — pill switches to `warn` (yellow pulse)
+ * to signal the access gate. No other field changes.
+ */
+export const WithTrailBriefingMembers: Story = {
+  args: {
+    ...WithTrailBriefingDetail.args,
+    pill: { text: 'MEMBERS', mode: 'warn' },
   },
 }

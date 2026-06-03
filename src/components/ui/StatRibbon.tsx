@@ -4,7 +4,13 @@ import { Fragment, type ReactNode } from 'react'
 export interface StatRibbonField {
   label: string
   value: ReactNode
-  accent?: 'green' | 'cyan' | 'mod'
+  /**
+   * Fields are neutral white by default — reserve an accent for values that
+   * are themselves a status or a categorical marker (cyan for analytics /
+   * Ashley-output content, green for OK state). Game brand colors (orange)
+   * never appear in chrome.
+   */
+  accent?: 'green' | 'cyan'
 }
 
 export interface TrailSegment {
@@ -12,12 +18,12 @@ export interface TrailSegment {
   /** Omit for the current page (leaf) — renders as non-link bright text. */
   href?: string
   /**
-   * Optional accent for non-link segments (typically the leaf). Mirrors the
-   * field accent vocabulary so a page can tint its leaf to match its body
-   * accent — e.g. briefing detail tints the `D_2026-05-29.md` designator
-   * cyan (weekly) or mod (daily) so it reads as a doc id, not chrome.
+   * Optional accent for non-link segments (typically the leaf). Vocabulary
+   * matches `StatRibbonField` — chrome stays RGA-neutral, so no game brand
+   * tokens. Cyan is the natural pick for Ashley-output identifiers (weekly
+   * briefing `.md` designators); green for active/OK markers.
    */
-  accent?: 'green' | 'cyan' | 'mod' | 'magenta'
+  accent?: 'green' | 'cyan'
 }
 
 export interface StatRibbonProps {
@@ -29,7 +35,12 @@ export interface StatRibbonProps {
   prefix?: string
   trail?: TrailSegment[]
   fields: StatRibbonField[]
-  pill: { text: string; ok: boolean; accent?: 'green' | 'mod' | 'magenta' }
+  /**
+   * Three modes — `info` is the muted default (TODAY, VIEWING, LIVE, PUBLIC),
+   * `warn` is soft attention (STALE, MEMBERS-ONLY) in yellow, `error` is
+   * hard failure (LOCKED, OFFLINE) in rose. See Foundations/Colors page.
+   */
+  pill: { text: string; mode: 'info' | 'warn' | 'error' }
 }
 
 export function StatRibbon({ prefix, trail, fields, pill }: StatRibbonProps) {
@@ -54,7 +65,7 @@ export function StatRibbon({ prefix, trail, fields, pill }: StatRibbonProps) {
       ))}
 
       <span className="ml-auto" />
-      <StatusPill text={pill.text} ok={pill.ok} accent={pill.accent} />
+      <StatusPill text={pill.text} mode={pill.mode} />
     </div>
   )
 }
@@ -129,20 +140,12 @@ function TrailSegmentNode({
   )
 }
 
-/**
- * Color recipe for a non-link trail segment (leaf or static ancestor). Shares
- * the field accent vocabulary so a page's leaf tint can match its body accent.
- */
 function trailAccentClass(accent: TrailSegment['accent']): string {
   switch (accent) {
     case 'green':
       return 'text-rga-green [text-shadow:0_0_10px_rgba(0,255,65,0.5)]'
     case 'cyan':
       return 'text-rga-cyan [text-shadow:0_0_10px_rgba(0,255,255,0.5)]'
-    case 'mod':
-      return 'text-rga-mod [text-shadow:0_0_10px_rgba(255,128,0,0.5)]'
-    case 'magenta':
-      return 'text-rga-magenta [text-shadow:0_0_10px_rgba(255,0,255,0.5)]'
     default:
       return 'text-text-primary'
   }
@@ -154,9 +157,7 @@ function RibbonField({ field }: { field: StatRibbonField }) {
       ? 'text-rga-green [text-shadow:0_0_10px_rgba(0,255,65,0.5)]'
       : field.accent === 'cyan'
         ? 'text-rga-cyan [text-shadow:0_0_10px_rgba(0,255,255,0.5)]'
-        : field.accent === 'mod'
-          ? 'text-rga-mod [text-shadow:0_0_10px_rgba(255,128,0,0.5)]'
-          : 'text-text-primary'
+        : 'text-text-primary'
 
   return (
     <span className="inline-flex items-baseline gap-2">
@@ -166,24 +167,35 @@ function RibbonField({ field }: { field: StatRibbonField }) {
   )
 }
 
+/**
+ * Three-mode status pill. `info` is the silent default — muted gray, no
+ * pulse, communicates "nothing to act on." `warn` is yellow + pulse for
+ * soft attention (STALE, MEMBERS-ONLY). `error` is rose + pulse for hard
+ * failure (LOCKED, OFFLINE). Magenta is no longer used for failure — it
+ * lives in decorative chromatic effects only.
+ */
 function StatusPill({
   text,
-  ok,
-  accent = 'green',
+  mode,
 }: {
   text: string
-  ok: boolean
-  accent?: 'green' | 'mod' | 'magenta'
+  mode: 'info' | 'warn' | 'error'
 }) {
-  // Failure always renders magenta — distinguishes "we have no signal" from
-  // the section's idle accent. Success uses the section's chosen accent.
-  const okMap = {
-    green: { text: 'text-rga-green', dot: 'bg-rga-green shadow-[0_0_8px_#00FF41] animate-pulse' },
-    mod: { text: 'text-rga-mod', dot: 'bg-rga-mod shadow-[0_0_8px_#FF8000] animate-pulse' },
-    magenta: { text: 'text-rga-magenta', dot: 'bg-rga-magenta shadow-[0_0_8px_#FF00FF]' },
+  const modeMap = {
+    info: {
+      text: 'text-text-secondary',
+      dot: 'bg-text-secondary',
+    },
+    warn: {
+      text: 'text-rga-yellow [text-shadow:0_0_10px_rgba(255,225,0,0.5)]',
+      dot: 'bg-rga-yellow shadow-[0_0_8px_#FFE100] animate-pulse',
+    },
+    error: {
+      text: 'text-rga-admin [text-shadow:0_0_10px_rgba(255,0,102,0.5)]',
+      dot: 'bg-rga-admin shadow-[0_0_8px_#FF0066] animate-pulse',
+    },
   } as const
-  const failStyle = okMap.magenta
-  const style = ok ? okMap[accent] : failStyle
+  const style = modeMap[mode]
   return (
     <span className={`inline-flex items-center gap-2 ${style.text}`}>
       <span aria-hidden className={`inline-block h-2 w-2 rounded-[1px] ${style.dot}`} />
