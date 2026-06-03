@@ -575,7 +575,7 @@ export default function BrandPage() {
               Two orthogonal layers coexist on every page. <strong className="text-white">Chrome</strong> is the persistent
               shell — top ribbon, nav, MENU, status pill. Always RGA-neutral (green brand + muted + white), regardless of section.
               <strong className="text-white"> Body</strong> is the page-unique content under that shell — titles, sections,
-              mission rows. On <span className="font-mono">/division-2/*</span> the body wears <span className="font-mono text-rga-mod">game-d2</span> orange.
+              mission rows. On <span className="font-mono">/division-2/*</span> the body wears <span className="font-mono text-game-d2">game-d2</span> orange.
               Future game sections will introduce their own <span className="font-mono">game-*</span> tokens; the chrome frame never changes.
             </p>
 
@@ -610,7 +610,7 @@ export default function BrandPage() {
 
                 {/* BODY zone */}
                 <div className="relative pt-2">
-                  <div className="absolute -top-1 left-0 z-10 px-2 bg-void font-mono text-[9px] uppercase tracking-[0.3em] text-rga-mod">
+                  <div className="absolute -top-1 left-0 z-10 px-2 bg-void font-mono text-[9px] uppercase tracking-[0.3em] text-game-d2">
                     ← Body zone (game-d2)
                   </div>
 
@@ -619,27 +619,27 @@ export default function BrandPage() {
                   </p>
                   <div className="font-display uppercase leading-[0.9] tracking-tight space-y-1">
                     <div className="text-text-primary text-3xl sm:text-5xl md:text-6xl">ESCALATION</div>
-                    <div className="text-rga-mod text-3xl sm:text-5xl md:text-6xl" style={{ textShadow: '0 0 24px rgba(255,128,0,0.5)' }}>
+                    <div className="text-game-d2 text-3xl sm:text-5xl md:text-6xl" style={{ textShadow: '0 0 24px rgba(255,128,0,0.5)' }}>
                       PROTOCOL
                     </div>
                   </div>
 
                   <div className="mt-12 flex flex-wrap items-center justify-between gap-4 font-mono text-[10px] uppercase tracking-[0.3em]">
                     <span className="text-text-muted">SEC_01 // <span className="text-text-secondary">Active Missions</span></span>
-                    <div className="flex items-center gap-1.5 text-rga-mod">
-                      <span className="border border-rga-mod/30 px-2.5 py-1.5">{'<'}</span>
+                    <div className="flex items-center gap-1.5 text-game-d2">
+                      <span className="border border-game-d2/30 px-2.5 py-1.5">{'<'}</span>
                       <span className="text-text-primary px-3">Tue · Jun 2</span>
-                      <span className="border border-rga-mod/30 px-2.5 py-1.5">{'>'}</span>
-                      <span className="border border-rga-mod/50 bg-rga-mod/10 px-3.5 py-1.5">// Today</span>
+                      <span className="border border-game-d2/30 px-2.5 py-1.5">{'>'}</span>
+                      <span className="border border-game-d2/50 bg-game-d2/10 px-3.5 py-1.5">// Today</span>
                     </div>
                   </div>
 
-                  <div className="mt-4 border border-rga-mod/30 bg-[rgba(255,128,0,0.03)] p-5 sm:p-6 flex flex-wrap items-center justify-between gap-5">
+                  <div className="mt-4 border border-game-d2/30 bg-[rgba(255,128,0,0.03)] p-5 sm:p-6 flex flex-wrap items-center justify-between gap-5">
                     <div className="flex items-center gap-5">
                       <span className="font-mono text-[10px] text-text-muted tracking-[0.3em]">M_01</span>
                       <div>
                         <div className="font-mono text-[9px] uppercase tracking-[0.3em] text-text-muted mb-1">// Drops</div>
-                        <div className="font-display text-base sm:text-lg uppercase text-rga-mod">Legatus S.P.A.</div>
+                        <div className="font-display text-base sm:text-lg uppercase text-game-d2">Legatus S.P.A.</div>
                       </div>
                     </div>
                     <div className="hidden sm:block">
@@ -663,12 +663,12 @@ export default function BrandPage() {
                   </p>
                 </div>
                 <div className="flex-1 lg:flex-none">
-                  <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.3em] text-rga-mod mb-2">
-                    <span aria-hidden className="inline-block h-2 w-2 rounded-[1px] bg-rga-mod shadow-[0_0_8px_#FF8000]" />
+                  <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.3em] text-game-d2 mb-2">
+                    <span aria-hidden className="inline-block h-2 w-2 rounded-[1px] bg-game-d2 shadow-[0_0_8px_#FF8000]" />
                     Body
                   </div>
                   <p className="font-body text-xs text-text-secondary leading-relaxed">
-                    Page-unique content. Wears the current section&apos;s <span className="font-mono text-rga-mod">game-*</span> token.
+                    Page-unique content. Wears the current section&apos;s <span className="font-mono text-game-d2">game-*</span> token.
                     On <span className="font-mono">/division-2/*</span> that&apos;s orange.
                   </p>
                 </div>
