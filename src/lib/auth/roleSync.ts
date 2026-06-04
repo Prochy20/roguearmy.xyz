@@ -15,6 +15,19 @@ import {
 const SUCCESS_TTL_MS = 5 * 60 * 1000
 const FAILURE_BACKOFF_MS = 60 * 1000
 
+// Per-instance result cache. Bridges the window between Ashley returning
+// and the deferred after() write landing in Mongo. Without it, concurrent
+// requests each see a stale DB timestamp, schedule their own
+// payload.update() on the same Members doc, and race in Mongo's transaction
+// layer — producing WriteConflict (code 112) errors.
+interface CachedSync {
+  at: number
+  roles: SymbolicRole[]
+  statusOverride: 'banned' | 'active' | null
+}
+const recentSyncs = new Map<string, CachedSync>()
+const recentFailures = new Map<string, number>()
+
 export type RoleSyncOutcome =
   | { kind: 'fresh'; roles: SymbolicRole[]; statusOverride: 'banned' | 'active' | null }
   | { kind: 'stale'; roles: SymbolicRole[] } // skipped — backoff or recently-synced
@@ -91,6 +104,26 @@ interface SyncMemberRolesArgs {
  * Concurrent calls for the same memberId share a single in-flight promise.
  */
 export function syncMemberRoles(args: SyncMemberRolesArgs): Promise<RoleSyncOutcome> {
+  const now = Date.now()
+
+  // Fast path: per-instance cache. Matches the DB-TTL gate exactly, so it
+  // tracks DB state once the after()-deferred write lands and short-circuits
+  // every request that arrives between Ashley resolving and the DB flush.
+  const cached = recentSyncs.get(args.memberId)
+  if (cached && now - cached.at < SUCCESS_TTL_MS) {
+    return Promise.resolve({
+      kind: 'fresh',
+      roles: cached.roles,
+      statusOverride: cached.statusOverride,
+    })
+  }
+  const failedAt = recentFailures.get(args.memberId)
+  if (failedAt && now - failedAt < FAILURE_BACKOFF_MS) {
+    return Promise.resolve({ kind: 'stale', roles: args.snapshot.symbolicRoles })
+  }
+
+  // Same-tick race dedup — collapses calls that arrive while Ashley is in
+  // flight, before recentSyncs is populated by the resolving promise.
   const existing = inflightSyncs.get(args.memberId)
   if (existing) return existing
 
@@ -126,6 +159,9 @@ async function syncMemberRolesUncached(args: SyncMemberRolesArgs): Promise<RoleS
   }
 
   if (fetched === null) {
+    // Mirror the after()-deferred timestamp in memory so the next request
+    // in the FAILURE_BACKOFF_MS window short-circuits without racing Mongo.
+    recentFailures.set(memberId, Date.now())
     // Record the failure so the next read knows we're in backoff. Defer via
     // after() so the auth result returns without waiting on the write — the
     // backoff timestamp is purely for the *next* request anyway.
@@ -147,6 +183,16 @@ async function syncMemberRolesUncached(args: SyncMemberRolesArgs): Promise<RoleS
 
   const statusOverride = computeStatusOverride(fetched, snapshot.status, snapshot.adminBanned)
   const now = new Date().toISOString()
+
+  // Mirror the after()-deferred snapshot in memory so concurrent requests in
+  // the SUCCESS_TTL_MS window resolve from cache instead of racing into
+  // their own Ashley call + payload.update().
+  recentSyncs.set(memberId, {
+    at: Date.now(),
+    roles: fetched,
+    statusOverride,
+  })
+  recentFailures.delete(memberId)
 
   // Defer the writeback so it doesn't block the response. The current request
   // already serves the freshly-fetched roles + status from memory (below); the
