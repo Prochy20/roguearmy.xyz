@@ -81,14 +81,12 @@ export function StaffPortrait({
         />
       ) : (
         <>
-          {/* Atmospheric gradient */}
           <div
             aria-hidden
             className="absolute inset-0"
             style={{ background: ACCENT_GRADIENT[accent] }}
           />
 
-          {/* Dot grid */}
           <div
             aria-hidden
             className="absolute inset-0 opacity-[0.18]"
@@ -99,7 +97,6 @@ export function StaffPortrait({
             }}
           />
 
-          {/* Crosshair reticle, centered */}
           <div aria-hidden className="absolute inset-0 flex items-center justify-center">
             <div className={cn('relative', isBadge ? 'h-10 w-10' : 'h-24 w-24')}>
               <span className="absolute top-1/2 left-0 h-px w-full bg-white/10" />
@@ -107,7 +104,6 @@ export function StaffPortrait({
             </div>
           </div>
 
-          {/* Initials */}
           <div className="absolute inset-0 flex items-center justify-center">
             <span
               className={cn(

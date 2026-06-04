@@ -165,7 +165,6 @@ export function StaffCard({ profile, index, showMemberSurface }: StaffCardProps)
             )}
           />
 
-          {/* Header band: avatar badge + name + role */}
           <div className="flex items-start gap-4 p-4 pb-3">
             <div className="w-24 shrink-0">
               <StaffPortrait
@@ -193,7 +192,6 @@ export function StaffCard({ profile, index, showMemberSurface }: StaffCardProps)
             </div>
           </div>
 
-          {/* Separator + tenure data band */}
           <div className="mx-4 mb-3 border-t border-dashed border-white/10" />
           <ul
             className={cn(
@@ -223,7 +221,6 @@ export function StaffCard({ profile, index, showMemberSurface }: StaffCardProps)
             )}
           </div>
 
-          {/* Member-only contact bar */}
           {showMemberSurface && (
             <div
               className={cn(
