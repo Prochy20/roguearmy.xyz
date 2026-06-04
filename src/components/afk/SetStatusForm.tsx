@@ -24,33 +24,25 @@ export function SetStatusForm({
   currentReason,
 }: SetStatusFormProps) {
   const router = useRouter()
-  const [intent, setIntent] = useState<Intent>(currentStatus)
   const [reason, setReason] = useState('')
   const [error, setError] = useState<AshleyError | null>(null)
   const [pending, startTransition] = useTransition()
 
-  const isDirty = intent !== currentStatus
+  const intent: Intent = currentStatus === 'active' ? 'afk' : 'active'
   const blockedByConfig = error?.status === 412
 
-  // Textarea is editable only when going from active to afk. Otherwise it's
-  // either showing the frozen current reason or empty (going-off-AFK).
-  const textareaEditable = currentStatus === 'active' && intent === 'afk'
-  const textareaValue = textareaEditable
-    ? reason
-    : currentStatus === 'afk'
-      ? (currentReason ?? '')
-      : ''
+  const textareaEditable = intent === 'afk'
+  const textareaValue = textareaEditable ? reason : (currentReason ?? '')
   const charCount = textareaEditable ? reason.length : (currentReason?.length ?? 0)
 
   const buttonLabel = (() => {
     if (pending) return intent === 'afk' ? 'GOING AFK…' : 'RETURNING…'
-    if (!isDirty) return 'NO CHANGES'
     return intent === 'afk' ? 'GO AFK' : 'GO ACTIVE'
   })()
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!isDirty || pending || blockedByConfig) return
+    if (pending || blockedByConfig) return
 
     startTransition(async () => {
       const result =
@@ -73,12 +65,6 @@ export function SetStatusForm({
     <form onSubmit={handleSubmit} className="flex flex-col gap-6">
       <Eyebrow>// SEC_01 · SET STATUS</Eyebrow>
 
-      <SegmentedToggle
-        value={intent}
-        onChange={setIntent}
-        disabled={pending}
-      />
-
       <ReasonField
         value={textareaValue}
         editable={textareaEditable}
@@ -90,8 +76,8 @@ export function SetStatusForm({
 
       <SubmitBar
         label={buttonLabel}
-        active={isDirty && !pending}
-        disabled={!isDirty || pending || blockedByConfig}
+        active={!pending}
+        disabled={pending || blockedByConfig}
       />
 
       {error && !pending && <ErrorPanel error={error} intent={intent} />}
@@ -118,79 +104,6 @@ function Eyebrow({ children }: { children: React.ReactNode }) {
   )
 }
 
-function SegmentedToggle({
-  value,
-  onChange,
-  disabled,
-}: {
-  value: Intent
-  onChange: (next: Intent) => void
-  disabled: boolean
-}) {
-  return (
-    <div className="grid grid-cols-2 border border-[rgba(255,255,255,0.08)]">
-      <TogglePill
-        active={value === 'active'}
-        tone="green"
-        onClick={() => onChange('active')}
-        disabled={disabled}
-      >
-        ACTIVE
-      </TogglePill>
-      <TogglePill
-        active={value === 'afk'}
-        tone="rose"
-        onClick={() => onChange('afk')}
-        disabled={disabled}
-      >
-        AFK
-      </TogglePill>
-    </div>
-  )
-}
-
-function TogglePill({
-  active,
-  tone,
-  onClick,
-  disabled,
-  children,
-}: {
-  active: boolean
-  tone: 'green' | 'rose'
-  onClick: () => void
-  disabled: boolean
-  children: React.ReactNode
-}) {
-  const accent = tone === 'rose' ? '#FF0066' : '#00FF41'
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      className={cn(
-        'group flex items-center justify-center gap-2 px-4 py-3.5 font-mono text-[12px] uppercase tracking-[0.25em] transition-colors',
-        'disabled:cursor-not-allowed disabled:opacity-50',
-        active
-          ? tone === 'rose'
-            ? 'bg-status-error/[0.08] text-status-error'
-            : 'bg-rga-green/[0.06] text-rga-green'
-          : 'text-text-muted hover:text-text-primary',
-      )}
-    >
-      <span
-        aria-hidden
-        className="inline-block h-2 w-2 rounded-[1px]"
-        style={{
-          background: active ? accent : 'rgba(255,255,255,0.25)',
-          boxShadow: active ? `0 0 8px ${accent}` : 'none',
-        }}
-      />
-      {children}
-    </button>
-  )
-}
-
 function ReasonField({
   value,
   editable,
@@ -211,9 +124,7 @@ function ReasonField({
       ? value.length === 0
         ? '// no reason set'
         : ''
-      : editable
-        ? '// optional reason · max 80 chars'
-        : '// active · no reason needed'
+      : '// optional reason · max 80 chars'
   return (
     <div className="border border-[rgba(255,255,255,0.08)]">
       <textarea
