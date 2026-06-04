@@ -23,7 +23,7 @@ export function TopBar({ onOpen }: TopBarProps) {
         type="button"
         onClick={onOpen}
         aria-label="Open menu"
-        accent="cyan"
+        accent="green"
         className="pointer-events-auto h-11 px-4"
       >
         <svg
