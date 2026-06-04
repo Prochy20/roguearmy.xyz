@@ -13,9 +13,6 @@ interface ManifestoContentProps {
   glitchPhase?: GlitchPhase
 }
 
-/**
- * Generates random horizontal slice offsets for the glitch displacement effect.
- */
 function generateSlices(count: number, power: number): number[] {
   return Array.from({ length: count }, () => (Math.random() - 0.5) * power)
 }
@@ -127,7 +124,6 @@ export const ManifestoContent = memo(function ManifestoContent({ doc, glitchPhas
     setTimeout(() => applyPhase(0, [0, 0, 0, 0, 0], 0, 0), 350)
   }, [applyPhase])
 
-  // Trigger glitch when phase transitions to non-idle
   const isGlitching = glitchPhase !== 'idle'
   useEffect(() => {
     if (isGlitching) runGlitch()

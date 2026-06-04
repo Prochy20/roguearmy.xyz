@@ -27,7 +27,6 @@ export function ManifestoTOC({
   const [mobileOpen, setMobileOpen] = useState(false)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
 
-  // Keep the active TOC item visible within the scrollable sidebar
   useEffect(() => {
     if (!activeId || !scrollContainerRef.current) return
     const container = scrollContainerRef.current
@@ -53,7 +52,6 @@ export function ManifestoTOC({
         // CONTENTS
       </div>
 
-      {/* Search input */}
       <div className="relative mb-4">
         <input
           ref={searchInputRef}
@@ -68,13 +66,11 @@ export function ManifestoTOC({
         </span>
       </div>
 
-      {/* Heading list */}
       <ol className="list-none p-0 m-0">
         {headings.map((h, i) => {
           const isActive = h.id === activeId
           const isRead = readSet.has(h.id)
           const visible = matches(h)
-          // Extract section number from heading text or use index
           const num = String(i + 1).padStart(2, '0')
 
           return (
@@ -132,7 +128,6 @@ export function ManifestoTOC({
         {content}
       </div>
 
-      {/* Mobile: collapsible */}
       <div className="lg:hidden mb-6">
         <button
           onClick={() => setMobileOpen(!mobileOpen)}

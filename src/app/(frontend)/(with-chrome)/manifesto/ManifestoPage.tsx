@@ -147,13 +147,11 @@ export function ManifestoPage({ docs, singleDoc }: ManifestoPageProps) {
   // Auto-tracks sections scrolled past (session only, not persisted)
   const { readSet } = useReadProgress(headingIds)
 
-  // Scrollspy
   const { activeId, scrollToHeading } = useTOC({
     headings: tocHeadings,
     rootMargin: '-120px 0px -70% 0px',
   })
 
-  // Tab switching handler
   const switchDoc = useCallback(
     (key: ManifestoDocKey) => {
       if (singleDoc) return // can't switch in standalone mode
@@ -165,7 +163,6 @@ export function ManifestoPage({ docs, singleDoc }: ManifestoPageProps) {
     [singleDoc],
   )
 
-  // Keyboard shortcuts
   useKeyboardShortcuts({
     headingIds,
     activeSection: activeId,

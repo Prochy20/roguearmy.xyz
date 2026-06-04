@@ -34,7 +34,6 @@ async function transformDocument(
     }
   }
 
-  // Process simplified content for rules
   let simplifiedContentSource: 'payload' | 'wiki' | undefined
   let simplifiedContent: ManifestoDocument['simplifiedContent']
   let simplifiedMarkdownContent: string | undefined

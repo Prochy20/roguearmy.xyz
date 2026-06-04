@@ -35,12 +35,10 @@ export function DifficultyToggle({ mode, onToggle }: DifficultyToggleProps) {
                   : 'text-text-muted hover:text-text-secondary hover:bg-white/5',
               )}
             >
-              {/* Active glow border */}
               {isActive && (
                 <div className="absolute inset-0 rounded-sm border border-rga-green/40 shadow-[0_0_8px_rgba(0,255,65,0.2)]" />
               )}
 
-              {/* Corner bracket accents */}
               {isActive && (
                 <>
                   <span className="absolute top-0 left-0 w-1.5 h-px bg-rga-green" />
@@ -59,7 +57,6 @@ export function DifficultyToggle({ mode, onToggle }: DifficultyToggleProps) {
         })}
       </div>
 
-      {/* Flavor text */}
       <div className="mt-2.5 text-[10px] text-text-muted tracking-[0.1em] font-mono">
         {MODES.find((m) => m.value === mode)?.flavor}
       </div>

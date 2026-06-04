@@ -106,9 +106,6 @@ export function useKeyboardShortcuts({
   }, [headingIds, activeSection, onSwitchDoc, searchInputRef, enableDocSwitch, onToggleDifficulty])
 }
 
-/**
- * Reads the initial document key from the URL hash.
- */
 export function getDocKeyFromHash(): ManifestoDocKey {
   if (typeof window === 'undefined') return 'rules'
   const hash = window.location.hash.replace('#', '')

@@ -74,7 +74,6 @@ export const ManifestoMeta = memo(function ManifestoMeta({
 
   return (
     <aside className="hidden lg:flex sticky top-24 self-start flex-col gap-5 font-mono">
-      {/* Document info card */}
       <div className="border border-rga-green/[0.12] bg-black/40 p-4">
         <div className="text-[10px] tracking-[0.35em] text-rga-green mb-3">
           // DOCUMENT
@@ -94,12 +93,10 @@ export const ManifestoMeta = memo(function ManifestoMeta({
         <MetaRow label="Sections" value={String(totalSections).padStart(2, '0')} mono />
       </div>
 
-      {/* Difficulty toggle (rules only) */}
       {showDifficultyToggle && difficulty && onToggleDifficulty && (
         <DifficultyToggle mode={difficulty} onToggle={onToggleDifficulty} />
       )}
 
-      {/* Progress card */}
       <div className="border border-rga-green/[0.12] bg-black/40 p-4">
         <div className="flex justify-between items-baseline mb-2.5">
           <span className="text-[10px] tracking-[0.35em] text-rga-green">// PROGRESS</span>
@@ -108,7 +105,6 @@ export const ManifestoMeta = memo(function ManifestoMeta({
           </span>
         </div>
 
-        {/* Progress bar */}
         <div className="h-1 bg-rga-green/[0.12] relative overflow-hidden mb-2.5">
           <div
             ref={barRef}
@@ -128,7 +124,6 @@ export const ManifestoMeta = memo(function ManifestoMeta({
 
       </div>
 
-      {/* Shortcuts card */}
       <div className="border border-rga-green/[0.12] bg-black/40 p-4">
         <div className="text-[10px] tracking-[0.35em] text-rga-green mb-3">
           // SHORTCUTS
