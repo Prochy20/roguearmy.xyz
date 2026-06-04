@@ -9,15 +9,10 @@ interface DataStreamLoaderProps {
   statusMessage?: string
 }
 
-// Block characters + alphanumeric for variety
 const CHARS = '░▒▓█ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
 
-// Line lengths to create visual variety (mimics data packets)
 const DEFAULT_LINE_LENGTHS = [45, 58, 38, 28, 42, 52, 36]
 
-/**
- * Generate a random scrambled string of specified length
- */
 function generateScrambledLine(length: number): string {
   let result = ''
   for (let i = 0; i < length; i++) {
@@ -26,10 +21,6 @@ function generateScrambledLine(length: number): string {
   return result
 }
 
-/**
- * DataStreamLoader - A terminal-style loading animation with scrambling text.
- * Displays corrupted data stream effect while content loads.
- */
 export function DataStreamLoader({
   lines = 7,
   statusMessage = 'RETRIEVING TRANSMISSION',
@@ -41,7 +32,6 @@ export function DataStreamLoader({
     char: number
   } | null>(null)
 
-  // Calculate line lengths based on number of lines requested
   const lineLengths = useMemo(() => {
     const lengths: number[] = []
     for (let i = 0; i < lines; i++) {
@@ -50,7 +40,6 @@ export function DataStreamLoader({
     return lengths
   }, [lines])
 
-  // Check for reduced motion preference
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
     setPrefersReducedMotion(mediaQuery.matches)
@@ -60,24 +49,19 @@ export function DataStreamLoader({
     return () => mediaQuery.removeEventListener('change', handler)
   }, [])
 
-  // Initialize and update scrambled lines
   useEffect(() => {
     if (prefersReducedMotion) return
 
-    // Initialize lines
     setDataLines(lineLengths.map((len) => generateScrambledLine(len)))
 
-    // Update scrambling every 50-100ms
     const interval = setInterval(() => {
       setDataLines(lineLengths.map((len) => generateScrambledLine(len)))
 
-      // Occasionally flash a cyan character (1 in 4 chance)
       if (Math.random() > 0.75) {
         const lineIdx = Math.floor(Math.random() * lines)
         const charIdx = Math.floor(Math.random() * lineLengths[lineIdx])
         setCyanFlashIndex({ line: lineIdx, char: charIdx })
 
-        // Clear cyan flash after a short delay
         setTimeout(() => setCyanFlashIndex(null), 100)
       }
     }, 70)
@@ -85,7 +69,6 @@ export function DataStreamLoader({
     return () => clearInterval(interval)
   }, [prefersReducedMotion, lines, lineLengths])
 
-  // Reduced motion fallback
   if (prefersReducedMotion) {
     return (
       <div
@@ -106,7 +89,6 @@ export function DataStreamLoader({
       aria-label="Loading article content"
       className="font-mono py-4 select-none"
     >
-      {/* Status Line */}
       <div className="flex items-center gap-1 mb-6">
         <span
           className="animate-blink text-rga-green text-glow-green"
@@ -119,7 +101,6 @@ export function DataStreamLoader({
         </span>
       </div>
 
-      {/* Scrambling Data Lines */}
       <div className="space-y-1.5" aria-hidden="true">
         {dataLines.map((line, lineIndex) => (
           <div
@@ -148,7 +129,6 @@ export function DataStreamLoader({
         ))}
       </div>
 
-      {/* Screen reader text */}
       <span className="sr-only">Loading article content, please wait.</span>
     </div>
   )

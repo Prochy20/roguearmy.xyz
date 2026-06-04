@@ -135,7 +135,6 @@ export function GlitchOnChange({ triggerKey, children }: GlitchOnChangeProps) {
 
   return (
     <div className="relative overflow-hidden">
-      {/* Scanline overlay */}
       <div
         ref={scanlineRef}
         className="absolute inset-0 pointer-events-none z-50"
@@ -152,7 +151,6 @@ export function GlitchOnChange({ triggerKey, children }: GlitchOnChangeProps) {
         }}
       />
 
-      {/* White flicker flash */}
       <div
         ref={flickerRef}
         className="absolute inset-0 bg-white mix-blend-overlay pointer-events-none z-40"
@@ -200,7 +198,6 @@ export function GlitchOnChange({ triggerKey, children }: GlitchOnChangeProps) {
         ))}
       </div>
 
-      {/* Noise grain overlay */}
       <div
         ref={noiseRef}
         className="absolute inset-0 pointer-events-none z-30 mix-blend-overlay opacity-30"
@@ -211,7 +208,6 @@ export function GlitchOnChange({ triggerKey, children }: GlitchOnChangeProps) {
         }}
       />
 
-      {/* Main content layer */}
       <div ref={mainRef} className="relative z-10">
         {children}
       </div>
