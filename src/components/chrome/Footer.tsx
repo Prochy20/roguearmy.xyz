@@ -103,7 +103,6 @@ export function Footer({ tagline, className }: { tagline: string; className?: st
         }}
       />
 
-      {/* Scanlines */}
       <div
         className="absolute inset-0 pointer-events-none opacity-[0.05]"
         aria-hidden="true"
@@ -113,7 +112,6 @@ export function Footer({ tagline, className }: { tagline: string; className?: st
         }}
       />
 
-      {/* Ambient radial glow */}
       <div
         className="absolute inset-0 pointer-events-none"
         aria-hidden="true"
@@ -142,7 +140,6 @@ export function Footer({ tagline, className }: { tagline: string; className?: st
 
         {/* ── Brand + Terminal prompt ── */}
         <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] gap-10 lg:gap-12 items-end mb-12 md:mb-14">
-          {/* Left: wordmark */}
           <div>
             <div className="text-[11px] tracking-[0.3em] text-text-muted mb-3.5">
               // ROOT/BROADCAST
@@ -158,7 +155,6 @@ export function Footer({ tagline, className }: { tagline: string; className?: st
             </p>
           </div>
 
-          {/* Right: live terminal prompt */}
           <CyberCorners color="green" size="sm" glow>
             <div className="border border-rga-green/20 bg-[rgba(5,10,5,0.6)] p-5">
               <div className="text-[11px] text-text-muted tracking-[0.2em] mb-2.5">
