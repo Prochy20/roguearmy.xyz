@@ -50,7 +50,7 @@ export function Header() {
           aria-label="Site navigation"
           className="rga-nav-overlay fixed inset-0 z-[60] flex flex-col outline-none"
         >
-          <TopoBackground accent="cyan" />
+          <TopoBackground />
 
           <Dialog.Title className="sr-only">Site navigation</Dialog.Title>
           <Dialog.Description className="sr-only">

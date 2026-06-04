@@ -1,13 +1,9 @@
 interface TopoBackgroundProps {
-  accent?: 'green' | 'cyan'
   glow?: number
 }
 
-export function TopoBackground({ accent = 'cyan', glow = 1 }: TopoBackgroundProps) {
-  const radial =
-    accent === 'cyan'
-      ? `rgba(0,255,255,${0.13 * glow + 0.05})`
-      : `rgba(0,255,65,${0.15 * glow + 0.06})`
+export function TopoBackground({ glow = 1 }: TopoBackgroundProps) {
+  const radial = `rgba(0,255,65,${0.15 * glow + 0.06})`
 
   return (
     <div

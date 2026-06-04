@@ -6,11 +6,9 @@ const meta = {
   title: 'Components/Chrome/Header/TopoBackground',
   component: TopoBackground,
   argTypes: {
-    accent: { control: 'inline-radio', options: ['green', 'cyan'] },
     glow: { control: { type: 'number', min: 0, max: 2, step: 0.1 } },
   },
   args: {
-    accent: 'cyan',
     glow: 1,
   },
   parameters: { layout: 'fullscreen' },
@@ -35,5 +33,4 @@ export const Default: Story = {
   },
 }
 
-export const GreenAccent: Story = { args: { accent: 'green' } }
 export const HighGlow: Story = { args: { glow: 1.8 } }
