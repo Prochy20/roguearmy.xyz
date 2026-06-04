@@ -61,7 +61,6 @@ export function ReadStatusIndicator({
   }
 
   if (status === 'in_progress') {
-    // SVG progress ring
     const radius = size === 'sm' ? 8 : 10
     const circumference = 2 * Math.PI * radius
     const strokeDashoffset = circumference - (progress / 100) * circumference
@@ -83,7 +82,6 @@ export function ReadStatusIndicator({
                 height={svgSize}
                 viewBox={`0 0 ${svgSize} ${svgSize}`}
               >
-                {/* Background circle */}
                 <circle
                   cx={svgSize / 2}
                   cy={svgSize / 2}
@@ -93,7 +91,6 @@ export function ReadStatusIndicator({
                   strokeWidth={strokeWidth}
                   className="text-rga-cyan/20"
                 />
-                {/* Progress arc */}
                 <circle
                   cx={svgSize / 2}
                   cy={svgSize / 2}
@@ -107,7 +104,6 @@ export function ReadStatusIndicator({
                   className="text-rga-cyan transition-all duration-300"
                 />
               </svg>
-              {/* Center text */}
               <span className="absolute text-[8px] font-mono text-rga-cyan">
                 {Math.round(progress)}
               </span>
@@ -119,7 +115,6 @@ export function ReadStatusIndicator({
     )
   }
 
-  // Unread - hollow circle
   return (
     <TooltipProvider delayDuration={300}>
       <Tooltip>
@@ -139,9 +134,6 @@ export function ReadStatusIndicator({
   )
 }
 
-/**
- * Determine read status from progress data
- */
 export function getReadStatus(progress?: number, completed?: boolean): ReadStatus {
   if (completed) return 'completed'
   if (progress && progress > 0) return 'in_progress'

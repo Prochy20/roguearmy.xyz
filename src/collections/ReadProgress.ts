@@ -19,7 +19,7 @@ export const ReadProgress: CollectionConfig = {
     // Only create/update via API (not admin)
     create: () => false,
     update: () => false,
-    delete: adminOnly, // Only admins can delete
+    delete: adminOnly,
   },
   dbName: 'readProgress',
   indexes: [

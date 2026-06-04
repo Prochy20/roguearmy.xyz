@@ -23,22 +23,18 @@ export function BookmarkDrawerItem({
 }: BookmarkDrawerItemProps) {
   const { article } = bookmark
 
-  // Get topic color classes
   const tint = article.topic?.color
     ? getTintClasses(mapPayloadColorToTint(article.topic.color))
     : null
 
-  // Determine read status
   const status: ReadStatus = getReadStatus(progress?.progress, progress?.completed)
 
-  // Generate article URL using the helper
   const articleUrl = article.topic?.slug
     ? getArticleUrl({ slug: article.slug, topic: { slug: article.topic.slug } })
-    : `/blog/${article.slug}` // Fallback if no topic
+    : `/blog/${article.slug}`
 
   return (
     <div className="group relative flex items-start gap-3 px-4 py-3 hover:bg-bg-surface transition-colors">
-      {/* Topic color dot */}
       <div
         className={cn(
           'w-1.5 h-1.5 rounded-full mt-2 flex-shrink-0',
@@ -46,7 +42,6 @@ export function BookmarkDrawerItem({
         )}
       />
 
-      {/* Article info */}
       <Link
         href={articleUrl}
         onClick={onNavigate}
@@ -62,11 +57,9 @@ export function BookmarkDrawerItem({
         )}
       </Link>
 
-      {/* Right side: progress indicator + remove button */}
       <div className="flex items-center gap-2 flex-shrink-0">
         <ReadStatusIndicator status={status} progress={progress?.progress} size="sm" />
 
-        {/* Remove button - visible on hover */}
         <button
           onClick={(e) => {
             e.preventDefault()

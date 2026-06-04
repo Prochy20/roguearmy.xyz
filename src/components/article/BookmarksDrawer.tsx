@@ -30,16 +30,13 @@ export function BookmarksDrawer() {
   const [filter, setFilter] = useState<FilterStatus>('all')
   const { bookmarks, isLoading, toggleBookmark } = useBookmarks()
 
-  // Get article IDs for progress fetching
   const articleIds = useMemo(
     () => bookmarks.map((b) => b.article.id),
     [bookmarks]
   )
 
-  // Fetch progress for all bookmarked articles
   const { progressMap, isLoading: progressLoading } = useBookmarkProgress(articleIds)
 
-  // Filter bookmarks by status
   const filteredBookmarks = useMemo(() => {
     if (filter === 'all') return bookmarks
 
@@ -50,12 +47,10 @@ export function BookmarksDrawer() {
     })
   }, [bookmarks, filter, progressMap])
 
-  // Close drawer on navigation
   const handleNavigate = useCallback(() => {
     setIsOpen(false)
   }, [])
 
-  // Handle remove bookmark
   const handleRemove = useCallback(
     (articleId: string) => {
       toggleBookmark(articleId)
@@ -63,7 +58,6 @@ export function BookmarksDrawer() {
     [toggleBookmark]
   )
 
-  // Get counts for filter badges
   const counts = useMemo(() => {
     const result = { all: bookmarks.length, unread: 0, in_progress: 0, completed: 0 }
 
@@ -78,7 +72,6 @@ export function BookmarksDrawer() {
 
   return (
     <>
-      {/* Trigger button */}
       <TooltipProvider delayDuration={300}>
         <Tooltip open={isOpen ? false : undefined}>
           <TooltipTrigger asChild>
@@ -93,7 +86,6 @@ export function BookmarksDrawer() {
               aria-label="Bookmarks"
             >
               <Bookmark className="w-5 h-5" />
-              {/* Badge count */}
               {bookmarks.length > 0 && (
                 <span className="flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-medium rounded-full bg-rga-cyan/20 text-rga-cyan">
                   {bookmarks.length > 99 ? '99+' : bookmarks.length}
@@ -105,9 +97,7 @@ export function BookmarksDrawer() {
         </Tooltip>
       </TooltipProvider>
 
-      {/* Drawer */}
       <Drawer open={isOpen} onOpenChange={setIsOpen} side="right" accent="cyan">
-        {/* Header */}
         <DrawerHeader onClose={() => setIsOpen(false)} accent="cyan">
           <div className="flex items-center gap-2">
             <Bookmark className="w-5 h-5 text-rga-cyan" />
@@ -118,7 +108,6 @@ export function BookmarksDrawer() {
           </div>
         </DrawerHeader>
 
-        {/* Filter tabs */}
         {bookmarks.length > 0 && (
           <div className="flex flex-wrap gap-1 px-4 py-3 border-b border-rga-cyan/10 overflow-hidden">
             {filterTabs.map((tab) => {
@@ -153,7 +142,6 @@ export function BookmarksDrawer() {
           </div>
         )}
 
-        {/* Content */}
         <DrawerContent>
           {isLoading || progressLoading ? (
             <div className="px-4 py-12 text-center">
@@ -190,7 +178,6 @@ export function BookmarksDrawer() {
           )}
         </DrawerContent>
 
-        {/* Footer */}
         {bookmarks.length > 0 && (
           <DrawerFooter accent="cyan">
             <Link

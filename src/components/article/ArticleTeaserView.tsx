@@ -15,7 +15,6 @@ import {
   formatArticleDate,
 } from '@/lib/articles'
 
-// Map article tint to CyberTag color
 const tintToColor = (tint: TintColor) => {
   switch (tint) {
     case 'green': return 'green' as const

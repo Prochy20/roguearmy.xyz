@@ -37,7 +37,6 @@ export function BookmarkButton({ articleId, size = 'sm', className }: BookmarkBu
     setIsAnimating(true)
     await toggleBookmark(articleId)
 
-    // Reset animation state after animation completes
     setTimeout(() => setIsAnimating(false), 400)
   }
 

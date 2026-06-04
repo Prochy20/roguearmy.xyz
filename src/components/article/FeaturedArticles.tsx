@@ -19,7 +19,6 @@ interface FeaturedArticlesProps {
  * Uses compact ArticleCardMini components in a 3-column grid.
  */
 export function FeaturedArticles({ articles, progress }: FeaturedArticlesProps) {
-  // Don't render if no articles
   if (articles.length === 0) {
     return null
   }
@@ -32,9 +31,7 @@ export function FeaturedArticles({ articles, progress }: FeaturedArticlesProps) 
       transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
       className="mt-16 pt-8 border-t border-rga-green/10"
     >
-      {/* Section header */}
       <div className="flex items-center gap-3 mb-6">
-        {/* Accent line */}
         <div className="w-1 h-8 bg-linear-to-b from-rga-magenta via-rga-cyan to-rga-green rounded-full" />
         <div className="flex items-center gap-2">
           <Sparkles className="w-4 h-4 text-rga-cyan" />

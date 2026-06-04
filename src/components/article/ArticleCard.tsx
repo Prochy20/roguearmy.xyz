@@ -18,13 +18,11 @@ import { ReadStatusIndicator, getReadStatus } from '@/components/article/ReadSta
 import { BookmarkButton } from '@/components/article/BookmarkButton'
 import { MembersOnlyOverlay } from './MembersOnlyOverlay'
 
-/** Minimal progress data needed for article card display */
 interface CardProgressData {
   progress: number
   completed: boolean
 }
 
-// Map article tint to CyberCorners color
 const tintToColor = (tint: TintColor) => {
   switch (tint) {
     case 'green': return 'green' as const
@@ -71,7 +69,6 @@ export function ArticleCard({ article, index = 0, progress, isAuthenticated = fa
               tint.glow
             )}
           >
-            {/* Hero Image */}
             <div className="relative aspect-5/2 overflow-hidden">
               <Image
                 src={article.heroImage.url}
@@ -80,23 +77,18 @@ export function ArticleCard({ article, index = 0, progress, isAuthenticated = fa
                 className="object-cover transition-transform duration-500 group-hover:scale-105"
               />
 
-              {/* Gradient Overlay */}
               <div className="absolute inset-0 bg-linear-to-t from-bg-elevated via-bg-elevated/50 to-transparent" />
 
-              {/* Scanline effect on hover */}
               <div className="absolute inset-0 bg-[repeating-linear-gradient(0deg,transparent,transparent_2px,rgba(0,255,65,0.03)_2px,rgba(0,255,65,0.03)_4px)] opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
-              {/* Members-only overlay - centered, only shown when not authenticated */}
               {isMembersOnly && !isAuthenticated && (
                 <MembersOnlyOverlay size="lg" />
               )}
 
-              {/* Topic Badge + Game Badge */}
               <div className="absolute bottom-4 left-4 flex items-center gap-2">
                 <CyberTag color={cornerColor} className={tint.text}>
                   {article.topic.name}
                 </CyberTag>
-                {/* Show first game if available */}
                 {article.games.length > 0 && (
                   <CyberTag color="gray" className="text-text-secondary/80">
                     {article.games[0].name}
@@ -105,9 +97,7 @@ export function ArticleCard({ article, index = 0, progress, isAuthenticated = fa
               </div>
             </div>
 
-            {/* Content */}
             <div className="p-5 flex-1 flex flex-col">
-              {/* Title with intense Glitch Effect on hover */}
               <HoverGlitch
                 intensity={5}
                 dataCorruption
@@ -116,34 +106,27 @@ export function ArticleCard({ article, index = 0, progress, isAuthenticated = fa
                 {article.title}
               </HoverGlitch>
 
-              {/* Perex */}
               <p className="text-text-secondary text-sm md:text-base line-clamp-2 mb-4">
                 {article.perex}
               </p>
 
-              {/* Metadata Row */}
               <div className="flex items-center gap-x-4 gap-y-2 text-xs text-text-secondary/60 mt-auto">
-                {/* Left side: Content Type, Date, Reading Time */}
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-2 flex-1">
-                  {/* Content Type - subtle pill */}
                   <span className="px-2 py-0.5 rounded bg-white/5 text-text-secondary/50 uppercase tracking-wider text-[10px]">
                     {article.contentType.name}
                   </span>
 
-                  {/* Date */}
                   <div className="flex items-center gap-1">
                     <Calendar className="w-3.5 h-3.5" />
                     <span>{formatArticleDate(article.publishedAt)}</span>
                   </div>
 
-                  {/* Reading Time */}
                   <div className="flex items-center gap-1">
                     <Clock className="w-3.5 h-3.5" />
                     <span>{article.readingTime} min read</span>
                   </div>
                 </div>
 
-                {/* Right side actions - only show for authenticated users */}
                 {isAuthenticated && (
                   <div className="flex items-center gap-2">
                     <BookmarkButton articleId={article.id} size="sm" />

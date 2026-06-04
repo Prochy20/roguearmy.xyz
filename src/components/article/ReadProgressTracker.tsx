@@ -50,7 +50,6 @@ export function ReadProgressTracker({
   const timeTrackingIntervalRef = useRef<NodeJS.Timeout | null>(null)
   const warnedMissingSelectorRef = useRef(false)
 
-  // Sync progress to API
   const syncProgress = useCallback(async (force = false) => {
     if (isSyncingRef.current) {
       return
@@ -91,7 +90,6 @@ export function ReadProgressTracker({
     }
   }, [targetType, targetId])
 
-  // Calculate scroll progress based on the configured element
   const calculateProgress = useCallback(() => {
     const article = document.querySelector(selector)
     if (!article) {
