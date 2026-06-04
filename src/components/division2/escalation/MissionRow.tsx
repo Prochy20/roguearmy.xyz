@@ -85,7 +85,6 @@ export function MissionRow({
                   (idx > 0 ? ' border-t border-game-d2/10' : '')
                 }
               >
-                {/* Position pill */}
                 <div className="font-mono text-sm tracking-[0.3em] text-game-d2">
                   M_{String(mission.position + 1).padStart(2, '0')}
                 </div>
@@ -99,7 +98,6 @@ export function MissionRow({
                   </SpecimenFrame>
                 </div>
 
-                {/* Drops column */}
                 <div className="flex min-w-0 flex-col gap-1">
                   <span className="font-mono text-[10px] tracking-[0.35em] text-text-muted">
                     // DROPS
@@ -121,7 +119,6 @@ export function MissionRow({
                   )}
                 </div>
 
-                {/* Mission column */}
                 <div className="col-span-2 flex min-w-0 flex-col gap-1 border-t border-game-d2/10 pt-3 sm:col-span-1 sm:border-t-0 sm:pt-0">
                   <span className="font-mono text-[10px] tracking-[0.35em] text-text-muted">
                     // RUN AT

@@ -47,7 +47,6 @@ export function SpecimenFrame({
       }`}
       style={{ background: glow }}
     >
-      {/* Corner ticks */}
       <span aria-hidden className={`pointer-events-none absolute left-1.5 top-1.5 h-2.5 w-2.5 border-l border-t ${tickColor}`} />
       <span aria-hidden className={`pointer-events-none absolute right-1.5 top-1.5 h-2.5 w-2.5 border-r border-t ${tickColor}`} />
       <span aria-hidden className={`pointer-events-none absolute bottom-1.5 left-1.5 h-2.5 w-2.5 border-b border-l ${tickColor}`} />

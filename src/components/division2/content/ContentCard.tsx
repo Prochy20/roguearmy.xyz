@@ -141,7 +141,6 @@ export function ContentCard({ article, now }: ContentCardProps) {
                 ].join(' ')}
                 style={{ background: cls.frameGlow }}
               >
-                {/* Corner ticks — top-left, top-right, bottom-left, bottom-right */}
                 <span
                   aria-hidden
                   className={['pointer-events-none absolute top-1 left-1 z-10 h-2 w-2 border-l border-t', cls.frameTick].join(' ')}
@@ -183,9 +182,7 @@ export function ContentCard({ article, now }: ContentCardProps) {
             </div>
           )}
 
-          {/* Content column */}
           <div className="relative flex min-w-0 flex-1 flex-col gap-3 px-5 pt-5 pb-4 sm:gap-3.5 sm:px-6 sm:pt-5 sm:pb-5">
-            {/* Header strip: designator · source · contentType · relevance */}
             <header className="flex flex-wrap items-center gap-x-2.5 gap-y-1 font-mono text-[10px] uppercase tracking-[0.3em]">
               <span className={cls.chipText}>{designator}</span>
               <span aria-hidden className="text-text-muted/50">·</span>
@@ -226,7 +223,6 @@ export function ContentCard({ article, now }: ContentCardProps) {
               )}
             </header>
 
-            {/* Transmission label + title */}
             <div className="flex flex-col gap-1.5">
               <span className="font-mono text-[9px] uppercase tracking-[0.35em] text-text-muted">
                 // TRANSMISSION
@@ -239,7 +235,6 @@ export function ContentCard({ article, now }: ContentCardProps) {
               </h3>
             </div>
 
-            {/* Brief label + summary */}
             {summary && (
               <div className="flex flex-col gap-1.5">
                 <span className="font-mono text-[9px] uppercase tracking-[0.35em] text-text-muted">
@@ -256,7 +251,6 @@ export function ContentCard({ article, now }: ContentCardProps) {
               </div>
             )}
 
-            {/* Footer meta row */}
             <footer className="mt-auto flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-t border-text-muted/10 pt-3 font-mono text-[10px] uppercase tracking-[0.3em]">
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-text-muted">
                 {author && (

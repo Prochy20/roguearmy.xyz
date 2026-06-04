@@ -42,7 +42,6 @@ export function BoosterPerksWidget({ perks }: BoosterPerksWidgetProps) {
       <BracketStamp />
 
       <div className="flex flex-col gap-7 p-6 sm:gap-9 sm:p-8 lg:p-10">
-        {/* Header — bracket pill + status indicator */}
         <div className="flex flex-wrap items-center gap-3">
           {kicker && (
             <span className="inline-flex items-center border border-tier-booster/55 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.32em] text-tier-booster">
@@ -55,7 +54,6 @@ export function BoosterPerksWidget({ perks }: BoosterPerksWidgetProps) {
           </span>
         </div>
 
-        {/* Display headline */}
         {heading && (
           <h2
             className="break-words font-display text-2xl uppercase leading-[1.0] text-text-primary sm:text-3xl lg:text-[40px] xl:text-[44px]"
@@ -65,14 +63,12 @@ export function BoosterPerksWidget({ perks }: BoosterPerksWidgetProps) {
           </h2>
         )}
 
-        {/* Body paragraph */}
         {body && (
           <p className="max-w-3xl text-[15px] leading-relaxed text-text-secondary/95 sm:text-base">
             {body}
           </p>
         )}
 
-        {/* Two-column give/get split */}
         {(fundBullets.length > 0 || giveBackBullets.length > 0) && (
           <div className="grid grid-cols-1 gap-6 border-t border-tier-booster/15 pt-7 sm:gap-10 lg:grid-cols-2">
             <Column
@@ -90,7 +86,6 @@ export function BoosterPerksWidget({ perks }: BoosterPerksWidgetProps) {
           </div>
         )}
 
-        {/* CTA + telemetry strip */}
         {ctaVisible && (
           <div className="flex flex-col gap-5 border-t border-tier-booster/15 pt-6 sm:flex-row sm:items-end sm:justify-between sm:gap-8">
             <div className="flex flex-col gap-1.5 font-mono text-[10px] uppercase tracking-[0.3em] text-text-muted">

@@ -67,14 +67,12 @@ function CacheCard({ kind, loot }: { kind: 'GEAR' | 'WEAPON'; loot: EscalationLo
   return (
     <CyberCorners color="cyan" size="md" className="h-full">
       <div className="flex h-full min-w-0 gap-5 border border-rga-cyan/15 bg-[rgba(0,0,0,0.5)] p-5">
-        {/* Hero: specimen frame holding the cache icon */}
         <div className="w-[120px] shrink-0 sm:w-[140px] lg:w-[160px]">
           <SpecimenFrame color="cyan" pending={!loot} padPx={18}>
             {loot && <LootIcon slug={loot.slug} name={loot.name} size={88} />}
           </SpecimenFrame>
         </div>
 
-        {/* Spec sheet text block */}
         <div className="flex min-w-0 flex-1 flex-col justify-between gap-3 py-1">
           <div className="flex items-baseline justify-between gap-2">
             <span className="font-mono text-[9px] tracking-[0.3em] text-rga-cyan">

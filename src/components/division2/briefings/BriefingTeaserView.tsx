@@ -128,7 +128,6 @@ export function BriefingTeaserView({
           >
             <CyberCorners color="magenta" size="md" glow>
               <div className="relative overflow-hidden border border-rga-magenta/30 bg-bg-elevated/80 p-8 backdrop-blur-sm">
-                {/* Grid pattern overlay */}
                 <div
                   className="pointer-events-none absolute inset-0 opacity-[0.03]"
                   style={{
