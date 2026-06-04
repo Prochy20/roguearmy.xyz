@@ -173,6 +173,9 @@ async function syncMemberRolesUncached(args: SyncMemberRolesArgs): Promise<RoleS
           data: { guildMember: { rolesSyncFailedAt: new Date().toISOString() } },
         })
         .catch((err) => {
+          // Benign race at multi-worker boundaries — another worker wrote the
+          // same timestamp; doc state is correct either way.
+          if (err?.code === 112 || err?.codeName === 'WriteConflict') return
           // Non-fatal for this request, but persistent failures here mean we'll
           // retry Ashley on every page load (no backoff persisted) — surface it.
           console.warn('Role sync: failed to record sync-failure timestamp', err)
@@ -214,6 +217,9 @@ async function syncMemberRolesUncached(args: SyncMemberRolesArgs): Promise<RoleS
         },
       })
       .catch((err) => {
+        // Benign race at multi-worker boundaries — another worker wrote the
+        // same Ashley result; doc state is correct either way.
+        if (err?.code === 112 || err?.codeName === 'WriteConflict') return
         // Non-fatal for this request — in-memory result is authoritative — but
         // a persistent write failure means TTL never advances and we'll re-call
         // Ashley on every request. Surface it.
