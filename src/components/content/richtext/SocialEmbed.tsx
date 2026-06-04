@@ -19,9 +19,6 @@ interface SocialEmbedProps {
   caption?: string | null
 }
 
-/**
- * Corner bracket decoration component (matches existing theme)
- */
 function Corner({
   position,
   colorClass = 'text-rga-cyan/40',
@@ -46,9 +43,6 @@ function Corner({
   )
 }
 
-/**
- * Platform icon components
- */
 function PlatformIcon({ platform, className = 'w-3 h-3' }: { platform: SocialPlatform; className?: string }) {
   switch (platform) {
     case 'twitter':
@@ -74,9 +68,6 @@ function PlatformIcon({ platform, className = 'w-3 h-3' }: { platform: SocialPla
   }
 }
 
-/**
- * Get platform-specific accent color classes
- */
 function getPlatformColors(platform: SocialPlatform): { bg: string; text: string; corner: string; containerBg: string } {
   const colors: Record<SocialPlatform, { bg: string; text: string; corner: string; containerBg: string }> = {
     twitter: {
@@ -101,9 +92,6 @@ function getPlatformColors(platform: SocialPlatform): { bg: string; text: string
   return colors[platform]
 }
 
-/**
- * Loading skeleton component
- */
 function LoadingSkeleton({ platform }: { platform: SocialPlatform }) {
   return (
     <div className="flex flex-col items-center justify-center py-20 gap-4 text-text-secondary/50">
@@ -115,9 +103,6 @@ function LoadingSkeleton({ platform }: { platform: SocialPlatform }) {
   )
 }
 
-/**
- * Error fallback component
- */
 function ErrorFallback({ parsed }: { parsed: ParsedSocialUrl }) {
   return (
     <div className="flex flex-col items-center justify-center py-16 gap-4">
@@ -183,10 +168,6 @@ function EmbedWrapper({ parsed }: { parsed: ParsedSocialUrl }) {
   )
 }
 
-/**
- * Frontend social media embed renderer component.
- * Displays embedded social posts with themed styling matching the site design.
- */
 export function SocialEmbed({ url, caption }: SocialEmbedProps) {
   const [isMounted, setIsMounted] = useState(false)
 

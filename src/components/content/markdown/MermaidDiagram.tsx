@@ -198,7 +198,6 @@ export function MermaidDiagram({ code }: MermaidDiagramProps) {
     }
   }, [code])
 
-  // Corner bracket component
   const Corner = ({ position }: { position: 'tl' | 'tr' | 'bl' | 'br' }) => {
     const rotations = {
       tl: '',
@@ -233,7 +232,6 @@ export function MermaidDiagram({ code }: MermaidDiagramProps) {
     )
   }
 
-  // Loading state
   if (isLoading) {
     return (
       <div className="my-12 flex items-center justify-center py-16">
@@ -259,7 +257,6 @@ export function MermaidDiagram({ code }: MermaidDiagramProps) {
     )
   }
 
-  // Error state
   if (error) {
     return (
       <div className="my-12 py-8">
@@ -281,20 +278,17 @@ export function MermaidDiagram({ code }: MermaidDiagramProps) {
       ref={containerRef}
       className="relative my-12 py-8 px-6 group"
     >
-      {/* Corner brackets */}
       <Corner position="tl" />
       <Corner position="tr" />
       <Corner position="bl" />
       <Corner position="br" />
 
-      {/* Label */}
       <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 px-3 bg-bg-primary">
         <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-rga-green/40">
           Diagram
         </span>
       </div>
 
-      {/* Main diagram container */}
       <div className="overflow-x-auto py-4">
         <div
           className="

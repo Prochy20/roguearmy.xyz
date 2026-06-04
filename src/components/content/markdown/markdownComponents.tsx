@@ -33,7 +33,6 @@ function extractTextFromChildren(children: ReactNode): string {
  * Matches the existing prose styles from ArticleContent.
  */
 export const markdownComponents: Partial<Components> = {
-  // Headings
   h1: ({ children }) => {
     const text = extractTextFromChildren(children)
     const id = slugify(text)
@@ -83,14 +82,12 @@ export const markdownComponents: Partial<Components> = {
     </h4>
   ),
 
-  // Paragraphs
   p: ({ children }) => (
     <p className="text-text-secondary text-base md:text-lg leading-[1.8] mb-6">
       {children}
     </p>
   ),
 
-  // Lists
   ul: ({ children }) => (
     <ul className="space-y-3 text-text-secondary mb-8 pl-0 list-none">
       {children}
@@ -104,7 +101,6 @@ export const markdownComponents: Partial<Components> = {
   ),
 
   li: ({ children, node }) => {
-    // Check if this is a task list item (contains checkbox)
     const hasCheckbox = node?.children?.some(
       (child) =>
         child.type === 'element' &&
@@ -130,7 +126,6 @@ export const markdownComponents: Partial<Components> = {
     )
   },
 
-  // Task list checkbox
   input: ({ checked, ...props }) => {
     if (props.type === 'checkbox') {
       return (
@@ -243,14 +238,12 @@ export const markdownComponents: Partial<Components> = {
     </td>
   ),
 
-  // Blockquotes
   blockquote: ({ children }) => (
     <blockquote className="my-6 border-l-4 border-rga-green bg-bg-surface/50 py-3 px-5 text-text-secondary italic rounded-r-lg">
       {children}
     </blockquote>
   ),
 
-  // Links
   a: ({ href, children }) => {
     const isExternal = href?.startsWith('http')
     return (
@@ -282,7 +275,6 @@ export const markdownComponents: Partial<Components> = {
     )
   },
 
-  // Images
   img: ({ src, alt }) => (
     <figure className="my-8">
       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -300,16 +292,13 @@ export const markdownComponents: Partial<Components> = {
     </figure>
   ),
 
-  // Inline code
   code: ({ className, children, ...props }) => {
-    // Check if this is a code block (has language class)
     const isCodeBlock = className?.startsWith('language-')
 
     if (isCodeBlock) {
       return <CodeBlock className={className}>{children}</CodeBlock>
     }
 
-    // Inline code
     return (
       <code
         className="px-2 py-1 bg-bg-surface/80 text-rga-magenta rounded border border-rga-magenta/20 text-sm font-mono"
@@ -337,7 +326,6 @@ export const markdownComponents: Partial<Components> = {
     <strong className="text-white font-medium mx-[0.1em]">{children}</strong>
   ),
 
-  // Emphasis/Italic
   em: ({ children }) => <em className="text-text-secondary italic">{children}</em>,
 
   // Strikethrough (GFM)
@@ -361,7 +349,6 @@ export const markdownComponents: Partial<Components> = {
       )
     }
 
-    // Fallback for regular aside elements
     return <aside {...props}>{children}</aside>
   },
 }

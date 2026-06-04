@@ -8,7 +8,6 @@ interface LexicalCodeBlockProps {
   language: string
 }
 
-// Language display names
 const languageNames: Record<string, string> = {
   js: 'JavaScript',
   javascript: 'JavaScript',
@@ -83,7 +82,6 @@ export function LexicalCodeBlock({ code, language }: LexicalCodeBlockProps) {
   }, [code])
 
   useEffect(() => {
-    // Skip highlighting for mermaid diagrams
     if (isMermaid) {
       setIsLoading(false)
       return
@@ -116,7 +114,6 @@ export function LexicalCodeBlock({ code, language }: LexicalCodeBlockProps) {
           setIsLoading(false)
         }
       } catch (err) {
-        // Fallback for unsupported languages
         console.warn(`Shiki highlight failed for language "${language}":`, err)
         if (mounted) {
           setHighlightedCode(null)
@@ -132,7 +129,6 @@ export function LexicalCodeBlock({ code, language }: LexicalCodeBlockProps) {
     }
   }, [code, language, isMermaid])
 
-  // Handle mermaid diagrams separately
   if (isMermaid) {
     return <MermaidDiagram code={code} />
   }

@@ -29,23 +29,17 @@ import {
   type CalloutType,
 } from '@/components/content/reader/readerMarkdownComponents'
 
-// Extend node types to include our custom blocks
 type NodeTypes =
   | DefaultNodeTypes
   | SerializedBlockNode<CalloutBlockType | CodeBlockType | MermaidBlockType | SocialEmbedBlockType | TrelloCardBlockType | VideoEmbedBlockType>
 
-/**
- * Extracts text from Lexical children nodes
- */
 function extractTextFromLexicalChildren(children?: SerializedLexicalNode[]): string {
   if (!children || !Array.isArray(children)) return ''
 
   return children.map((child) => {
-    // Text node
     if ('text' in child && typeof child.text === 'string') {
       return child.text
     }
-    // Node with children
     if ('children' in child && Array.isArray(child.children)) {
       return extractTextFromLexicalChildren(child.children as SerializedLexicalNode[])
     }
@@ -203,8 +197,6 @@ export function buildConverters({
     ...defaultConverters,
     ...LinkJSXConverter({ internalDocToHref }),
 
-    // ==================== HEADINGS ====================
-
     heading: ({ node, nodesToJSX }) => {
       const children = nodesToJSX({ nodes: node.children })
       const text = extractTextFromLexicalChildren(node.children as SerializedLexicalNode[])
@@ -284,8 +276,6 @@ export function buildConverters({
       return <>{children}</>
     },
 
-    // ==================== PARAGRAPH ====================
-
     paragraph: ({ node, nodesToJSX }) => {
       const children = nodesToJSX({ nodes: node.children })
       return (
@@ -294,8 +284,6 @@ export function buildConverters({
         </p>
       )
     },
-
-    // ==================== LISTS ====================
 
     list: ({ node, nodesToJSX }) => {
       const children = nodesToJSX({ nodes: node.children })
@@ -352,8 +340,6 @@ export function buildConverters({
       )
     },
 
-    // ==================== LINKS (4-flavor dispatcher) ====================
-
     link: ({ node, nodesToJSX }) => {
       const children = nodesToJSX({ nodes: node.children })
       const url = node.fields.url || '#'
@@ -366,8 +352,6 @@ export function buildConverters({
       return renderLink({ url, children, newTab: false })
     },
 
-    // ==================== QUOTE ====================
-
     quote: ({ node, nodesToJSX }) => {
       const children = nodesToJSX({ nodes: node.children })
       return (
@@ -376,8 +360,6 @@ export function buildConverters({
         </ReaderCalloutBlock>
       )
     },
-
-    // ==================== TABLE ====================
 
     table: ({ node, nodesToJSX }) => {
       const children = nodesToJSX({ nodes: node.children })
@@ -420,13 +402,9 @@ export function buildConverters({
       )
     },
 
-    // ==================== HORIZONTAL RULE ====================
-
     horizontalrule: () => (
       <div className="my-14 mx-auto max-w-xs h-px bg-linear-to-r from-transparent via-text-muted/20 to-transparent" />
     ),
-
-    // ==================== TEXT FORMATTING ====================
 
     text: ({ node }) => {
       let text: ReactNode = node.text
@@ -460,8 +438,6 @@ export function buildConverters({
       return <>{text}</>
     },
 
-    // ==================== UPLOAD (Images) — uses ReaderImageFrame ====================
-
     upload: ({ node }) => {
       if (node.relationTo !== 'media') return null
       const uploadDoc = node.value
@@ -470,8 +446,6 @@ export function buildConverters({
       if (!url) return null
       return <ReaderImageFrame accent={accent} src={url} alt={alt ?? ''} />
     },
-
-    // ==================== CUSTOM BLOCKS ====================
 
     blocks: {
       callout: ({ node }) => {

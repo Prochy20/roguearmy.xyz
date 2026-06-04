@@ -8,9 +8,6 @@ interface VideoEmbedProps {
   title?: string | null
 }
 
-/**
- * Corner bracket decoration component (matches existing theme)
- */
 function Corner({
   position,
   colorClass = 'text-rga-cyan/40',
@@ -35,9 +32,6 @@ function Corner({
   )
 }
 
-/**
- * Platform icon components
- */
 function PlatformIcon({ platform, className = 'w-3 h-3' }: { platform: string; className?: string }) {
 
   switch (platform) {
@@ -80,9 +74,6 @@ function getEmbedUrl(parsed: ParsedVideoUrl, parentDomain: string): string {
   return parsed.embedUrl
 }
 
-/**
- * Get platform-specific accent color classes
- */
 function getPlatformColors(platform: string): { bg: string; text: string; border: string; corner: string; containerBg: string } {
   const colors: Record<string, { bg: string; text: string; border: string; corner: string; containerBg: string }> = {
     youtube: {
@@ -117,10 +108,6 @@ function getPlatformColors(platform: string): { bg: string; text: string; border
   return colors[platform] || { bg: 'bg-rga-cyan/10', text: 'text-rga-cyan', border: 'border-rga-cyan/20', corner: 'text-rga-cyan/40', containerBg: 'bg-rga-cyan/5' }
 }
 
-/**
- * Frontend video embed renderer component.
- * Displays embedded videos with themed styling matching the site design.
- */
 export function VideoEmbed({ url, title }: VideoEmbedProps) {
   const [parentDomain, setParentDomain] = useState<string | null>(null)
 

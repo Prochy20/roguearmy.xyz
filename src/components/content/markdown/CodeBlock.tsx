@@ -8,7 +8,6 @@ interface CodeBlockProps {
   children?: React.ReactNode
 }
 
-// Language display names
 const languageNames: Record<string, string> = {
   js: 'JavaScript',
   javascript: 'JavaScript',
