@@ -105,11 +105,7 @@ export default async function AfkPage() {
             )}
           </section>
 
-          <section className="me-fade me-fade--02 mt-10 sm:mt-14">
-            <ProtocolCaption />
-          </section>
-
-          <section className="me-fade me-fade--03 mt-10 sm:mt-16 lg:mt-24">
+          <section className="me-fade me-fade--02 mt-10 sm:mt-16 lg:mt-24">
             {historyResult.ok ? (
               <SessionHistorySection
                 initialItems={history!.items}
@@ -182,11 +178,3 @@ function OperationalStrip({ handle }: { handle: string }) {
   )
 }
 
-function ProtocolCaption() {
-  return (
-    <p className="font-mono text-[11px] uppercase tracking-[0.28em] text-text-muted">
-      // going AFK applies a role + nickname prefix · reverts when you return active or
-      join any voice channel
-    </p>
-  )
-}
