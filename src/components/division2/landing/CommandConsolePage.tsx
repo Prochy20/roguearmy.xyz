@@ -153,7 +153,7 @@ export function CommandConsolePage({
           translate on both the decoration and the headline column. Top
           clearance is provided by the sticky ribbon above. */}
       <section
-        className="relative overflow-hidden px-4 pt-7 pb-10 sm:px-8 sm:pt-9 sm:pb-12 lg:px-16 lg:pt-10 lg:pb-14 [--scanner-shove:140px] xl:[--scanner-shove:180px] 2xl:[--scanner-shove:220px]"
+        className="relative overflow-hidden border-b border-[rgba(255,255,255,0.06)] px-4 pt-7 pb-10 sm:px-8 sm:pt-9 sm:pb-12 lg:px-16 lg:pt-10 lg:pb-14 [--scanner-shove:140px] xl:[--scanner-shove:180px] 2xl:[--scanner-shove:220px]"
         aria-label="Command Console hero"
       >
         <div
@@ -253,7 +253,7 @@ export function CommandConsolePage({
 
 function Shell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-10 px-4 pb-20 sm:gap-14 sm:px-8 sm:pb-28 lg:px-16 lg:pb-36">
+    <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-10 px-4 pt-20 pb-20 sm:gap-14 sm:px-8 sm:pt-24 sm:pb-28 lg:px-16 lg:pt-28 lg:pb-36">
       {children}
     </div>
   )

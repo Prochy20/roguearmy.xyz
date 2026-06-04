@@ -102,7 +102,7 @@ export function BriefingsPage({
           same scanner-family interaction language. Top clearance is provided
           by the sticky ribbon above (its mt-20 pushes everything below). */}
       <section
-        className="relative overflow-hidden px-4 pt-7 pb-10 sm:px-8 sm:pt-9 sm:pb-12 lg:px-16 lg:pb-14 [--scanner-shove:180px] xl:[--scanner-shove:230px] 2xl:[--scanner-shove:280px]"
+        className="relative overflow-hidden border-b border-[rgba(255,255,255,0.06)] px-4 pt-7 pb-10 sm:px-8 sm:pt-9 sm:pb-12 lg:px-16 lg:pb-14 [--scanner-shove:180px] xl:[--scanner-shove:230px] 2xl:[--scanner-shove:280px]"
         aria-label="Briefings hero"
       >
         <div
@@ -309,7 +309,7 @@ function Section({
 
 function Shell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-10 px-4 pb-20 sm:gap-14 sm:px-8 sm:pb-28 lg:px-16 lg:pb-36">
+    <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-10 px-4 pt-20 pb-20 sm:gap-14 sm:px-8 sm:pt-24 sm:pb-28 lg:px-16 lg:pt-28 lg:pb-36">
       {children}
     </div>
   )
