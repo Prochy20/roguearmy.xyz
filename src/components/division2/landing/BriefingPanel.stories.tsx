@@ -44,6 +44,17 @@ export const Booster: Story = {
     await step('Weekly card title renders', async () => {
       await expect(canvas.getByText(MOCK_BRIEFING_WEEKLY.title)).toBeInTheDocument()
     })
+    await step('Header + dailies subsection link to the archive', async () => {
+      const archiveLinks = canvas.getAllByRole('link', { name: /all briefings/i })
+      expect(archiveLinks.length).toBeGreaterThanOrEqual(2)
+      for (const link of archiveLinks) {
+        expect(link).toHaveAttribute('href', '/division-2/briefings')
+      }
+    })
+    await step('Card CTA opens the specific briefing', async () => {
+      const cardCta = canvas.getByRole('link', { name: /open briefing/i })
+      expect(cardCta).toHaveAttribute('href', MOCK_BRIEFING_WEEKLY.canonicalPath)
+    })
   },
 }
 

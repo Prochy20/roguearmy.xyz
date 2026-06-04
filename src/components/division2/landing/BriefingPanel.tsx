@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { BoosterPerksWidget } from '@/components/division2/briefings/BoosterPerksWidget'
 import { BriefingCard } from '@/components/division2/briefings/BriefingCard'
 import { CyberCorners } from '@/components/ui/CyberCorners'
@@ -67,8 +68,8 @@ export function BriefingPanel({
           label="// LATEST · WEEKLY BRIEFING"
           meta={period}
           cta={{
-            href: briefing.canonicalPath,
-            label: 'READ FULL BRIEFING →',
+            href: '/division-2/briefings',
+            label: 'ALL BRIEFINGS →',
           }}
           accent="cyan"
         />
@@ -84,12 +85,14 @@ export function BriefingPanel({
             )}
           </div>
 
-          <h3
-            className="font-display text-2xl uppercase leading-[1.05] text-text-primary sm:text-3xl"
-            style={{ textShadow: '0 0 18px rgba(0,255,255,0.18)' }}
-          >
-            {briefing.title}
-          </h3>
+          <Link href={briefing.canonicalPath} className="group/title block">
+            <h3
+              className="font-display text-2xl uppercase leading-[1.05] text-text-primary transition-colors group-hover/title:text-rga-cyan sm:text-3xl"
+              style={{ textShadow: '0 0 18px rgba(0,255,255,0.18)' }}
+            >
+              {briefing.title}
+            </h3>
+          </Link>
 
           {briefing.perex && (
             <p className="line-clamp-3 max-w-3xl text-sm leading-relaxed text-text-secondary sm:text-base">
@@ -115,6 +118,13 @@ export function BriefingPanel({
               ))}
             </ul>
           )}
+
+          <Link
+            href={briefing.canonicalPath}
+            className="self-end font-mono text-[10px] uppercase tracking-[0.3em] text-rga-cyan transition-colors hover:text-text-primary"
+          >
+            OPEN BRIEFING →
+          </Link>
         </div>
       </CyberCorners>
 
@@ -122,7 +132,7 @@ export function BriefingPanel({
         <div className="flex flex-col gap-4 pt-2 sm:gap-5">
           <SubsectionHeader
             label="// DAILY BRIEFINGS"
-            meta={`${String(dailyItems.length).padStart(2, '0')} FILES`}
+            cta={{ href: '/division-2/briefings', label: 'ALL BRIEFINGS →' }}
             accent="mod"
           />
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
@@ -150,10 +160,12 @@ export function BriefingPanel({
 function SubsectionHeader({
   label,
   meta,
+  cta,
   accent,
 }: {
   label: string
   meta?: string
+  cta?: { href: string; label: string }
   accent: 'mod' | 'magenta'
 }) {
   const accentClass =
@@ -163,11 +175,18 @@ function SubsectionHeader({
       <span className={`font-mono text-[10px] tracking-[0.32em] ${accentClass}`}>
         {label}
       </span>
-      {meta && (
+      {cta ? (
+        <Link
+          href={cta.href}
+          className={`font-mono text-[10px] uppercase tracking-[0.3em] ${accentClass} transition-colors hover:text-text-primary`}
+        >
+          {cta.label}
+        </Link>
+      ) : meta ? (
         <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-text-muted/80">
           {meta}
         </span>
-      )}
+      ) : null}
     </div>
   )
 }

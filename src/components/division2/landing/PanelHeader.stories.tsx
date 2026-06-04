@@ -8,7 +8,7 @@ const meta = {
     code: 'SEC_03',
     label: '// LATEST · WEEKLY BRIEFING',
     meta: 'MON 12 MAY',
-    cta: { href: '/division-2/briefings', label: 'OPEN BRIEFINGS →' },
+    cta: { href: '/division-2/briefings', label: 'ALL BRIEFINGS →' },
     accent: 'cyan',
     external: false,
   },
@@ -51,7 +51,7 @@ export const Gallery: Story = {
         code="SEC_03"
         label="// LATEST · WEEKLY BRIEFING"
         meta="MON 12 MAY"
-        cta={{ href: '/division-2/briefings', label: 'OPEN BRIEFINGS →' }}
+        cta={{ href: '/division-2/briefings', label: 'ALL BRIEFINGS →' }}
         accent="cyan"
       />
       <PanelHeader
