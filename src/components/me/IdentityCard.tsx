@@ -34,17 +34,17 @@ interface IdentityCardProps {
 
 type BadgeKey = PrimaryBadge
 
-type CornerColor = 'green' | 'cyan' | 'magenta' | 'gray'
+type CornerColor = 'green' | 'cyan' | 'magenta' | 'gray' | 'dev'
 
 const BADGE_THEME: Record<
   BadgeKey,
   { hex: string; glow: string; eyebrow: string; corner: CornerColor }
 > = {
   DEVELOPER: {
-    hex: '#00FFFF',
-    glow: 'rgba(0,255,255,0.55)',
+    hex: '#CCFF00',
+    glow: 'rgba(204,255,0,0.55)',
     eyebrow: 'TIER · CORE ENGINEERING',
-    corner: 'cyan',
+    corner: 'dev',
   },
   STAFF: {
     hex: '#00FF41',
@@ -276,4 +276,5 @@ const HEX_BY_CORNER: Record<CornerColor, string> = {
   cyan: '#00FFFF',
   magenta: '#FF00FF',
   gray: '#9aa3a6',
+  dev: '#CCFF00',
 }
