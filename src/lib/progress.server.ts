@@ -14,10 +14,6 @@ import { cache } from 'react'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 
-// ============================================================================
-// TYPES
-// ============================================================================
-
 export interface ArticleProgress {
   articleId: string
   progress: number
@@ -35,10 +31,6 @@ export interface BriefingProgress {
   lastVisitedAt: Date
   timeSpent: number
 }
-
-// ============================================================================
-// ARTICLE PROGRESS
-// ============================================================================
 
 export async function getMemberProgress(
   memberId: string,
@@ -122,10 +114,6 @@ export const getMemberProgressMap = cache(async function getMemberProgressMap(
   const progress = await getMemberProgress(memberId, articleIds)
   return new Map(progress.map((p) => [p.articleId, p]))
 })
-
-// ============================================================================
-// BRIEFING PROGRESS
-// ============================================================================
 
 export async function getMemberBriefingProgress(
   memberId: string,

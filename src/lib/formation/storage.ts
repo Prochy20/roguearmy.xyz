@@ -127,10 +127,6 @@ export function dismissSuggestion(
   return { ...current, dismissedSuggestion: { discordId, at: now } }
 }
 
-/* ──────────────────────────────────────────────────────────────────────── */
-/* Validators                                                                 */
-/* ──────────────────────────────────────────────────────────────────────── */
-
 function validatePoint(value: unknown): PointDesignation | null {
   if (!value || typeof value !== 'object') return null
   const v = value as Record<string, unknown>

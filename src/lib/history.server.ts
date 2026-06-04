@@ -9,10 +9,6 @@ import config from '@payload-config'
 import type { Article as PayloadArticle } from '@/payload-types'
 import { type Article, transformPayloadArticle } from './articles'
 
-// ============================================================================
-// TYPES
-// ============================================================================
-
 export type HistoryStatusFilter = 'all' | 'completed' | 'in_progress'
 
 export interface HistoryEntry {
@@ -28,10 +24,6 @@ export interface ReadingHistoryResult {
   hasMore: boolean
   total: number
 }
-
-// ============================================================================
-// DATA FETCHING
-// ============================================================================
 
 /**
  * Get reading history for a member

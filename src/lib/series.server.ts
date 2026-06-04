@@ -16,10 +16,6 @@ import type {
 import { transformPayloadArticle, mapPayloadColorToTint, type Article, type ArticleImage, type TintColor } from './articles'
 import type { SeriesFilterOptions, SeriesWithFilterData } from './series'
 
-// ============================================================================
-// TYPES
-// ============================================================================
-
 export interface SeriesWithArticles {
   id: string
   name: string
@@ -44,10 +40,6 @@ export interface SeriesWithProgress extends SeriesWithCount {
   gameIds: string[]
   topicIds: string[]
 }
-
-// ============================================================================
-// DATA FETCHING
-// ============================================================================
 
 /**
  * Get all series with article counts

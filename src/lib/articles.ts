@@ -13,10 +13,6 @@ import type {
   Media as PayloadMedia,
 } from '@/payload-types'
 
-// ============================================================================
-// TYPES
-// ============================================================================
-
 /** Tint colors used for styling across the frontend */
 export type TintColor = 'orange' | 'red' | 'cyan' | 'green' | 'magenta' | 'blue' | 'yellow' | 'teal' | 'purple' | 'pink'
 
@@ -156,10 +152,6 @@ export interface SeriesNavigation {
   next: Article | null
 }
 
-// ============================================================================
-// COLOR MAPPING
-// ============================================================================
-
 /**
  * Map Payload color values to frontend tint colors
  */
@@ -271,10 +263,6 @@ export function getTintClasses(tint: TintColor) {
 // Legacy alias for backwards compatibility
 export const getCategoryTintClasses = getTintClasses
 
-// ============================================================================
-// URL HELPERS
-// ============================================================================
-
 /**
  * Generate the URL for an article based on its topic and slug
  */
@@ -288,10 +276,6 @@ export function getArticleUrl(article: { slug: string; topic: { slug: string } }
 export function getSeriesUrl(series: { slug: string }): string {
   return `/blog/series/${series.slug}`
 }
-
-// ============================================================================
-// TYPE TRANSFORMERS
-// ============================================================================
 
 /**
  * Transform Payload article to frontend Article type
@@ -358,10 +342,6 @@ export function transformPayloadArticle(
     visibility: (payloadArticle.visibility as ArticleVisibility) || 'members_only',
   }
 }
-
-// ============================================================================
-// UTILITY FUNCTIONS
-// ============================================================================
 
 /** Progress data structure (mirrors progress.server.ts for client use) */
 export interface ArticleProgressData {
