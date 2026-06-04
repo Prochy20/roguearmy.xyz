@@ -105,13 +105,19 @@ export function BriefingsPage({
         className="relative overflow-hidden border-b border-[rgba(255,255,255,0.06)] px-4 pt-7 pb-10 sm:px-8 sm:pt-9 sm:pb-12 lg:px-16 lg:pb-14 [--scanner-shove:180px] xl:[--scanner-shove:230px] 2xl:[--scanner-shove:280px]"
         aria-label="Briefings hero"
       >
+        {/* Vertical anchor — the landmark cluster (BASE OF OPS, CAPITOL,
+            DISTRICT UNION, etc.) sits at y≈40-67% of the full square map.
+            Pulling the container up by ~110-200px crops the visually noisy
+            northern street labels and lifts the pins out of the bottom
+            fade band, so they read as the focal point. The hover zone
+            must mirror these offsets exactly to stay under the visible map. */}
         <div
           aria-hidden
-          className="rga-scanner-hover-zone pointer-events-auto absolute top-2 -right-[300px] hidden aspect-square w-[600px] rounded-full lg:block xl:top-4 xl:-right-[380px] xl:w-[760px] 2xl:top-6 2xl:-right-[460px] 2xl:w-[920px]"
+          className="rga-scanner-hover-zone pointer-events-auto absolute -top-28 -right-[300px] hidden aspect-square w-[600px] rounded-full lg:block xl:-top-36 xl:-right-[380px] xl:w-[760px] 2xl:-top-48 2xl:-right-[460px] 2xl:w-[920px]"
         />
 
         <WashingtonMap
-          className="absolute top-2 -right-[300px] transition-transform duration-500 ease-out will-change-transform xl:top-4 xl:-right-[380px] 2xl:top-6 2xl:-right-[460px] motion-safe:[section:has(.rga-scanner-hover-zone:hover)_&]:translate-x-[calc(-1*var(--scanner-shove))]"
+          className="absolute -top-28 -right-[300px] transition-transform duration-500 ease-out will-change-transform xl:-top-36 xl:-right-[380px] 2xl:-top-48 2xl:-right-[460px] motion-safe:[section:has(.rga-scanner-hover-zone:hover)_&]:translate-x-[calc(-1*var(--scanner-shove))]"
         />
 
         {/* Bottom edge fade — anchored to the section's bottom, NOT the
