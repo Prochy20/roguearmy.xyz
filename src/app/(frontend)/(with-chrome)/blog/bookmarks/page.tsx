@@ -20,16 +20,13 @@ export default function BookmarksPage() {
   const { bookmarks, isLoading: bookmarksLoading } = useBookmarks()
   const { viewMode, setViewMode, isHydrated } = useViewMode()
 
-  // Extract article IDs for progress fetching
   const articleIds = useMemo(
     () => bookmarks.map((b) => b.article.id),
     [bookmarks]
   )
 
-  // Fetch progress for all bookmarked articles
   const { progressMap, isLoading: progressLoading } = useBookmarkProgress(articleIds)
 
-  // Transform bookmarks to Article format
   const articles = useMemo(
     () =>
       bookmarks
@@ -40,14 +37,12 @@ export default function BookmarksPage() {
 
   const isLoading = bookmarksLoading || progressLoading
 
-  // Grid classes based on view mode
   const gridClasses = cn(
     viewMode === 'featured' && 'grid grid-cols-1 md:grid-cols-2 gap-6',
     viewMode === 'grid' && 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-fr',
     viewMode === 'list' && 'flex flex-col gap-3'
   )
 
-  // Render the appropriate card component based on view mode
   const renderCard = (article: Article, index: number) => {
     const cardProgress = progressMap[article.id] || null
 

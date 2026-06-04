@@ -8,7 +8,6 @@ import type { ViewMode } from '@/hooks/useViewMode'
 const STORAGE_KEY = 'rga-article-view-mode'
 
 export default function BlogLoading() {
-  // Read view mode from localStorage to match user's preference
   const [viewMode, setViewMode] = useState<ViewMode>('featured')
 
   useEffect(() => {

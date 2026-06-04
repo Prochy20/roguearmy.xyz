@@ -24,13 +24,11 @@ export default async function SeriesDetailPage({ params }: SeriesDetailPageProps
 
   const memberId = await getActiveMemberId()
 
-  // Get progress for all articles in this series (only for authenticated users)
   const articleIds = series.articles.map((a) => a.id)
   const progressMap = memberId
     ? await getMemberProgressMap(memberId, articleIds)
     : new Map()
 
-  // Calculate completion count
   let completedCount = 0
   for (const progress of progressMap.values()) {
     if (progress.completed) {

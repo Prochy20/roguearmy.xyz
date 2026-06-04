@@ -37,10 +37,8 @@ export default async function BlogHistoryRoute({ searchParams }: PageProps) {
 
   const statusFilter = parseStatusFilter(params.status)
 
-  // Fetch reading history with status filter
   const { entries } = await getReadingHistory(memberId, { limit: 100, status: statusFilter })
 
-  // Transform entries to articles and build progress map
   const articles = entries.map((entry) => entry.article)
   const progress = Object.fromEntries(
     entries.map((entry) => [

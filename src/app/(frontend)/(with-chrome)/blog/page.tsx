@@ -5,14 +5,12 @@ import { getActiveMemberId } from '@/lib/auth/session.server'
 import { getMemberProgressMap } from '@/lib/progress.server'
 
 export default async function BlogPage() {
-  // Fetch articles and filter options from Payload
   const [articles, filterOptions, memberId] = await Promise.all([
     getPublishedArticles(),
     getFilterOptions(),
     getActiveMemberId(),
   ])
 
-  // Fetch progress for all articles if member is authenticated
   const articleIds = articles.map((a) => a.id)
   const progressMap = memberId
     ? await getMemberProgressMap(memberId, articleIds)
