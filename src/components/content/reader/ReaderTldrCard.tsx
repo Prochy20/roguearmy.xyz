@@ -30,7 +30,6 @@ export function ReaderTldrCard({ accent, highlights }: ReaderTldrCardProps) {
       aria-label="Key takeaways"
       className={`relative border ${a.borderFaint} bg-void/45 p-5 backdrop-blur-sm sm:p-7`}
     >
-      {/* Corner ticks */}
       <CornerTick position="tl" accent={accent} />
       <CornerTick position="tr" accent={accent} />
       <CornerTick position="bl" accent={accent} />

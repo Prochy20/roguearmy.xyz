@@ -81,7 +81,6 @@ export function ReaderReadingWidget({
         // READING
       </span>
 
-      {/* PROGRESS */}
       <div className="flex flex-col gap-1.5">
         <div className="flex items-baseline justify-between font-mono text-[9px] uppercase tracking-[0.3em] text-text-muted">
           <span>PROGRESS</span>
@@ -113,7 +112,6 @@ export function ReaderReadingWidget({
         </div>
       </div>
 
-      {/* TIME LEFT */}
       <div className="flex items-baseline justify-between font-mono text-[9px] uppercase tracking-[0.3em] text-text-muted">
         <span>TIME LEFT</span>
         <span className="text-text-secondary tabular-nums">
@@ -121,7 +119,6 @@ export function ReaderReadingWidget({
         </span>
       </div>
 
-      {/* WORDS */}
       <div className="flex items-baseline justify-between font-mono text-[9px] uppercase tracking-[0.3em] text-text-muted">
         <span>WORDS</span>
         <span className="text-text-secondary tabular-nums">

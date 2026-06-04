@@ -10,10 +10,6 @@ interface TOCItemProps {
   onClick: (id: string) => void
 }
 
-/**
- * Individual TOC link with cyberpunk styling.
- * Green active state, cyan hover, left accent line.
- */
 export const TOCItem = forwardRef<HTMLButtonElement, TOCItemProps>(
   function TOCItem({ heading, isActive, onClick }, ref) {
     return (
@@ -27,7 +23,6 @@ export const TOCItem = forwardRef<HTMLButtonElement, TOCItemProps>(
           // Indentation for H2 and H3 (H1 is top level)
           heading.level === 2 && 'ml-3',
           heading.level === 3 && 'ml-6',
-          // Active state
           isActive
             ? 'text-rga-green border-l-rga-green'
             : 'text-text-secondary/70 border-l-transparent hover:text-rga-cyan hover:border-l-rga-cyan/50'
@@ -43,7 +38,6 @@ export const TOCItem = forwardRef<HTMLButtonElement, TOCItemProps>(
           {heading.text}
         </span>
 
-        {/* Active glow effect */}
         {isActive && (
           <span
             className="absolute left-0 top-0 bottom-0 w-0.5 bg-rga-green blur-sm"

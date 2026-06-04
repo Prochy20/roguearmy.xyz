@@ -13,9 +13,6 @@ interface MobileTOCProps {
   className?: string
 }
 
-/**
- * Corner bracket decoration component (matches table/callout style)
- */
 function Corner({ position }: { position: 'tl' | 'tr' | 'bl' | 'br' }) {
   const rotations = {
     tl: '',
@@ -54,21 +51,18 @@ export function MobileTOC({ headings, className }: MobileTOCProps) {
   const [isOpen, setIsOpen] = useState(false)
   const { activeId, scrollToHeading } = useTOC({ headings })
 
-  // Don't render if no headings
   if (headings.length === 0) {
     return null
   }
 
   const handleItemClick = (id: string) => {
     scrollToHeading(id)
-    // Auto-close after selection
     setIsOpen(false)
   }
 
   return (
     <div className={cn('lg:hidden', className)}>
       <div className="relative">
-        {/* Corner brackets */}
         <Corner position="tl" />
         <Corner position="tr" />
         <Corner position="bl" />
@@ -82,7 +76,6 @@ export function MobileTOC({ headings, className }: MobileTOCProps) {
           </span>
         </div>
 
-        {/* Toggle button */}
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
@@ -106,7 +99,6 @@ export function MobileTOC({ headings, className }: MobileTOCProps) {
           </motion.span>
         </button>
 
-        {/* Expandable content */}
         <AnimatePresence>
           {isOpen && (
             <motion.div

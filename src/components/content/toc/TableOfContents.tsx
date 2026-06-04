@@ -11,7 +11,6 @@ import { TOCItem } from './TOCItem'
 interface TableOfContentsProps {
   headings: TOCHeading[]
   className?: string
-  /** Ref to article element - TOC shows only when article is in viewport */
   articleRef?: React.RefObject<HTMLElement | null>
 }
 
@@ -34,13 +33,7 @@ function Corner({ position }: { position: 'tl' | 'tr' | 'bl' | 'br' }) {
 
   return (
     <div className={`absolute ${positions[position]} ${rotations[position]}`}>
-      <svg
-        width="12"
-        height="12"
-        viewBox="0 0 12 12"
-        fill="none"
-        className="text-rga-green/40"
-      >
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="text-rga-green/40">
         <path d="M0 12V0H12" stroke="currentColor" strokeWidth="1.5" fill="none" />
       </svg>
     </div>
@@ -139,12 +132,9 @@ export function TableOfContents({ headings, className, articleRef }: TableOfCont
     const containerHeight = container.clientHeight
     const scrollTop = container.scrollTop
 
-    // Check if item is outside visible area
     if (itemTopInContainer < scrollTop) {
-      // Item is above visible area - scroll up
       container.scrollTo({ top: Math.max(0, itemTopInContainer - 8), behavior: 'smooth' })
     } else if (itemTopInContainer + itemHeight > scrollTop + containerHeight) {
-      // Item is below visible area - scroll down
       container.scrollTo({
         top: itemTopInContainer + itemHeight - containerHeight + 8,
         behavior: 'smooth',
@@ -152,7 +142,6 @@ export function TableOfContents({ headings, className, articleRef }: TableOfCont
     }
   }, [activeId])
 
-  // Register item ref
   const setItemRef = (id: string, el: HTMLButtonElement | null) => {
     if (el) {
       itemRefs.current.set(id, el)
@@ -166,7 +155,7 @@ export function TableOfContents({ headings, className, articleRef }: TableOfCont
       className={cn(
         // Fixed positioning in left column, top-aligned
         'fixed z-50 w-[200px] hidden lg:block',
-        className
+        className,
       )}
       style={{
         // Center horizontally in left column
@@ -209,10 +198,7 @@ export function TableOfContents({ headings, className, articleRef }: TableOfCont
             <div className="my-3 h-px bg-rga-green/10" />
 
             {/* Scrollable TOC list */}
-            <div
-              ref={scrollContainerRef}
-              className="max-h-[50vh] overflow-y-auto scrollbar-hide"
-            >
+            <div ref={scrollContainerRef} className="max-h-[50vh] overflow-y-auto scrollbar-hide">
               <div className="space-y-0.5">
                 {headings.map((heading) => (
                   <TOCItem

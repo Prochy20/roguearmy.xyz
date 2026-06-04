@@ -41,7 +41,6 @@ export function useTOC({
     }
   }, [])
 
-  // Initialize with first heading if available
   useEffect(() => {
     if (headings.length > 0 && !activeId) {
       setActiveId(headings[0].id)
@@ -51,13 +50,11 @@ export function useTOC({
   useEffect(() => {
     if (headings.length === 0) return
 
-    // Cleanup previous observer
     if (observerRef.current) {
       observerRef.current.disconnect()
     }
 
     const callback: IntersectionObserverCallback = (entries) => {
-      // Update the map with new intersection states
       entries.forEach((entry) => {
         headingElementsRef.current.set(entry.target.id, entry)
       })
@@ -105,7 +102,6 @@ export function useTOC({
       threshold: [0, 0.5, 1],
     })
 
-    // Observe all heading elements
     headings.forEach((heading) => {
       const element = document.getElementById(heading.id)
       if (element) {
@@ -126,7 +122,6 @@ export function useTOC({
   const scrollToHeading = useCallback((id: string) => {
     const element = document.getElementById(id)
     if (element) {
-      // Smooth scroll to the element
       element.scrollIntoView({ behavior: 'smooth', block: 'start' })
       // Immediately set active to provide instant feedback
       setActiveId(id)

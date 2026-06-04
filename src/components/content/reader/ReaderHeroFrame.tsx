@@ -62,7 +62,6 @@ export function ReaderHeroFrame({
           fileNumber={fileNumber}
         />
 
-        {/* Top-left documentary plate */}
         <div
           className={`absolute top-3 left-3 flex items-center gap-2 border ${a.borderSoft} bg-void/70 px-2 py-1 font-mono text-[9px] uppercase tracking-[0.32em] backdrop-blur-sm sm:top-4 sm:left-4`}
         >
@@ -72,7 +71,6 @@ export function ReaderHeroFrame({
           <span className="text-text-muted">{kindLabel}</span>
         </div>
 
-        {/* Bottom film-strip metadata bar */}
         <div
           className={`absolute inset-x-0 bottom-0 flex items-center justify-between border-t ${a.borderSoft} bg-void/80 px-3 py-2 font-mono text-[9px] uppercase tracking-[0.32em] backdrop-blur-sm sm:px-5 sm:py-3 sm:text-[10px]`}
         >
