@@ -57,7 +57,6 @@ export default function FormationPreviewPage() {
           title="TARGETING LOCK"
         />
 
-        {/* Control panel */}
         <div className="mb-10 grid grid-cols-1 gap-4 border border-[rgba(255,255,255,0.08)] bg-[rgba(0,0,0,0.4)] p-5 sm:mb-14 sm:p-6 lg:grid-cols-[1fr_auto] lg:gap-8">
           <div className="flex flex-col gap-3">
             <div className="font-mono text-[10px] tracking-[0.4em] uppercase text-rga-green/80">
@@ -137,7 +136,6 @@ export default function FormationPreviewPage() {
           </div>
         </div>
 
-        {/* Above-the-fold preview */}
         <PreviewFrame mobile={mobile}>
           <FormationBlock
             status={variant === 'relieved' ? 'relieved' : variant === 'unranked' ? 'standby' : 'live'}
@@ -177,19 +175,16 @@ export default function FormationPreviewPage() {
             <MiniPodium entries={MOCK_TOP3} myRank={MOCK_ME.rank} />
           </div>
 
-          {/* Sample of existing list rows would render here */}
           <div className="mt-10 border border-dashed border-[rgba(255,255,255,0.08)] bg-[rgba(0,0,0,0.2)] p-6 font-mono text-xs uppercase tracking-[0.3em] text-text-muted">
             // EXISTING LEADERBOARD LIST RENDERS HERE — UNCHANGED
           </div>
         </PreviewFrame>
 
-        {/* Component gallery — additional state variants stacked */}
         <section className="mt-20 flex flex-col gap-12">
           <h2 className="font-display text-2xl uppercase tracking-[0.005em] text-text-primary sm:text-3xl">
             // COMPONENT GALLERY
           </h2>
 
-          {/* TierBand — extra variants */}
           <div className="flex flex-col gap-4">
             <div className="font-mono text-[10px] tracking-[0.4em] uppercase text-text-muted">
               TIER BAND · VARIANTS
@@ -220,7 +215,6 @@ export default function FormationPreviewPage() {
             />
           </div>
 
-          {/* ProgressStrip — variants */}
           <div className="flex flex-col gap-3">
             <div className="font-mono text-[10px] tracking-[0.4em] uppercase text-text-muted">
               PROGRESS STRIP · WINDOW VARIANTS
@@ -239,7 +233,6 @@ export default function FormationPreviewPage() {
             </div>
           </div>
 
-          {/* Roster modal preview thumbnail */}
           <div className="flex flex-col gap-3">
             <div className="font-mono text-[10px] tracking-[0.4em] uppercase text-text-muted">
               ROSTER MODAL · TRIGGER

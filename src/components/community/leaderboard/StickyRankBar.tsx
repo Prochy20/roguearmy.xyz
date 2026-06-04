@@ -29,7 +29,6 @@ export function StickyRankBar({ me, levelLabel, nextLevelLabel, fail }: StickyRa
   const [expanded, setExpanded] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
-  // Click outside to collapse.
   useEffect(() => {
     if (!expanded) return
     const onDown = (e: MouseEvent) => {
@@ -40,7 +39,6 @@ export function StickyRankBar({ me, levelLabel, nextLevelLabel, fail }: StickyRa
     return () => window.removeEventListener('mousedown', onDown)
   }, [expanded])
 
-  // Esc to collapse.
   useEffect(() => {
     if (!expanded) return
     const onKey = (e: KeyboardEvent) => {
@@ -60,7 +58,6 @@ export function StickyRankBar({ me, levelLabel, nextLevelLabel, fail }: StickyRa
       className="pointer-events-none fixed inset-x-0 bottom-0 z-40 flex justify-center px-3 pb-3 sm:px-6 sm:pb-5"
     >
       <div className="pointer-events-auto w-full max-w-[820px]">
-        {/* Expanded strip drawer */}
         <div
           className={
             'overflow-hidden border border-b-0 border-rga-green/30 bg-[rgba(0,0,0,0.92)] backdrop-blur-md transition-[max-height,opacity] duration-300 ease-out ' +
@@ -74,7 +71,6 @@ export function StickyRankBar({ me, levelLabel, nextLevelLabel, fail }: StickyRa
           <AroundMeStrip myRank={me.rank} myDiscordId={me.discordId} active={expanded} />
         </div>
 
-        {/* Collapsed handle / always visible */}
         <button
           type="button"
           onClick={() => setExpanded((v) => !v)}
@@ -85,20 +81,17 @@ export function StickyRankBar({ me, levelLabel, nextLevelLabel, fail }: StickyRa
           aria-expanded={expanded}
           aria-label={expanded ? 'Collapse rank details' : 'Expand to see your cohort'}
         >
-          {/* Pulse dot */}
           <span
             aria-hidden
             className="inline-block h-2 w-2 shrink-0 rounded-[1px] bg-rga-green shadow-[0_0_10px_#00FF41] animate-pulse"
           />
 
-          {/* Eyebrow */}
           <span className="hidden font-mono text-[9px] tracking-[0.4em] uppercase text-rga-green/70 sm:inline">
             YOU
           </span>
 
           <span className="hidden h-3 w-px bg-[rgba(255,255,255,0.12)] sm:inline-block" aria-hidden />
 
-          {/* Rank */}
           <Field label="RANK" accent="green">
             <span className="font-display tabular-nums text-rga-green [text-shadow:0_0_12px_rgba(0,255,65,0.55)]" style={{ fontSize: 'clamp(20px, 2.4vw, 28px)' }}>
               {`#${String(me.rank).padStart(2, '0')}`}
@@ -107,7 +100,6 @@ export function StickyRankBar({ me, levelLabel, nextLevelLabel, fail }: StickyRa
 
           <span className="h-3 w-px bg-[rgba(255,255,255,0.12)]" aria-hidden />
 
-          {/* Level + optional label */}
           <Field label="LV" accent="cyan">
             <span className="flex items-baseline gap-2">
               <span className="font-display tabular-nums text-rga-cyan [text-shadow:0_0_10px_rgba(0,255,255,0.55)]" style={{ fontSize: 'clamp(18px, 2.2vw, 26px)' }}>
@@ -123,14 +115,12 @@ export function StickyRankBar({ me, levelLabel, nextLevelLabel, fail }: StickyRa
 
           <span className="h-3 w-px bg-[rgba(255,255,255,0.12)]" aria-hidden />
 
-          {/* XP */}
           <Field label="XP" accent="muted">
             <span className="font-mono tabular-nums text-text-primary text-sm sm:text-base">
               {me.xp.toLocaleString()}
             </span>
           </Field>
 
-          {/* Chevron */}
           <span className="ml-auto flex shrink-0 items-center gap-2 font-mono text-[9px] tracking-[0.35em] uppercase text-text-muted">
             <span className="hidden sm:inline">{expanded ? 'CLOSE' : 'COHORT'}</span>
             <ChevronUp

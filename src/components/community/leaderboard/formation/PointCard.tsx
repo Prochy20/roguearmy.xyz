@@ -154,7 +154,6 @@ function AvatarFrame({ entry, state, color }: AvatarFrameProps) {
             tone.shadow
           }
         >
-          {/* The avatar image itself */}
           <Image
             src={leaderboardAvatarSrc(entry)}
             alt={entry.displayName}
@@ -256,7 +255,6 @@ function BackupTargets({
               className="absolute inset-y-2 left-0 w-px bg-rga-green/0 transition-all group-hover/tgt:bg-rga-green group-hover/tgt:shadow-[0_0_8px_#00FF41]"
             />
 
-            {/* tiny avatar */}
             <div className="relative h-8 w-8 shrink-0 overflow-hidden border border-[rgba(255,255,255,0.12)]">
               <Image
                 src={leaderboardAvatarSrc(s)}
@@ -519,7 +517,6 @@ function SuggestCard({
 }: SuggestCardProps) {
   return (
     <article className="group/sug relative border border-rga-cyan/20 bg-[rgba(0,0,0,0.55)] p-5 transition-all duration-300 hover:border-rga-cyan/40 hover:shadow-[0_0_48px_rgba(0,255,255,0.12)] sm:p-7 lg:p-8">
-      {/* Eyebrow */}
       <div className="mb-5 flex items-center justify-between gap-4 font-mono text-[10px] tracking-[0.4em] uppercase">
         <div className="flex items-center gap-2 text-rga-cyan/80">
           <span aria-hidden className="inline-block h-1 w-3 bg-rga-cyan shadow-[0_0_6px_#00FFFF] animate-pulse" />
@@ -589,7 +586,6 @@ function SuggestCard({
             </BriefSection>
           </div>
 
-          {/* CTAs */}
           <div className="flex flex-col gap-3 sm:flex-row">
             <button
               type="button"
@@ -671,7 +667,6 @@ function RelievedCard({
           <span className="text-text-secondary">{relievedAgo}</span>
         </div>
 
-        {/* Big headline */}
         <h3
           className="mb-5 font-display uppercase leading-[0.9] tracking-[0.005em] text-text-primary"
           style={{ fontSize: 'clamp(36px, 5vw, 64px)' }}
@@ -761,7 +756,6 @@ interface TopCardProps {
 function TopCard({ rearGuard, rearGap, rearLevelLabel }: TopCardProps) {
   return (
     <article className="relative border border-rga-green/35 bg-[rgba(0,40,8,0.25)] p-5 shadow-[inset_0_0_64px_rgba(0,255,65,0.07)] sm:p-7 lg:p-8">
-      {/* Eyebrow */}
       <div className="mb-5 flex items-center justify-between gap-4 font-mono text-[10px] tracking-[0.4em] uppercase">
         <div className="flex items-center gap-2 text-rga-green">
           <span aria-hidden className="inline-block h-1 w-3 bg-rga-green animate-pulse shadow-[0_0_8px_#00FF41]" />

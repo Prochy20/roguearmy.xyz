@@ -53,7 +53,6 @@ export function RosterModal({
   const [query, setQuery] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
 
-  // Esc closes
   useEffect(() => {
     if (!open) return
     const onKey = (e: KeyboardEvent) => {
@@ -63,7 +62,6 @@ export function RosterModal({
     return () => window.removeEventListener('keydown', onKey)
   }, [open, onClose])
 
-  // Auto-focus search on open
   useEffect(() => {
     if (open) {
       setQuery('')
