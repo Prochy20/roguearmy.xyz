@@ -47,6 +47,14 @@ export async function GET(
     )
   }
 
+  // Trello shortlinks are 8 chars; full IDs are 24-char hex.
+  if (!/^[a-zA-Z0-9]{8,24}$/.test(cardId)) {
+    return NextResponse.json(
+      { error: 'Invalid card ID' },
+      { status: 400 }
+    )
+  }
+
   try {
     // Fetch card from Trello API (public boards don't need API key)
     const trelloUrl = new URL(`https://api.trello.com/1/cards/${cardId}`)
