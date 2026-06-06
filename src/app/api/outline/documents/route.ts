@@ -34,7 +34,7 @@ export async function GET() {
   } catch (error) {
     console.error('Error fetching Outline documents:', error)
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to fetch documents' },
+      { error: 'Failed to fetch documents' },
       { status: 500 },
     )
   }
