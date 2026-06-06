@@ -45,3 +45,8 @@ export const COMMUNITY_ROOT: TrailSegment = {
   label: 'Community',
   href: '/community',
 }
+
+export const ME_ROOT: TrailSegment = {
+  label: 'Operative File',
+  href: '/me',
+}
