@@ -100,7 +100,12 @@ async function expandArticles(
   if (ids.length === 0) return new Map()
   const result = await payload.find({
     collection: 'articles',
-    where: { id: { in: ids } },
+    where: {
+      and: [
+        { id: { in: ids } },
+        { _status: { equals: 'published' } },
+      ],
+    },
     limit: ids.length,
     depth: 2,
   })

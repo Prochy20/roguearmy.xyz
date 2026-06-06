@@ -115,10 +115,26 @@ export async function POST(request: NextRequest) {
   const payload = await getPayload({ config })
 
   if (targetType === 'article') {
-    try {
-      await payload.findByID({ collection: 'articles', id: targetId })
-    } catch {
+    const articleResult = await payload.find({
+      collection: 'articles',
+      where: {
+        and: [
+          { id: { equals: targetId } },
+          { _status: { equals: 'published' } },
+        ],
+      },
+      limit: 1,
+      depth: 0,
+    })
+    const article = articleResult.docs[0]
+    if (!article) {
       return NextResponse.json({ error: 'Article not found' }, { status: 404 })
+    }
+    if (article.visibility === 'members_only' && !memberId) {
+      return NextResponse.json(
+        { error: 'Members-only article' },
+        { status: 403 },
+      )
     }
   } else {
     const result = await fetchBriefingById(targetId)

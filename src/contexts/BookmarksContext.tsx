@@ -6,6 +6,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from 'react'
@@ -76,6 +77,14 @@ export function BookmarksProvider({
     [bookmarkedKeys],
   )
 
+  // Refs so toggleBookmark stays stable across renders.
+  const bookmarksRef = useRef(bookmarks)
+  const bookmarkedKeysRef = useRef(bookmarkedKeys)
+  useEffect(() => {
+    bookmarksRef.current = bookmarks
+    bookmarkedKeysRef.current = bookmarkedKeys
+  }, [bookmarks, bookmarkedKeys])
+
   const refetch = useCallback(async () => {
     const response = await fetch('/api/member/bookmarks')
     if (response.ok) {
@@ -87,32 +96,40 @@ export function BookmarksProvider({
   const toggleBookmark = useCallback(
     async (targetType: BookmarkTargetType, targetId: string) => {
       const key = bookmarkKey(targetType, targetId)
-      // Functional setState reads the latest bookmarks without needing them
-      // in the dep array, so toggleBookmark stays stable across renders
-      // (no ref mirror required).
-      let wasBookmarked = false
-      setBookmarks((prev) => {
-        wasBookmarked = prev.some(
-          (b) => bookmarkKey(b.targetType, b.target.id) === key,
+      const wasBookmarked = bookmarkedKeysRef.current.has(key)
+      const previousBookmarks = bookmarksRef.current
+
+      if (wasBookmarked) {
+        setBookmarks((prev) =>
+          prev.filter((b) => bookmarkKey(b.targetType, b.target.id) !== key),
         )
-        return wasBookmarked
-          ? prev.filter((b) => bookmarkKey(b.targetType, b.target.id) !== key)
-          : prev
-      })
+      }
 
       const method = wasBookmarked ? 'DELETE' : 'POST'
+      let serverOk = false
       try {
-        await fetch('/api/member/bookmarks', {
+        const response = await fetch('/api/member/bookmarks', {
           method,
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ targetType, targetId }),
         })
+        // 409 (already-bookmarked / already-deleted) is benign — refetch reconciles.
+        serverOk = response.ok || response.status === 409
+        if (!serverOk) {
+          console.error(
+            `Bookmark ${method} failed with status ${response.status}`,
+          )
+        }
       } catch (error) {
         console.error(`Failed to ${method.toLowerCase()} bookmark:`, error)
       }
-      // Always refetch — success, 409 (race / duplicate), 403 (lost role),
-      // 503 (Ashley down) all reconcile to authoritative server state and
-      // roll back the optimistic remove if needed.
+
+      if (!serverOk && wasBookmarked) {
+        // Roll back optimistic remove; skip refetch since the request failed.
+        setBookmarks(previousBookmarks)
+        return
+      }
+
       await refetch()
     },
     [refetch],
