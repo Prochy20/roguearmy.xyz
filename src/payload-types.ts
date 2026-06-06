@@ -114,6 +114,7 @@ export interface Config {
   globals: {
     homepage: Homepage;
     'staff-page': StaffPage;
+    'community-page': CommunityPage;
     manifesto: Manifesto;
     division2: Division2;
     'site-chrome': SiteChrome;
@@ -121,6 +122,7 @@ export interface Config {
   globalsSelect: {
     homepage: HomepageSelect<false> | HomepageSelect<true>;
     'staff-page': StaffPageSelect<false> | StaffPageSelect<true>;
+    'community-page': CommunityPageSelect<false> | CommunityPageSelect<true>;
     manifesto: ManifestoSelect<false> | ManifestoSelect<true>;
     division2: Division2Select<false> | Division2Select<true>;
     'site-chrome': SiteChromeSelect<false> | SiteChromeSelect<true>;
@@ -1421,6 +1423,258 @@ export interface StaffPage {
   createdAt?: string | null;
 }
 /**
+ * All copy + content for the /community page. Live numbers come from Ashley.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "community-page".
+ */
+export interface CommunityPage {
+  id: string;
+  hero: {
+    /**
+     * Mono kicker above the headline.
+     */
+    kicker?: string | null;
+    /**
+     * Trail label after RGA root in the sticky ribbon.
+     */
+    breadcrumbLabel?: string | null;
+    ribbonLabelMembers?: string | null;
+    ribbonLabelJoined14d?: string | null;
+    ribbonLabelTaken?: string | null;
+    /**
+     * Pill text when Ashley is reachable.
+     */
+    ribbonPillLive?: string | null;
+    /**
+     * Pill text when Ashley is unreachable.
+     */
+    ribbonPillOffline?: string | null;
+    /**
+     * Headline first row. Live count renders between this and postLine.
+     */
+    preLine?: string | null;
+    /**
+     * Headline third row.
+     */
+    postLine?: string | null;
+    /**
+     * Paragraph under the headline.
+     */
+    subline?: string | null;
+    /**
+     * Discord CTA — rendered as a green CyberButton with Discord icon.
+     */
+    primaryCta: {
+      label: string;
+      /**
+       * Absolute URL, /path, or #anchor.
+       */
+      href: string;
+    };
+    /**
+     * Inline text link — typically points to a #anchor on the page.
+     */
+    secondaryCta: {
+      label: string;
+      /**
+       * Absolute URL, /path, or #anchor.
+       */
+      href: string;
+    };
+  };
+  pullStrip?: {
+    /**
+     * Toggle the full-bleed quote band between Hero and Stats.
+     */
+    enabled?: boolean | null;
+    /**
+     * Large display-font quote.
+     */
+    quote?: string | null;
+    /**
+     * Mono caption under the quote.
+     */
+    caption?: string | null;
+  };
+  stats?: {
+    /**
+     * Toggle the entire numbers section.
+     */
+    enabled?: boolean | null;
+    /**
+     * Section marker (e.g. "01").
+     */
+    sectionNum?: string | null;
+    sectionEyebrow?: string | null;
+    sectionTitle?: string | null;
+    /**
+     * Kicker shown when Ashley is up. `{time}` is replaced with HH:MM UTC.
+     */
+    kickerLive?: string | null;
+    /**
+     * Kicker shown when Ashley is down (FailNote takes over the grid).
+     */
+    kickerOffline?: string | null;
+    statLabelMembers?: string | null;
+    statLabelJoined14d?: string | null;
+    statLabelVoice?: string | null;
+    statLabelMessages?: string | null;
+    /**
+     * Mono label above the commitments pills row.
+     */
+    commitmentsLabel?: string | null;
+    /**
+     * Standing commitments shown as pills below the stats grid.
+     */
+    commitments?:
+      | {
+          tone: 'green' | 'cyan' | 'magenta';
+          label: string;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  leaderboardTeaser: {
+    /**
+     * Master switch over the auth gate. When off, hides the teaser even for signed-in members. When on, renders only for signed-in members.
+     */
+    enabled?: boolean | null;
+    kicker?: string | null;
+    /**
+     * Display headline. Newlines render as line breaks (white-space: pre-line).
+     */
+    heading?: string | null;
+    body?: string | null;
+    bullets?:
+      | {
+          tone: 'green' | 'cyan' | 'magenta';
+          label: string;
+          id?: string | null;
+        }[]
+      | null;
+    cta: {
+      label: string;
+      /**
+       * Absolute URL, /path, or #anchor.
+       */
+      href: string;
+    };
+    /**
+     * Mono note under the CTA button.
+     */
+    footer?: string | null;
+  };
+  beyondLobbies?: {
+    enabled?: boolean | null;
+    sectionNum?: string | null;
+    sectionEyebrow?: string | null;
+    sectionTitle?: string | null;
+    kicker?: string | null;
+    intro?: string | null;
+    columnHeaderLeft?: string | null;
+    columnHeaderRight?: string | null;
+    /**
+     * Comparison rows. Left column shows the pain-point, right column shows the RGA answer.
+     */
+    rows?:
+      | {
+          /**
+           * Pain-point in random Discord servers.
+           */
+          elsewhere: string;
+          /**
+           * What RGA does instead.
+           */
+          here: string;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  lore?: {
+    enabled?: boolean | null;
+    sectionNum?: string | null;
+    sectionEyebrow?: string | null;
+    sectionTitle?: string | null;
+    kicker?: string | null;
+    /**
+     * First paragraph — rendered larger than the body.
+     */
+    leadParagraph?: string | null;
+    bodyParagraphs?:
+      | {
+          text: string;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Value cards rendered to the right of the body copy.
+     */
+    values?:
+      | {
+          iconKey: 'shield' | 'users' | 'heart' | 'target' | 'flag' | 'swords' | 'compass' | 'crown' | 'zap' | 'radio';
+          tone: 'green' | 'cyan' | 'magenta';
+          /**
+           * Short uppercase title.
+           */
+          title: string;
+          description: string;
+          id?: string | null;
+        }[]
+      | null;
+    pullQuoteText?: string | null;
+    pullQuoteAttribution?: string | null;
+  };
+  joinCta: {
+    enabled?: boolean | null;
+    sectionNum?: string | null;
+    sectionEyebrow?: string | null;
+    sectionTitle?: string | null;
+    kicker?: string | null;
+    body?: string | null;
+    /**
+     * Eligibility tags above the buttons.
+     */
+    eligibility?:
+      | {
+          tone: 'green' | 'cyan' | 'magenta';
+          label: string;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Primary CyberButton — Discord by default.
+     */
+    primaryButton: {
+      label: string;
+      /**
+       * Absolute URL, /path, or #anchor.
+       */
+      href: string;
+    };
+    /**
+     * Secondary CyberButton — internal page link by default.
+     */
+    secondaryButton: {
+      label: string;
+      /**
+       * Absolute URL, /path, or #anchor.
+       */
+      href: string;
+    };
+    /**
+     * Mono footer next to the pulsing dot.
+     */
+    footer?: string | null;
+  };
+  seo?: {
+    title?: string | null;
+    description?: string | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "manifesto".
  */
@@ -2204,6 +2458,174 @@ export interface StaffPageSelect<T extends boolean = true> {
         heading?: T;
         body?: T;
         hint?: T;
+      };
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "community-page_select".
+ */
+export interface CommunityPageSelect<T extends boolean = true> {
+  hero?:
+    | T
+    | {
+        kicker?: T;
+        breadcrumbLabel?: T;
+        ribbonLabelMembers?: T;
+        ribbonLabelJoined14d?: T;
+        ribbonLabelTaken?: T;
+        ribbonPillLive?: T;
+        ribbonPillOffline?: T;
+        preLine?: T;
+        postLine?: T;
+        subline?: T;
+        primaryCta?:
+          | T
+          | {
+              label?: T;
+              href?: T;
+            };
+        secondaryCta?:
+          | T
+          | {
+              label?: T;
+              href?: T;
+            };
+      };
+  pullStrip?:
+    | T
+    | {
+        enabled?: T;
+        quote?: T;
+        caption?: T;
+      };
+  stats?:
+    | T
+    | {
+        enabled?: T;
+        sectionNum?: T;
+        sectionEyebrow?: T;
+        sectionTitle?: T;
+        kickerLive?: T;
+        kickerOffline?: T;
+        statLabelMembers?: T;
+        statLabelJoined14d?: T;
+        statLabelVoice?: T;
+        statLabelMessages?: T;
+        commitmentsLabel?: T;
+        commitments?:
+          | T
+          | {
+              tone?: T;
+              label?: T;
+              id?: T;
+            };
+      };
+  leaderboardTeaser?:
+    | T
+    | {
+        enabled?: T;
+        kicker?: T;
+        heading?: T;
+        body?: T;
+        bullets?:
+          | T
+          | {
+              tone?: T;
+              label?: T;
+              id?: T;
+            };
+        cta?:
+          | T
+          | {
+              label?: T;
+              href?: T;
+            };
+        footer?: T;
+      };
+  beyondLobbies?:
+    | T
+    | {
+        enabled?: T;
+        sectionNum?: T;
+        sectionEyebrow?: T;
+        sectionTitle?: T;
+        kicker?: T;
+        intro?: T;
+        columnHeaderLeft?: T;
+        columnHeaderRight?: T;
+        rows?:
+          | T
+          | {
+              elsewhere?: T;
+              here?: T;
+              id?: T;
+            };
+      };
+  lore?:
+    | T
+    | {
+        enabled?: T;
+        sectionNum?: T;
+        sectionEyebrow?: T;
+        sectionTitle?: T;
+        kicker?: T;
+        leadParagraph?: T;
+        bodyParagraphs?:
+          | T
+          | {
+              text?: T;
+              id?: T;
+            };
+        values?:
+          | T
+          | {
+              iconKey?: T;
+              tone?: T;
+              title?: T;
+              description?: T;
+              id?: T;
+            };
+        pullQuoteText?: T;
+        pullQuoteAttribution?: T;
+      };
+  joinCta?:
+    | T
+    | {
+        enabled?: T;
+        sectionNum?: T;
+        sectionEyebrow?: T;
+        sectionTitle?: T;
+        kicker?: T;
+        body?: T;
+        eligibility?:
+          | T
+          | {
+              tone?: T;
+              label?: T;
+              id?: T;
+            };
+        primaryButton?:
+          | T
+          | {
+              label?: T;
+              href?: T;
+            };
+        secondaryButton?:
+          | T
+          | {
+              label?: T;
+              href?: T;
+            };
+        footer?: T;
       };
   seo?:
     | T

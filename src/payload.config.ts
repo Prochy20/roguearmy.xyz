@@ -20,6 +20,7 @@ import { ReadProgress } from './collections/ReadProgress'
 import { Bookmarks } from './collections/Bookmarks'
 import { StaffProfiles } from './collections/StaffProfiles'
 import { Division2Clans } from './collections/Division2Clans'
+import { CommunityPage } from './globals/CommunityPage'
 import { Division2 } from './globals/Division2'
 import { Homepage } from './globals/Homepage'
 import { Manifesto } from './globals/Manifesto'
@@ -83,7 +84,7 @@ export default buildConfig({
     Media,                                           // Assets
     Users,                                           // System
   ],
-  globals: [Homepage, StaffPage, Manifesto, Division2, SiteChrome],
+  globals: [Homepage, StaffPage, CommunityPage, Manifesto, Division2, SiteChrome],
   editor: lexicalEditor({
     features: ({ defaultFeatures }) => [
       ...defaultFeatures,
