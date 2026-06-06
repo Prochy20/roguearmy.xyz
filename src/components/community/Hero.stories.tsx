@@ -1,12 +1,16 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { expect, within } from 'storybook/test'
 import { Hero } from './Hero'
-import { STATS_FAIL_UNAVAILABLE, STATS_OK } from './_mock'
+import { MOCK_HERO, STATS_FAIL_UNAVAILABLE, STATS_OK } from './_mock'
 
 const meta = {
   title: 'Components/Community/Hero',
   component: Hero,
-  args: { stats: STATS_OK },
+  args: {
+    stats: STATS_OK,
+    content: MOCK_HERO,
+    memberCountFloor: 200,
+  },
   parameters: {
     layout: 'fullscreen',
     nextjs: { appDirectory: true, navigation: { pathname: '/community' } },
@@ -31,8 +35,8 @@ export const StatsOffline: Story = {
   args: { stats: STATS_FAIL_UNAVAILABLE },
   play: async ({ canvasElement, step }) => {
     const canvas = within(canvasElement)
-    await step('Fallback ∞ count + OFFLINE pill render', async () => {
-      await expect(canvas.getAllByText('∞').length).toBeGreaterThan(0)
+    await step('Hero falls back to SiteChrome floor count + OFFLINE pill renders', async () => {
+      await expect(canvas.getAllByText('200+').length).toBeGreaterThan(0)
       await expect(canvas.getByText('OFFLINE')).toBeInTheDocument()
     })
   },

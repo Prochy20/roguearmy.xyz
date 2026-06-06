@@ -1,10 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { expect, within } from 'storybook/test'
 import { PullStrip } from './PullStrip'
+import { MOCK_PULL_STRIP } from './_mock'
 
 const meta = {
   title: 'Components/Community/PullStrip',
   component: PullStrip,
+  args: { content: MOCK_PULL_STRIP },
   parameters: { layout: 'fullscreen' },
 } satisfies Meta<typeof PullStrip>
 

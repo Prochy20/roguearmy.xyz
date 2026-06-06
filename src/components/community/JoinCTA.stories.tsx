@@ -1,10 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { expect, within } from 'storybook/test'
 import { JoinCTA } from './JoinCTA'
+import { MOCK_JOIN_CTA } from './_mock'
 
 const meta = {
   title: 'Components/Community/JoinCTA',
   component: JoinCTA,
+  args: { content: MOCK_JOIN_CTA },
   parameters: {
     layout: 'fullscreen',
     nextjs: { appDirectory: true },

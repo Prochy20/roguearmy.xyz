@@ -1,10 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { expect, within } from 'storybook/test'
 import { LoreSection } from './LoreSection'
+import { MOCK_LORE } from './_mock'
 
 const meta = {
   title: 'Components/Community/LoreSection',
   component: LoreSection,
+  args: { content: MOCK_LORE },
   parameters: { layout: 'fullscreen' },
 } satisfies Meta<typeof LoreSection>
 

@@ -1,12 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { expect, within } from 'storybook/test'
 import { StatsSection } from './StatsSection'
-import { STATS_FAIL_UNAVAILABLE, STATS_OK } from './_mock'
+import { MOCK_STATS_CONTENT, STATS_FAIL_UNAVAILABLE, STATS_OK } from './_mock'
 
 const meta = {
   title: 'Components/Community/StatsSection',
   component: StatsSection,
-  args: { stats: STATS_OK },
+  args: { stats: STATS_OK, content: MOCK_STATS_CONTENT },
   parameters: { layout: 'fullscreen' },
 } satisfies Meta<typeof StatsSection>
 

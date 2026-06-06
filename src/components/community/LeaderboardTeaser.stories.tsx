@@ -1,10 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { expect, within } from 'storybook/test'
 import { LeaderboardTeaser } from './LeaderboardTeaser'
+import { MOCK_LEADERBOARD_TEASER } from './_mock'
 
 const meta = {
   title: 'Components/Community/LeaderboardTeaser',
   component: LeaderboardTeaser,
+  args: { content: MOCK_LEADERBOARD_TEASER },
   parameters: {
     layout: 'fullscreen',
     nextjs: { appDirectory: true },
