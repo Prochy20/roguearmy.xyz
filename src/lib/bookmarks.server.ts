@@ -122,10 +122,6 @@ async function expandBriefings(ids: string[]): Promise<Map<string, BriefingDetai
       map.set(ids[i], r.data)
       continue
     }
-    // fetchBriefingById wraps unstable_cache around an AshleyResult — a 5xx
-    // can get cached for 24h, silently dropping the bookmark from the list.
-    // Log so the failure is observable in ops; the bookmark will simply
-    // not render until cache evicts.
     console.warn(
       '[bookmarks] briefing hydration failed',
       ids[i],

@@ -1,7 +1,11 @@
 import 'server-only'
 
 import { unstable_cache } from 'next/cache'
-import { fetchAshleyService, type AshleyResult } from '@/lib/api/server'
+import {
+  fetchAshleyService,
+  type AshleyError,
+  type AshleyResult,
+} from '@/lib/api/server'
 import type { components } from '@/lib/api/schema'
 import { coerceAuthors, coerceString, coerceUrl } from './_coerce'
 
@@ -298,6 +302,14 @@ export function fetchDailyBriefingsForWeek({
   return cached()
 }
 
+// Thrown inside the cached function so failures propagate without being cached.
+class BriefingFetchError extends Error {
+  constructor(public readonly payload: AshleyError) {
+    super(payload.message ?? payload.code)
+    this.name = 'BriefingFetchError'
+  }
+}
+
 /**
  * Fetch a single briefing by UUID with hydrated cited articles. Used by the
  * detail page.
@@ -306,17 +318,25 @@ export function fetchBriefingById(
   id: string,
 ): Promise<AshleyResult<BriefingDetail | null>> {
   const cached = unstable_cache(
-    async (): Promise<AshleyResult<BriefingDetail | null>> => {
+    async (): Promise<BriefingDetail | null> => {
       const result = await fetchAshleyService<RawDigestDetail>((c) =>
         c.GET('/api/content/digests/{id}', { params: { path: { id } } }),
       )
-      if (!result.ok) return result
-      return { ok: true, data: normalizeBriefingDetail(result.data) }
+      if (!result.ok) throw new BriefingFetchError(result.error)
+      return normalizeBriefingDetail(result.data)
     },
     ['division2-briefing-detail', id],
     { revalidate: DETAIL_TTL, tags: ['briefing', 'briefing-detail', `briefing-${id}`] },
   )
-  return cached()
+  return cached().then(
+    (data): AshleyResult<BriefingDetail | null> => ({ ok: true, data }),
+    (error: unknown): AshleyResult<BriefingDetail | null> => {
+      if (error instanceof BriefingFetchError) {
+        return { ok: false, error: error.payload }
+      }
+      throw error
+    },
+  )
 }
 
 /**
