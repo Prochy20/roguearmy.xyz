@@ -87,15 +87,12 @@ export function BriefingCard({
     ? 'text-2xl sm:text-3xl lg:text-[40px] xl:text-[48px]'
     : 'text-xl sm:text-[22px]'
 
-  return (
-    <Link
-      href={briefing.canonicalPath}
-      prefetch={false}
-      className={`group relative block h-full transition-colors ${wrapperLayout} ${
-        isLead ? '' : `border ${accent.cardBorder} ${accent.cardBorderHover}`
-      }`}
-      style={isLead ? undefined : { backgroundImage: STRIPE_BG }}
-    >
+  const wrapperClassName = `group relative block h-full transition-colors ${wrapperLayout} ${
+    isLead ? '' : `border ${accent.cardBorder} ${accent.cardBorderHover}`
+  }`
+  const wrapperStyle = isLead ? undefined : { backgroundImage: STRIPE_BG }
+  const wrapperContent = (
+    <>
       {isLead && <CornerTicks accent={isWeekly ? 'cyan' : 'mod'} />}
       <QuoteOrnament lead={isLead} />
 
@@ -208,6 +205,29 @@ export function BriefingCard({
           </div>
         </div>
       </div>
+    </>
+  )
+
+  if (locked) {
+    return (
+      <div
+        aria-label="Locked — booster access required"
+        className={wrapperClassName}
+        style={wrapperStyle}
+      >
+        {wrapperContent}
+      </div>
+    )
+  }
+
+  return (
+    <Link
+      href={briefing.canonicalPath}
+      prefetch={false}
+      className={wrapperClassName}
+      style={wrapperStyle}
+    >
+      {wrapperContent}
     </Link>
   )
 }
