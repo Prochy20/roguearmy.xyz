@@ -73,6 +73,7 @@ export interface Config {
     'division2-clans': Division2Clan;
     games: Game;
     'game-roles': GameRole;
+    'discord-roles': DiscordRole;
     topics: Topic;
     'content-types': ContentType;
     members: Member;
@@ -93,6 +94,7 @@ export interface Config {
     'division2-clans': Division2ClansSelect<false> | Division2ClansSelect<true>;
     games: GamesSelect<false> | GamesSelect<true>;
     'game-roles': GameRolesSelect<false> | GameRolesSelect<true>;
+    'discord-roles': DiscordRolesSelect<false> | DiscordRolesSelect<true>;
     topics: TopicsSelect<false> | TopicsSelect<true>;
     'content-types': ContentTypesSelect<false> | ContentTypesSelect<true>;
     members: MembersSelect<false> | MembersSelect<true>;
@@ -473,6 +475,82 @@ export interface GameRole {
   createdAt: string;
 }
 /**
+ * Canonical Discord role identity. Sync from Discord populates the read-only fields; admin curates isPrimary + accentOverride.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "discord-roles".
+ */
+export interface DiscordRole {
+  id: string;
+  /**
+   * Discord Snowflake ID. Identity key.
+   */
+  discordId: string;
+  name: string;
+  /**
+   * Hex color from Discord, or null.
+   */
+  color?: string | null;
+  /**
+   * Discord guild hierarchy. Higher renders above lower; used for sort.
+   */
+  position: number;
+  /**
+   * Drives the @MENTION marker in /me lattice.
+   */
+  mentionable?: boolean | null;
+  /**
+   * True for integration roles (booster, bots). Drives INTEGRATION badge.
+   */
+  managed?: boolean | null;
+  /**
+   * Multi-size icon URLs from Discord, or null. {64, 128, 256, 512}.
+   */
+  iconUrls?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Fallback unicode emoji when no custom icon.
+   */
+  unicodeEmoji?: string | null;
+  lastSyncedAt?: string | null;
+  /**
+   * Pin this role to the PRIMARY row in /me lattice.
+   */
+  isPrimary?: boolean | null;
+  /**
+   * Override the category badge text (e.g. "LEVEL", "ASSIGNMENT", "BANNER"). Leave empty to use the derived label: PRIMARY / TAG / INTEGRATION. Rendered uppercase regardless of input casing.
+   */
+  badgeLabel?: string | null;
+  /**
+   * Override Discord color with a design-system palette token. Leave empty to derive accent from Discord color. Semantic hints: Chartreuse = dev roles, Yellow = warn/stale, Rose = AFK/failure, Magenta = booster tier, Orange = mod / D2.
+   */
+  accentOverride?:
+    | (
+        | 'green'
+        | 'cyan'
+        | 'magenta'
+        | 'orange'
+        | 'chartreuse'
+        | 'yellow'
+        | 'amber'
+        | 'azure'
+        | 'gold'
+        | 'red'
+        | 'rose'
+        | 'gray'
+      )
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * Discord members who have authenticated via OAuth
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -694,6 +772,10 @@ export interface PayloadLockedDocument {
         value: string | GameRole;
       } | null)
     | ({
+        relationTo: 'discord-roles';
+        value: string | DiscordRole;
+      } | null)
+    | ({
         relationTo: 'topics';
         value: string | Topic;
       } | null)
@@ -873,6 +955,26 @@ export interface GameRolesSelect<T extends boolean = true> {
   displayName?: T;
   game?: T;
   roles?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "discord-roles_select".
+ */
+export interface DiscordRolesSelect<T extends boolean = true> {
+  discordId?: T;
+  name?: T;
+  color?: T;
+  position?: T;
+  mentionable?: T;
+  managed?: T;
+  iconUrls?: T;
+  unicodeEmoji?: T;
+  lastSyncedAt?: T;
+  isPrimary?: T;
+  badgeLabel?: T;
+  accentOverride?: T;
   updatedAt?: T;
   createdAt?: T;
 }

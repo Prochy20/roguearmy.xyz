@@ -10,6 +10,7 @@ import { Users } from './collections/Users'
 import { Media } from './collections/Media'
 import { Games } from './collections/Games'
 import { GameRoles } from './collections/GameRoles'
+import { DiscordRoles } from './collections/DiscordRoles'
 import { Members } from './collections/Members'
 import { Topics } from './collections/Topics'
 import { ContentTypes } from './collections/ContentTypes'
@@ -77,7 +78,7 @@ export default buildConfig({
     Articles, Series,                                // Editorial
     StaffProfiles,                                   // Identity
     Division2Clans,                                  // Division 2
-    Games, GameRoles, Topics, ContentTypes,          // Taxonomies
+    Games, GameRoles, DiscordRoles, Topics, ContentTypes, // Taxonomies
     Members, Bookmarks, ReadProgress,                // Community
     Media,                                           // Assets
     Users,                                           // System
