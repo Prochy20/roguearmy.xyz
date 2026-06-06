@@ -82,7 +82,7 @@ export function BlogNavUserMenu() {
 
         <DropdownMenuItem asChild>
           <Link
-            href="/blog/bookmarks"
+            href="/me/bookmarks"
             className="px-4 py-2 text-sm text-text-secondary hover:text-white cursor-pointer"
           >
             Bookmarks

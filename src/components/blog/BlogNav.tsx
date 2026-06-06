@@ -6,7 +6,6 @@ import { motion } from 'motion/react'
 import { BlogNavLinks } from './BlogNavLinks'
 import { BlogNavSearch } from './BlogNavSearch'
 import { BlogNavUserMenu } from './BlogNavUserMenu'
-import { BookmarksDrawer } from '@/components/article/BookmarksDrawer'
 import { BlogNavMenuTrigger } from './BlogNavMenuTrigger'
 import { useScrollVisibility } from './useScrollVisibility'
 import { useBlogAuth } from '@/contexts/BlogAuthContext'
@@ -49,16 +48,13 @@ export function BlogNav() {
           {/* Center: Search */}
           <BlogNavSearch />
 
-          {/* Right: Bookmarks drawer + User menu (desktop) + Site menu trigger */}
+          {/* Right: User menu (desktop) + Site menu trigger. Bookmarks moved
+              to /me/bookmarks — entry point lives in the chrome menu overlay. */}
           <div className="flex items-center gap-2">
             {isAuthenticated && (
-              <>
-                {/* Show bookmarks drawer for authenticated users */}
-                <BookmarksDrawer />
-                <div className="hidden sm:block">
-                  <BlogNavUserMenu />
-                </div>
-              </>
+              <div className="hidden sm:block">
+                <BlogNavUserMenu />
+              </div>
             )}
             <BlogNavMenuTrigger />
           </div>
