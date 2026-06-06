@@ -1,5 +1,8 @@
 import type { Metadata } from 'next'
+import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
+import { getPayload } from 'payload'
+import config from '@payload-config'
 import { getArticleUrl } from '@/lib/articles'
 import {
   fetchWikiBody,
@@ -78,8 +81,14 @@ export default async function BlogArticlePage({ params, searchParams }: ArticleP
   const { topic, slug } = await params
   const { preview } = await searchParams
 
-  // Preview mode is used by Payload Live Preview (iframe with postMessage).
-  const isPreview = preview === 'true'
+  // Preview mode is used by Payload Live Preview (iframe with postMessage)
+  // and is gated on an authenticated Payload admin.
+  let isPreview = false
+  if (preview === 'true') {
+    const payload = await getPayload({ config })
+    const { user } = await payload.auth({ headers: await headers() })
+    isPreview = Boolean(user)
+  }
 
   const [{ article, rawArticle }, memberId] = await Promise.all([
     getArticleByTopicAndSlugWithDraft(topic, slug, isPreview),
