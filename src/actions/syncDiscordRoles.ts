@@ -19,6 +19,10 @@ export async function syncDiscordRoles(): Promise<SyncResult> {
   const { user } = await payload.auth({ headers: await headers() })
   if (!user) return { ok: false, error: { code: 'unauthenticated' } }
 
+  if (user.collection === 'users' && user.role !== 'admin') {
+    return { ok: false, error: { code: 'forbidden' } }
+  }
+
   const live = await fetchAshleyService((c) => c.GET('/api/community/roles'))
   if (!live.ok) {
     return { ok: false, error: { code: live.error.code, message: live.error.message } }
