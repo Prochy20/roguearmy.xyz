@@ -13,10 +13,41 @@ async function bustArticlesTag(): Promise<void> {
   revalidateTag('articles')
 }
 
-export const revalidateArticlesAfterChange: CollectionAfterChangeHook = async () => {
+/**
+ * Cascade-delete `bookmarks` and `read-progress` rows referencing the
+ * deleted article by `targetId` — the relationship is stored as opaque text,
+ * so Payload's built-in cascade doesn't fire.
+ */
+export const revalidateArticlesAfterDelete: CollectionAfterDeleteHook = async ({
+  req,
+  id,
+}) => {
+  const targetId = String(id)
+  await Promise.all([
+    req.payload.delete({
+      collection: 'bookmarks',
+      where: {
+        and: [
+          { targetType: { equals: 'article' } },
+          { targetId: { equals: targetId } },
+        ],
+      },
+      req,
+    }),
+    req.payload.delete({
+      collection: 'read-progress',
+      where: {
+        and: [
+          { targetType: { equals: 'article' } },
+          { targetId: { equals: targetId } },
+        ],
+      },
+      req,
+    }),
+  ])
   await bustArticlesTag()
 }
 
-export const revalidateArticlesAfterDelete: CollectionAfterDeleteHook = async () => {
+export const revalidateArticlesAfterChange: CollectionAfterChangeHook = async () => {
   await bustArticlesTag()
 }

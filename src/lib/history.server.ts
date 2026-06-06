@@ -58,25 +58,30 @@ export async function getReadingHistory(
     })
   }
 
-  // Build where clause based on status filter
-  type WhereClause = { member: { equals: string } } | { and: Array<{ member?: { equals: string }; completed?: { equals: boolean } }> }
-  let whereClause: WhereClause = { member: { equals: memberId } }
-
-  if (status === 'completed') {
-    whereClause = {
-      and: [
-        { member: { equals: memberId } },
-        { completed: { equals: true } },
-      ],
-    }
-  } else if (status === 'in_progress') {
-    whereClause = {
-      and: [
-        { member: { equals: memberId } },
-        { completed: { equals: false } },
-      ],
-    }
+  type AndClause = {
+    member?: { equals: string }
+    targetType?: { equals: string }
+    completed?: { equals: boolean }
   }
+  const andFilters: AndClause[] = [
+    { member: { equals: memberId } },
+    { targetType: { equals: 'article' } },
+  ]
+  if (status === 'completed') {
+    andFilters.push({ completed: { equals: true } })
+  } else if (status === 'in_progress') {
+    andFilters.push({ completed: { equals: false } })
+  }
+  const whereClause = { and: andFilters }
+
+  // Payload's `page` only supports whole pages — non-aligned offsets snap
+  // to the previous page boundary.
+  if (offset % limit !== 0) {
+    console.warn(
+      `[getReadingHistory] non-aligned offset=${offset} for limit=${limit}; rounding to nearest page`,
+    )
+  }
+  const page = Math.floor(offset / limit) + 1
 
   // Query progress records with populated articles
   const result = await payload.find({
@@ -84,7 +89,7 @@ export async function getReadingHistory(
     where: whereClause,
     sort: '-lastVisitedAt',
     limit: limit + 1, // Fetch one extra to check if there's more
-    page: Math.floor(offset / limit) + 1,
+    page,
     depth: 2, // Populate article relationships
   })
 
