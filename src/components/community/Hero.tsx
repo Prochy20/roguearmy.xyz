@@ -24,6 +24,7 @@ export function Hero({ stats, content, memberCountFloor }: HeroProps) {
   const primary = content.primaryCta
   const secondary = content.secondaryCta
   const primaryExternal = primary.href.startsWith('http')
+  const secondaryExternal = secondary.href.startsWith('http')
 
   return (
     <>
@@ -120,6 +121,7 @@ export function Hero({ stats, content, memberCountFloor }: HeroProps) {
               </CyberButton>
               <a
                 href={secondary.href}
+                {...(secondaryExternal && { target: '_blank', rel: 'noopener noreferrer' })}
                 className="font-mono text-xs uppercase tracking-[0.3em] text-text-muted underline-offset-4 transition-colors duration-200 hover:text-rga-cyan hover:underline"
               >
                 {secondary.label} ↓
