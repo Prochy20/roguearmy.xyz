@@ -41,15 +41,8 @@ const OVERLAY = {
   capitol: project(-77.0091, 38.8899),
 } as const
 
-function buildMapboxUrl(): string | null {
-  const token = process.env.MAPBOX_TOKEN
-  if (!token) return null
-  return (
-    `https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/` +
-    `${MAP.centerLon},${MAP.centerLat},${MAP.zoom},0/` +
-    `${MAP.sizePx}x${MAP.sizePx}?access_token=${token}`
-  )
-}
+// Proxied through an API route so the Mapbox access token stays server-side.
+const MAPBOX_PROXY_URL = '/api/division2/map/washington'
 
 type LabelPos = 'above' | 'below' | 'left' | 'right'
 
@@ -79,7 +72,6 @@ const LANDMARKS: ReadonlyArray<Landmark> = [
 ]
 
 export function WashingtonMap({ className }: WashingtonMapProps) {
-  const mapboxUrl = buildMapboxUrl()
   return (
     <div
       aria-hidden
@@ -91,7 +83,7 @@ export function WashingtonMap({ className }: WashingtonMapProps) {
       <div
         className="absolute inset-0 bg-cover bg-center opacity-50"
         style={{
-          backgroundImage: mapboxUrl ? `url('${mapboxUrl}')` : undefined,
+          backgroundImage: `url('${MAPBOX_PROXY_URL}')`,
           filter: 'invert(1) grayscale(1) saturate(0) contrast(1.1) brightness(0.88)',
         }}
       />
