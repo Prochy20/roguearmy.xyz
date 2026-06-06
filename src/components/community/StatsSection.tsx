@@ -1,44 +1,34 @@
 import type { AshleyResult } from '@/lib/api/server'
 import type { components } from '@/lib/api/schema'
+import type { CommunityPage } from '@/payload-types'
 import { SectionHeader } from './SectionHeader'
 import { StatCounter } from './StatCounter'
 import { FailNote } from './FailNote'
 
 type CommunityStats = components['schemas']['CommunityStatsDto']
+type Tone = 'green' | 'cyan' | 'magenta'
 
 interface StatsSectionProps {
   stats: AshleyResult<CommunityStats>
+  content: CommunityPage['stats']
 }
 
-const STAT_LABELS = {
-  members: 'OPERATIVES',
-  joined14d: 'JOINED · LAST 14 DAYS',
-  voice: 'MINUTES IN VOICE',
-  messages: 'CHAT MESSAGES',
-} as const
-
-const COMMITMENTS = [
-  { label: '$0 · FOREVER', tone: 'green' as const },
-  { label: '0 ADS · 0 DATA SOLD', tone: 'cyan' as const },
-  { label: 'VOLUNTEER-RUN', tone: 'magenta' as const },
-] as const
-
-const TONE_CLASS: Record<'green' | 'cyan' | 'magenta', string> = {
+const TONE_CLASS: Record<Tone, string> = {
   green: 'text-rga-green border-rga-green/40 [text-shadow:0_0_18px_rgba(0,255,65,0.45)]',
   cyan: 'text-rga-cyan border-rga-cyan/40 [text-shadow:0_0_18px_rgba(0,255,255,0.45)]',
   magenta: 'text-rga-magenta border-rga-magenta/40 [text-shadow:0_0_18px_rgba(255,0,255,0.45)]',
 }
 
-const CELL_TONE: Record<'green' | 'cyan' | 'magenta', string> = {
+const CELL_TONE: Record<Tone, string> = {
   green: 'text-rga-green [text-shadow:0_0_24px_rgba(0,255,65,0.55)]',
   cyan: 'text-rga-cyan [text-shadow:0_0_24px_rgba(0,255,255,0.55)]',
   magenta: 'text-rga-magenta [text-shadow:0_0_24px_rgba(255,0,255,0.55)]',
 }
 
-export function StatsSection({ stats }: StatsSectionProps) {
+export function StatsSection({ stats, content }: StatsSectionProps) {
   const kicker = stats.ok
-    ? `// SNAPSHOT ${formatTime(stats.data.generatedAt)}`
-    : '// SNAPSHOT UNAVAILABLE'
+    ? (content?.kickerLive ?? '// SNAPSHOT {time}').replace('{time}', formatTime(stats.data.generatedAt))
+    : (content?.kickerOffline ?? '// SNAPSHOT UNAVAILABLE')
 
   return (
     <section
@@ -47,32 +37,37 @@ export function StatsSection({ stats }: StatsSectionProps) {
       aria-labelledby="community-stats-heading"
     >
       <div className="mx-auto w-full max-w-[1480px]">
-        <SectionHeader num="01" eyebrow="LIVE METRICS" kicker={kicker} title="BY THE NUMBERS" />
+        <SectionHeader
+          num={content?.sectionNum ?? '01'}
+          eyebrow={content?.sectionEyebrow ?? 'LIVE METRICS'}
+          kicker={kicker}
+          title={content?.sectionTitle ?? 'BY THE NUMBERS'}
+        />
 
         {!stats.ok ? (
           <FailNote error={stats.error} resource="STATS" />
         ) : (
           <div className="grid grid-cols-2 gap-6 sm:gap-8 lg:grid-cols-4 lg:gap-10">
             <StatCell
-              label={STAT_LABELS.members}
+              label={content?.statLabelMembers ?? 'OPERATIVES'}
               value={stats.data.totalMembers}
               tone="green"
               compact
             />
             <StatCell
-              label={STAT_LABELS.joined14d}
+              label={content?.statLabelJoined14d ?? 'JOINED · LAST 14 DAYS'}
               value={stats.data.joinedLast14d}
               tone="cyan"
               compact
             />
             <StatCell
-              label={STAT_LABELS.voice}
+              label={content?.statLabelVoice ?? 'MINUTES IN VOICE'}
               value={stats.data.totalVoiceMinutes}
               tone="green"
               compact
             />
             <StatCell
-              label={STAT_LABELS.messages}
+              label={content?.statLabelMessages ?? 'CHAT MESSAGES'}
               value={stats.data.totalMessages}
               tone="magenta"
               compact
@@ -80,21 +75,27 @@ export function StatsSection({ stats }: StatsSectionProps) {
           </div>
         )}
 
-        <div className="mt-14 flex flex-wrap items-center justify-center gap-4 border-t border-[rgba(255,255,255,0.06)] pt-10">
-          <span className="font-mono text-[10px] tracking-[0.3em] text-text-muted uppercase">
-            // STANDING COMMITMENTS
-          </span>
-          <ul className="flex flex-wrap items-center justify-center gap-3">
-            {COMMITMENTS.map((c) => (
-              <li
-                key={c.label}
-                className={`border bg-[rgba(0,0,0,0.4)] px-4 py-2 font-mono text-[11px] tracking-[0.25em] uppercase ${TONE_CLASS[c.tone]}`}
-              >
-                {c.label}
-              </li>
-            ))}
-          </ul>
-        </div>
+        {(content?.commitmentsLabel || (content?.commitments && content.commitments.length > 0)) && (
+          <div className="mt-14 flex flex-wrap items-center justify-center gap-4 border-t border-[rgba(255,255,255,0.06)] pt-10">
+            {content?.commitmentsLabel && (
+              <span className="font-mono text-[10px] tracking-[0.3em] text-text-muted uppercase">
+                {content.commitmentsLabel}
+              </span>
+            )}
+            {content?.commitments && content.commitments.length > 0 && (
+              <ul className="flex flex-wrap items-center justify-center gap-3">
+                {content.commitments.map((c) => (
+                  <li
+                    key={c.id ?? c.label}
+                    className={`border bg-[rgba(0,0,0,0.4)] px-4 py-2 font-mono text-[11px] tracking-[0.25em] uppercase ${TONE_CLASS[c.tone]}`}
+                  >
+                    {c.label}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
       </div>
     </section>
   )
@@ -109,7 +110,7 @@ function StatCell({
 }: {
   label: string
   value: number
-  tone: 'green' | 'cyan' | 'magenta'
+  tone: Tone
   locale?: boolean
   compact?: boolean
 }) {

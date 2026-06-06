@@ -1,28 +1,21 @@
 import { ArrowRight } from 'lucide-react'
+import type { CommunityPage } from '@/payload-types'
 import { CyberButton } from '@/components/ui/CyberButton'
 import { CyberTag } from '@/components/ui/CyberCorners'
 import { DiscordIcon } from '@/components/ui/DiscordIcon'
 import { SectionHeader } from './SectionHeader'
 
-const DISCORD_INVITE = 'https://dc.roguearmy.xyz'
+interface JoinCTAProps {
+  content: CommunityPage['joinCta']
+}
 
-const COPY = {
-  kicker: '// RECRUITMENT ORDER · OPEN STANDING',
-  heading: 'STAND THE WATCH',
-  body: 'The door stays open. Drop your platform and timezone in #general once you’re in — that’s the whole onboarding.',
-  eligibility: [
-    { label: '25+', tone: 'green' as const },
-    { label: 'SA · UK · EU', tone: 'cyan' as const },
-    { label: 'NO SKILL FLOOR', tone: 'green' as const },
-    { label: 'OPTIONAL ATTENDANCE', tone: 'cyan' as const },
-    { label: '$0 · FOREVER', tone: 'magenta' as const },
-  ],
-  primaryButton: { label: 'ENLIST · DISCORD', href: DISCORD_INVITE },
-  secondaryButton: { label: 'READ THE MANIFESTO', href: '/manifesto' },
-  footer: '// ACCEPTING · STATUS LIVE',
-} as const
+export function JoinCTA({ content }: JoinCTAProps) {
+  const eligibility = content.eligibility ?? []
+  const primary = content.primaryButton
+  const secondary = content.secondaryButton
+  const primaryExternal = primary.href.startsWith('http')
+  const secondaryExternal = secondary.href.startsWith('http')
 
-export function JoinCTA() {
   return (
     <section
       id="sec-04"
@@ -40,7 +33,6 @@ export function JoinCTA() {
         }}
       />
 
-      {/* Faint scanline texture, low opacity — adds the HUD doc feel */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 -z-10 opacity-[0.04]"
@@ -57,52 +49,59 @@ export function JoinCTA() {
 
       <div className="mx-auto flex w-full max-w-[1200px] flex-col items-center gap-10 text-center">
         <SectionHeader
-          num="04"
-          eyebrow="JOIN"
-          kicker={COPY.kicker}
-          title={COPY.heading}
+          num={content.sectionNum ?? '04'}
+          eyebrow={content.sectionEyebrow ?? 'JOIN'}
+          kicker={content.kicker ?? '// RECRUITMENT ORDER · OPEN STANDING'}
+          title={content.sectionTitle ?? 'STAND THE WATCH'}
           align="center"
         />
 
-        <p className="max-w-2xl text-lg leading-relaxed text-text-primary sm:text-xl">
-          {COPY.body}
-        </p>
+        {content.body && (
+          <p className="max-w-2xl text-lg leading-relaxed text-text-primary sm:text-xl">
+            {content.body}
+          </p>
+        )}
 
-        <ul className="flex flex-wrap items-center justify-center gap-3">
-          {COPY.eligibility.map((item) => (
-            <li key={item.label}>
-              <CyberTag color={item.tone}>{item.label}</CyberTag>
-            </li>
-          ))}
-        </ul>
+        {eligibility.length > 0 && (
+          <ul className="flex flex-wrap items-center justify-center gap-3">
+            {eligibility.map((item) => (
+              <li key={item.id ?? item.label}>
+                <CyberTag color={item.tone}>{item.label}</CyberTag>
+              </li>
+            ))}
+          </ul>
+        )}
 
         <div className="flex flex-col items-center gap-4 pt-2 sm:flex-row sm:gap-5">
           <CyberButton
-            href={COPY.primaryButton.href}
-            external
+            href={primary.href}
+            external={primaryExternal}
             color="green"
             iconLeft={<DiscordIcon className="h-4 w-4" />}
             className="px-8 py-5"
           >
-            {COPY.primaryButton.label}
+            {primary.label}
           </CyberButton>
           <CyberButton
-            href={COPY.secondaryButton.href}
+            href={secondary.href}
+            external={secondaryExternal}
             color="cyan"
             iconRight={<ArrowRight className="h-4 w-4" />}
             className="px-8 py-5"
           >
-            {COPY.secondaryButton.label}
+            {secondary.label}
           </CyberButton>
         </div>
 
-        <div className="mt-4 flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-text-muted">
-          <span
-            aria-hidden
-            className="inline-block h-2 w-2 rounded-[1px] bg-rga-green shadow-[0_0_8px_#00FF41] animate-pulse"
-          />
-          <span>{COPY.footer}</span>
-        </div>
+        {content.footer && (
+          <div className="mt-4 flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.4em] text-text-muted">
+            <span
+              aria-hidden
+              className="inline-block h-2 w-2 rounded-[1px] bg-rga-green shadow-[0_0_8px_#00FF41] animate-pulse"
+            />
+            <span>{content.footer}</span>
+          </div>
+        )}
       </div>
     </section>
   )

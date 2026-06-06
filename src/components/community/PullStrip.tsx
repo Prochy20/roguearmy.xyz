@@ -1,13 +1,13 @@
-const COPY = {
-  quote: 'BEYOND RANDOM LOBBIES.',
-  caption: '// QUALITY GAMING · QUALITY PEOPLE · SINCE 2019',
-} as const
+import type { CommunityPage } from '@/payload-types'
+
+interface PullStripProps {
+  content: CommunityPage['pullStrip']
+}
 
 /**
- * Full-bleed quote band between Hero and Stats. Uses an approved RGA
- * tagline as a visual punctuation mark and pain-point handle.
+ * Full-bleed quote band between Hero and Stats.
  */
-export function PullStrip() {
+export function PullStrip({ content }: PullStripProps) {
   return (
     <section
       className="relative overflow-hidden border-y border-[rgba(255,255,255,0.06)] py-16 sm:py-24"
@@ -36,19 +36,23 @@ export function PullStrip() {
       />
 
       <div className="mx-auto flex max-w-[1480px] flex-col items-center gap-5 px-6 text-center">
-        <p
-          className="font-display uppercase leading-[0.95] tracking-[0.01em] text-text-primary"
-          style={{
-            fontSize: 'clamp(36px, 6vw, 96px)',
-            textShadow:
-              '0 0 32px rgba(0,255,65,0.25), 2px 0 0 rgba(0,255,255,0.15), -2px 0 0 rgba(255,0,255,0.15)',
-          }}
-        >
-          {COPY.quote}
-        </p>
-        <p className="font-mono text-[10px] tracking-[0.4em] text-text-muted uppercase">
-          {COPY.caption}
-        </p>
+        {content?.quote && (
+          <p
+            className="font-display uppercase leading-[0.95] tracking-[0.01em] text-text-primary"
+            style={{
+              fontSize: 'clamp(36px, 6vw, 96px)',
+              textShadow:
+                '0 0 32px rgba(0,255,65,0.25), 2px 0 0 rgba(0,255,255,0.15), -2px 0 0 rgba(255,0,255,0.15)',
+            }}
+          >
+            {content.quote}
+          </p>
+        )}
+        {content?.caption && (
+          <p className="font-mono text-[10px] tracking-[0.4em] text-text-muted uppercase">
+            {content.caption}
+          </p>
+        )}
       </div>
     </section>
   )

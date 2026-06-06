@@ -1,5 +1,6 @@
 import { fetchAshleyService } from '@/lib/api/server'
 import { getMemberAuth } from '@/lib/auth/session.server'
+import { cachedFindGlobal } from '@/lib/payload/cached'
 import type { components } from '@/lib/api/schema'
 import { Hero } from '@/components/community/Hero'
 import { PullStrip } from '@/components/community/PullStrip'
@@ -11,33 +12,43 @@ import { JoinCTA } from '@/components/community/JoinCTA'
 
 type CommunityStats = components['schemas']['CommunityStatsDto']
 
-export const metadata = {
-  title: 'Community | Rogue Army',
-  description:
-    'A casual gaming community for adults across South Africa, the UK, and Europe. Drama-free, no skill gates, no engagement metrics — just the people, by the numbers.',
+export async function generateMetadata() {
+  const page = await cachedFindGlobal('community-page')
+  return {
+    title: page.seo?.title ?? 'Community | Rogue Army',
+    description:
+      page.seo?.description ??
+      'A casual gaming community for adults across South Africa, the UK, and Europe. Drama-free, no skill gates, no engagement metrics — just the people, by the numbers.',
+  }
 }
 
 // Dynamic rendering is already forced by the cookie-based auth read in
-// getMemberAuth(), so an explicit `force-dynamic` is redundant. Leaving it
-// off means individual fetch() calls inside the render are uncached by
-// default (Next 15 behavior) — exactly what we want for the live stats DTO
-// without disabling caching globally.
+// getMemberAuth(), so an explicit `force-dynamic` is redundant.
 
 export default async function CommunityPage() {
-  const [stats, auth] = await Promise.all([
+  const [stats, auth, page, chrome] = await Promise.all([
     fetchAshleyService<CommunityStats>((c) => c.GET('/api/community/stats')),
     getMemberAuth(),
+    cachedFindGlobal('community-page'),
+    cachedFindGlobal('site-chrome'),
   ])
+
+  const showLeaderboardTeaser =
+    page.leaderboardTeaser?.enabled !== false && auth.status === 'active'
 
   return (
     <>
-      <Hero stats={stats} />
-      <PullStrip />
-      <StatsSection stats={stats} />
-      {auth.status === 'active' && <LeaderboardTeaser />}
-      <BeyondLobbies />
-      <LoreSection />
-      <JoinCTA />
+      <Hero
+        stats={stats}
+        content={page.hero}
+        memberCountFloor={chrome.memberCountFloor ?? null}
+      />
+      {page.pullStrip?.enabled !== false && <PullStrip content={page.pullStrip} />}
+      {page.stats?.enabled !== false && <StatsSection stats={stats} content={page.stats} />}
+      {showLeaderboardTeaser && <LeaderboardTeaser content={page.leaderboardTeaser} />}
+      {page.beyondLobbies?.enabled !== false && <BeyondLobbies content={page.beyondLobbies} />}
+      {page.lore?.enabled !== false && <LoreSection content={page.lore} />}
+      {page.joinCta?.enabled !== false && <JoinCTA content={page.joinCta} />}
     </>
   )
 }
