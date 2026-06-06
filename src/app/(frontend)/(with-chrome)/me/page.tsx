@@ -10,11 +10,20 @@ import {
 import { isAfk } from '@/lib/auth/badges'
 import { IdentityCard } from '@/components/me/IdentityCard'
 import { ProgressionBand, type AshleyLevel } from '@/components/me/ProgressionBand'
-import { RoleStrip, type AshleyMe } from '@/components/me/RoleStrip'
+import { RoleLattice } from '@/components/me/RoleLattice'
 import { SectionHeader } from '@/components/me/SectionHeader'
 import { normalizeAfkRecord } from '@/components/afk/types'
+import { getMemberRoles } from '@/lib/me/getMemberRoles'
 import type { components } from '@/lib/api/schema'
 import './me.css'
+
+type AshleyMe = {
+  user: {
+    avatarUrls: { '64': string; '128': string; '256': string; '512': string } | null
+    serverAvatarUrls: { '64': string; '128': string; '256': string; '512': string } | null
+    joinedAt: string | null
+  }
+}
 
 type RawAfk = components['schemas']['AfkRecordResponseDto']
 
@@ -30,10 +39,11 @@ export default async function MePage() {
   }
 
   const accessToken = await getAshleyAccessCookie()
-  const [ashleyMe, ashleyLevel, afkResult] = await Promise.all([
+  const [ashleyMe, ashleyLevel, afkResult, memberRoles] = await Promise.all([
     fetchAshleyUser<AshleyMe>(accessToken, (c) => c.GET('/api/auth/me')),
     fetchAshleyUser<AshleyLevel>(accessToken, (c) => c.GET('/api/leveling/me')),
     fetchAshleyUserNullable<RawAfk>(accessToken, (c) => c.GET('/api/afk/me')),
+    getMemberRoles(auth.discordRoleIds),
   ])
 
   const afkRecord = afkResult.ok ? normalizeAfkRecord(afkResult.data) : null
@@ -48,11 +58,10 @@ export default async function MePage() {
       ? (ashleyMe.data.user.serverAvatarUrls?.['256'] ?? ashleyMe.data.user.avatarUrls!['256'])
       : getDiscordAvatarUrl(auth.member.discordId, auth.member.avatar)
 
-  const roleStripKicker = ashleyMe.ok
-    ? '// resolved from upstream'
-    : ashleyMe.error.code === 'unauthenticated'
-      ? '// session not established'
-      : '// resolution failed'
+  const roleLatticeKicker =
+    memberRoles.length === 0
+      ? '// no assignments'
+      : '// resolved from the guild'
 
   return (
     <main className="relative z-10 mx-auto w-full max-w-[1480px] px-4 py-10 sm:px-8 sm:py-16 lg:px-16 lg:py-28">
@@ -84,10 +93,10 @@ export default async function MePage() {
         <SectionHeader
           num="03"
           eyebrow="ROLE LATTICE"
-          kicker={roleStripKicker}
+          kicker={roleLatticeKicker}
           title="ASSIGNMENTS"
         />
-        <RoleStrip ashleyMe={ashleyMe} />
+        <RoleLattice roles={memberRoles} />
       </section>
     </main>
   )
