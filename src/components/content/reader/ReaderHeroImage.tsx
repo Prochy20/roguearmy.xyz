@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { NoSignalPanel } from './NoSignalPanel'
 import type { AccentName } from './accent'
 
@@ -14,10 +15,10 @@ interface ReaderHeroImageProps {
 }
 
 /**
- * Interior of the ReaderHeroFrame — owns the `<img>` element plus the
- * vignette overlay that grounds the bottom metadata bar against bright
- * photos. Marked `'use client'` so it can wire `onError` and fall through
- * to NoSignalPanel when the URL is missing or fails to load.
+ * Interior of the ReaderHeroFrame — owns the hero image plus the vignette
+ * overlay that grounds the bottom metadata bar against bright photos. Marked
+ * `'use client'` so it can wire `onError` and fall through to NoSignalPanel
+ * when the URL is missing or fails to load.
  *
  * The parent frame (corner ticks, documentary plate, film-strip metadata
  * bar) stays server-rendered.
@@ -40,19 +41,14 @@ export function ReaderHeroImage({ src, accent, fileNumber }: ReaderHeroImageProp
 
   return (
     <>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
+      <Image
         src={src}
         alt=""
-        loading="lazy"
-        decoding="async"
-        onError={(e) => {
-          // Hide the broken glyph immediately to avoid a single-frame flash
-          // before React rerenders to the placeholder.
-          e.currentTarget.style.visibility = 'hidden'
-          setErrored(true)
-        }}
-        className="absolute inset-0 h-full w-full object-cover opacity-95"
+        fill
+        priority
+        sizes="(min-width: 1280px) 60vw, (min-width: 1024px) 70vw, 100vw"
+        onError={() => setErrored(true)}
+        className="object-cover opacity-95"
       />
       {/* Vignette — anchors the bottom metadata bar against bright photos.
           Only painted when an image actually renders; the placeholder
