@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "skills": {
+    "deslop": {
+      "source": "brianlovin/claude-config",
+      "sourceType": "github",
+      "skillPath": "skills/deslop/SKILL.md",
+      "computedHash": "f949bc0e44dd84a07686a33bc471f4b0295a8444c40cb66e2e7c77ba52154fea"
+    },
+    "storybook-story-writing": {
+      "source": "thebushidocollective/han",
+      "sourceType": "github",
+      "skillPath": "plugins/tools/storybook/skills/storybook-story-writing/SKILL.md",
+      "computedHash": "1b0b4120563b8e6fd97334504148cee1dac45043d42acba528679c735a22fb75"
+    }
+  }
+}

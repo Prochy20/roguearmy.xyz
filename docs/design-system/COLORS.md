@@ -1,163 +1,83 @@
 # Colors
 
-## Brand Colors
+Two-layer token system. Source of truth lives in `src/app/globals.css`
+(`@theme` + `@theme inline`) and `src/lib/design-tokens.ts`. Visual
+references: `/brand` (Next.js route) and Storybook's `Brand/Colors` page.
 
-The cyberpunk neon palette:
+## Layer 1 — raw palette
 
-| Name        | Hex       | Tailwind                             | Usage                     |
-| ----------- | --------- | ------------------------------------ | ------------------------- |
-| RGA Green   | `#00FF41` | `text-rga-green`, `bg-rga-green`     | Primary accent, CTAs      |
-| RGA Cyan    | `#00FFFF` | `text-rga-cyan`, `bg-rga-cyan`       | Secondary accent, links   |
-| RGA Magenta | `#FF00FF` | `text-rga-magenta`, `bg-rga-magenta` | Tertiary accent, warnings |
+Seven brand-saturated hex values. Use directly only when no Layer 2
+semantic fits (rare).
 
-### Usage
+| Name       | Hex       | Tailwind          | Role                                       |
+| ---------- | --------- | ----------------- | ------------------------------------------ |
+| Green      | `#00FF41` | `rga-green`       | RGA brand. Logo, primary CTAs, selection.  |
+| Cyan       | `#00FFFF` | `rga-cyan`        | Alternative voice. No semantic alias.       |
+| Magenta    | `#FF00FF` | `rga-magenta`     | Backs `tier-booster`. Otherwise decorative. |
+| Orange     | `#FF8000` | `rga-orange`      | Backs `game-d2` and `role-mod`.            |
+| Chartreuse | `#CCFF00` | `rga-chartreuse`  | Backs `role-dev`.                          |
+| Yellow     | `#FFE100` | `rga-yellow`      | Backs `status-warn` (Hazard Yellow).        |
+| Rose       | `#FF0066` | `rga-rose`        | Backs `status-error` and `role-admin`.     |
 
-```tsx
-// Text colors
-<span className="text-rga-green">Highlighted text</span>
-<span className="text-rga-cyan">Link text</span>
+Magenta is **not a failure state** — status-error uses Rose. Magenta carries one semantic (`tier-booster` — Discord-boost-gated surfaces) and is otherwise decorative (RGB-shift, chromatic effects, gradient ends).
 
-// Background colors
-<div className="bg-rga-green text-void">Button</div>
-```
+## Layer 2 — semantic aliases
 
-## Background Colors
+Components should reference these in preference to raw `rga-*` tokens.
+`text-status-warn` tells the next reader *why* it's yellow;
+`text-rga-yellow` doesn't.
 
-Deep dark palette for void aesthetic:
+| Alias           | Backs            | Purpose                                                  |
+| --------------- | ---------------- | -------------------------------------------------------- |
+| `brand`         | `rga-green`      | RGA identity surfaces.                                   |
+| `status-ok`     | `rga-green`      | Active OK state.                                         |
+| `status-warn`   | `rga-yellow`     | Soft attention — STALE, MEMBERS-ONLY gates.              |
+| `status-error`  | `rga-rose`       | Hard failure — LOCKED, OFFLINE.                          |
+| `status-info`   | muted gray       | Default pill — TODAY, VIEWING, LIVE, PUBLIC. No pulse.   |
+| `game-d2`       | `rga-orange`     | Division 2 body content brand.                           |
+| `role-dev`      | `rga-chartreuse` | Staff Developer accent on `/community/staff`.            |
+| `role-mod`      | `rga-orange`     | Staff Moderator accent. Same hex as `game-d2`.           |
+| `role-admin`    | `rga-rose`       | Staff Admin accent. Same hex as `status-error`.          |
+| `tier-booster`  | `rga-magenta`    | Discord-boost-gated perks — BOOSTER PERK widgets, daily briefings. |
 
-| Name       | Hex       | Tailwind         | Usage                |
-| ---------- | --------- | ---------------- | -------------------- |
-| Void       | `#030303` | `bg-void`        | Main page background |
-| Primary BG | `#0A0A0A` | `bg-bg-primary`  | Section backgrounds  |
-| Elevated   | `#111111` | `bg-bg-elevated` | Cards, modals        |
-| Surface    | `#1A1A1A` | `bg-bg-surface`  | Interactive surfaces |
+Same hex can back multiple aliases when the surfaces never coexist on
+one screen (mod cards live on `/community/staff/*`, D2 stuff on
+`/division-2/*`).
 
-### Usage
+## Behavioral rules
 
-```tsx
-<body className="bg-void">
-  <section className="bg-bg-primary">
-    <div className="bg-bg-elevated p-6 rounded-lg">Card content</div>
-  </section>
-</body>
-```
+**Chrome vs body.** The persistent shell (top ribbon, nav, MENU,
+status pill) is **chrome** — always RGA-neutral (green brand + muted +
+white) regardless of URL section. Page-unique content under the shell
+is **body** — wears the current game's `game-*` token. `/division-2/*`
+body uses `game-d2` (orange). Future game sections add their own
+`game-*` token; chrome never changes.
 
-## Text Colors
+**Status pill modes.** `StatRibbon` carries a pill that always renders
+in one of three modes. Silent when fine, loud when not.
 
-| Name      | Hex       | Tailwind              | Usage                    |
-| --------- | --------- | --------------------- | ------------------------ |
-| Primary   | `#FFFFFF` | `text-text-primary`   | Headings, important text |
-| Secondary | `#888888` | `text-text-secondary` | Body text, descriptions  |
-| Muted     | `#555555` | `text-text-muted`     | Placeholders, hints      |
+| Mode      | Visual             | When                                                          |
+| --------- | ------------------ | ------------------------------------------------------------- |
+| `info`    | muted gray, static | Default — VIEWING, TODAY, LIVE, PUBLIC.                       |
+| `warn`    | yellow, pulse      | Soft attention — STALE, MEMBERS-ONLY weekly briefings.        |
+| `error`   | rose, pulse        | Hard failure — LOCKED, OFFLINE.                               |
+| `booster` | magenta, pulse     | Booster-tier gate signaling — BOOSTER. Overrides warn/error.  |
 
-## Glow Colors
+**Ribbon fields.** Neutral white by default. Accent vocabulary is `green`
+(OK state), `cyan` (analytics / Ashley-output content), `booster`
+(viewer's tier identity when BOOSTER). Game brand colors (orange) never
+appear in chrome.
 
-Semi-transparent versions for box-shadow effects:
+## Backgrounds and text
 
-| Name         | RGBA                     | CSS Variable           |
-| ------------ | ------------------------ | ---------------------- |
-| Glow Green   | `rgba(0, 255, 65, 0.5)`  | `--color-glow-green`   |
-| Glow Cyan    | `rgba(0, 255, 255, 0.5)` | `--color-glow-cyan`    |
-| Glow Magenta | `rgba(255, 0, 255, 0.5)` | `--color-glow-magenta` |
+Four-level dark hierarchy (`bg-void` → `bg-bg-primary` → `bg-bg-elevated`
+→ `bg-bg-surface`). Three text levels (`text-text-primary` →
+`text-text-secondary` → `text-text-muted`). Never use brand colors for
+long-form body — short labels, links, accents only.
 
-### Usage
+## See also
 
-```css
-/* Custom glow effect */
-.custom-glow {
-  box-shadow: 0 0 20px var(--color-glow-green);
-}
-```
-
-## CSS Variables Reference
-
-Defined in `src/app/globals.css`:
-
-### Theme Block (Tailwind v4)
-
-```css
-@theme {
-  /* Brand */
-  --color-rga-green: #00ff41;
-  --color-rga-cyan: #00ffff;
-  --color-rga-magenta: #ff00ff;
-
-  /* Backgrounds */
-  --color-void: #030303;
-  --color-bg-primary: #0a0a0a;
-  --color-bg-elevated: #111111;
-  --color-bg-surface: #1a1a1a;
-
-  /* Text */
-  --color-text-primary: #ffffff;
-  --color-text-secondary: #888888;
-  --color-text-muted: #555555;
-
-  /* Glows */
-  --color-glow-green: rgba(0, 255, 65, 0.5);
-  --color-glow-cyan: rgba(0, 255, 255, 0.5);
-  --color-glow-magenta: rgba(255, 0, 255, 0.5);
-}
-```
-
-### shadcn/ui Variables (OKLCH)
-
-```css
-:root {
-  --background: oklch(0.06 0 0);
-  --foreground: oklch(0.98 0 0);
-  --primary: oklch(0.87 0.29 142); /* RGA Green */
-  --accent: oklch(0.85 0.18 195); /* Cyan */
-  --destructive: oklch(0.65 0.25 0); /* Magenta */
-  --border: oklch(0.25 0 0);
-  --ring: oklch(0.87 0.29 142);
-}
-```
-
-## Color with Opacity
-
-Use Tailwind's opacity modifier:
-
-```tsx
-// 50% opacity
-<div className="bg-rga-green/50">Semi-transparent green</div>
-
-// 30% opacity for subtle effects
-<div className="bg-rga-cyan/30">Subtle cyan tint</div>
-
-// Selection color (already configured globally)
-::selection { @apply bg-rga-green/30 text-white; }
-```
-
-## Gradients
-
-### Brand Gradient
-
-```tsx
-<h1 className="text-gradient-rga">Gradient Text</h1>
-```
-
-Creates green → cyan → magenta gradient text.
-
-### Custom Gradients
-
-```tsx
-// Radial glow (used in Hero)
-<div style={{
-  background: `radial-gradient(ellipse at 80% 50%, rgba(0,255,65,0.15) 0%, transparent 50%)`
-}} />
-
-// Linear gradient
-<div className="bg-linear-to-r from-rga-green to-rga-cyan" />
-```
-
-## Dark Mode
-
-The project is **dark mode only**. The `dark` class is always applied:
-
-```tsx
-// src/app/(frontend)/layout.tsx
-<html lang="en" className="dark">
-```
-
-No light mode variant exists. All colors are optimized for dark backgrounds.
+- `src/stories/brand/Colors.mdx` — Storybook page with live mockups.
+- `/brand` route — full living reference.
+- `src/lib/design-tokens.ts` — TypeScript exports consumed by both.
+- `src/app/globals.css` — token declarations.

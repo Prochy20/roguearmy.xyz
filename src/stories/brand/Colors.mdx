@@ -1,0 +1,241 @@
+import { Meta, ColorPalette, ColorItem } from '@storybook/addon-docs/blocks'
+import {
+  BRAND_COLORS,
+  EXTENDED_PALETTE,
+  BG_COLORS,
+  TEXT_COLORS,
+  GLOW_COLORS,
+  SEMANTIC_TOKENS,
+  STATUS_PILL_MODES,
+} from '@/lib/design-tokens'
+
+<Meta title="Brand/Colors" />
+
+# Colors
+
+The RGA palette is a **two-layer system** built for dark cyberpunk interfaces.
+
+- **Layer 1 — raw palette.** Seven brand-saturated hex values. Use directly via `text-rga-*` only when no semantic name applies (rare).
+- **Layer 2 — semantic aliases.** Names that describe what the color *does* in context (`status-warn`, `game-d2`, `role-mod`). Components reference these. Same hex may back multiple aliases when surfaces don't coexist on one screen.
+
+The single biggest rule that keeps this system coherent: **chrome stays RGA-neutral; body wears game color**. The persistent top ribbon and nav are always green/muted/white regardless of section. The page body under `/division-2/*` wears `game-d2` (orange). Future game sections each get their own brand color, but the chrome frame never changes.
+
+Values below come from `src/lib/design-tokens.ts`. Both this page and the `/brand` route on the live site read from the same source.
+
+## Layer 1 — raw palette
+
+These are the seven hex values the system is built on. Prefer Layer 2 aliases in components; reach for these only when no semantic fits.
+
+<ColorPalette>
+  {BRAND_COLORS.map((c) => (
+    <ColorItem key={c.hex} title={c.name} subtitle={c.tailwind} colors={{ [c.name]: c.hex }} />
+  ))}
+  {EXTENDED_PALETTE.map((c) => (
+    <ColorItem key={c.hex} title={c.name} subtitle={c.tailwind} colors={{ [c.name]: c.hex }} />
+  ))}
+</ColorPalette>
+
+- **Green** `#00FF41` — RGA brand identity. Logo, primary CTAs, selection, scrollbar.
+- **Cyan** `#00FFFF` — alternative voice. No fixed semantic — use when green would be wrong or you need a second neon flavor.
+- **Magenta** `#FF00FF` — backs the `tier-booster` semantic (Discord-boost-gated perks, BOOSTER PERK widgets, the StatRibbon `booster` pill mode). Otherwise decorative — powers `text-chromatic`, RGB-shift glitch effects, gradient ends. Never a failure state.
+- **Orange** `#FF8000` — Division 2 game brand (`game-d2`) and Moderator staff role (`role-mod`). Same hex, different surfaces.
+- **Chartreuse** `#CCFF00` — exclusively for Developer staff role (`role-dev`). Don't repurpose.
+- **Yellow** `#FFE100` — Hazard Yellow. Status warning (`status-warn`) — STALE, MEMBERS-ONLY gates, soft attention.
+- **Rose** `#FF0066` — Status error (`status-error`) and Admin staff role (`role-admin`). Same hex, different surfaces.
+
+## Layer 2 — semantic aliases
+
+Use these in components. They tell the next reader **why** a color is there, not just which one it is.
+
+<div style={{ overflowX: 'auto', margin: '1.5rem 0' }}>
+  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+    <thead>
+      <tr style={{ borderBottom: '1px solid #333' }}>
+        <th style={{ textAlign: 'left', padding: '0.5rem' }}>Alias</th>
+        <th style={{ textAlign: 'left', padding: '0.5rem' }}>Backs</th>
+        <th style={{ textAlign: 'left', padding: '0.5rem' }}>Hex</th>
+        <th style={{ textAlign: 'left', padding: '0.5rem' }}>Purpose</th>
+      </tr>
+    </thead>
+    <tbody>
+      {SEMANTIC_TOKENS.map((t) => (
+        <tr key={t.alias} style={{ borderBottom: '1px solid #1a1a1a' }}>
+          <td style={{ padding: '0.5rem' }}>
+            <code>{t.alias}</code>
+          </td>
+          <td style={{ padding: '0.5rem' }}>
+            <code style={{ color: '#888' }}>{t.layer1}</code>
+          </td>
+          <td style={{ padding: '0.5rem' }}>
+            <span
+              aria-hidden
+              style={{
+                display: 'inline-block',
+                width: '0.8rem',
+                height: '0.8rem',
+                background: t.hex.startsWith('#') ? t.hex : 'oklch(0.65 0 0)',
+                verticalAlign: 'middle',
+                marginRight: '0.4rem',
+                border: '1px solid #333',
+              }}
+            />
+            <code>{t.hex}</code>
+          </td>
+          <td style={{ padding: '0.5rem' }}>{t.purpose}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
+## Status pill — three modes
+
+The chrome ribbon (`StatRibbon`) carries a status pill that always renders, but in one of three modes. The pill's job is to be **silent when everything is fine and loud when it isn't**.
+
+<div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', margin: '1.5rem 0' }}>
+  {STATUS_PILL_MODES.map((m) => (
+    <div
+      key={m.mode}
+      style={{
+        background: '#030303',
+        border: '1px solid rgba(255,255,255,0.08)',
+        padding: '1rem',
+        fontFamily: 'monospace',
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.5rem' }}>
+        <span
+          style={{
+            fontSize: '10px',
+            letterSpacing: '0.3em',
+            textTransform: 'uppercase',
+            color: '#888',
+            minWidth: '4rem',
+          }}
+        >
+          mode: <strong style={{ color: '#fff' }}>{m.mode}</strong>
+        </span>
+        <span
+          className={m.textClass}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            fontSize: '10px',
+            letterSpacing: '0.3em',
+            textTransform: 'uppercase',
+          }}
+        >
+          <span
+            aria-hidden
+            className={m.dotClass}
+            style={{ display: 'inline-block', width: '0.5rem', height: '0.5rem' }}
+          />
+          {m.example}
+        </span>
+      </div>
+      <div style={{ color: '#888', fontSize: '0.8rem', fontFamily: 'sans-serif' }}>{m.description}</div>
+    </div>
+  ))}
+</div>
+
+> **Magenta is no longer a failure color.** Previously every failure was magenta; now `status-error` is rose. Magenta carries one pill semantic (`booster` — names the Discord-boost-gated tier, takes precedence over warn/error when the pill identifies BOOSTER) and is otherwise decorative.
+
+## Chrome vs body layers
+
+Two orthogonal layers coexist on every page. **Chrome** is the persistent shell — top ribbon, nav, MENU button, status pill. It always uses RGA neutral colors (green brand + muted + white). **Body** is the page-unique content under that shell — titles, sections, mission rows. On `/division-2/*` the body wears `game-d2` orange.
+
+<div style={{ border: '1px solid rgba(255,255,255,0.08)', background: '#030303', padding: '1.5rem', margin: '1.5rem 0' }}>
+  {/* Chrome zone */}
+  <div style={{ position: 'relative' }}>
+    <div style={{ position: 'absolute', top: '-0.75rem', left: 0, padding: '0 0.5rem', background: '#030303', fontFamily: 'monospace', fontSize: '9px', letterSpacing: '0.3em', textTransform: 'uppercase', color: '#00FF41' }}>
+      ← Chrome zone
+    </div>
+    <div style={{ border: '1px solid rgba(255,255,255,0.08)', background: 'rgba(0,0,0,0.78)', padding: '0.75rem 1rem' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '0.5rem 1rem', fontFamily: 'monospace', fontSize: '10px', letterSpacing: '0.3em', textTransform: 'uppercase', color: '#555' }}>
+        <span style={{ color: '#888' }}>//</span>
+        <span style={{ color: '#888' }}>Division 2</span>
+        <span aria-hidden>›</span>
+        <span style={{ color: '#888' }}>Escalation</span>
+        <span aria-hidden>›</span>
+        <span style={{ color: '#fff' }}>Tue · Jun 2</span>
+        <span aria-hidden style={{ width: '1px', height: '0.75rem', background: 'rgba(255,255,255,0.1)' }} />
+        <span>Missions <span style={{ color: '#fff' }}>5</span></span>
+        <span style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', color: '#888' }}>
+          <span aria-hidden style={{ display: 'inline-block', width: '0.5rem', height: '0.5rem', background: '#888' }} />
+          VIEWING
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div style={{ borderTop: '1px dashed rgba(255,255,255,0.1)', margin: '1.5rem 0' }} aria-hidden />
+
+  {/* Body zone */}
+  <div style={{ position: 'relative', paddingTop: '0.5rem' }}>
+    <div style={{ position: 'absolute', top: '-0.25rem', left: 0, padding: '0 0.5rem', background: '#030303', fontFamily: 'monospace', fontSize: '9px', letterSpacing: '0.3em', textTransform: 'uppercase', color: '#FF8000' }}>
+      ← Body zone (game-d2)
+    </div>
+    <p style={{ fontFamily: 'monospace', fontSize: '10px', letterSpacing: '0.3em', textTransform: 'uppercase', color: '#555', marginTop: '1rem', marginBottom: '0.75rem' }}>
+      // Division 2 · Escalation · Targeted Loot
+    </p>
+    <div style={{ fontFamily: 'var(--font-display, "Black Ops One", sans-serif)', textTransform: 'uppercase', lineHeight: 0.85, letterSpacing: '-0.01em' }}>
+      <div style={{ color: '#fff', fontSize: '2.5rem' }}>ESCALATION</div>
+      <div style={{ color: '#FF8000', fontSize: '2.5rem', textShadow: '0 0 24px rgba(255,128,0,0.5)' }}>PROTOCOL</div>
+    </div>
+    <div style={{ marginTop: '1.5rem', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem', fontFamily: 'monospace', fontSize: '10px', letterSpacing: '0.3em', textTransform: 'uppercase' }}>
+      <span style={{ color: '#555' }}>SEC_01 // <span style={{ color: '#888' }}>Active Missions</span></span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', color: '#FF8000' }}>
+        <span style={{ border: '1px solid rgba(255,128,0,0.3)', padding: '0.25rem 0.5rem' }}>{'<'}</span>
+        <span style={{ color: '#fff', padding: '0 0.5rem' }}>Tue · Jun 2</span>
+        <span style={{ border: '1px solid rgba(255,128,0,0.3)', padding: '0.25rem 0.5rem' }}>{'>'}</span>
+        <span style={{ border: '1px solid rgba(255,128,0,0.5)', background: 'rgba(255,128,0,0.1)', padding: '0.25rem 0.75rem' }}>// Today</span>
+      </div>
+    </div>
+    <div style={{ marginTop: '0.75rem', border: '1px solid rgba(255,128,0,0.3)', background: 'rgba(255,128,0,0.03)', padding: '1rem', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+        <span style={{ fontFamily: 'monospace', fontSize: '10px', color: '#555', letterSpacing: '0.3em' }}>M_01</span>
+        <div>
+          <div style={{ fontFamily: 'monospace', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.3em', color: '#555' }}>// Drops</div>
+          <div style={{ fontFamily: 'var(--font-display, "Black Ops One", sans-serif)', fontSize: '1.125rem', textTransform: 'uppercase', color: '#FF8000' }}>Legatus S.P.A.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+## Background colors
+
+Four levels of darkness create depth and hierarchy. Layer them from dark to light: **Void → Primary → Elevated → Surface**. Never skip levels.
+
+<ColorPalette>
+  {BG_COLORS.map((c) => (
+    <ColorItem key={c.hex} title={c.name} subtitle={c.tailwind} colors={{ [c.name]: c.hex }} />
+  ))}
+</ColorPalette>
+
+## Text colors
+
+Three text hierarchy levels:
+
+- **Primary** (#FFFFFF) — headings and important content.
+- **Secondary** (#888888) — body text and descriptions.
+- **Muted** (#555555) — labels, timestamps, placeholders, disabled text.
+
+<ColorPalette>
+  {TEXT_COLORS.map((c) => (
+    <ColorItem key={c.hex} title={c.name} subtitle={c.tailwind} colors={{ [c.name]: c.hex }} />
+  ))}
+</ColorPalette>
+
+> Never use brand colors (green, cyan, magenta) for long-form body text — they are for short labels, links, and accents only.
+
+## Glow colors
+
+Semi-transparent versions of palette colors, used exclusively for `box-shadow` and `text-shadow` glow effects. These create the signature neon luminosity that defines the cyberpunk aesthetic.
+
+<ColorPalette>
+  {GLOW_COLORS.map((c) => (
+    <ColorItem key={c.tailwind} title={c.name} subtitle={c.tailwind} colors={{ [c.name]: c.hex }} />
+  ))}
+</ColorPalette>

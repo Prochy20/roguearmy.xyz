@@ -2,7 +2,7 @@
 
 import { motion } from "motion/react"
 import { SectionGlitch } from "@/components/effects/SectionGlitch"
-import { ScrollReveal } from "@/components/shared/ScrollReveal"
+import { ScrollReveal } from "@/components/effects/ScrollReveal"
 import type { Game } from "@/payload-types"
 
 interface GamesShowcaseProps {
@@ -70,7 +70,7 @@ export function GamesShowcase({ games }: GamesShowcaseProps) {
   }
 
   return (
-    <section className="relative py-20 overflow-hidden">
+    <section id="games" className="relative py-20 overflow-hidden scroll-mt-24">
       {/* Glitch transition from Hero */}
       <SectionGlitch
         intensity="medium"

@@ -3,9 +3,9 @@
 import { motion } from "motion/react"
 import { GlitchText } from "@/components/effects/GlitchText"
 import { SectionGlitch } from "@/components/effects/SectionGlitch"
-import { GlowButton } from "@/components/shared/GlowButton"
-import { ScrollReveal } from "@/components/shared/ScrollReveal"
-import { DiscordIcon } from "@/components/shared/DiscordIcon"
+import { GlowButton } from "@/components/ui/GlowButton"
+import { ScrollReveal } from "@/components/effects/ScrollReveal"
+import { DiscordIcon } from "@/components/ui/DiscordIcon"
 
 const DISCORD_INVITE = "https://dc.roguearmy.xyz"
 

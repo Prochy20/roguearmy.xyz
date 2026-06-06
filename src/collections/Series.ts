@@ -1,13 +1,14 @@
 import type { CollectionConfig } from 'payload'
+import { publicRead } from '@/access'
 
 export const Series: CollectionConfig = {
   slug: 'series',
   admin: {
     useAsTitle: 'name',
-    group: 'Content',
+    group: 'Editorial',
   },
   access: {
-    read: () => true,
+    read: publicRead,
   },
   fields: [
     {

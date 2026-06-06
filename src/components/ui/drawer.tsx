@@ -128,7 +128,7 @@ export function DrawerHeader({
       <div className="flex-1 min-w-0">{children}</div>
       <button
         onClick={onClose}
-        className="p-1 text-rga-gray hover:text-white transition-colors flex-shrink-0 ml-2"
+        className="p-1 text-text-secondary hover:text-white transition-colors flex-shrink-0 ml-2"
         aria-label="Close"
       >
         <X className="w-5 h-5" />

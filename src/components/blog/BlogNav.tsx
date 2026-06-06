@@ -1,24 +1,23 @@
 'use client'
 
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { motion } from 'motion/react'
 import { BlogNavLinks } from './BlogNavLinks'
 import { BlogNavSearch } from './BlogNavSearch'
 import { BlogNavUserMenu } from './BlogNavUserMenu'
-import { BlogNavLoginButton } from './BlogNavLoginButton'
-import { BlogMobileNav } from './BlogMobileNav'
-import { BlogBookmarksDrawer } from './BlogBookmarksDrawer'
+import { BookmarksDrawer } from '@/components/article/BookmarksDrawer'
+import { BlogNavMenuTrigger } from './BlogNavMenuTrigger'
 import { useScrollVisibility } from './useScrollVisibility'
 import { useBlogAuth } from '@/contexts/BlogAuthContext'
 
-interface BlogNavProps {
-  /** Enable hide-on-scroll behavior (for article detail pages) */
-  hideOnScroll?: boolean
-  /** Whether the user is authenticated */
-  isAuthenticated?: boolean
-}
+// Hide-on-scroll is only enabled on article detail pages (`/blog/:topic/:slug`).
+// List pages keep the nav permanently sticky.
+const ARTICLE_DETAIL_REGEX = /^\/blog\/[^/]+\/[^/]+$/
 
-export function BlogNav({ hideOnScroll = false }: BlogNavProps) {
+export function BlogNav() {
+  const pathname = usePathname()
+  const hideOnScroll = ARTICLE_DETAIL_REGEX.test(pathname)
   const isVisible = useScrollVisibility({ enabled: hideOnScroll })
   const { isAuthenticated } = useBlogAuth()
 
@@ -30,7 +29,7 @@ export function BlogNav({ hideOnScroll = false }: BlogNavProps) {
         opacity: isVisible ? 1 : 0,
       }}
       transition={{ duration: 0.2 }}
-      className="sticky top-0 z-50 border-b border-rga-green/20 bg-void/90 backdrop-blur-md"
+      className="sticky top-0 z-40 border-b border-rga-green/20 bg-void/90 backdrop-blur-md"
     >
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between gap-4">
@@ -50,22 +49,18 @@ export function BlogNav({ hideOnScroll = false }: BlogNavProps) {
           {/* Center: Search */}
           <BlogNavSearch />
 
-          {/* Right: Bookmarks drawer + User menu (desktop) + Mobile hamburger */}
+          {/* Right: Bookmarks drawer + User menu (desktop) + Site menu trigger */}
           <div className="flex items-center gap-2">
-            {isAuthenticated ? (
+            {isAuthenticated && (
               <>
                 {/* Show bookmarks drawer for authenticated users */}
-                <BlogBookmarksDrawer />
+                <BookmarksDrawer />
                 <div className="hidden sm:block">
                   <BlogNavUserMenu />
                 </div>
               </>
-            ) : (
-              <div className="hidden sm:block">
-                <BlogNavLoginButton />
-              </div>
             )}
-            <BlogMobileNav isAuthenticated={isAuthenticated} />
+            <BlogNavMenuTrigger />
           </div>
         </div>
       </div>

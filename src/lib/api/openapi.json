@@ -1,0 +1,3661 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/afk/me": {
+      "get": {
+        "operationId": "AfkController_getOwnStatus",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Active AFK record, or null.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AfkRecordResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key / bearer token."
+          }
+        },
+        "security": [
+          {
+            "X-API-Key": []
+          },
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Return the caller’s active AFK record, or null when not AFK.",
+        "tags": [
+          "Discord / AFK"
+        ]
+      },
+      "post": {
+        "operationId": "AfkController_setOwnAfk",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetAfkBodyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AfkRecordResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key / bearer token."
+          },
+          "404": {
+            "description": "Caller is not a member of the guild bound to this token."
+          },
+          "409": {
+            "description": "Caller is already AFK; clear first before setting again."
+          },
+          "412": {
+            "description": "Guild has no AFK role configured."
+          }
+        },
+        "security": [
+          {
+            "X-API-Key": []
+          },
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Mark the caller as AFK. Applies the AFK role and nickname prefix on Discord.",
+        "tags": [
+          "Discord / AFK"
+        ]
+      },
+      "delete": {
+        "operationId": "AfkController_clearOwnAfk",
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "Missing or invalid API key / bearer token."
+          },
+          "404": {
+            "description": "Caller is not a member of the guild bound to this token."
+          },
+          "412": {
+            "description": "Guild has no AFK role configured."
+          }
+        },
+        "security": [
+          {
+            "X-API-Key": []
+          },
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Clear the caller’s AFK status. Idempotent: returns 204 even if the caller was not AFK.",
+        "tags": [
+          "Discord / AFK"
+        ]
+      }
+    },
+    "/api/afk/me/history": {
+      "get": {
+        "operationId": "AfkController_getOwnHistory",
+        "parameters": [
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "offset",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 0,
+              "default": 0,
+              "type": "number"
+            }
+          },
+          {
+            "name": "isValid",
+            "required": false,
+            "in": "query",
+            "description": "Optional filter on AFK record validity. Omit to return both active and ended records; pass `true` for active only, `false` for ended only.",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AfkHistoryResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key / bearer token."
+          }
+        },
+        "security": [
+          {
+            "X-API-Key": []
+          },
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Return the caller’s paginated AFK history.",
+        "tags": [
+          "Discord / AFK"
+        ]
+      }
+    },
+    "/api/afk/users": {
+      "get": {
+        "operationId": "AfkController_listGuildAfk",
+        "parameters": [
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "offset",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 0,
+              "default": 0,
+              "type": "number"
+            }
+          },
+          {
+            "name": "isValid",
+            "required": false,
+            "in": "query",
+            "description": "Optional filter on AFK record validity. Omit to return both active and ended records; pass `true` for active only, `false` for ended only.",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AfkListResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key / bearer token."
+          },
+          "403": {
+            "description": "Caller lacks the STAFF role."
+          }
+        },
+        "security": [
+          {
+            "X-API-Key": []
+          },
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List AFK records across the guild (staff only). Filter via isValid.",
+        "tags": [
+          "Discord / AFK"
+        ]
+      }
+    },
+    "/api/afk/users/{id}": {
+      "get": {
+        "operationId": "AfkController_getUserStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Active AFK record, or null.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AfkRecordWithProfileResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key / bearer token."
+          },
+          "403": {
+            "description": "Caller lacks the STAFF role."
+          }
+        },
+        "security": [
+          {
+            "X-API-Key": []
+          },
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Return a target user’s active AFK record (staff only), or null when not AFK.",
+        "tags": [
+          "Discord / AFK"
+        ]
+      },
+      "post": {
+        "operationId": "AfkController_setUserAfk",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetAfkBodyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AfkRecordWithProfileResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key / bearer token."
+          },
+          "403": {
+            "description": "Caller lacks the STAFF role."
+          },
+          "404": {
+            "description": "Target user is not a member of the guild bound to this token."
+          },
+          "409": {
+            "description": "Target user is already AFK; clear first before setting again."
+          },
+          "412": {
+            "description": "Guild has no AFK role configured."
+          }
+        },
+        "security": [
+          {
+            "X-API-Key": []
+          },
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Mark a target user as AFK (staff only). Applies the AFK role and nickname prefix.",
+        "tags": [
+          "Discord / AFK"
+        ]
+      },
+      "delete": {
+        "operationId": "AfkController_clearUserAfk",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "Missing or invalid API key / bearer token."
+          },
+          "403": {
+            "description": "Caller lacks the STAFF role."
+          },
+          "404": {
+            "description": "Target user is not a member of the guild bound to this token."
+          },
+          "412": {
+            "description": "Guild has no AFK role configured."
+          }
+        },
+        "security": [
+          {
+            "X-API-Key": []
+          },
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Clear a target user’s AFK status (staff only). Idempotent: 204 even if the user was not AFK.",
+        "tags": [
+          "Discord / AFK"
+        ]
+      }
+    },
+    "/api/afk/users/{id}/history": {
+      "get": {
+        "operationId": "AfkController_getUserHistory",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "offset",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 0,
+              "default": 0,
+              "type": "number"
+            }
+          },
+          {
+            "name": "isValid",
+            "required": false,
+            "in": "query",
+            "description": "Optional filter on AFK record validity. Omit to return both active and ended records; pass `true` for active only, `false` for ended only.",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AfkListResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key / bearer token."
+          },
+          "403": {
+            "description": "Caller lacks the STAFF role."
+          }
+        },
+        "security": [
+          {
+            "X-API-Key": []
+          },
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Return a target user’s paginated AFK history (staff only).",
+        "tags": [
+          "Discord / AFK"
+        ]
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "operationId": "AuthController_login",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DiscordLoginRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthTokensResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid X-API-Key or Discord access token."
+          },
+          "403": {
+            "description": "User is not a member of the application guild."
+          }
+        },
+        "security": [
+          {
+            "X-API-Key": []
+          }
+        ],
+        "summary": "Exchange a Discord OAuth access token for application access + refresh tokens.",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/auth/refresh": {
+      "post": {
+        "operationId": "AuthController_refresh",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthTokensResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid, expired, revoked, or reused refresh token."
+          }
+        },
+        "security": [
+          {
+            "X-API-Key": []
+          }
+        ],
+        "summary": "Rotate refresh token; returns a new access + refresh token pair.",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "operationId": "AuthController_logout",
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "X-API-Key": []
+          },
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Revoke the current refresh-token family (logout this session).",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/auth/logout-all": {
+      "post": {
+        "operationId": "AuthController_logoutAll",
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "X-API-Key": []
+          },
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Revoke every refresh-token family for the current user (logout everywhere).",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/auth/me": {
+      "get": {
+        "operationId": "AuthController_me",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "X-API-Key": []
+          },
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Return the authenticated user identity with freshly resolved roles.",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/auth/token/validate": {
+      "get": {
+        "operationId": "AuthTokenController_validate",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Token is valid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidateApiTokenDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing, invalid, revoked, or expired token."
+          }
+        },
+        "security": [
+          {
+            "X-API-Key": []
+          }
+        ],
+        "summary": "Validate an API key passed via the X-API-Key header.",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/community/roles": {
+      "get": {
+        "operationId": "CommunityController_getRoles",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DiscordRoleDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key."
+          }
+        },
+        "security": [
+          {
+            "X-API-Key": []
+          }
+        ],
+        "summary": "List all guild roles, sorted by position desc, @everyone excluded.",
+        "tags": [
+          "Community"
+        ]
+      }
+    },
+    "/api/community/stats": {
+      "get": {
+        "operationId": "CommunityController_getStats",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommunityStatsDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key."
+          }
+        },
+        "security": [
+          {
+            "X-API-Key": []
+          }
+        ],
+        "summary": "Return community totals (members, recent joiners, voice minutes, messages).",
+        "tags": [
+          "Community"
+        ]
+      }
+    },
+    "/api/community/members/recent": {
+      "get": {
+        "operationId": "CommunityController_getRecent",
+        "parameters": [
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 50,
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "offset",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 0,
+              "default": 0,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommunityMembersPageDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key / bearer token."
+          }
+        },
+        "security": [
+          {
+            "X-API-Key": []
+          },
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Return the newest active members ordered by joinedAt desc.",
+        "tags": [
+          "Community"
+        ]
+      }
+    },
+    "/api/community/members/autocomplete": {
+      "get": {
+        "operationId": "CommunityController_autocomplete",
+        "parameters": [
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "description": "Case-insensitive name fragment matched against nickname, globalName, and username.",
+            "schema": {
+              "minLength": 2,
+              "type": "string"
+            }
+          },
+          {
+            "name": "ids",
+            "required": false,
+            "in": "query",
+            "description": "Comma-separated list of Discord IDs to hydrate. Max 100.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 25,
+              "default": 25,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CommunityMemberSlimDto"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "q must be at least 2 characters when provided."
+          },
+          "401": {
+            "description": "Missing or invalid API key."
+          }
+        },
+        "security": [
+          {
+            "X-API-Key": []
+          }
+        ],
+        "summary": "Slim member list for CMS autocomplete fields. Supports name fragment or ID list.",
+        "tags": [
+          "Community"
+        ]
+      }
+    },
+    "/api/community/members/lookup": {
+      "get": {
+        "operationId": "CommunityController_lookup",
+        "parameters": [
+          {
+            "name": "ids",
+            "required": true,
+            "in": "query",
+            "description": "Comma-separated list of Discord IDs to hydrate. Required, max 100.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CommunityMemberDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key."
+          }
+        },
+        "security": [
+          {
+            "X-API-Key": []
+          }
+        ],
+        "summary": "Bulk-hydrate rich member DTOs by Discord ID list (staff page render).",
+        "tags": [
+          "Community"
+        ]
+      }
+    },
+    "/api/community/members": {
+      "get": {
+        "operationId": "CommunityController_getDirectory",
+        "parameters": [
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "description": "Case-insensitive name fragment matched against nickname, globalName, and username.",
+            "schema": {
+              "minLength": 2,
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "joinedAt",
+              "type": "string",
+              "enum": [
+                "joinedAt",
+                "name"
+              ]
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "desc",
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "offset",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 0,
+              "default": 0,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommunityMembersPageDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key / bearer token."
+          }
+        },
+        "security": [
+          {
+            "X-API-Key": []
+          },
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Searchable, sortable, paginated member directory.",
+        "tags": [
+          "Community"
+        ]
+      }
+    },
+    "/api/community/members/{discordId}": {
+      "get": {
+        "operationId": "CommunityController_getOne",
+        "parameters": [
+          {
+            "name": "discordId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommunityMemberDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key / bearer token."
+          },
+          "404": {
+            "description": "Member not found in this guild or has left."
+          }
+        },
+        "security": [
+          {
+            "X-API-Key": []
+          },
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Return the rich profile for a single active member.",
+        "tags": [
+          "Community"
+        ]
+      }
+    },
+    "/api/content/digests": {
+      "get": {
+        "operationId": "ContentDigestController_list",
+        "parameters": [
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "offset",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 0,
+              "default": 0,
+              "type": "number"
+            }
+          },
+          {
+            "name": "topic",
+            "required": false,
+            "in": "query",
+            "description": "Filter by topic (e.g. division-2, xdefiant).",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "frequency",
+            "required": false,
+            "in": "query",
+            "description": "Filter by frequency (daily or weekly).",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "daily",
+                "weekly"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of digests.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentDigestListDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API token."
+          }
+        },
+        "security": [
+          {
+            "X-API-Key": []
+          }
+        ],
+        "summary": "List content digests with optional topic and frequency filters",
+        "tags": [
+          "Content / Digest"
+        ]
+      }
+    },
+    "/api/content/digests/{id}": {
+      "get": {
+        "operationId": "ContentDigestController_getOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Digest details with hydrated articles.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentDigestDetailDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API token."
+          },
+          "404": {
+            "description": "Digest not found."
+          }
+        },
+        "security": [
+          {
+            "X-API-Key": []
+          }
+        ],
+        "summary": "Get a single content digest by UUID, with cited articles hydrated",
+        "tags": [
+          "Content / Digest"
+        ]
+      }
+    },
+    "/api/content/digests/generate": {
+      "post": {
+        "operationId": "ContentDigestController_generate",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateDigestBodyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Generation completed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentDigestGenerateResultDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API token."
+          }
+        },
+        "security": [
+          {
+            "X-API-Key": []
+          }
+        ],
+        "summary": "Trigger digest generation for one or all topics and frequencies",
+        "tags": [
+          "Content / Digest"
+        ]
+      }
+    },
+    "/api/content": {
+      "get": {
+        "operationId": "ContentController_list",
+        "parameters": [
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "offset",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 0,
+              "default": 0,
+              "type": "number"
+            }
+          },
+          {
+            "name": "source",
+            "required": false,
+            "in": "query",
+            "description": "Filter by source (e.g. UBISOFT, REDDIT).",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "UBISOFT",
+                "REDDIT",
+                "YOUTUBE"
+              ]
+            }
+          },
+          {
+            "name": "topic",
+            "required": false,
+            "in": "query",
+            "description": "Filter by topic (e.g. division-2, xdefiant).",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "contentType",
+            "required": false,
+            "in": "query",
+            "description": "Filter by AI-classified content type (e.g. news, guide, discussion).",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "minRelevance",
+            "required": false,
+            "in": "query",
+            "description": "Minimum AI relevance score (1-5).",
+            "schema": {
+              "minimum": 1,
+              "maximum": 5,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of articles.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentListDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API token."
+          }
+        },
+        "security": [
+          {
+            "X-API-Key": []
+          }
+        ],
+        "summary": "List content articles with optional source and topic filters",
+        "tags": [
+          "Content"
+        ]
+      }
+    },
+    "/api/content/{id}": {
+      "get": {
+        "operationId": "ContentController_getOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Article details.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentArticleDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API token."
+          },
+          "404": {
+            "description": "Article not found."
+          }
+        },
+        "security": [
+          {
+            "X-API-Key": []
+          }
+        ],
+        "summary": "Get a single content article by UUID or source ID",
+        "tags": [
+          "Content"
+        ]
+      }
+    },
+    "/api/content/sync": {
+      "post": {
+        "operationId": "ContentController_triggerSync",
+        "parameters": [
+          {
+            "name": "source",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sync completed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ContentSyncResultDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API token."
+          }
+        },
+        "security": [
+          {
+            "X-API-Key": []
+          }
+        ],
+        "summary": "Trigger an incremental content sync for one or all sources",
+        "tags": [
+          "Content"
+        ]
+      }
+    },
+    "/api/discord/channels": {
+      "get": {
+        "operationId": "DiscordChannelController_getChannels",
+        "parameters": [
+          {
+            "name": "roleId",
+            "required": false,
+            "in": "query",
+            "description": "Filter channels by role ViewChannel permission",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "userId",
+            "required": false,
+            "in": "query",
+            "description": "Filter channels by guild member ViewChannel permission",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of channels.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ChannelDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API token."
+          }
+        },
+        "security": [
+          {
+            "X-API-Key": []
+          }
+        ],
+        "summary": "List guild channels",
+        "tags": [
+          "Discord / Channels"
+        ]
+      }
+    },
+    "/api/discord/channels/{channelId}": {
+      "get": {
+        "operationId": "DiscordChannelController_getChannel",
+        "parameters": [
+          {
+            "name": "channelId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Channel details.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChannelDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API token."
+          }
+        },
+        "security": [
+          {
+            "X-API-Key": []
+          }
+        ],
+        "summary": "Get channel details",
+        "tags": [
+          "Discord / Channels"
+        ]
+      }
+    },
+    "/api/discord/channels/{channelId}/messages": {
+      "get": {
+        "operationId": "DiscordChannelController_getMessages",
+        "parameters": [
+          {
+            "name": "channelId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50,
+              "type": "number"
+            }
+          },
+          {
+            "name": "before",
+            "required": false,
+            "in": "query",
+            "description": "Message ID cursor for pagination (fetch messages before this ID)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of messages.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ChannelMessageDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API token."
+          }
+        },
+        "security": [
+          {
+            "X-API-Key": []
+          }
+        ],
+        "summary": "Get channel message history",
+        "tags": [
+          "Discord / Channels"
+        ]
+      }
+    },
+    "/api/division2/escalation/weeks": {
+      "get": {
+        "operationId": "EscalationController_listWeeks",
+        "parameters": [
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "offset",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 0,
+              "default": 0,
+              "type": "number"
+            }
+          },
+          {
+            "name": "from",
+            "required": false,
+            "in": "query",
+            "description": "Lower bound on weekStart (inclusive), as YYYY-MM-DD.",
+            "schema": {
+              "example": "2026-01-01",
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": false,
+            "in": "query",
+            "description": "Upper bound on weekStart (inclusive), as YYYY-MM-DD.",
+            "schema": {
+              "example": "2026-12-31",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of weeks.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EscalationWeekListDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API token."
+          }
+        },
+        "security": [
+          {
+            "X-API-Key": []
+          }
+        ],
+        "summary": "List escalation weeks (newest first) with optional date-range filter.",
+        "tags": [
+          "Division 2 / Escalation"
+        ]
+      }
+    },
+    "/api/division2/escalation/weeks/current": {
+      "get": {
+        "operationId": "EscalationController_getCurrentWeek",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "The current week.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EscalationWeekDetailDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API token."
+          },
+          "404": {
+            "description": "No escalation week has been ingested yet."
+          }
+        },
+        "security": [
+          {
+            "X-API-Key": []
+          }
+        ],
+        "summary": "Get the still-active escalation week (most recent Tuesday ≤ today UTC), with embedded dailies.",
+        "tags": [
+          "Division 2 / Escalation"
+        ]
+      }
+    },
+    "/api/division2/escalation/weeks/{weekStart}": {
+      "get": {
+        "operationId": "EscalationController_getWeekByWeekStart",
+        "parameters": [
+          {
+            "name": "weekStart",
+            "required": true,
+            "in": "path",
+            "description": "The Tuesday weekStart in YYYY-MM-DD format.",
+            "schema": {
+              "example": "2026-05-05",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The matching week.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EscalationWeekDetailDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API token."
+          },
+          "404": {
+            "description": "No week exists for the supplied weekStart."
+          }
+        },
+        "security": [
+          {
+            "X-API-Key": []
+          }
+        ],
+        "summary": "Get a single escalation week by its Tuesday weekStart, with embedded dailies.",
+        "tags": [
+          "Division 2 / Escalation"
+        ]
+      }
+    },
+    "/api/division2/escalation/dailies": {
+      "get": {
+        "operationId": "EscalationController_listDailies",
+        "parameters": [
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "offset",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 0,
+              "default": 0,
+              "type": "number"
+            }
+          },
+          {
+            "name": "weekStart",
+            "required": false,
+            "in": "query",
+            "description": "Filter to dailies whose parent week starts on this date (YYYY-MM-DD).",
+            "schema": {
+              "example": "2026-05-05",
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "required": false,
+            "in": "query",
+            "description": "Lower bound on day (inclusive), as YYYY-MM-DD.",
+            "schema": {
+              "example": "2026-01-01",
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": false,
+            "in": "query",
+            "description": "Upper bound on day (inclusive), as YYYY-MM-DD.",
+            "schema": {
+              "example": "2026-12-31",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of dailies.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EscalationDailyListDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API token."
+          }
+        },
+        "security": [
+          {
+            "X-API-Key": []
+          }
+        ],
+        "summary": "List daily-loot rows (newest first) with optional weekStart and date-range filters.",
+        "tags": [
+          "Division 2 / Escalation"
+        ]
+      }
+    },
+    "/api/division2/escalation/dailies/{day}": {
+      "get": {
+        "operationId": "EscalationController_getDailyByDay",
+        "parameters": [
+          {
+            "name": "day",
+            "required": true,
+            "in": "path",
+            "description": "The calendar day in YYYY-MM-DD format.",
+            "schema": {
+              "example": "2026-05-07",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The matching daily.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EscalationDailyDetailDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API token."
+          },
+          "404": {
+            "description": "No daily-loot row exists for the supplied day."
+          }
+        },
+        "security": [
+          {
+            "X-API-Key": []
+          }
+        ],
+        "summary": "Get a single daily-loot row by its calendar day, with embedded week summary.",
+        "tags": [
+          "Division 2 / Escalation"
+        ]
+      }
+    },
+    "/api/division2/escalation/sync": {
+      "post": {
+        "operationId": "EscalationController_triggerSync",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SyncEscalationBodyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Sync completed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EscalationSyncResultDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API token."
+          }
+        },
+        "security": [
+          {
+            "X-API-Key": []
+          }
+        ],
+        "summary": "Trigger an upstream sync and per-guild dispatch for today’s daily loot. Mirrors the hourly cron, with optional `force` and per-guild scoping.",
+        "tags": [
+          "Division 2 / Escalation"
+        ]
+      }
+    },
+    "/api/leveling/me": {
+      "get": {
+        "operationId": "LevelingController_me",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OwnLevelResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key / bearer token."
+          }
+        },
+        "security": [
+          {
+            "X-API-Key": []
+          },
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Return the authenticated user’s current level, XP, and progress to the next level.",
+        "tags": [
+          "Discord / Leveling"
+        ]
+      }
+    },
+    "/api/leveling/leaderboard": {
+      "get": {
+        "operationId": "LevelingController_leaderboard",
+        "parameters": [
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "offset",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 0,
+              "default": 0,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LeaderboardResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key / bearer token."
+          }
+        },
+        "security": [
+          {
+            "X-API-Key": []
+          },
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Return the guild leaderboard plus the caller’s own ranked entry.",
+        "tags": [
+          "Discord / Leveling"
+        ]
+      }
+    },
+    "/api/status": {
+      "get": {
+        "operationId": "StatusController_getStatus",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Application is running."
+          }
+        },
+        "summary": "Health check",
+        "tags": [
+          "Status"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "RGA Discord Bot API",
+    "description": "REST API for the RGA Discord Bot",
+    "version": "1.8.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "X-API-Key": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key"
+      },
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "AfkRecordResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "discordId": {
+            "type": "string"
+          },
+          "guildId": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "object",
+            "nullable": true
+          },
+          "isValid": {
+            "type": "boolean",
+            "description": "False once the AFK session has ended."
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "When the AFK session started (ISO 8601)."
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "Last time the record was modified (ISO 8601)."
+          },
+          "endedAt": {
+            "type": "object",
+            "nullable": true,
+            "description": "When the AFK session ended (ISO 8601). Null while the session is still active."
+          },
+          "durationMs": {
+            "type": "number",
+            "description": "Duration of the AFK session in milliseconds. For active sessions, measured against the time the response was generated."
+          }
+        },
+        "required": [
+          "id",
+          "discordId",
+          "guildId",
+          "isValid",
+          "createdAt",
+          "updatedAt",
+          "durationMs"
+        ]
+      },
+      "AfkHistoryResponseDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AfkRecordResponseDto"
+            }
+          },
+          "total": {
+            "type": "number",
+            "description": "Total number of matching records."
+          },
+          "limit": {
+            "type": "number",
+            "description": "Limit echoed back from the request."
+          },
+          "offset": {
+            "type": "number",
+            "description": "Offset echoed back from the request."
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ]
+      },
+      "SetAfkBodyDto": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "Optional reason shown alongside the AFK status. Max 200 characters."
+          }
+        }
+      },
+      "AfkRecordWithProfileResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "discordId": {
+            "type": "string"
+          },
+          "guildId": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "object",
+            "nullable": true
+          },
+          "isValid": {
+            "type": "boolean",
+            "description": "False once the AFK session has ended."
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "When the AFK session started (ISO 8601)."
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "Last time the record was modified (ISO 8601)."
+          },
+          "endedAt": {
+            "type": "object",
+            "nullable": true,
+            "description": "When the AFK session ended (ISO 8601). Null while the session is still active."
+          },
+          "durationMs": {
+            "type": "number",
+            "description": "Duration of the AFK session in milliseconds. For active sessions, measured against the time the response was generated."
+          },
+          "username": {
+            "type": "object",
+            "nullable": true
+          },
+          "globalName": {
+            "type": "object",
+            "nullable": true
+          },
+          "nickname": {
+            "type": "object",
+            "nullable": true
+          },
+          "displayName": {
+            "type": "string",
+            "description": "Best available display name (nickname → globalName → username)."
+          },
+          "avatar": {
+            "type": "object",
+            "nullable": true,
+            "description": "Discord avatar hash; clients build the CDN URL."
+          }
+        },
+        "required": [
+          "id",
+          "discordId",
+          "guildId",
+          "isValid",
+          "createdAt",
+          "updatedAt",
+          "durationMs",
+          "displayName"
+        ]
+      },
+      "AfkListResponseDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AfkRecordWithProfileResponseDto"
+            }
+          },
+          "total": {
+            "type": "number",
+            "description": "Total number of matching records in the guild."
+          },
+          "limit": {
+            "type": "number",
+            "description": "Limit echoed back from the request."
+          },
+          "offset": {
+            "type": "number",
+            "description": "Offset echoed back from the request."
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ]
+      },
+      "DiscordLoginRequestDto": {
+        "type": "object",
+        "properties": {
+          "discordAccessToken": {
+            "type": "string",
+            "description": "Discord OAuth access token obtained by the frontend (scope: identify)."
+          }
+        },
+        "required": [
+          "discordAccessToken"
+        ]
+      },
+      "IconUrlsDto": {
+        "type": "object",
+        "properties": {
+          "64": {
+            "type": "string",
+            "description": "CDN URL at 64x64."
+          },
+          "128": {
+            "type": "string",
+            "description": "CDN URL at 128x128."
+          },
+          "256": {
+            "type": "string",
+            "description": "CDN URL at 256x256."
+          },
+          "512": {
+            "type": "string",
+            "description": "CDN URL at 512x512."
+          }
+        },
+        "required": [
+          "64",
+          "128",
+          "256",
+          "512"
+        ]
+      },
+      "DiscordRoleDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string",
+            "nullable": true,
+            "description": "Hex color (#rrggbb), or null when the role has no color set."
+          },
+          "iconUrls": {
+            "nullable": true,
+            "description": "Multi-size icon URLs, or null when no custom icon is set.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/IconUrlsDto"
+              }
+            ]
+          },
+          "unicodeEmoji": {
+            "type": "string",
+            "nullable": true,
+            "description": "Unicode emoji used as a fallback icon when no custom icon is set."
+          },
+          "position": {
+            "type": "number",
+            "description": "Higher position is rendered above lower in Discord."
+          },
+          "hoist": {
+            "type": "boolean",
+            "description": "Whether the role is displayed separately in the member list."
+          },
+          "mentionable": {
+            "type": "boolean"
+          },
+          "managed": {
+            "type": "boolean",
+            "description": "True for integration-managed roles (e.g. booster role, bot roles)."
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "color",
+          "iconUrls",
+          "unicodeEmoji",
+          "position",
+          "hoist",
+          "mentionable",
+          "managed"
+        ]
+      },
+      "AuthUserDto": {
+        "type": "object",
+        "properties": {
+          "discordId": {
+            "type": "string"
+          },
+          "guildId": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          },
+          "globalName": {
+            "type": "object",
+            "nullable": true
+          },
+          "nickname": {
+            "type": "object",
+            "nullable": true
+          },
+          "avatarUrls": {
+            "nullable": true,
+            "description": "Multi-size URLs for the user's global avatar, or null when no avatar is set.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/IconUrlsDto"
+              }
+            ]
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "DISCORD_ROLE_DEVELOPER",
+                "DISCORD_ROLE_TICKET_RESOLVER",
+                "DISCORD_ROLE_AFK",
+                "DISCORD_ROLE_QUARANTINE",
+                "DISCORD_ROLE_PENDING_VERIFICATION",
+                "DISCORD_ROLE_NOTIFY_ABOUT_PENDING_VERIFICATION",
+                "DISCORD_ROLE_BOOSTER",
+                "DISCORD_ROLE_STAFF"
+              ]
+            }
+          },
+          "discordRoles": {
+            "description": "All Discord roles the member holds, sorted by position desc; @everyone excluded.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DiscordRoleDto"
+            }
+          },
+          "joinedAt": {
+            "type": "string",
+            "nullable": true,
+            "description": "ISO 8601 timestamp of when the user joined the guild."
+          },
+          "premiumSince": {
+            "type": "string",
+            "nullable": true,
+            "description": "ISO 8601 timestamp of when the user started server-boosting."
+          },
+          "accountCreatedAt": {
+            "type": "string",
+            "description": "ISO 8601 timestamp of when the Discord account was created (derived from the snowflake)."
+          },
+          "serverAvatarUrls": {
+            "nullable": true,
+            "description": "Multi-size URLs for the guild-specific avatar override, or null when the user uses their global avatar.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/IconUrlsDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "discordId",
+          "guildId",
+          "avatarUrls",
+          "roles",
+          "discordRoles",
+          "joinedAt",
+          "premiumSince",
+          "accountCreatedAt",
+          "serverAvatarUrls"
+        ]
+      },
+      "AuthTokensResponseDto": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string"
+          },
+          "refreshToken": {
+            "type": "string"
+          },
+          "expiresIn": {
+            "type": "number",
+            "description": "Access token TTL in seconds."
+          },
+          "user": {
+            "$ref": "#/components/schemas/AuthUserDto"
+          }
+        },
+        "required": [
+          "accessToken",
+          "refreshToken",
+          "expiresIn",
+          "user"
+        ]
+      },
+      "RefreshRequestDto": {
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "description": "Previously issued refresh token."
+          }
+        },
+        "required": [
+          "refreshToken"
+        ]
+      },
+      "MeResponseDto": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/AuthUserDto"
+          }
+        },
+        "required": [
+          "user"
+        ]
+      },
+      "ValidateApiTokenDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CommunityStatsDto": {
+        "type": "object",
+        "properties": {
+          "totalMembers": {
+            "type": "number",
+            "description": "Active members in the guild (excluding members who have left)."
+          },
+          "joinedLast14d": {
+            "type": "number",
+            "description": "Active members who joined within the last 14 days."
+          },
+          "totalVoiceMinutes": {
+            "type": "number",
+            "description": "All-time total of completed voice-channel time across the guild, in whole minutes (floored)."
+          },
+          "totalMessages": {
+            "type": "number",
+            "description": "All-time total of user messages logged in the guild, including ones that were later deleted. Bot messages are not logged and therefore not counted."
+          },
+          "generatedAt": {
+            "type": "string",
+            "description": "ISO 8601 timestamp marking when this snapshot was generated."
+          }
+        },
+        "required": [
+          "totalMembers",
+          "joinedLast14d",
+          "totalVoiceMinutes",
+          "totalMessages",
+          "generatedAt"
+        ]
+      },
+      "CommunityMemberDto": {
+        "type": "object",
+        "properties": {
+          "discordId": {
+            "type": "string"
+          },
+          "username": {
+            "type": "object",
+            "nullable": true
+          },
+          "globalName": {
+            "type": "object",
+            "nullable": true
+          },
+          "nickname": {
+            "type": "object",
+            "nullable": true
+          },
+          "displayName": {
+            "type": "string",
+            "description": "Best available display name (nickname → globalName → username)."
+          },
+          "avatarUrls": {
+            "nullable": true,
+            "description": "Multi-size URLs for the user's global avatar, or null when no avatar is set.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/IconUrlsDto"
+              }
+            ]
+          },
+          "serverAvatarUrls": {
+            "nullable": true,
+            "description": "Multi-size URLs for the guild-specific avatar override, or null when the user uses their global avatar.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/IconUrlsDto"
+              }
+            ]
+          },
+          "joinedAt": {
+            "type": "string",
+            "nullable": true,
+            "description": "ISO 8601 timestamp of when the user joined the guild."
+          },
+          "premiumSince": {
+            "type": "string",
+            "nullable": true,
+            "description": "ISO 8601 timestamp of when the user started server-boosting."
+          },
+          "accountCreatedAt": {
+            "type": "string",
+            "description": "ISO 8601 timestamp of when the Discord account was created (derived from the snowflake)."
+          },
+          "roleIds": {
+            "description": "Discord role IDs the member currently holds. Join client-side against /community/roles.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "discordId",
+          "displayName",
+          "avatarUrls",
+          "serverAvatarUrls",
+          "joinedAt",
+          "premiumSince",
+          "accountCreatedAt",
+          "roleIds"
+        ]
+      },
+      "CommunityMembersPageDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CommunityMemberDto"
+            }
+          },
+          "total": {
+            "type": "number",
+            "description": "Total number of active members matching the query."
+          },
+          "limit": {
+            "type": "number",
+            "description": "Limit echoed back from the request."
+          },
+          "offset": {
+            "type": "number",
+            "description": "Offset echoed back from the request."
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ]
+      },
+      "CommunityMemberSlimDto": {
+        "type": "object",
+        "properties": {
+          "discordId": {
+            "type": "string"
+          },
+          "displayName": {
+            "type": "string",
+            "description": "Best available display name (nickname → globalName → username)."
+          },
+          "avatar": {
+            "type": "string",
+            "nullable": true,
+            "description": "Pre-built CDN URL for the global avatar, or null when no avatar is set."
+          }
+        },
+        "required": [
+          "discordId",
+          "displayName",
+          "avatar"
+        ]
+      },
+      "ContentDigestDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Internal entity UUID."
+          },
+          "topic": {
+            "type": "string",
+            "description": "Topic / game this digest covers."
+          },
+          "frequency": {
+            "type": "string",
+            "description": "Digest frequency (daily or weekly)."
+          },
+          "periodStart": {
+            "type": "string",
+            "description": "Period start date (ISO 8601)."
+          },
+          "periodEnd": {
+            "type": "string",
+            "description": "Period end date (ISO 8601)."
+          },
+          "title": {
+            "type": "string",
+            "description": "AI-generated digest title."
+          },
+          "perex": {
+            "type": "string",
+            "description": "AI-generated short summary."
+          },
+          "highlights": {
+            "description": "AI-generated key takeaway bullet points.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "content": {
+            "type": "string",
+            "description": "AI-generated full digest body in Markdown format."
+          },
+          "thumbnailUrl": {
+            "type": "object",
+            "description": "AI-selected thumbnail URL from source articles."
+          },
+          "articleCount": {
+            "type": "number",
+            "description": "Number of articles included in this digest."
+          },
+          "articleIds": {
+            "description": "UUIDs of articles included in this digest.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "When the digest was created (ISO 8601)."
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "When the digest was last updated (ISO 8601)."
+          }
+        },
+        "required": [
+          "id",
+          "topic",
+          "frequency",
+          "periodStart",
+          "periodEnd",
+          "title",
+          "perex",
+          "content",
+          "articleCount",
+          "articleIds",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "ContentDigestListDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ContentDigestDto"
+            }
+          },
+          "total": {
+            "type": "number",
+            "description": "Total number of digests matching the query."
+          },
+          "limit": {
+            "type": "number",
+            "description": "Limit echoed back from the request."
+          },
+          "offset": {
+            "type": "number",
+            "description": "Offset echoed back from the request."
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ]
+      },
+      "ContentDigestArticleDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Internal entity UUID. Matches the (ref:UUID) markers in digest content."
+          },
+          "title": {
+            "type": "string",
+            "description": "Article headline."
+          },
+          "source": {
+            "type": "string",
+            "description": "Source system (e.g. UBISOFT, REDDIT)."
+          },
+          "url": {
+            "type": "object",
+            "description": "URL to the article on the source website."
+          },
+          "publishedAt": {
+            "type": "string",
+            "description": "Publication date (ISO 8601).",
+            "example": "2026-04-01T12:34:56.000Z"
+          },
+          "thumbnailUrl": {
+            "type": "object",
+            "description": "Thumbnail image URL."
+          },
+          "authors": {
+            "type": "object",
+            "description": "Article author(s)."
+          },
+          "aiSummary": {
+            "type": "object",
+            "description": "AI-generated 200-char summary, suitable for citation card subtitle."
+          },
+          "contentType": {
+            "type": "object",
+            "description": "AI-classified content type (e.g. news, guide, discussion)."
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "source",
+          "publishedAt"
+        ]
+      },
+      "ContentDigestDetailDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Internal entity UUID."
+          },
+          "topic": {
+            "type": "string",
+            "description": "Topic / game this digest covers."
+          },
+          "frequency": {
+            "type": "string",
+            "description": "Digest frequency (daily or weekly)."
+          },
+          "periodStart": {
+            "type": "string",
+            "description": "Period start date (ISO 8601)."
+          },
+          "periodEnd": {
+            "type": "string",
+            "description": "Period end date (ISO 8601)."
+          },
+          "title": {
+            "type": "string",
+            "description": "AI-generated digest title."
+          },
+          "perex": {
+            "type": "string",
+            "description": "AI-generated short summary."
+          },
+          "highlights": {
+            "description": "AI-generated key takeaway bullet points.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "content": {
+            "type": "string",
+            "description": "AI-generated full digest body in Markdown format."
+          },
+          "thumbnailUrl": {
+            "type": "object",
+            "description": "AI-selected thumbnail URL from source articles."
+          },
+          "articleCount": {
+            "type": "number",
+            "description": "Number of articles included in this digest."
+          },
+          "articles": {
+            "description": "Hydrated articles cited by (ref:UUID) markers in `content`, ordered by relevance desc.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ContentDigestArticleDto"
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "When the digest was created (ISO 8601)."
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "When the digest was last updated (ISO 8601)."
+          }
+        },
+        "required": [
+          "id",
+          "topic",
+          "frequency",
+          "periodStart",
+          "periodEnd",
+          "title",
+          "perex",
+          "content",
+          "articleCount",
+          "articles",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "GenerateDigestBodyDto": {
+        "type": "object",
+        "properties": {
+          "topic": {
+            "type": "string",
+            "description": "Topic to generate digest for. Omit to generate for all topics."
+          },
+          "frequency": {
+            "type": "string",
+            "enum": [
+              "daily",
+              "weekly"
+            ],
+            "description": "Frequency to generate. Omit to generate both daily and weekly."
+          },
+          "date": {
+            "type": "string",
+            "description": "Target date (ISO 8601, e.g. 2026-04-05). For daily: the day to cover. For weekly: any day in the target week. Defaults to yesterday (daily) / previous week (weekly)."
+          }
+        }
+      },
+      "ContentDigestGenerateResultDto": {
+        "type": "object",
+        "properties": {
+          "generated": {
+            "type": "number",
+            "description": "Number of digests generated."
+          },
+          "skipped": {
+            "type": "number",
+            "description": "Number of topic/frequency combinations skipped (no articles)."
+          },
+          "digests": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ContentDigestDto"
+            }
+          }
+        },
+        "required": [
+          "generated",
+          "skipped",
+          "digests"
+        ]
+      },
+      "ContentArticleDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Internal entity UUID."
+          },
+          "source": {
+            "type": "string",
+            "description": "Source system (e.g. UBISOFT, REDDIT)."
+          },
+          "sourceId": {
+            "type": "string",
+            "description": "External identifier from the source system."
+          },
+          "topic": {
+            "type": "string",
+            "description": "Topic / game this article relates to."
+          },
+          "publishedAt": {
+            "type": "string",
+            "description": "Publication date (ISO 8601).",
+            "example": "2026-04-01T12:34:56.000Z"
+          },
+          "title": {
+            "type": "string",
+            "description": "Article headline."
+          },
+          "perex": {
+            "type": "object",
+            "description": "Short summary / lead paragraph."
+          },
+          "content": {
+            "type": "object",
+            "description": "Full article body in Markdown format."
+          },
+          "thumbnailUrl": {
+            "type": "object",
+            "description": "Thumbnail image URL."
+          },
+          "url": {
+            "type": "object",
+            "description": "URL to the article on the source website."
+          },
+          "authors": {
+            "type": "object",
+            "description": "Article author(s)."
+          },
+          "tags": {
+            "description": "Content tags.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "metadata": {
+            "type": "object",
+            "description": "Source-specific metadata."
+          },
+          "fetchedAt": {
+            "type": "string",
+            "description": "When the article was last synced from the source (ISO 8601)."
+          },
+          "relevance": {
+            "type": "object",
+            "description": "AI-assigned relevance score (1-5).",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "aiSummary": {
+            "type": "object",
+            "description": "AI-generated summary of the content."
+          },
+          "aiTags": {
+            "description": "AI-generated game-specific tags.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "contentType": {
+            "type": "object",
+            "description": "AI-classified content type (e.g. news, guide, discussion)."
+          }
+        },
+        "required": [
+          "id",
+          "source",
+          "sourceId",
+          "topic",
+          "publishedAt",
+          "title",
+          "fetchedAt"
+        ]
+      },
+      "ContentListDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ContentArticleDto"
+            }
+          },
+          "total": {
+            "type": "number",
+            "description": "Total number of articles matching the query."
+          },
+          "limit": {
+            "type": "number",
+            "description": "Limit echoed back from the request."
+          },
+          "offset": {
+            "type": "number",
+            "description": "Offset echoed back from the request."
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ]
+      },
+      "ContentSyncResultDto": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "type": "string",
+            "description": "The source that was synced."
+          },
+          "inserted": {
+            "type": "number",
+            "description": "Number of newly inserted articles."
+          },
+          "updated": {
+            "type": "number",
+            "description": "Number of existing articles updated with fresh content."
+          },
+          "pagesScanned": {
+            "type": "number",
+            "description": "Number of pages fetched from the source API during the sync."
+          }
+        },
+        "required": [
+          "source",
+          "inserted",
+          "updated",
+          "pagesScanned"
+        ]
+      },
+      "ChannelDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "description": "Channel type (e.g. text, voice, category, announcement)"
+          },
+          "parentId": {
+            "type": "object"
+          },
+          "position": {
+            "type": "number"
+          },
+          "topic": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "type",
+          "position"
+        ]
+      },
+      "ChannelMessageDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          },
+          "authorId": {
+            "type": "string"
+          },
+          "authorName": {
+            "type": "string"
+          },
+          "authorAvatar": {
+            "type": "object",
+            "description": "Author avatar URL"
+          },
+          "authorIsBot": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "editedAt": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "content",
+          "authorId",
+          "authorName",
+          "authorIsBot",
+          "createdAt"
+        ]
+      },
+      "EscalationMissionDto": {
+        "type": "object",
+        "properties": {
+          "position": {
+            "type": "number",
+            "description": "Zero-based slot for this mission within the week. Pairs 1:1 with the targeted-loot item at the same `position` on each daily.",
+            "example": 0
+          },
+          "slug": {
+            "type": "string",
+            "description": "URL-friendly slug derived from the mission name.",
+            "example": "the-art-museum"
+          },
+          "name": {
+            "type": "string",
+            "description": "Human-readable mission name.",
+            "example": "The Art Museum"
+          }
+        },
+        "required": [
+          "position",
+          "slug",
+          "name"
+        ]
+      },
+      "EscalationWeekListItemDto": {
+        "type": "object",
+        "properties": {
+          "weekStart": {
+            "type": "string",
+            "description": "The Tuesday this escalation week starts on (UTC).",
+            "example": "2026-05-05"
+          },
+          "fetchedAt": {
+            "type": "string",
+            "description": "When this week was last synced from upstream (ISO 8601).",
+            "example": "2026-05-05T11:23:11.000Z"
+          },
+          "missions": {
+            "description": "Five missions active during this week, sorted by `position` ASC. mission[position] is paired 1:1 with the targeted-loot item at the same `position` on every daily of this week.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EscalationMissionDto"
+            }
+          },
+          "dailyCount": {
+            "type": "number",
+            "description": "Number of daily-loot rows ingested for this week so far.",
+            "example": 3
+          }
+        },
+        "required": [
+          "weekStart",
+          "fetchedAt",
+          "missions",
+          "dailyCount"
+        ]
+      },
+      "EscalationWeekListDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EscalationWeekListItemDto"
+            }
+          },
+          "total": {
+            "type": "number",
+            "description": "Total number of weeks matching the query."
+          },
+          "limit": {
+            "type": "number",
+            "description": "Limit echoed back from the request."
+          },
+          "offset": {
+            "type": "number",
+            "description": "Offset echoed back from the request."
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ]
+      },
+      "EscalationLootItemDto": {
+        "type": "object",
+        "properties": {
+          "position": {
+            "type": "number",
+            "description": "Zero-based slot for this loot item within the day. Pairs 1:1 with the mission at the same `position` on the parent week — i.e. running mission[position] today drops loot[position].",
+            "example": 0
+          },
+          "slug": {
+            "type": "string",
+            "description": "URL-friendly slug derived from the loot-type name (weapon class, gear slot, or brand).",
+            "example": "shotgun"
+          },
+          "name": {
+            "type": "string",
+            "description": "Human-readable loot-type name.",
+            "example": "Shotgun"
+          }
+        },
+        "required": [
+          "position",
+          "slug",
+          "name"
+        ]
+      },
+      "EscalationLootTypeRefDto": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string",
+            "description": "URL-friendly slug derived from the loot-type name (weapon class or gear slot).",
+            "example": "holster"
+          },
+          "name": {
+            "type": "string",
+            "description": "Human-readable loot-type name.",
+            "example": "Holster"
+          }
+        },
+        "required": [
+          "slug",
+          "name"
+        ]
+      },
+      "EscalationPrototypeCacheDto": {
+        "type": "object",
+        "properties": {
+          "gear": {
+            "nullable": true,
+            "description": "The gear slot sold as a prototype gear cache by the escalation vendor on this day, or null when upstream did not publish the value.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EscalationLootTypeRefDto"
+              }
+            ]
+          },
+          "weapon": {
+            "nullable": true,
+            "description": "The weapon class sold as a prototype weapon cache by the escalation vendor on this day, or null when upstream did not publish the value.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EscalationLootTypeRefDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "gear",
+          "weapon"
+        ]
+      },
+      "EscalationDailySummaryDto": {
+        "type": "object",
+        "properties": {
+          "day": {
+            "type": "string",
+            "description": "The calendar day this targeted-loot rotation applies to (UTC).",
+            "example": "2026-05-07"
+          },
+          "fetchedAt": {
+            "type": "string",
+            "description": "When this day was last synced from upstream (ISO 8601).",
+            "example": "2026-05-07T10:14:02.000Z"
+          },
+          "items": {
+            "description": "Targeted-loot items for this day, sorted by `position` ASC. item[position] drops from the parent week's mission at the same `position`.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EscalationLootItemDto"
+            }
+          },
+          "prototypeCaches": {
+            "description": "Prototype caches sold by the escalation vendor on this day — one gear slot and one weapon class, independent of the mission/loot pairing on `items`. Either side is null when upstream did not publish that value.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EscalationPrototypeCacheDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "day",
+          "fetchedAt",
+          "items",
+          "prototypeCaches"
+        ]
+      },
+      "EscalationWeekDetailDto": {
+        "type": "object",
+        "properties": {
+          "weekStart": {
+            "type": "string",
+            "description": "The Tuesday this escalation week starts on (UTC).",
+            "example": "2026-05-05"
+          },
+          "fetchedAt": {
+            "type": "string",
+            "description": "When this week was last synced from upstream (ISO 8601).",
+            "example": "2026-05-05T11:23:11.000Z"
+          },
+          "missions": {
+            "description": "Five missions active during this week, sorted by `position` ASC. mission[position] is paired 1:1 with the targeted-loot item at the same `position` on every daily of this week.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EscalationMissionDto"
+            }
+          },
+          "dailies": {
+            "description": "Daily-loot rows ingested for this week so far, ordered by day ascending.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EscalationDailySummaryDto"
+            }
+          }
+        },
+        "required": [
+          "weekStart",
+          "fetchedAt",
+          "missions",
+          "dailies"
+        ]
+      },
+      "EscalationDailyListItemDto": {
+        "type": "object",
+        "properties": {
+          "day": {
+            "type": "string",
+            "description": "The calendar day this targeted-loot rotation applies to (UTC).",
+            "example": "2026-05-07"
+          },
+          "weekStart": {
+            "type": "string",
+            "description": "The Tuesday this day belongs to (UTC).",
+            "example": "2026-05-05"
+          },
+          "fetchedAt": {
+            "type": "string",
+            "description": "When this day was last synced from upstream (ISO 8601).",
+            "example": "2026-05-07T10:14:02.000Z"
+          },
+          "itemCount": {
+            "type": "number",
+            "description": "Number of targeted-loot items in this day.",
+            "example": 4
+          },
+          "prototypeCaches": {
+            "description": "Prototype caches sold by the escalation vendor on this day — one gear slot and one weapon class. Either side is null when upstream did not publish that value.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EscalationPrototypeCacheDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "day",
+          "weekStart",
+          "fetchedAt",
+          "itemCount",
+          "prototypeCaches"
+        ]
+      },
+      "EscalationDailyListDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EscalationDailyListItemDto"
+            }
+          },
+          "total": {
+            "type": "number",
+            "description": "Total number of dailies matching the query."
+          },
+          "limit": {
+            "type": "number",
+            "description": "Limit echoed back from the request."
+          },
+          "offset": {
+            "type": "number",
+            "description": "Offset echoed back from the request."
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ]
+      },
+      "EscalationWeekSummaryDto": {
+        "type": "object",
+        "properties": {
+          "weekStart": {
+            "type": "string",
+            "description": "The Tuesday this escalation week starts on (UTC).",
+            "example": "2026-05-05"
+          },
+          "fetchedAt": {
+            "type": "string",
+            "description": "When this week was last synced from upstream (ISO 8601).",
+            "example": "2026-05-05T11:23:11.000Z"
+          },
+          "missions": {
+            "description": "Five missions active during this week, sorted by `position` ASC. mission[position] is paired 1:1 with the targeted-loot item at the same `position` on every daily of this week.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EscalationMissionDto"
+            }
+          }
+        },
+        "required": [
+          "weekStart",
+          "fetchedAt",
+          "missions"
+        ]
+      },
+      "EscalationDailyDetailDto": {
+        "type": "object",
+        "properties": {
+          "day": {
+            "type": "string",
+            "description": "The calendar day this targeted-loot rotation applies to (UTC).",
+            "example": "2026-05-07"
+          },
+          "fetchedAt": {
+            "type": "string",
+            "description": "When this day was last synced from upstream (ISO 8601).",
+            "example": "2026-05-07T10:14:02.000Z"
+          },
+          "items": {
+            "description": "Targeted-loot items for this day, sorted by `position` ASC. item[position] drops from `week.missions[position]`.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EscalationLootItemDto"
+            }
+          },
+          "prototypeCaches": {
+            "description": "Prototype caches sold by the escalation vendor on this day — one gear slot and one weapon class, independent of the mission/loot pairing on `items`. Either side is null when upstream did not publish that value.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EscalationPrototypeCacheDto"
+              }
+            ]
+          },
+          "week": {
+            "description": "Summary of the week this day belongs to.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EscalationWeekSummaryDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "day",
+          "fetchedAt",
+          "items",
+          "prototypeCaches",
+          "week"
+        ]
+      },
+      "SyncEscalationBodyDto": {
+        "type": "object",
+        "properties": {
+          "force": {
+            "type": "boolean",
+            "description": "When true, deletes today’s claim row(s) before re-dispatching so the post goes out again. Old Discord messages are not edited or deleted — expect duplicates in the channel.",
+            "default": false
+          },
+          "guildId": {
+            "type": "string",
+            "description": "Optional Discord guild snowflake to scope the dispatch to a single guild. Omit to operate on every enabled guild (matches the cron).",
+            "example": "1234567890123456789"
+          }
+        }
+      },
+      "EscalationDispatchOutcomeDto": {
+        "type": "object",
+        "properties": {
+          "guildId": {
+            "type": "string",
+            "description": "The Discord guild snowflake.",
+            "example": "1234567890123456789"
+          },
+          "channelId": {
+            "type": "object",
+            "description": "The configured target channel snowflake. Null when the guild was not enabled.",
+            "nullable": true,
+            "example": "9876543210987654321"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "queued",
+              "skipped-already-posted",
+              "skipped-not-enabled"
+            ],
+            "description": "Outcome of the dispatch attempt. `queued` = claim acquired and post emitted (actual send is async); `skipped-already-posted` = a claim row already existed for today; `skipped-not-enabled` = a `guildId` was supplied but is not in the enabled-target list."
+          },
+          "forceCleared": {
+            "type": "boolean",
+            "description": "True when this guild’s claim row was force-cleared on this run before re-claiming."
+          }
+        },
+        "required": [
+          "guildId",
+          "channelId",
+          "status"
+        ]
+      },
+      "EscalationSyncResultDto": {
+        "type": "object",
+        "properties": {
+          "weeksProcessed": {
+            "type": "number",
+            "description": "Number of upstream weeks scanned during this run."
+          },
+          "daysIngested": {
+            "type": "number",
+            "description": "Number of upstream daily-loot rows seen across all weeks."
+          },
+          "newDaysIngested": {
+            "type": "number",
+            "description": "Number of daily-loot rows newly inserted on this run."
+          },
+          "prototypeCachesBackfilled": {
+            "type": "number",
+            "description": "Number of prototype-cache rows attached to *already-existing* daily-loot rows on this run. Counts the backfill of legacy days that were ingested before caches existed; excludes caches saved as part of brand-new daily rows."
+          },
+          "latestDay": {
+            "type": "object",
+            "description": "The most recent upstream day seen, in YYYY-MM-DD form. Null when nothing was seen.",
+            "nullable": true,
+            "example": "2026-05-10"
+          },
+          "todayDailyIngested": {
+            "type": "boolean",
+            "description": "Whether today’s daily-loot row is now in the database. When false, no dispatch was attempted because there is nothing to post."
+          },
+          "forceClearedRows": {
+            "type": "number",
+            "description": "Number of (guild, today) claim rows that were deleted as part of `force=true`. Always 0 when `force` was false."
+          },
+          "dispatched": {
+            "description": "Per-guild dispatch outcomes. Empty when today’s daily was not yet ingested or no guilds had the feature enabled.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EscalationDispatchOutcomeDto"
+            }
+          }
+        },
+        "required": [
+          "weeksProcessed",
+          "daysIngested",
+          "newDaysIngested",
+          "prototypeCachesBackfilled",
+          "latestDay",
+          "todayDailyIngested",
+          "forceClearedRows",
+          "dispatched"
+        ]
+      },
+      "NextLevelDto": {
+        "type": "object",
+        "properties": {
+          "level": {
+            "type": "number",
+            "description": "Numeric index of the next configured level."
+          },
+          "xpRequired": {
+            "type": "number",
+            "description": "Total XP the user must accumulate to reach this level."
+          },
+          "label": {
+            "type": "object",
+            "nullable": true,
+            "description": "Optional label configured for this level."
+          }
+        },
+        "required": [
+          "level",
+          "xpRequired"
+        ]
+      },
+      "OwnLevelResponseDto": {
+        "type": "object",
+        "properties": {
+          "discordId": {
+            "type": "string"
+          },
+          "guildId": {
+            "type": "string"
+          },
+          "level": {
+            "type": "number",
+            "description": "The level the user has currently reached."
+          },
+          "levelLabel": {
+            "type": "object",
+            "nullable": true,
+            "description": "Label configured for the current level, if any."
+          },
+          "xp": {
+            "type": "number",
+            "description": "Total XP earned by the user in this guild."
+          },
+          "nextLevel": {
+            "nullable": true,
+            "description": "Next configured level, or null when the user is already at the highest configured level.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NextLevelDto"
+              }
+            ]
+          },
+          "xpToNextLevel": {
+            "type": "object",
+            "nullable": true,
+            "description": "XP remaining until the next level, or null when there is no next level."
+          },
+          "progress": {
+            "type": "number",
+            "description": "Progress within the current level band, in the inclusive range [0, 1]."
+          }
+        },
+        "required": [
+          "discordId",
+          "guildId",
+          "level",
+          "xp",
+          "progress"
+        ]
+      },
+      "LeaderboardEntryDto": {
+        "type": "object",
+        "properties": {
+          "rank": {
+            "type": "number",
+            "description": "1-indexed rank within the guild leaderboard sort."
+          },
+          "discordId": {
+            "type": "string"
+          },
+          "username": {
+            "type": "object",
+            "nullable": true
+          },
+          "globalName": {
+            "type": "object",
+            "nullable": true
+          },
+          "nickname": {
+            "type": "object",
+            "nullable": true
+          },
+          "displayName": {
+            "type": "string",
+            "description": "Best available display name (nickname → globalName → username)."
+          },
+          "avatar": {
+            "type": "object",
+            "nullable": true,
+            "description": "Discord avatar hash; clients build the CDN URL."
+          },
+          "level": {
+            "type": "number"
+          },
+          "xp": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "rank",
+          "discordId",
+          "displayName",
+          "level",
+          "xp"
+        ]
+      },
+      "LeaderboardResponseDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LeaderboardEntryDto"
+            }
+          },
+          "total": {
+            "type": "number",
+            "description": "Total number of leveled users in the guild."
+          },
+          "limit": {
+            "type": "number",
+            "description": "Limit echoed back from the request."
+          },
+          "offset": {
+            "type": "number",
+            "description": "Offset echoed back from the request."
+          },
+          "me": {
+            "nullable": true,
+            "description": "Caller’s own leaderboard entry; null when the caller has not earned XP in this guild.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/LeaderboardEntryDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ]
+      }
+    }
+  }
+}

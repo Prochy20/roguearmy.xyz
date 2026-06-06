@@ -16,10 +16,6 @@ import type {
 import { transformPayloadArticle, mapPayloadColorToTint, type Article, type ArticleImage, type TintColor } from './articles'
 import type { SeriesFilterOptions, SeriesWithFilterData } from './series'
 
-// ============================================================================
-// TYPES
-// ============================================================================
-
 export interface SeriesWithArticles {
   id: string
   name: string
@@ -44,10 +40,6 @@ export interface SeriesWithProgress extends SeriesWithCount {
   gameIds: string[]
   topicIds: string[]
 }
-
-// ============================================================================
-// DATA FETCHING
-// ============================================================================
 
 /**
  * Get all series with article counts
@@ -167,10 +159,16 @@ export async function getSeriesWithProgress(memberId: string): Promise<SeriesWit
     sort: 'name',
   })
 
-  // Get member's read progress for all articles
+  // Get member's read progress for all articles (article-type rows only —
+  // briefing rows live in the same collection post-polymorphic-extension).
   const progressResult = await payload.find({
     collection: 'read-progress',
-    where: { member: { equals: memberId } },
+    where: {
+      and: [
+        { member: { equals: memberId } },
+        { targetType: { equals: 'article' } },
+      ],
+    },
     limit: 1000,
     depth: 0,
   })
@@ -178,8 +176,7 @@ export async function getSeriesWithProgress(memberId: string): Promise<SeriesWit
   // Build a map of articleId -> progress
   const progressMap = new Map<string, { progress: number; completed: boolean }>()
   for (const progress of progressResult.docs) {
-    const articleId = typeof progress.article === 'string' ? progress.article : progress.article.id
-    progressMap.set(articleId, {
+    progressMap.set(progress.targetId, {
       progress: progress.progress,
       completed: progress.completed || false,
     })

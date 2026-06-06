@@ -1,9 +1,13 @@
 import type { GlobalConfig } from 'payload'
+import { publicRead } from '@/access'
 
 export const Homepage: GlobalConfig = {
   slug: 'homepage',
+  admin: {
+    group: 'System',
+  },
   access: {
-    read: () => true,
+    read: publicRead,
   },
   fields: [
     {

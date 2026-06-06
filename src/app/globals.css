@@ -3,18 +3,24 @@
    Tailwind CSS v4 + shadcn/ui Configuration
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/* 1. All @import statements MUST come first (CSS requirement) */
-@import url("https://fonts.googleapis.com/css2?family=Black+Ops+One&family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@300;400;500;600;700&display=swap");
+/* 1. All @import statements MUST come first (CSS requirement). The Google
+   fonts (Black Ops One, JetBrains Mono, Outfit) plus Hanson Bold are
+   self-hosted via `next/font` in `src/app/fonts.ts` — variables consumed
+   by the `@theme` tokens below. */
 @import "tailwindcss";
 @import "tw-animate-css";
 
 /* 2. Custom Dark Variant (for .dark class support) */
 @custom-variant dark (&:is(.dark *));
 
-/* 3. Self-hosted Font Face (download from fontmirror.com/hanson) */
+/* 3. Plain `@font-face` for Hanson Bold under its literal name. next/font/local
+   provides the optimized variable for Next.js, but Storybook's vite plugin
+   doesn't always inject the runtime @font-face for local fonts — the literal
+   "Hanson Bold" registration here keeps the docs surface working as a fallback
+   via `var(--font-hanson-bold, "Hanson Bold")` in --font-display. */
 @font-face {
   font-family: "Hanson Bold";
-  src: url("/fonts/Hanson-Bold.otf") format("opentype");
+  src: url("/fonts/Hanson-Bold-Czech.otf?v=da582367") format("opentype");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -88,6 +94,24 @@
   --color-rga-cyan: #00FFFF;
   --color-rga-magenta: #FF00FF;
   --color-rga-gray: #888888;
+  /* Hazard Yellow — status-warn token. See Foundations/Colors Storybook page
+     and project_design_system_colors memory for rationale. Hue 54° sits
+     between D2 orange (30°) and chartreuse (72°) with safe distance from
+     both. */
+  --color-rga-yellow: #FFE100;
+  /* Role / game / status raw palette. `rga-orange` doubles as the D2 game
+     brand (`game-d2`); `rga-rose` doubles as `status-error`. Layer 2
+     aliases below carry the semantic names — callsites should reference
+     those, not these raw rga-* tokens. */
+  --color-rga-chartreuse: #ccff00;
+  --color-rga-rose: #ff0066;
+  --color-rga-orange: #ff8000;
+  /* Clan accents — used on /division-2/clans cards. Tuned to match the
+     Discord clan banner palette: RGA = neon green (reuses rga-green),
+     SDC = warm copper/bronze, RGS = deep azure with a gold highlight. */
+  --color-rga-amber: #ff9c2a;
+  --color-rga-azure: #2a6dff;
+  --color-rga-gold: #ffd166;
 
   /* ─────────────────────────────────────────────────────────────────────────
      BACKGROUND COLORS
@@ -110,6 +134,24 @@
   --color-glow-green: rgba(0, 255, 65, 0.5);
   --color-glow-cyan: rgba(0, 255, 255, 0.5);
   --color-glow-magenta: rgba(255, 0, 255, 0.5);
+  --color-glow-orange: rgba(255, 128, 0, 0.5);
+  --color-glow-amber: rgba(255, 156, 42, 0.5);
+  --color-glow-azure: rgba(42, 109, 255, 0.5);
+  --color-glow-yellow: rgba(255, 225, 0, 0.5);
+  --color-glow-rose: rgba(255, 0, 102, 0.5);
+  --color-glow-chartreuse: rgba(204, 255, 0, 0.5);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     SOURCE BRAND COLORS — used on the /division-2/content firehose cards
+     and filter chips. Tuned slightly toward neon to fit the cyberpunk
+     palette while staying recognizable as each platform's brand.
+     ───────────────────────────────────────────────────────────────────────── */
+  --color-source-youtube: #ff0040;
+  --color-source-reddit: #ff4500;
+  --color-source-ubisoft: #00a1fb;
+  --color-glow-source-youtube: rgba(255, 0, 64, 0.5);
+  --color-glow-source-reddit: rgba(255, 69, 0, 0.5);
+  --color-glow-source-ubisoft: rgba(0, 161, 251, 0.5);
 
   /* ─────────────────────────────────────────────────────────────────────────
      CUSTOM FONTS
@@ -117,9 +159,9 @@
      JetBrains Mono for terminal/code
      Outfit for body text
      ───────────────────────────────────────────────────────────────────────── */
-  --font-display: "Hanson Bold", "Black Ops One", sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, monospace;
-  --font-body: "Outfit", system-ui, sans-serif;
+  --font-display: var(--font-hanson-bold, "Hanson Bold"), var(--font-black-ops-one, "Black Ops One"), sans-serif;
+  --font-mono: var(--font-jetbrains-mono, "JetBrains Mono"), ui-monospace, monospace;
+  --font-body: var(--font-outfit, "Outfit"), system-ui, sans-serif;
 
   /* ─────────────────────────────────────────────────────────────────────────
      CUSTOM ANIMATIONS
@@ -330,6 +372,44 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     DESIGN SYSTEM SEMANTIC ALIASES (Layer 2)
+     Components should reference these, not the raw rga-* tokens, whenever
+     a semantic name exists. Same hex can power multiple aliases — e.g.
+     `role-mod` and `game-d2` both resolve to orange. See Foundations/Colors
+     Storybook page for full rationale.
+     ───────────────────────────────────────────────────────────────────────── */
+
+  /* Brand */
+  --color-brand: var(--color-rga-green);
+
+  /* Status — appears in chrome (StatRibbon pill, attention surfaces).
+     `status-info` is the muted default; `warn` and `error` are the two
+     attention modes. */
+  --color-status-ok: var(--color-rga-green);
+  --color-status-warn: var(--color-rga-yellow);
+  --color-status-error: var(--color-rga-rose);
+  --color-status-info: oklch(0.65 0 0);
+
+  /* Game — body content per-game brand. Each game has its own surface
+     accent so the page body identifies which game the content is about,
+     while the chrome stays RGA-neutral above. */
+  --color-game-d2: var(--color-rga-orange);
+
+  /* Roles — staff card accents on /community/staff. Shared hexes with
+     status-error (admin) and game-d2 (mod) are intentional; staff cards
+     and D2/chrome surfaces never appear on the same screen. */
+  --color-role-dev: var(--color-rga-chartreuse);
+  --color-role-mod: var(--color-rga-orange);
+  --color-role-admin: var(--color-rga-rose);
+
+  /* Tier — community membership tiers. `booster` (magenta) flags
+     Discord-server-boost-gated perks: daily briefings, BOOSTER PERK
+     widgets, the StatRibbon `booster` pill mode. Takes semantic
+     precedence over `status-warn` for booster-tier signaling — see
+     BriefingDetailPage. Magenta otherwise stays decorative. */
+  --color-tier-booster: var(--color-rga-magenta);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -344,6 +424,7 @@
 
   html {
     @apply scroll-smooth;
+    scrollbar-gutter: stable;
   }
 
   body {
@@ -423,6 +504,30 @@
       0 0 40px var(--color-glow-magenta);
   }
 
+  .glow-orange {
+    box-shadow:
+      0 0 20px var(--color-glow-orange),
+      0 0 40px var(--color-glow-orange);
+  }
+
+  .glow-source-youtube {
+    box-shadow:
+      0 0 20px var(--color-glow-source-youtube),
+      0 0 40px var(--color-glow-source-youtube);
+  }
+
+  .glow-source-reddit {
+    box-shadow:
+      0 0 20px var(--color-glow-source-reddit),
+      0 0 40px var(--color-glow-source-reddit);
+  }
+
+  .glow-source-ubisoft {
+    box-shadow:
+      0 0 20px var(--color-glow-source-ubisoft),
+      0 0 40px var(--color-glow-source-ubisoft);
+  }
+
   /* Gradient Text */
   .text-gradient-rga {
     @apply bg-linear-to-r from-rga-green via-rga-cyan to-rga-magenta bg-clip-text text-transparent;
@@ -496,5 +601,169 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   12. NAVIGATION OVERLAY (RGA Centered Nav)
+   Open/close transitions on Radix [data-state], staggered link reveals,
+   and chromatic-aberration glitch on link hover.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@keyframes rga-nav-row-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.rga-nav-overlay[data-state='open'] {
+  animation: rga-overlay-in 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.rga-nav-overlay[data-state='closed'] {
+  animation: rga-overlay-out 180ms cubic-bezier(0.4, 0, 1, 1);
+}
+
+@keyframes rga-overlay-in {
+  from {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes rga-overlay-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.99);
+  }
+}
+
+.rga-nav-row.group:hover .rga-nav-label,
+.rga-nav-row.group:focus-within .rga-nav-label {
+  text-shadow:
+    0 0 24px rgba(0, 255, 65, 0.5),
+    -2px 0 rgba(0, 255, 255, 0.5),
+    2px 0 rgba(255, 0, 255, 0.4);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rga-nav-row.group:hover .rga-nav-label,
+  .rga-nav-row.group:focus-within .rga-nav-label {
+    text-shadow: none;
+  }
+
+  .rga-nav-row {
+    animation: none !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   13. STAFF MANIFEST (Personnel Roster Cards)
+   Staggered card reveals on initial render; the hover scanline lives on
+   the card component as a Tailwind transition, no keyframe needed.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.rga-staff-card {
+  animation: rga-card-in 520ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes rga-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rga-staff-card {
+    animation: none !important;
+  }
+}
+
+/* Clan dossier cards — same "settle" feel as the staff cards, but slightly
+   taller initial offset so the three banners feel like they're being raised
+   into position rather than crossfading. */
+@keyframes rga-clan-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rga-clan-card {
+    animation: none !important;
+  }
+}
+
+
+/* Shared scanner machinery — used by StaffRadar (staff page) and WashingtonMap
+   (briefings page). Naming: `rga-scanner-*` for cross-component primitives;
+   `rga-radar-*` is reserved for radar-specific viz (blip dot/halo). */
+.rga-scanner-sweep {
+  transform-box: view-box;
+  transform-origin: center;
+  animation: rga-scanner-spin 11s linear infinite;
+}
+
+/* Radar blip core dot — one-shot. Hidden until animationDelay elapses (set
+   per-blip in JS so the ping fires the instant the sweep crosses), then fades
+   over 3s. Radar-specific — map has no blips. */
+.rga-radar-blip-dot {
+  opacity: 0;
+  animation: rga-radar-ping-dot 3s linear forwards;
+}
+
+/* Radar blip halo — quick sonar ring that expands at the ping moment. */
+.rga-radar-blip-halo {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: rga-radar-ping-halo 1.6s ease-out forwards;
+}
+
+@keyframes rga-scanner-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes rga-radar-ping-dot {
+  0%   { opacity: 1; }
+  20%  { opacity: 0.7; }
+  100% { opacity: 0; }
+}
+
+@keyframes rga-radar-ping-halo {
+  0%   { opacity: 0.55; transform: scale(0.4); }
+  100% { opacity: 0; transform: scale(2.8); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rga-scanner-sweep,
+  .rga-radar-blip-dot,
+  .rga-radar-blip-halo {
+    animation: none !important;
   }
 }

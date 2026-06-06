@@ -6,7 +6,7 @@ import { DiscordLoginButton } from './DiscordLoginButton'
 import { GlitchText } from '@/components/effects/GlitchText'
 import { MembersLoginPage } from './MembersLoginPage'
 import { ErrorPage } from '@/components/error/ErrorPage'
-import { GlowButton } from '@/components/shared/GlowButton'
+import { GlowButton } from '@/components/ui/GlowButton'
 
 interface AccessDeniedProps {
   reason?: 'not_authenticated' | 'not_member' | 'banned' | 'left_server' | 'error'

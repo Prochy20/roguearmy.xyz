@@ -1,4 +1,5 @@
 import type { GlobalConfig, Field } from 'payload'
+import { publicRead } from '@/access'
 
 /**
  * Creates the shared field set for each manifesto document tab (rules, privacy, terms).
@@ -81,10 +82,10 @@ function createDocumentFields(): Field[] {
 export const Manifesto: GlobalConfig = {
   slug: 'manifesto',
   access: {
-    read: () => true,
+    read: publicRead,
   },
   admin: {
-    group: 'Content',
+    group: 'Identity',
   },
   fields: [
     {

@@ -72,7 +72,7 @@ export function FilterMultiDropdown({
 
   return (
     <div className="space-y-2.5">
-      <label className="text-xs text-rga-gray/70 uppercase tracking-wider flex items-center gap-1.5">
+      <label className="text-xs text-text-secondary/70 uppercase tracking-wider flex items-center gap-1.5">
         {icon}
         {label}
       </label>
@@ -84,7 +84,7 @@ export function FilterMultiDropdown({
             'w-full flex items-center justify-between px-3 py-2 rounded-lg border transition-all text-sm',
             selectedCount > 0
               ? 'border-rga-green/50 text-rga-green bg-rga-green/10'
-              : 'border-rga-gray/30 text-rga-gray hover:border-rga-gray/50'
+              : 'border-rga-gray/30 text-text-secondary hover:border-rga-gray/50'
           )}
         >
           <span className="truncate">{displayLabel}</span>
@@ -108,20 +108,20 @@ export function FilterMultiDropdown({
               <div className="mt-1.5 bg-black/40 border border-rga-green/10 rounded-lg overflow-hidden">
                 <div className="p-1.5 border-b border-rga-green/10">
                   <div className="relative">
-                    <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-rga-gray/50" />
+                    <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-text-secondary/50" />
                     <input
                       ref={searchInputRef}
                       type="text"
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
                       placeholder="Search..."
-                      className="w-full pl-7 pr-2 py-1 bg-transparent border border-rga-gray/20 rounded text-xs text-white placeholder:text-rga-gray/50 focus:outline-none focus:border-rga-green/50"
+                      className="w-full pl-7 pr-2 py-1 bg-transparent border border-rga-gray/20 rounded text-xs text-white placeholder:text-text-secondary/50 focus:outline-none focus:border-rga-green/50"
                     />
                   </div>
                 </div>
                 <div className="max-h-36 overflow-y-auto">
                   {filteredOptions.length === 0 ? (
-                    <div className="px-3 py-2 text-xs text-rga-gray/50">No results</div>
+                    <div className="px-3 py-2 text-xs text-text-secondary/50">No results</div>
                   ) : (
                     filteredOptions.map((option) => {
                       const isSelected = values.includes(option.value)
@@ -137,7 +137,7 @@ export function FilterMultiDropdown({
                               ? tintClasses
                                 ? `bg-black/20 ${tintClasses.text}`
                                 : 'bg-rga-green/10 text-rga-green'
-                              : 'text-rga-gray hover:bg-white/5 hover:text-white'
+                              : 'text-text-secondary hover:bg-white/5 hover:text-white'
                           )}
                         >
                           <span className="truncate">{option.label}</span>

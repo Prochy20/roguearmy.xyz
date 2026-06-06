@@ -1,0 +1,46 @@
+import { Meta, Title, Subtitle, Primary, Controls, Stories } from '@storybook/addon-docs/blocks'
+import * as ChromaticTextStories from './ChromaticText.stories'
+
+<Meta of={ChromaticTextStories} />
+
+<Title />
+<Subtitle>RGB chromatic aberration text effect — simulates the colour misalignment of a broken CRT screen.</Subtitle>
+
+## When to use
+
+- **Section headings** that need a brand-coded visual signature.
+- **Brand moments** (the word "ROGUE ARMY", feature title cards).
+- Combine with Hanson Bold + uppercase + tight tracking for the maximum-impact look.
+
+## Static vs animated
+
+| Mode | Effect |
+|---|---|
+| `animated={false}` (default) | Permanent cyan/magenta text-shadows. Calm, always-on. |
+| `animated={true}` | The offset pulses subtly. Use sparingly — one or two on the page. |
+
+## Usage rules
+
+> **Don't apply to body text** — chromatic aberration on long paragraphs hurts readability badly.
+
+> **Pick the right `as`.** A heading needs a heading tag (`h1`, `h2`, `h3`) for accessibility — don't default to `span` everywhere. The visual effect is identical regardless of tag.
+
+> **One animated ChromaticText per page max.** Two simultaneous pulses fight for attention.
+
+```tsx
+import { ChromaticText } from '@/components/effects/ChromaticText'
+
+<ChromaticText as="h2" className="font-display text-5xl uppercase">
+  SECTION TITLE
+</ChromaticText>
+
+<ChromaticText as="h1" animated className="font-display text-7xl uppercase">
+  ROGUE ARMY
+</ChromaticText>
+```
+
+<Primary />
+
+<Controls />
+
+<Stories />

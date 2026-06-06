@@ -1,0 +1,57 @@
+import { Meta, Title, Subtitle, Primary, Controls, Stories } from '@storybook/addon-docs/blocks'
+import * as CyberCornersStories from './CyberCorners.stories'
+
+<Meta of={CyberCornersStories} />
+
+<Title />
+<Subtitle>L-shaped targeting brackets positioned outside content, inspired by military HUD interfaces.</Subtitle>
+
+## When to use
+
+Frame featured content blocks, cards, and sections where you want a tactical / sci-fi feel. The brackets shift outward on hover for a subtle interactive cue.
+
+## Sizing
+
+| Size | Use for |
+|---|---|
+| `sm` | Inline elements, small cards, badges |
+| `md` | Standard cards (default for most contexts) |
+| `lg` | Hero-level containers, feature blocks |
+
+## Selective corners
+
+The `corners` prop lets you show only specific brackets — useful for "open" frames that don't fully enclose content:
+
+```tsx
+<CyberCorners corners={['tl', 'br']}>…</CyberCorners>  // diagonal accent
+<CyberCorners corners={['tl', 'tr']}>…</CyberCorners>  // top frame only
+```
+
+## Color palette
+
+12 colors total:
+
+- **Brand** — `green`, `cyan`, `magenta`
+- **Status** — `orange`, `red`, `gray`
+- **Roles** — `dev`, `admin`, `mod`
+- **Sources** — `source-youtube`, `source-reddit`, `source-ubisoft`
+
+Use brand colors for general accents; use status/role/source colors only when the content semantically matches (a developer badge → `dev`, a YouTube embed → `source-youtube`).
+
+## Usage rule
+
+> **Don't nest CyberCorners.** Putting one CyberCorners frame inside another creates visually competing brackets. If you need nested framing, use plain borders for the inner frame.
+
+```tsx
+import { CyberCorners } from '@/components/ui/CyberCorners'
+
+<CyberCorners color="cyan" size="md">
+  <div className="p-6">…</div>
+</CyberCorners>
+```
+
+<Primary />
+
+<Controls />
+
+<Stories />

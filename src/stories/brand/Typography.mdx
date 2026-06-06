@@ -1,0 +1,78 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { FONTS, TYPE_SCALE } from '@/lib/design-tokens'
+
+<Meta title="Brand/Typography" />
+
+# Typography
+
+Three typefaces form our typographic identity. Each serves a distinct purpose — display for impact, body for readability, mono for data and code. Never swap their roles or introduce additional fonts.
+
+## Hanson Bold — display
+
+> **font-display** · weights 700 · UPPERCASE only
+
+<p style={{ fontFamily: 'var(--font-display)', fontSize: '4rem', textTransform: 'uppercase', color: '#FFFFFF', letterSpacing: '-0.02em', lineHeight: 1, margin: '1rem 0' }}>ROGUE ARMY</p>
+
+Used for all headings (H1, H2, H3), hero text, and brand moments. **Always set in UPPERCASE** — Hanson Bold is not designed for mixed case. Apply tight tracking and leading for maximum impact. Pair with chromatic aberration or glow effects on hero headings for the full RGA look.
+
+[Download `/fonts/Hanson-Bold.otf`](/fonts/Hanson-Bold.otf)
+
+## Outfit — body
+
+> **font-body** · weights 300 / 400 / 500 / 600 / 700
+
+<div style={{ margin: '1rem 0' }}>
+  <p style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 300, fontSize: '1.25rem', color: '#FFFFFF', margin: '0.25rem 0' }}>Light 300 — The quick brown fox jumps over the lazy dog</p>
+  <p style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 400, fontSize: '1.25rem', color: '#FFFFFF', margin: '0.25rem 0' }}>Regular 400 — The quick brown fox jumps over the lazy dog</p>
+  <p style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 500, fontSize: '1.25rem', color: '#FFFFFF', margin: '0.25rem 0' }}>Medium 500 — The quick brown fox jumps over the lazy dog</p>
+  <p style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 600, fontSize: '1.25rem', color: '#FFFFFF', margin: '0.25rem 0' }}>Semibold 600 — The quick brown fox jumps over the lazy dog</p>
+  <p style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700, fontSize: '1.25rem', color: '#FFFFFF', margin: '0.25rem 0' }}>Bold 700 — The quick brown fox jumps over the lazy dog</p>
+</div>
+
+Use **Regular 400** for body text, **Semibold 600** or **Bold 700** for emphasis and inline labels. Light 300 can be used for large decorative text but avoid it at small sizes where readability suffers.
+
+[Get on Google Fonts ↗](https://fonts.google.com/specimen/Outfit)
+
+## JetBrains Mono — monospace
+
+> **font-mono** · weights 400 / 500 / 700
+
+<div style={{ fontFamily: '"JetBrains Mono", monospace', fontSize: '1rem', color: '#FFFFFF', margin: '1rem 0', background: '#0A0A0A', padding: '1.5rem', border: '1px solid rgba(255,255,255,0.1)' }}>
+  <p style={{ margin: '0.125rem 0' }}>{'> system.init()'}</p>
+  <p style={{ margin: '0.125rem 0' }}>{'> loading modules... '}<span style={{ color: '#00FF41' }}>OK</span></p>
+  <p style={{ margin: '0.125rem 0' }}>{'> const rga = new RogueArmy()'}</p>
+  <p style={{ margin: '0.125rem 0', color: '#555555' }}>{'// 0123456789 !@#$%^&*()'}</p>
+</div>
+
+For terminal-style output, code snippets, section tags (e.g. `// SECTION 01`), technical metadata, timestamps, and data labels. Reinforces the cyberpunk / hacker aesthetic. Always use at smaller sizes (text-xs to text-sm) for UI labels. Set in uppercase with wide tracking for section markers.
+
+[Get on Google Fonts ↗](https://fonts.google.com/specimen/JetBrains+Mono)
+
+## Type scale
+
+The canonical size hierarchy. Use this scale consistently — H1 for page titles, H2 for major sections, H3 for subsections, Body for paragraphs, Small for captions and metadata, Mono for tags and technical labels.
+
+<div style={{ border: '1px solid rgba(255,255,255,0.1)', padding: '1.5rem', marginTop: '1rem' }}>
+  {TYPE_SCALE.map((t) => (
+    <div key={t.label} style={{ display: 'flex', alignItems: 'baseline', gap: '1rem', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '1rem', marginBottom: '1rem' }}>
+      <span style={{ flexShrink: 0, width: '3rem', fontFamily: 'monospace', fontSize: '0.75rem', color: '#00FFFF' }}>{t.label}</span>
+      <span className={t.classes}>{t.sample}</span>
+    </div>
+  ))}
+</div>
+
+> **Never** use Hanson Bold for body text or long paragraphs — illegible at small sizes and in mixed case. **Never** use Outfit for hero headings where Hanson Bold is expected. The font pairing is intentional: Hanson screams, Outfit speaks, JetBrains whispers.
+
+## Available fonts
+
+{FONTS.map((f) => (
+  <div key={f.family} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.05)', padding: '0.75rem 0' }}>
+    <div>
+      <p style={{ fontFamily: 'monospace', fontSize: '0.875rem', color: '#FFFFFF', margin: 0 }}>{f.family} <span style={{ color: '#555555' }}>· {f.tailwindClass}</span></p>
+      <p style={{ fontSize: '0.75rem', color: '#888888', margin: '0.25rem 0 0' }}>{f.role} <span style={{ color: '#555555' }}>(weights: {f.weights})</span></p>
+    </div>
+    <a href={f.downloadHref} target={f.external ? '_blank' : undefined} rel={f.external ? 'noopener noreferrer' : undefined} style={{ fontFamily: 'monospace', fontSize: '0.75rem', color: '#00FFFF' }}>
+      {f.downloadLabel}{f.external ? ' ↗' : ''}
+    </a>
+  </div>
+))}

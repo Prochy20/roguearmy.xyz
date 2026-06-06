@@ -13,12 +13,38 @@ import type {
   Media as PayloadMedia,
 } from '@/payload-types'
 
-// ============================================================================
-// TYPES
-// ============================================================================
-
 /** Tint colors used for styling across the frontend */
 export type TintColor = 'orange' | 'red' | 'cyan' | 'green' | 'magenta' | 'blue' | 'yellow' | 'teal' | 'purple' | 'pink'
+
+/**
+ * The 5 accent values the shared reader surface supports. Article tints can
+ * declare up to 10 values; in practice `mapPayloadColorToTint` only emits
+ * these 5, so the unmatched arms below act as defensive fallbacks for any
+ * legacy `tint` literal that slipped past the Payload mapper.
+ */
+export type ReaderAccent = 'green' | 'cyan' | 'magenta' | 'orange' | 'red'
+
+export function tintToAccent(tint: TintColor): ReaderAccent {
+  switch (tint) {
+    case 'green':
+      return 'green'
+    case 'cyan':
+    case 'blue':
+    case 'teal':
+      return 'cyan'
+    case 'magenta':
+    case 'purple':
+    case 'pink':
+      return 'magenta'
+    case 'orange':
+    case 'yellow':
+      return 'orange'
+    case 'red':
+      return 'red'
+    default:
+      return 'green'
+  }
+}
 
 /** Article visibility options */
 export type ArticleVisibility = 'public' | 'members_only'
@@ -125,10 +151,6 @@ export interface SeriesNavigation {
   previous: Article | null
   next: Article | null
 }
-
-// ============================================================================
-// COLOR MAPPING
-// ============================================================================
 
 /**
  * Map Payload color values to frontend tint colors
@@ -241,10 +263,6 @@ export function getTintClasses(tint: TintColor) {
 // Legacy alias for backwards compatibility
 export const getCategoryTintClasses = getTintClasses
 
-// ============================================================================
-// URL HELPERS
-// ============================================================================
-
 /**
  * Generate the URL for an article based on its topic and slug
  */
@@ -258,10 +276,6 @@ export function getArticleUrl(article: { slug: string; topic: { slug: string } }
 export function getSeriesUrl(series: { slug: string }): string {
   return `/blog/series/${series.slug}`
 }
-
-// ============================================================================
-// TYPE TRANSFORMERS
-// ============================================================================
 
 /**
  * Transform Payload article to frontend Article type
@@ -328,10 +342,6 @@ export function transformPayloadArticle(
     visibility: (payloadArticle.visibility as ArticleVisibility) || 'members_only',
   }
 }
-
-// ============================================================================
-// UTILITY FUNCTIONS
-// ============================================================================
 
 /** Progress data structure (mirrors progress.server.ts for client use) */
 export interface ArticleProgressData {

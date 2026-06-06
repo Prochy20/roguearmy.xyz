@@ -1,6 +1,19 @@
 import { cn } from '@/lib/utils'
 
-type CornerColor = 'green' | 'cyan' | 'magenta' | 'orange' | 'red' | 'gray'
+type CornerColor =
+  | 'green'
+  | 'cyan'
+  | 'magenta'
+  | 'orange'
+  | 'red'
+  | 'rose'
+  | 'gray'
+  | 'dev'
+  | 'admin'
+  | 'mod'
+  | 'source-youtube'
+  | 'source-reddit'
+  | 'source-ubisoft'
 
 interface CyberCornersProps {
   children: React.ReactNode
@@ -36,9 +49,37 @@ const colorMap: Record<CornerColor, { line: string; glow: string }> = {
     line: 'bg-red-500',
     glow: 'shadow-[0_0_6px_rgba(239,68,68,0.5)]',
   },
+  rose: {
+    line: 'bg-status-error',
+    glow: 'shadow-[0_0_6px_rgba(255,0,102,0.5)]',
+  },
   gray: {
     line: 'bg-rga-gray/40',
     glow: '',
+  },
+  dev: {
+    line: 'bg-role-dev',
+    glow: 'shadow-[0_0_6px_rgba(204,255,0,0.5)]',
+  },
+  admin: {
+    line: 'bg-role-admin',
+    glow: 'shadow-[0_0_6px_rgba(255,0,102,0.5)]',
+  },
+  mod: {
+    line: 'bg-game-d2',
+    glow: 'shadow-[0_0_6px_rgba(255,128,0,0.5)]',
+  },
+  'source-youtube': {
+    line: 'bg-source-youtube',
+    glow: 'shadow-[0_0_6px_rgba(255,0,64,0.5)]',
+  },
+  'source-reddit': {
+    line: 'bg-source-reddit',
+    glow: 'shadow-[0_0_6px_rgba(255,69,0,0.5)]',
+  },
+  'source-ubisoft': {
+    line: 'bg-source-ubisoft',
+    glow: 'shadow-[0_0_6px_rgba(0,161,251,0.5)]',
   },
 }
 
@@ -179,11 +220,53 @@ const tagColorConfig: Record<
     glow: 'shadow-[0_0_16px_rgba(239,68,68,0.5)]',
     gradient: 'from-red-500/20 to-transparent',
   },
+  rose: {
+    bg: 'bg-status-error',
+    text: 'text-status-error',
+    glow: 'shadow-[0_0_16px_rgba(255,0,102,0.5)]',
+    gradient: 'from-status-error/20 to-transparent',
+  },
   gray: {
     bg: 'bg-rga-gray/50',
-    text: 'text-rga-gray',
+    text: 'text-text-secondary',
     glow: '',
     gradient: 'from-rga-gray/10 to-transparent',
+  },
+  dev: {
+    bg: 'bg-role-dev',
+    text: 'text-role-dev',
+    glow: 'shadow-[0_0_16px_rgba(204,255,0,0.5)]',
+    gradient: 'from-role-dev/20 to-transparent',
+  },
+  admin: {
+    bg: 'bg-role-admin',
+    text: 'text-role-admin',
+    glow: 'shadow-[0_0_16px_rgba(255,0,102,0.5)]',
+    gradient: 'from-role-admin/20 to-transparent',
+  },
+  mod: {
+    bg: 'bg-game-d2',
+    text: 'text-game-d2',
+    glow: 'shadow-[0_0_16px_rgba(255,128,0,0.5)]',
+    gradient: 'from-game-d2/20 to-transparent',
+  },
+  'source-youtube': {
+    bg: 'bg-source-youtube',
+    text: 'text-source-youtube',
+    glow: 'shadow-[0_0_16px_rgba(255,0,64,0.5)]',
+    gradient: 'from-source-youtube/20 to-transparent',
+  },
+  'source-reddit': {
+    bg: 'bg-source-reddit',
+    text: 'text-source-reddit',
+    glow: 'shadow-[0_0_16px_rgba(255,69,0,0.5)]',
+    gradient: 'from-source-reddit/20 to-transparent',
+  },
+  'source-ubisoft': {
+    bg: 'bg-source-ubisoft',
+    text: 'text-source-ubisoft',
+    glow: 'shadow-[0_0_16px_rgba(0,161,251,0.5)]',
+    gradient: 'from-source-ubisoft/20 to-transparent',
   },
 }
 

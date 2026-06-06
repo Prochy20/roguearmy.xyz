@@ -1,0 +1,47 @@
+import type { TrailSegment } from './StatRibbon'
+
+/**
+ * Canonical "first segment" anchors for the StatRibbon breadcrumb trail.
+ * Pages compose their trail by spreading the appropriate root then appending
+ * deeper segments. Centralizing these keeps labels + hrefs consistent across
+ * the ~15 ribbon callsites and makes a future label change a one-line edit.
+ *
+ * Phase 2 will add RGA_ROOT (brand root for non-D2 surfaces), CONTENT_ROOT,
+ * ESCALATION_ROOT, CLANS_ROOT, COMMUNITY_ROOT as their pages migrate.
+ */
+
+export const D2_ROOT: TrailSegment = {
+  label: 'Division 2',
+  href: '/division-2',
+}
+
+export const BRIEFINGS_ROOT: TrailSegment = {
+  label: 'Briefings',
+  href: '/division-2/briefings',
+}
+
+export const ESCALATION_ROOT: TrailSegment = {
+  label: 'Escalation',
+  href: '/division-2/escalation',
+}
+
+/** Brand root for non-D2 surfaces (manifesto, community, staff). */
+export const RGA_ROOT: TrailSegment = {
+  label: 'Rogue Army',
+  href: '/',
+}
+
+export const BLOG_ROOT: TrailSegment = {
+  label: 'Blog',
+  href: '/blog',
+}
+
+export const MANIFESTO_ROOT: TrailSegment = {
+  label: 'Manifesto',
+  href: '/manifesto',
+}
+
+export const COMMUNITY_ROOT: TrailSegment = {
+  label: 'Community',
+  href: '/community',
+}

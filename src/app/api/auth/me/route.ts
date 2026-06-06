@@ -1,45 +1,35 @@
 import { NextResponse } from 'next/server'
-import { getPayload } from 'payload'
-import config from '@payload-config'
-import { getSessionCookie, verifyMemberToken } from '@/lib/auth'
+import { getMemberAuth } from '@/lib/auth/session.server'
+import { checkRoleGate, type RoleGateKey } from '@/lib/auth/roleGate'
+import type { RoleGateMap } from '@/lib/auth/roleGate.types'
+
+// Keep in sync with the layout — same keys, same client expectations.
+const NAV_ROLE_GATE_KEYS: RoleGateKey[] = ['division2Role']
 
 export async function GET() {
-  const token = await getSessionCookie()
+  const auth = await getMemberAuth()
 
-  if (!token) {
-    return NextResponse.json({ authenticated: false, member: null })
+  if (!auth.authenticated || !auth.member) {
+    return NextResponse.json({ authenticated: false, member: null, roleGates: {} })
   }
 
-  const session = await verifyMemberToken(token)
+  const roleGates: RoleGateMap = {}
+  const results = await Promise.all(
+    NAV_ROLE_GATE_KEYS.map(async (key) => [key, await checkRoleGate(key)] as const),
+  )
+  for (const [key, gate] of results) roleGates[key] = gate.state
 
-  if (!session) {
-    return NextResponse.json({ authenticated: false, member: null })
-  }
-
-  // Verify member is still active and still a valid user
-  const payload = await getPayload({ config })
-
-  try {
-    const member = await payload.findByID({
-      collection: 'members',
-      id: session.memberId,
-    })
-
-    if (!member || member.status === 'banned') {
-      return NextResponse.json({ authenticated: false, member: null })
-    }
-
-    return NextResponse.json({
-      authenticated: true,
-      member: {
-        id: member.id,
-        discordId: member.discordId,
-        username: member.username,
-        globalName: member.globalName,
-        avatar: member.avatar,
-      },
-    })
-  } catch {
-    return NextResponse.json({ authenticated: false, member: null })
-  }
+  return NextResponse.json({
+    authenticated: true,
+    member: {
+      id: auth.memberId,
+      discordId: auth.member.discordId,
+      username: auth.member.username,
+      globalName: auth.member.globalName,
+      avatar: auth.member.avatar,
+      primaryBadge: auth.primaryBadge,
+      isBooster: auth.isBooster,
+    },
+    roleGates,
+  })
 }

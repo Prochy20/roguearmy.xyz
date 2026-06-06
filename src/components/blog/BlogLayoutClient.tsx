@@ -1,13 +1,9 @@
 'use client'
 
 import { type ReactNode } from 'react'
-import { usePathname } from 'next/navigation'
 import { BlogAuthProvider, type BlogAuthState } from '@/contexts/BlogAuthContext'
 import { BookmarksProvider } from '@/contexts/BookmarksContext'
 import { BlogNav } from './BlogNav'
-
-// Cache regex pattern outside component to prevent recreation on each render
-const ARTICLE_DETAIL_REGEX = /^\/blog\/[^/]+\/[^/]+$/
 
 interface BlogLayoutClientProps {
   children: ReactNode
@@ -15,15 +11,12 @@ interface BlogLayoutClientProps {
 }
 
 export function BlogLayoutClient({ children, authState }: BlogLayoutClientProps) {
-  const pathname = usePathname()
-
-  // Enable hide-on-scroll only on article detail pages
-  const isArticleDetailPage = ARTICLE_DETAIL_REGEX.test(pathname)
-
-  // If authenticated, wrap with member-specific providers
+  // BlogNav reads its own pathname to decide hide-on-scroll behavior, so this
+  // layout no longer needs to subscribe to navigation events. The providers
+  // here still need `'use client'` because they expose React context.
   const content = (
     <div className="min-h-screen flex flex-col">
-      <BlogNav hideOnScroll={!!isArticleDetailPage} isAuthenticated={authState.authenticated} />
+      <BlogNav />
       <main className="flex-1">{children}</main>
     </div>
   )

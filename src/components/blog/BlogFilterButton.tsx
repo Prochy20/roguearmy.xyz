@@ -43,7 +43,7 @@ export function BlogFilterButton({
                 'relative flex items-center justify-center w-8 h-8 rounded-sm transition-all duration-200',
                 hasActiveFilters
                   ? 'text-rga-green bg-rga-green/10'
-                  : 'text-rga-gray/60 hover:text-rga-gray hover:bg-white/5'
+                  : 'text-text-secondary/60 hover:text-text-secondary hover:bg-white/5'
               )}
             >
               {/* Active state glow */}

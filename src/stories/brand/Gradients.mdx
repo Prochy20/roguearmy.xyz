@@ -1,0 +1,56 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { GRADIENTS, BACKGROUND_IMAGES, RADIAL_HERO_BACKGROUND } from '@/lib/design-tokens'
+
+<Meta title="Brand/Gradients" />
+
+# Gradients & backgrounds
+
+Gradients bridge our accent colors and add energy to flat surfaces. Use them for decorative lines, text fills, button backgrounds, and section dividers. Always apply left-to-right direction for consistency.
+
+## Linear gradients
+
+{GRADIENTS.map((g) => (
+  <div key={g.name} style={{ marginBottom: '1.5rem' }}>
+    <div className={g.classes} style={{ height: '5rem', width: '100%' }} />
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.5rem', marginTop: '0.5rem' }}>
+      <p style={{ fontFamily: 'monospace', fontSize: '0.75rem', color: '#888888', margin: 0 }}>{g.name}</p>
+      <p style={{ fontFamily: 'monospace', fontSize: '0.75rem', color: '#555555', margin: 0 }}>{g.classes}</p>
+    </div>
+    <p style={{ color: '#555555', fontSize: '0.875rem', margin: '0.25rem 0 0', lineHeight: 1.5 }}>{g.description}</p>
+  </div>
+))}
+
+## Radial background (hero pattern)
+
+The standard hero/section background. Three overlapping radial ellipses at low opacity create ambient depth without overpowering content. The green ellipse is the dominant light source at top-center; cyan and magenta sit at lower corners.
+
+<div style={{ height: '10rem', border: '1px solid rgba(255,255,255,0.1)', background: RADIAL_HERO_BACKGROUND }} />
+
+The full string is exported from `design-tokens.ts` as `RADIAL_HERO_BACKGROUND` — import it directly:
+
+```ts
+import { RADIAL_HERO_BACKGROUND } from '@/lib/design-tokens'
+
+<section style={{ background: RADIAL_HERO_BACKGROUND }}>...</section>
+```
+
+> Use **Tailwind v4 syntax**: `bg-linear-to-r` not the deprecated `bg-gradient-to-r`. For radial backgrounds, use inline styles with `radial-gradient()` — Tailwind does not have radial gradient utilities.
+
+## Cinematic background images
+
+Five background images for hero sections, stream scenes, and promotional materials. They are **always** blended with a solid black overlay at 50-75% opacity to keep text readable and maintain the dark aesthetic. Never use them at full brightness.
+
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '0.75rem' }}>
+  {BACKGROUND_IMAGES.map((bg) => (
+    <div key={bg.file}>
+      <div style={{ position: 'relative', aspectRatio: '21 / 9', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)' }}>
+        <img src={`/images/bg/${bg.file}`} alt={bg.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)' }} />
+      </div>
+      <p style={{ fontFamily: 'monospace', fontSize: '0.7rem', color: '#888888', margin: '0.25rem 0 0' }}>{bg.name}</p>
+      <p style={{ fontFamily: 'monospace', fontSize: '0.7rem', color: '#555555', margin: 0 }}>/images/bg/{bg.file}</p>
+    </div>
+  ))}
+</div>
+
+> Always darken these images with a black overlay — use **75% opacity** for text-heavy sections and **50%** for atmospheric backgrounds with minimal text. The raw image at full brightness breaks the dark aesthetic and makes text illegible. Combine with radial gradient overlays for additional depth.

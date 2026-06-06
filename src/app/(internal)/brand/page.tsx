@@ -13,86 +13,23 @@ import {
   ScrollReveal,
   ScrollRevealContainer,
   ScrollRevealItem,
-} from '@/components/shared/ScrollReveal'
-import { GlowButton } from '@/components/shared/GlowButton'
+} from '@/components/effects/ScrollReveal'
+import { GlowButton } from '@/components/ui/GlowButton'
 import { CyberCorners, CyberTag } from '@/components/ui/CyberCorners'
-import { CyberButton } from '@/components/members/CyberButton'
+import { CyberButton } from '@/components/ui/CyberButton'
+import {
+  BRAND_COLORS,
+  EXTENDED_PALETTE,
+  BG_COLORS,
+  TEXT_COLORS,
+  GLOW_COLORS,
+  SEMANTIC_TOKENS,
+  STATUS_PILL_MODES,
+  TYPE_SCALE,
+  GRADIENTS,
+  type ColorSwatch,
+} from '@/lib/design-tokens'
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   COLOR DATA
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-interface ColorSwatch {
-  name: string
-  hex: string
-  tailwind: string
-  glow?: boolean
-}
-
-const BRAND_COLORS: ColorSwatch[] = [
-  { name: 'Green', hex: '#00FF41', tailwind: 'rga-green', glow: true },
-  { name: 'Cyan', hex: '#00FFFF', tailwind: 'rga-cyan', glow: true },
-  { name: 'Magenta', hex: '#FF00FF', tailwind: 'rga-magenta', glow: true },
-]
-
-const BG_COLORS: ColorSwatch[] = [
-  { name: 'Void', hex: '#030303', tailwind: 'void' },
-  { name: 'Primary', hex: '#0A0A0A', tailwind: 'bg-primary' },
-  { name: 'Elevated', hex: '#111111', tailwind: 'bg-elevated' },
-  { name: 'Surface', hex: '#1A1A1A', tailwind: 'bg-surface' },
-]
-
-const TEXT_COLORS: ColorSwatch[] = [
-  { name: 'Primary', hex: '#FFFFFF', tailwind: 'text-primary' },
-  { name: 'Secondary', hex: '#888888', tailwind: 'text-secondary' },
-  { name: 'Muted', hex: '#555555', tailwind: 'text-muted' },
-]
-
-const GLOW_COLORS: ColorSwatch[] = [
-  { name: 'Glow Green', hex: 'rgba(0,255,65,0.5)', tailwind: 'glow-green' },
-  { name: 'Glow Cyan', hex: 'rgba(0,255,255,0.5)', tailwind: 'glow-cyan' },
-  { name: 'Glow Magenta', hex: 'rgba(255,0,255,0.5)', tailwind: 'glow-magenta' },
-]
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   TYPOGRAPHY DATA
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-const TYPE_SCALE = [
-  { label: 'H1', classes: 'font-display text-5xl md:text-6xl uppercase', sample: 'ROGUE ARMY' },
-  { label: 'H2', classes: 'font-display text-3xl md:text-4xl uppercase', sample: 'SECTION TITLE' },
-  { label: 'H3', classes: 'font-display text-xl md:text-2xl uppercase', sample: 'SUB HEADING' },
-  { label: 'Body', classes: 'font-body text-base', sample: 'The quick brown fox jumps over the lazy dog. Rogue Army is a gaming community with cyberpunk aesthetics.' },
-  { label: 'Small', classes: 'font-body text-sm text-text-secondary', sample: 'Secondary text for supporting information and metadata.' },
-  { label: 'Mono', classes: 'font-mono text-sm', sample: '> system.init() // terminal output' },
-]
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   GRADIENT DATA
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-const GRADIENTS = [
-  {
-    name: 'Brand Gradient',
-    classes: 'bg-linear-to-r from-rga-green via-rga-cyan to-rga-magenta',
-    description: 'The full RGA spectrum. Use for primary CTAs, hero accents, and major brand moments. This is the most impactful gradient — use it sparingly to maintain its effect.',
-  },
-  {
-    name: 'Green \u2192 Cyan',
-    classes: 'bg-linear-to-r from-rga-green to-rga-cyan',
-    description: 'The primary accent pair. Use for secondary UI elements, progress bars, and data visualizations. Feels technical and clean.',
-  },
-  {
-    name: 'Cyan \u2192 Magenta',
-    classes: 'bg-linear-to-r from-rga-cyan to-rga-magenta',
-    description: 'The neon accent pair. Works well for hover states, notifications, and decorative lines. Has a more energetic, cyberpunk feel.',
-  },
-  {
-    name: 'Green \u2192 Magenta',
-    classes: 'bg-linear-to-r from-rga-green to-rga-magenta',
-    description: 'High contrast pair. Use for alerts, important badges, or when you need maximum visual tension. The complementary colors create strong energy.',
-  },
-]
 
 /* ═══════════════════════════════════════════════════════════════════════════
    COPY TOAST
@@ -502,16 +439,19 @@ export default function BrandPage() {
           <SectionHeading
             tag="// 02 — COLORS"
             title="COLOR PALETTE"
-            description="Our palette is built for dark interfaces. The three brand colors — Green, Cyan, and Magenta — are high-saturation neon accents designed to pop against near-black backgrounds. Click any swatch to copy its hex value."
+            description="A two-layer system. Layer 1 holds seven raw neon hexes. Layer 2 gives them semantic names that describe what they do (status-warn, game-d2, role-mod) — components reference these. Same hex may back multiple aliases when surfaces don't share a screen. Click any swatch to copy its hex value."
           />
 
-          {/* Brand Colors */}
+          {/* Brand Colors — Layer 1 core */}
           <ScrollReveal>
             <h3 className="font-display text-lg uppercase tracking-wider text-white mb-2">Brand Colors</h3>
             <p className="text-text-secondary text-sm mb-4 leading-relaxed">
-              These are the core identity colors. Green is the primary accent used for CTAs, active states, and the logo glow.
-              Cyan serves as the secondary accent for links, highlights, and technical UI. Magenta is the tertiary accent
-              reserved for warnings, special badges, and moments of visual tension.
+              The historical RGA trio. <strong className="text-white">Green</strong> is the RGA brand identity —
+              logo, primary CTAs, selection, scrollbar. <strong className="text-white">Cyan</strong> is the
+              alternative voice with no fixed semantic; reach for it when green would be wrong or you need a
+              second neon flavor. <strong className="text-white">Magenta</strong> is decorative only — RGB-shift
+              glitch effects, chromatic aberration, gradient ends. It is <strong className="text-white">not</strong>
+              used for warnings anymore (yellow took that role).
             </p>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
               {BRAND_COLORS.map((c) => <Swatch key={c.hex} color={c} onCopy={copy} />)}
@@ -520,6 +460,225 @@ export default function BrandPage() {
               Never use brand colors as large background fills — they are accent colors only. On dark backgrounds,
               use them for text, borders, glows, and small UI elements. If you need a colored background area,
               use the color at 5-10% opacity (e.g. <span className="font-mono">bg-rga-green/5</span>).
+            </GuidelineNote>
+          </ScrollReveal>
+
+          {/* Extended Palette — Layer 1 extension */}
+          <ScrollReveal>
+            <h3 className="font-display text-lg uppercase tracking-wider text-white mt-12 mb-2">Extended Palette</h3>
+            <p className="text-text-secondary text-sm mb-4 leading-relaxed">
+              Four additional raw hexes power game brands, status messaging, and staff role accents.
+              <strong className="text-white"> Orange</strong> is the Division 2 game brand AND the Moderator
+              staff role (different surfaces, same hex). <strong className="text-white">Chartreuse</strong> is
+              the Developer staff role — don&apos;t repurpose elsewhere.
+              <strong className="text-white"> Yellow</strong> is Hazard Yellow — the status warning color
+              (STALE, MEMBERS-ONLY). <strong className="text-white">Rose</strong> is status error
+              (LOCKED, OFFLINE) and the Admin staff role.
+            </p>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+              {EXTENDED_PALETTE.map((c) => <Swatch key={c.hex} color={c} onCopy={copy} />)}
+            </div>
+            <GuidelineNote color="magenta">
+              These extend the palette beyond the historical trio. Same shape: accent-only on dark surfaces,
+              never use as large background fills. The shared-hex pattern (Orange = Mod + D2, Rose = Admin + Error)
+              works because the surfaces don&apos;t coexist on a single screen — semantic aliases in Layer 2
+              keep intent clear in code.
+            </GuidelineNote>
+          </ScrollReveal>
+
+          {/* Semantic Aliases — Layer 2 */}
+          <ScrollReveal>
+            <h3 className="font-display text-lg uppercase tracking-wider text-white mt-12 mb-2">Semantic Aliases (Layer 2)</h3>
+            <p className="text-text-secondary text-sm mb-4 leading-relaxed">
+              Components reference these names instead of raw <span className="font-mono">rga-*</span> tokens whenever a semantic
+              exists. <span className="font-mono text-rga-cyan">text-status-warn</span> tells the next reader why the color is
+              there; <span className="font-mono text-rga-cyan">text-rga-yellow</span> doesn&apos;t.
+            </p>
+            <div className="overflow-x-auto mb-4">
+              <table className="w-full text-sm font-mono">
+                <thead className="text-text-muted text-xs uppercase tracking-widest">
+                  <tr className="border-b border-white/10">
+                    <th className="text-left py-2 pr-4">alias</th>
+                    <th className="text-left py-2 pr-4">backs</th>
+                    <th className="text-left py-2 pr-4">hex</th>
+                    <th className="text-left py-2">purpose</th>
+                  </tr>
+                </thead>
+                <tbody className="text-text-secondary">
+                  {SEMANTIC_TOKENS.map((t) => (
+                    <tr key={t.alias} className="border-b border-white/5">
+                      <td className="py-2 pr-4 text-rga-cyan">{t.alias}</td>
+                      <td className="py-2 pr-4 text-text-muted">{t.layer1}</td>
+                      <td className="py-2 pr-4">
+                        <span className="inline-flex items-center gap-2">
+                          <span
+                            aria-hidden
+                            className="inline-block h-3 w-3 border border-white/10"
+                            style={{
+                              background: t.hex.startsWith('#') ? t.hex : '#A6A6A6',
+                            }}
+                          />
+                          <span className="text-text-primary">{t.hex}</span>
+                        </span>
+                      </td>
+                      <td className="py-2 font-body text-text-secondary">{t.purpose}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <GuidelineNote color="cyan">
+              When you reach for a color in a component, ask yourself: does it carry meaning (status, role, game brand)?
+              If yes — use the Layer 2 alias. If it&apos;s purely aesthetic (decorative cyan accent, magenta glitch
+              effect) — Layer 1 raw token is fine.
+            </GuidelineNote>
+          </ScrollReveal>
+
+          {/* Status Pill Modes */}
+          <ScrollReveal>
+            <h3 className="font-display text-lg uppercase tracking-wider text-white mt-12 mb-2">Status Pill — Three Modes</h3>
+            <p className="text-text-secondary text-sm mb-4 leading-relaxed">
+              The chrome ribbon (<span className="font-mono text-rga-cyan">StatRibbon</span>) carries a status pill that always
+              renders, but in one of three modes. Job: <strong className="text-white">silent when fine, loud when not</strong>.
+              Magenta is no longer used for failure — error is rose, warn is yellow, info is muted gray.
+            </p>
+            <div className="flex flex-col gap-3 mb-4">
+              {STATUS_PILL_MODES.map((m) => (
+                <div
+                  key={m.mode}
+                  className="border border-white/10 bg-[rgba(0,0,0,0.5)] p-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-6"
+                >
+                  <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-text-muted min-w-[6rem]">
+                    mode: <span className="text-white">{m.mode}</span>
+                  </div>
+                  <div className={`inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.3em] ${m.textClass}`}>
+                    <span aria-hidden className={`inline-block h-2 w-2 rounded-[1px] ${m.dotClass}`} />
+                    {m.example}
+                  </div>
+                  <div className="text-text-secondary text-xs leading-relaxed sm:flex-1">
+                    {m.description}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <GuidelineNote color="green">
+              Routine states (TODAY, VIEWING, LIVE, PUBLIC, OK) all render as <span className="font-mono">info</span> — muted gray,
+              no pulse. They&apos;re visible but they don&apos;t demand attention. The pill only goes loud (yellow or rose, pulse on)
+              when there&apos;s something the user genuinely needs to notice.
+            </GuidelineNote>
+          </ScrollReveal>
+
+          {/* Chrome vs Body — architecture mockup */}
+          <ScrollReveal>
+            <h3 className="font-display text-lg uppercase tracking-wider text-white mt-12 mb-2">Chrome vs Body Layers</h3>
+            <p className="text-text-secondary text-sm mb-4 leading-relaxed">
+              Two orthogonal layers coexist on every page. <strong className="text-white">Chrome</strong> is the persistent
+              shell — top ribbon, nav, MENU, status pill. Always RGA-neutral (green brand + muted + white), regardless of section.
+              <strong className="text-white"> Body</strong> is the page-unique content under that shell — titles, sections,
+              mission rows. On <span className="font-mono">/division-2/*</span> the body wears <span className="font-mono text-game-d2">game-d2</span> orange.
+              Future game sections will introduce their own <span className="font-mono">game-*</span> tokens; the chrome frame never changes.
+            </p>
+
+            <div className="relative grid grid-cols-1 gap-6 lg:grid-cols-[1fr_auto] lg:gap-10 mb-4">
+              {/* Mockup column */}
+              <div className="border border-white/10 bg-void p-6 sm:p-10 lg:p-14 overflow-hidden">
+                {/* CHROME zone */}
+                <div className="relative">
+                  <div className="absolute -top-3 left-0 z-10 px-2 bg-void font-mono text-[9px] uppercase tracking-[0.3em] text-rga-green">
+                    ← Chrome zone
+                  </div>
+                  <div className="border border-white/10 bg-[rgba(0,0,0,0.78)] px-5 py-4 backdrop-blur-2xl overflow-x-auto">
+                    <div className="flex items-center gap-x-4 font-mono text-[10px] uppercase tracking-[0.3em] text-text-muted whitespace-nowrap">
+                      <span className="text-text-secondary">//</span>
+                      <span className="text-text-secondary hover:text-text-primary cursor-pointer">Division 2</span>
+                      <span aria-hidden>›</span>
+                      <span className="text-text-secondary hover:text-text-primary cursor-pointer">Escalation</span>
+                      <span aria-hidden>›</span>
+                      <span className="text-text-primary">Tue · Jun 2</span>
+                      <span aria-hidden className="h-3 w-px bg-white/10 shrink-0" />
+                      <span>Missions <span className="text-text-primary tabular-nums">5</span></span>
+                      <span className="ml-auto pl-4 inline-flex items-center gap-2 text-text-secondary">
+                        <span aria-hidden className="inline-block h-2 w-2 rounded-[1px] bg-text-secondary" />
+                        VIEWING
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Divider — generous breathing room between zones */}
+                <div className="my-12 border-t border-dashed border-white/10" aria-hidden />
+
+                {/* BODY zone */}
+                <div className="relative pt-2">
+                  <div className="absolute -top-1 left-0 z-10 px-2 bg-void font-mono text-[9px] uppercase tracking-[0.3em] text-game-d2">
+                    ← Body zone (game-d2)
+                  </div>
+
+                  <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-text-muted mt-6 mb-6">
+                    // Division 2 · Escalation · Targeted Loot
+                  </p>
+                  <div className="font-display uppercase leading-[0.9] tracking-tight space-y-1">
+                    <div className="text-text-primary text-3xl sm:text-5xl md:text-6xl">ESCALATION</div>
+                    <div className="text-game-d2 text-3xl sm:text-5xl md:text-6xl" style={{ textShadow: '0 0 24px rgba(255,128,0,0.5)' }}>
+                      PROTOCOL
+                    </div>
+                  </div>
+
+                  <div className="mt-12 flex flex-wrap items-center justify-between gap-4 font-mono text-[10px] uppercase tracking-[0.3em]">
+                    <span className="text-text-muted">SEC_01 // <span className="text-text-secondary">Active Missions</span></span>
+                    <div className="flex items-center gap-1.5 text-game-d2">
+                      <span className="border border-game-d2/30 px-2.5 py-1.5">{'<'}</span>
+                      <span className="text-text-primary px-3">Tue · Jun 2</span>
+                      <span className="border border-game-d2/30 px-2.5 py-1.5">{'>'}</span>
+                      <span className="border border-game-d2/50 bg-game-d2/10 px-3.5 py-1.5">// Today</span>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 border border-game-d2/30 bg-[rgba(255,128,0,0.03)] p-5 sm:p-6 flex flex-wrap items-center justify-between gap-5">
+                    <div className="flex items-center gap-5">
+                      <span className="font-mono text-[10px] text-text-muted tracking-[0.3em]">M_01</span>
+                      <div>
+                        <div className="font-mono text-[9px] uppercase tracking-[0.3em] text-text-muted mb-1">// Drops</div>
+                        <div className="font-display text-base sm:text-lg uppercase text-game-d2">Legatus S.P.A.</div>
+                      </div>
+                    </div>
+                    <div className="hidden sm:block">
+                      <div className="font-mono text-[9px] uppercase tracking-[0.3em] text-text-muted mb-1">// Run At</div>
+                      <div className="font-display text-base sm:text-lg uppercase text-text-primary">The Tombs</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Legend column — sits to the right on lg+, stacks below on small */}
+              <div className="flex flex-row gap-4 lg:flex-col lg:gap-6 lg:w-48 lg:pt-2">
+                <div className="flex-1 lg:flex-none">
+                  <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.3em] text-rga-green mb-2">
+                    <span aria-hidden className="inline-block h-2 w-2 rounded-[1px] bg-rga-green shadow-[0_0_8px_#00FF41]" />
+                    Chrome
+                  </div>
+                  <p className="font-body text-xs text-text-secondary leading-relaxed">
+                    Persistent shell. Same on every page. Status pill in <span className="text-text-primary">info</span> mode
+                    means &ldquo;nothing to act on.&rdquo;
+                  </p>
+                </div>
+                <div className="flex-1 lg:flex-none">
+                  <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.3em] text-game-d2 mb-2">
+                    <span aria-hidden className="inline-block h-2 w-2 rounded-[1px] bg-game-d2 shadow-[0_0_8px_#FF8000]" />
+                    Body
+                  </div>
+                  <p className="font-body text-xs text-text-secondary leading-relaxed">
+                    Page-unique content. Wears the current section&apos;s <span className="font-mono text-game-d2">game-*</span> token.
+                    On <span className="font-mono">/division-2/*</span> that&apos;s orange.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <GuidelineNote>
+              The single rule that keeps the system coherent. If you&apos;re building a new component, ask:
+              does it live in chrome (persistent across pages) or body (per-page content)? Chrome = RGA neutral always.
+              Body = game brand of the current section. This split survives when RGA adds a second game.
             </GuidelineNote>
           </ScrollReveal>
 
@@ -561,10 +720,11 @@ export default function BrandPage() {
 
           {/* Glow Colors */}
           <ScrollReveal>
-            <h3 className="font-display text-lg uppercase tracking-wider text-white mb-2">Glow Colors</h3>
+            <h3 className="font-display text-lg uppercase tracking-wider text-white mt-12 mb-2">Glow Colors</h3>
             <p className="text-text-secondary text-sm mb-4 leading-relaxed">
-              Semi-transparent versions of our brand colors, used exclusively for <span className="font-mono text-xs">box-shadow</span> and
-              glow effects. These create the signature neon luminosity that defines our cyberpunk aesthetic.
+              Semi-transparent versions of palette colors, used exclusively for <span className="font-mono text-xs">box-shadow</span> and
+              <span className="font-mono text-xs"> text-shadow</span> glow effects. These create the signature neon luminosity
+              that defines the cyberpunk aesthetic. Each Layer 1 color has a matching glow at 0.5 alpha.
             </p>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {GLOW_COLORS.map((c) => <Swatch key={c.tailwind} color={c} onCopy={copy} />)}
@@ -1038,7 +1198,7 @@ export default function BrandPage() {
                     button per viewport.
                   </p>
                   <p className="font-mono text-xs text-text-muted">
-                    {'import { GlowButton } from "@/components/shared/GlowButton"'}
+                    {'import { GlowButton } from "@/components/ui/GlowButton"'}
                   </p>
                 </div>
               </CyberCorners>
@@ -1097,7 +1257,7 @@ export default function BrandPage() {
                     magenta for featured, and gray for neutral/disabled-looking actions.
                   </p>
                   <p className="font-mono text-xs text-text-muted">
-                    {'import { CyberButton } from "@/components/members/CyberButton"'}
+                    {'import { CyberButton } from "@/components/ui/CyberButton"'}
                   </p>
                 </div>
               </CyberCorners>

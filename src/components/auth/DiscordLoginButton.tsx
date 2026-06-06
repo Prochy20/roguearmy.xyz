@@ -1,7 +1,7 @@
 'use client'
 
-import { GlowButton } from '@/components/shared/GlowButton'
-import { DiscordIcon } from '@/components/shared/DiscordIcon'
+import { GlowButton } from '@/components/ui/GlowButton'
+import { DiscordIcon } from '@/components/ui/DiscordIcon'
 
 interface DiscordLoginButtonProps {
   className?: string

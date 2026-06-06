@@ -69,14 +69,18 @@ export interface Config {
   collections: {
     articles: Article;
     series: Series;
+    'staff-profiles': StaffProfile;
+    'division2-clans': Division2Clan;
     games: Game;
+    'game-roles': GameRole;
+    'discord-roles': DiscordRole;
     topics: Topic;
     'content-types': ContentType;
+    members: Member;
+    bookmarks: Bookmark;
+    'read-progress': ReadProgress;
     media: Media;
     users: User;
-    members: Member;
-    'read-progress': ReadProgress;
-    bookmarks: Bookmark;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -86,14 +90,18 @@ export interface Config {
   collectionsSelect: {
     articles: ArticlesSelect<false> | ArticlesSelect<true>;
     series: SeriesSelect<false> | SeriesSelect<true>;
+    'staff-profiles': StaffProfilesSelect<false> | StaffProfilesSelect<true>;
+    'division2-clans': Division2ClansSelect<false> | Division2ClansSelect<true>;
     games: GamesSelect<false> | GamesSelect<true>;
+    'game-roles': GameRolesSelect<false> | GameRolesSelect<true>;
+    'discord-roles': DiscordRolesSelect<false> | DiscordRolesSelect<true>;
     topics: TopicsSelect<false> | TopicsSelect<true>;
     'content-types': ContentTypesSelect<false> | ContentTypesSelect<true>;
+    members: MembersSelect<false> | MembersSelect<true>;
+    bookmarks: BookmarksSelect<false> | BookmarksSelect<true>;
+    'read-progress': ReadProgressSelect<false> | ReadProgressSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
-    members: MembersSelect<false> | MembersSelect<true>;
-    'read-progress': ReadProgressSelect<false> | ReadProgressSelect<true>;
-    bookmarks: BookmarksSelect<false> | BookmarksSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -105,11 +113,17 @@ export interface Config {
   fallbackLocale: null;
   globals: {
     homepage: Homepage;
+    'staff-page': StaffPage;
     manifesto: Manifesto;
+    division2: Division2;
+    'site-chrome': SiteChrome;
   };
   globalsSelect: {
     homepage: HomepageSelect<false> | HomepageSelect<true>;
+    'staff-page': StaffPageSelect<false> | StaffPageSelect<true>;
     manifesto: ManifestoSelect<false> | ManifestoSelect<true>;
+    division2: Division2Select<false> | Division2Select<true>;
+    'site-chrome': SiteChromeSelect<false> | SiteChromeSelect<true>;
   };
   locale: null;
   user: User & {
@@ -152,6 +166,15 @@ export interface Article {
    * Short excerpt/description shown in article listings
    */
   perex: string;
+  /**
+   * Optional bullet list rendered above the article body. Leave empty to hide the TL;DR card.
+   */
+  highlights?:
+    | {
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
   articleContent?: {
     /**
      * Choose where the article content comes from
@@ -296,28 +319,236 @@ export interface Series {
   createdAt: string;
 }
 /**
+ * Operatives shown on /community/staff. Order ascending.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users".
+ * via the `definition` "staff-profiles".
  */
-export interface User {
+export interface StaffProfile {
   id: string;
+  /**
+   * Search Discord members by name and pick one. The display name and avatar are hydrated from Ashley on save and refreshed lazily on page render.
+   */
+  discordId: string;
+  /**
+   * Human-readable title shown under the operative name (e.g. "Community Lead").
+   */
+  roleTitle: string;
+  /**
+   * Optional dossier text. Line-clamped to three lines on the card; click-through reveals the full bio on the future operative detail page.
+   */
+  bio?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * When off, this operative only appears for signed-in members.
+   */
+  isPublic?: boolean | null;
+  /**
+   * Card accent color. Leave "Auto" for hash-derived variety across the roster, or pick a specific color (the three role tints map to the brand role colors).
+   */
+  accent?: ('auto' | 'green' | 'cyan' | 'magenta' | 'dev' | 'admin' | 'mod') | null;
+  /**
+   * Display sort, ascending. Lower numbers appear first. Leave gaps (10, 20, 30…) so reordering is cheap.
+   */
+  order?: number | null;
+  /**
+   * Latest known Discord username (the @handle, not the display name). Refreshed lazily on page render past TTL.
+   */
+  cached_username?: string | null;
+  /**
+   * Latest known display name from Discord. Refreshed lazily on page render past TTL.
+   */
+  cached_displayName?: string | null;
+  /**
+   * Latest known Discord avatar URL. Falls back to the tactical ID-portrait when empty.
+   */
+  cached_avatarUrl?: string | null;
+  /**
+   * When this operative joined the Discord guild (surfaced as "ENLISTED" on the card).
+   */
+  cached_joinedAt?: string | null;
+  /**
+   * When this operative's Discord account was created (surfaced as "ON RECORD" on the card).
+   */
+  cached_accountCreatedAt?: string | null;
+  /**
+   * When the cached fields were last refreshed from Ashley.
+   */
+  cached_at?: string | null;
   updatedAt: string;
   createdAt: string;
-  email: string;
-  resetPasswordToken?: string | null;
-  resetPasswordExpiration?: string | null;
-  salt?: string | null;
-  hash?: string | null;
-  loginAttempts?: number | null;
-  lockUntil?: string | null;
-  sessions?:
+}
+/**
+ * In-game clans shown on /division-2/clans. Order ascending. Banner image and accent color carry each clan’s identity; the optional leader is members-only.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "division2-clans".
+ */
+export interface Division2Clan {
+  id: string;
+  /**
+   * Full clan name as displayed in Discord (e.g., Rogue Army SDC).
+   */
+  name: string;
+  /**
+   * Short clan tag (e.g., RGA, SDC, RGS). Up to 8 characters.
+   */
+  tag: string;
+  /**
+   * Path to the clan banner emblem. Drop the PNG into /public/division2/img/clans/ and reference it here, e.g. /division2/img/clans/rga.png. Target aspect ratio ~4:7 vertical (Discord pennant), ~600px wide minimum, transparent background recommended. Local files only — keeps emblems versioned with the code instead of going through Vercel Blob.
+   */
+  banner: string;
+  /**
+   * Card accent color — drives the left rail, banner halo, and tag chip tint. Pick the value that matches the clan’s Discord banner.
+   */
+  accent: 'green' | 'amber' | 'azure' | 'cyan' | 'magenta';
+  /**
+   * Display sort, ascending. Lower numbers appear first. Leave gaps (10, 20, 30…) so reordering is cheap.
+   */
+  order?: number | null;
+  /**
+   * Uncheck to hide from /division-2/clans without deleting the row.
+   */
+  isPublished?: boolean | null;
+  /**
+   * Optional clan leader. Search Discord members by name and pick one. Display name and avatar are hydrated from Ashley on save and refreshed lazily on page render. Leader info is shown only to signed-in members.
+   */
+  leaderDiscordId?: string | null;
+  /**
+   * Latest known Discord username (the @handle) for the leader. Refreshed lazily on page render past TTL.
+   */
+  cached_leaderUsername?: string | null;
+  /**
+   * Latest known display name from Discord for the leader.
+   */
+  cached_leaderDisplayName?: string | null;
+  /**
+   * Latest known Discord avatar URL for the leader.
+   */
+  cached_leaderAvatarUrl?: string | null;
+  /**
+   * When the cached leader fields were last refreshed from Ashley.
+   */
+  cached_leaderAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Pair Discord roles with games. Members holding any paired role count as playing that game.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "game-roles".
+ */
+export interface GameRole {
+  id: string;
+  displayName?: string | null;
+  /**
+   * One GameRoles entry per game.
+   */
+  game: string | Game;
+  /**
+   * Discord roles paired with this game. Snapshot of {id, name, color} taken at save.
+   */
+  roles:
     | {
-        id: string;
-        createdAt?: string | null;
-        expiresAt: string;
-      }[]
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
     | null;
-  password?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Canonical Discord role identity. Sync from Discord populates the read-only fields; admin curates isPrimary + accentOverride.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "discord-roles".
+ */
+export interface DiscordRole {
+  id: string;
+  /**
+   * Discord Snowflake ID. Identity key.
+   */
+  discordId: string;
+  name: string;
+  /**
+   * Hex color from Discord, or null.
+   */
+  color?: string | null;
+  /**
+   * Discord guild hierarchy. Higher renders above lower; used for sort.
+   */
+  position: number;
+  /**
+   * Drives the @MENTION marker in /me lattice.
+   */
+  mentionable?: boolean | null;
+  /**
+   * True for integration roles (booster, bots). Drives INTEGRATION badge.
+   */
+  managed?: boolean | null;
+  /**
+   * Multi-size icon URLs from Discord, or null. {64, 128, 256, 512}.
+   */
+  iconUrls?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Fallback unicode emoji when no custom icon.
+   */
+  unicodeEmoji?: string | null;
+  lastSyncedAt?: string | null;
+  /**
+   * Pin this role to the PRIMARY row in /me lattice.
+   */
+  isPrimary?: boolean | null;
+  /**
+   * Override the category badge text (e.g. "LEVEL", "ASSIGNMENT", "BANNER"). Leave empty to use the derived label: PRIMARY / TAG / INTEGRATION. Rendered uppercase regardless of input casing.
+   */
+  badgeLabel?: string | null;
+  /**
+   * Override Discord color with a design-system palette token. Leave empty to derive accent from Discord color. Semantic hints: Chartreuse = dev roles, Yellow = warn/stale, Rose = AFK/failure, Magenta = booster tier, Orange = mod / D2.
+   */
+  accentOverride?:
+    | (
+        | 'green'
+        | 'cyan'
+        | 'magenta'
+        | 'orange'
+        | 'chartreuse'
+        | 'yellow'
+        | 'amber'
+        | 'azure'
+        | 'gold'
+        | 'red'
+        | 'rose'
+        | 'gray'
+      )
+    | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * Discord members who have authenticated via OAuth
@@ -356,7 +587,7 @@ export interface Member {
      */
     nickname?: string | null;
     /**
-     * Array of Discord role IDs
+     * Array of raw Discord role snowflake IDs
      */
     roles?:
       | {
@@ -367,6 +598,26 @@ export interface Member {
       | number
       | boolean
       | null;
+    /**
+     * Ashley-resolved symbolic role list (DISCORD_ROLE_*). Drives badges and quarantine. Refreshed on a TTL via getMemberAuth.
+     */
+    symbolicRoles?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+    /**
+     * Last successful symbolic-role sync from Ashley.
+     */
+    rolesSyncedAt?: string | null;
+    /**
+     * Last failed sync attempt — drives short retry backoff after Ashley outages.
+     */
+    rolesSyncFailedAt?: string | null;
     /**
      * When they joined the Discord server
      */
@@ -381,42 +632,13 @@ export interface Member {
    */
   lastLogin: string;
   /**
-   * Set to Banned to revoke access
+   * Auto-managed read-only field. Reflects DISCORD_ROLE_QUARANTINE state OR the `adminBanned` flag below. Do not edit directly — set `adminBanned` to ban a member from the admin panel.
    */
   status: 'active' | 'banned' | 'left_server';
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * Tracks article reading progress for members
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "read-progress".
- */
-export interface ReadProgress {
-  id: string;
-  member: string | Member;
-  article: string | Article;
   /**
-   * Scroll percentage (0-100)
+   * Hard ban applied by an admin. When true, the member is banned regardless of Discord role state. Use this to ban a member who has not yet been quarantined on Discord, or to keep someone banned even if their Discord role is removed.
    */
-  progress: number;
-  /**
-   * When the member first visited this article
-   */
-  firstVisitedAt: string;
-  /**
-   * When the member last visited this article
-   */
-  lastVisitedAt: string;
-  /**
-   * Total time spent reading (seconds)
-   */
-  timeSpent: number;
-  /**
-   * True when progress reaches 85% or higher
-   */
-  completed?: boolean | null;
+  adminBanned?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -432,6 +654,74 @@ export interface Bookmark {
   article: string | Article;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * Tracks reading progress for members across articles and briefings
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "read-progress".
+ */
+export interface ReadProgress {
+  id: string;
+  member: string | Member;
+  /**
+   * Which content type this progress record points at
+   */
+  targetType: 'article' | 'briefing';
+  /**
+   * ID of the article (Payload ID) or briefing (Ashley UUID)
+   */
+  targetId: string;
+  /**
+   * Linked article (article-type rows only)
+   */
+  article?: (string | null) | Article;
+  /**
+   * Scroll percentage (0-100)
+   */
+  progress: number;
+  /**
+   * When the member first visited this target
+   */
+  firstVisitedAt: string;
+  /**
+   * When the member last visited this target
+   */
+  lastVisitedAt: string;
+  /**
+   * Total time spent reading (seconds)
+   */
+  timeSpent: number;
+  /**
+   * True when progress reaches 85% or higher
+   */
+  completed?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users".
+ */
+export interface User {
+  id: string;
+  updatedAt: string;
+  createdAt: string;
+  email: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
+  password?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -466,8 +756,24 @@ export interface PayloadLockedDocument {
         value: string | Series;
       } | null)
     | ({
+        relationTo: 'staff-profiles';
+        value: string | StaffProfile;
+      } | null)
+    | ({
+        relationTo: 'division2-clans';
+        value: string | Division2Clan;
+      } | null)
+    | ({
         relationTo: 'games';
         value: string | Game;
+      } | null)
+    | ({
+        relationTo: 'game-roles';
+        value: string | GameRole;
+      } | null)
+    | ({
+        relationTo: 'discord-roles';
+        value: string | DiscordRole;
       } | null)
     | ({
         relationTo: 'topics';
@@ -478,24 +784,24 @@ export interface PayloadLockedDocument {
         value: string | ContentType;
       } | null)
     | ({
-        relationTo: 'media';
-        value: string | Media;
-      } | null)
-    | ({
-        relationTo: 'users';
-        value: string | User;
-      } | null)
-    | ({
         relationTo: 'members';
         value: string | Member;
+      } | null)
+    | ({
+        relationTo: 'bookmarks';
+        value: string | Bookmark;
       } | null)
     | ({
         relationTo: 'read-progress';
         value: string | ReadProgress;
       } | null)
     | ({
-        relationTo: 'bookmarks';
-        value: string | Bookmark;
+        relationTo: 'media';
+        value: string | Media;
+      } | null)
+    | ({
+        relationTo: 'users';
+        value: string | User;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -549,6 +855,12 @@ export interface ArticlesSelect<T extends boolean = true> {
   readingTime?: T;
   title?: T;
   perex?: T;
+  highlights?:
+    | T
+    | {
+        text?: T;
+        id?: T;
+      };
   articleContent?:
     | T
     | {
@@ -585,6 +897,45 @@ export interface SeriesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "staff-profiles_select".
+ */
+export interface StaffProfilesSelect<T extends boolean = true> {
+  discordId?: T;
+  roleTitle?: T;
+  bio?: T;
+  isPublic?: T;
+  accent?: T;
+  order?: T;
+  cached_username?: T;
+  cached_displayName?: T;
+  cached_avatarUrl?: T;
+  cached_joinedAt?: T;
+  cached_accountCreatedAt?: T;
+  cached_at?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "division2-clans_select".
+ */
+export interface Division2ClansSelect<T extends boolean = true> {
+  name?: T;
+  tag?: T;
+  banner?: T;
+  accent?: T;
+  order?: T;
+  isPublished?: T;
+  leaderDiscordId?: T;
+  cached_leaderUsername?: T;
+  cached_leaderDisplayName?: T;
+  cached_leaderAvatarUrl?: T;
+  cached_leaderAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "games_select".
  */
 export interface GamesSelect<T extends boolean = true> {
@@ -593,6 +944,37 @@ export interface GamesSelect<T extends boolean = true> {
   description?: T;
   color?: T;
   featured?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "game-roles_select".
+ */
+export interface GameRolesSelect<T extends boolean = true> {
+  displayName?: T;
+  game?: T;
+  roles?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "discord-roles_select".
+ */
+export interface DiscordRolesSelect<T extends boolean = true> {
+  discordId?: T;
+  name?: T;
+  color?: T;
+  position?: T;
+  mentionable?: T;
+  managed?: T;
+  iconUrls?: T;
+  unicodeEmoji?: T;
+  lastSyncedAt?: T;
+  isPrimary?: T;
+  badgeLabel?: T;
+  accentOverride?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -614,6 +996,60 @@ export interface TopicsSelect<T extends boolean = true> {
 export interface ContentTypesSelect<T extends boolean = true> {
   name?: T;
   slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "members_select".
+ */
+export interface MembersSelect<T extends boolean = true> {
+  discordId?: T;
+  username?: T;
+  globalName?: T;
+  avatar?: T;
+  email?: T;
+  guildMember?:
+    | T
+    | {
+        nickname?: T;
+        roles?: T;
+        symbolicRoles?: T;
+        rolesSyncedAt?: T;
+        rolesSyncFailedAt?: T;
+        joinedDiscordAt?: T;
+      };
+  joinedAt?: T;
+  lastLogin?: T;
+  status?: T;
+  adminBanned?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "bookmarks_select".
+ */
+export interface BookmarksSelect<T extends boolean = true> {
+  member?: T;
+  article?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "read-progress_select".
+ */
+export interface ReadProgressSelect<T extends boolean = true> {
+  member?: T;
+  targetType?: T;
+  targetId?: T;
+  article?: T;
+  progress?: T;
+  firstVisitedAt?: T;
+  lastVisitedAt?: T;
+  timeSpent?: T;
+  completed?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -656,54 +1092,6 @@ export interface UsersSelect<T extends boolean = true> {
         createdAt?: T;
         expiresAt?: T;
       };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "members_select".
- */
-export interface MembersSelect<T extends boolean = true> {
-  discordId?: T;
-  username?: T;
-  globalName?: T;
-  avatar?: T;
-  email?: T;
-  guildMember?:
-    | T
-    | {
-        nickname?: T;
-        roles?: T;
-        joinedDiscordAt?: T;
-      };
-  joinedAt?: T;
-  lastLogin?: T;
-  status?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "read-progress_select".
- */
-export interface ReadProgressSelect<T extends boolean = true> {
-  member?: T;
-  article?: T;
-  progress?: T;
-  firstVisitedAt?: T;
-  lastVisitedAt?: T;
-  timeSpent?: T;
-  completed?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "bookmarks_select".
- */
-export interface BookmarksSelect<T extends boolean = true> {
-  member?: T;
-  article?: T;
-  updatedAt?: T;
-  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -759,6 +1147,276 @@ export interface Homepage {
    * Drag to reorder games on the homepage
    */
   games?: (string | Game)[] | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * All copy + content for the /community/staff page. Roster operatives live in the Staff Profiles collection.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "staff-page".
+ */
+export interface StaffPage {
+  id: string;
+  manifest?: {
+    /**
+     * Small mono kicker above the headline.
+     */
+    kicker?: string | null;
+    /**
+     * First word of the three-stanza headline.
+     */
+    preLine?: string | null;
+    /**
+     * Middle word of the headline — rendered in cyan with extra glow.
+     */
+    midLine?: string | null;
+    /**
+     * Last line of the headline.
+     */
+    postLine?: string | null;
+    /**
+     * Intro paragraph shown to everyone, under the headline.
+     */
+    sublineLead?: string | null;
+    /**
+     * Additional paragraph shown only to signed-in members.
+     */
+    sublineMember?: string | null;
+  };
+  roster?: {
+    /**
+     * Mono label next to the SEC_01 marker.
+     */
+    sectionEyebrow?: string | null;
+    /**
+     * Display title of the roster section.
+     */
+    sectionTitle?: string | null;
+    /**
+     * Kicker shown to public visitors above the roster.
+     */
+    kickerPublic?: string | null;
+    /**
+     * Kicker shown to signed-in members above the roster.
+     */
+    kickerMember?: string | null;
+    /**
+     * Wide closing card rendered below the roster grid — communicates that the dossiers above are not the only people contributing.
+     */
+    tailBanner?: {
+      /**
+       * Toggle the banner without losing its copy.
+       */
+      enabled?: boolean | null;
+      /**
+       * Mono kicker above the headline.
+       */
+      kicker?: string | null;
+      /**
+       * Display title — keep short, all-caps reads best.
+       */
+      title?: string | null;
+      /**
+       * Editorial paragraph. Keep it short — 2-3 sentences.
+       */
+      body?: string | null;
+      /**
+       * Right-side "redacted manifest fragment" — a mono-styled console readout listing a few role-groups with two redacted rows underneath. Conveys "there are more, names withheld" in the page's dossier vocabulary. Leave entries empty to hide the panel entirely.
+       */
+      fragment?: {
+        /**
+         * Header label at the top of the readout (e.g. a fake filename).
+         */
+        label?: string | null;
+        /**
+         * Visible rows in the fragment. Each row reads "NN  LABEL  ::  NOTE" — keep labels and notes UPPER_SNAKE_CASE for the console look. Two redacted rows render below automatically.
+         */
+        entries?:
+          | {
+              /**
+               * Color of the status note.
+               */
+              tone: 'cyan' | 'green' | 'magenta';
+              /**
+               * Role-group name (e.g. REGULARS).
+               */
+              label: string;
+              /**
+               * Short status word (ACTIVE, STANDBY, ROTATING).
+               */
+              note: string;
+              id?: string | null;
+            }[]
+          | null;
+        /**
+         * Footer line below the redacted rows. The "+ N" count is editorial — set it to whatever feels right for the size of your unnamed crew.
+         */
+        redactedLine?: string | null;
+      };
+      /**
+       * CTA pill label. Leave the href blank to hide the pill entirely; the label alone does not render a button.
+       */
+      ctaLabel?: string | null;
+      /**
+       * Where the CTA points. Discord invite, /community, etc. Leave blank to hide the button.
+       */
+      ctaHref?: string | null;
+    };
+  };
+  protocol?: {
+    /**
+     * Mono label next to the SEC_02 marker.
+     */
+    sectionEyebrow?: string | null;
+    /**
+     * Kicker under the section eyebrow.
+     */
+    sectionKicker?: string | null;
+    /**
+     * Display title of the protocol section.
+     */
+    sectionTitle?: string | null;
+    /**
+     * Intro paragraph above the three lanes panel.
+     */
+    intro?: string | null;
+    /**
+     * Mono label above the lane cards grid.
+     */
+    lanesEyebrow?: string | null;
+    /**
+     * Contact lanes shown side-by-side. Three by default — Tickets / DM / Tag. Add more if you grow new channels.
+     */
+    lanes?:
+      | {
+          tone: 'cyan' | 'green' | 'magenta';
+          /**
+           * Icon shown in the lane card.
+           */
+          iconKey: 'ticket' | 'message-circle' | 'at-sign' | 'mail' | 'globe' | 'phone';
+          /**
+           * Mono label at the top of the card (e.g. "FORMAL").
+           */
+          toneLabel: string;
+          /**
+           * Display title (e.g. "TICKETS").
+           */
+          title: string;
+          /**
+           * Short mono channel reference (e.g. "#open-a-ticket", "@handle").
+           */
+          hint: string;
+          /**
+           * Body paragraph explaining when to use this lane.
+           */
+          body: string;
+          /**
+           * Optional outbound URL. When set, the lane gets an "OPEN CHANNEL" CTA pill at the bottom.
+           */
+          href?: string | null;
+          /**
+           * CTA pill label. Defaults to "OPEN CHANNEL" if blank.
+           */
+          ctaLabel?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  faq?: {
+    /**
+     * Mono heading above the FAQ grid.
+     */
+    heading?: string | null;
+    /**
+     * FAQ entries rendered as a 2-column grid of cards. Reorder with the drag handle; ordering controls render order.
+     */
+    entries?:
+      | {
+          /**
+           * Colour-codes the severity dot + label.
+           */
+          severity: 'urgent' | 'formal' | 'casual' | 'social';
+          /**
+           * The question, phrased in the visitor’s voice.
+           */
+          question: string;
+          /**
+           * Substantive answer. Uses the project rich text editor — bold, italic, links, lists, etc.
+           */
+          answer: {
+            root: {
+              type: string;
+              children: {
+                type: any;
+                version: number;
+                [k: string]: unknown;
+              }[];
+              direction: ('ltr' | 'rtl') | null;
+              format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+              indent: number;
+              version: number;
+            };
+            [k: string]: unknown;
+          };
+          /**
+           * Channel description (e.g. "Open a ticket").
+           */
+          channel: string;
+          /**
+           * Mono channel reference (e.g. "#help").
+           */
+          channelHint: string;
+          /**
+           * Optional outbound URL. When set, the channel pill renders as a clickable button with hover/external-link affordances. When blank, it renders as a read-only chip preceded by the leading arrow.
+           */
+          href?: string | null;
+          /**
+           * Response time expectation (e.g. "Minutes", "Hours · paper trail").
+           */
+          response: string;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Mono label next to the warning icon in the ground rules strip below the FAQ.
+     */
+    groundRulesLabel?: string | null;
+    /**
+     * Short pills shown below the FAQ grid, closing out the protocol section.
+     */
+    groundRules?:
+      | {
+          tone: 'cyan' | 'green' | 'magenta';
+          label: string;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  endStrip?: {
+    /**
+     * Label on the back-link to /community.
+     */
+    backLinkLabel?: string | null;
+    /**
+     * Mono closing tag in the end strip.
+     */
+    endLabel?: string | null;
+    /**
+     * Prefix before the compiled timestamp (e.g. "COMPILED · 14:32 UTC · 16 MAY").
+     */
+    compiledLabel?: string | null;
+  };
+  emptyState?: {
+    pill?: string | null;
+    heading?: string | null;
+    body?: string | null;
+    hint?: string | null;
+  };
+  seo?: {
+    title?: string | null;
+    description?: string | null;
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -942,12 +1600,617 @@ export interface Manifesto {
   createdAt?: string | null;
 }
 /**
+ * Access gate + editable copy for the Division 2 tools. Clearing the gate role disables the section for all members.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "division2".
+ */
+export interface Division2 {
+  id: string;
+  gate?: {
+    /**
+     * Game-roles entry whose Discord roles grant access to /division-2. Clearing this disables the section for everyone.
+     */
+    role?: (string | null) | GameRole;
+  };
+  landingPage?: {
+    /**
+     * First word of the two-line headline — rendered in white.
+     */
+    heroTitle?: string | null;
+    /**
+     * Second word of the headline — rendered in Division 2 orange with extra glow.
+     */
+    heroAccent?: string | null;
+    /**
+     * Paragraph under the headline.
+     */
+    intro?: string | null;
+    /**
+     * WEEKLY RAIDS section (SEC_04). Routes operatives to Discord #events for RSVP via the Apollo bot. Every string here is admin-editable.
+     */
+    raids?: {
+      /**
+       * First word of the section headline — rendered in white.
+       */
+      headlineTitle?: string | null;
+      /**
+       * Second word of the section headline — rendered in Division 2 green with extra glow.
+       */
+      headlineAccent?: string | null;
+      /**
+       * Body paragraph shown under the WEEKLY RAIDS headline.
+       */
+      blurb?: string | null;
+      /**
+       * Mono caption above the recurring-raid list.
+       */
+      rotationLabel?: string | null;
+      /**
+       * Recurring weekly raids. Each row renders as an image-backed card — drop two hero images per raid under /public/division2/img/raids/ and reference them below. Image 1 is the resting background; Image 2 swipes in on hover.
+       */
+      schedule?:
+        | {
+            /**
+             * Day pill (e.g., SATURDAY).
+             */
+            day?: string | null;
+            /**
+             * Raid name (e.g., IRON HORSE).
+             */
+            title?: string | null;
+            /**
+             * Path to the resting hero image (e.g., /division2/img/raids/dark-hours-1.jpg). Local files only — Discord CDN links expire.
+             */
+            imagePrimary?: string | null;
+            /**
+             * Path to the hover-reveal image (e.g., /division2/img/raids/dark-hours-2.jpg). Falls back to the primary if blank.
+             */
+            imageSecondary?: string | null;
+            id?: string | null;
+          }[]
+        | null;
+      /**
+       * CTA button label.
+       */
+      ctaLabel?: string | null;
+      /**
+       * Deep link to the Discord #events channel.
+       */
+      discordUrl?: string | null;
+    };
+    /**
+     * Document title + meta description.
+     */
+    seo?: {
+      title?: string | null;
+      description?: string | null;
+    };
+  };
+  contentPage?: {
+    /**
+     * Small mono kicker above the headline. Source-count + filter token appended automatically.
+     */
+    heroKicker?: string | null;
+    /**
+     * First word of the two-line headline — rendered in white.
+     */
+    heroTitle?: string | null;
+    /**
+     * Second word of the headline — rendered in Division 2 orange with extra glow.
+     */
+    heroAccent?: string | null;
+    /**
+     * Paragraph under the headline.
+     */
+    intro?: string | null;
+    /**
+     * Mono label above the card grid.
+     */
+    feedSectionLabel?: string | null;
+    /**
+     * Editorial blurb shown under the SEC_03 // LIVE FEED label. Best used to explain what the filters do, since the trigger UI is intentionally terse.
+     */
+    feedBlurb?: string | null;
+    /**
+     * Shown when a source filter is active but Ashley returns zero items. `{SOURCE}` is replaced with the active source name (YOUTUBE / REDDIT / UBISOFT).
+     */
+    emptyFiltered?: string | null;
+    /**
+     * Shown when no filter is active and Ashley still returns zero items (sync may not have happened yet).
+     */
+    emptyAll?: string | null;
+    /**
+     * Mono marker shown after the user scrolls to the last item. `{COUNT}` is replaced with the loaded-items count.
+     */
+    endOfFeedLabel?: string | null;
+    /**
+     * Document title + meta description.
+     */
+    seo?: {
+      title?: string | null;
+      description?: string | null;
+    };
+  };
+  escalationPage?: {
+    /**
+     * Small mono kicker above the headline. The status token (TODAY / VIEWING) and date are appended automatically.
+     */
+    heroKicker?: string | null;
+    /**
+     * First word of the two-line headline — rendered in white.
+     */
+    heroTitle?: string | null;
+    /**
+     * Second word of the headline — rendered in Division 2 orange with extra glow.
+     */
+    heroAccent?: string | null;
+    /**
+     * Paragraph under the headline.
+     */
+    intro?: string | null;
+    /**
+     * Mono label next to SEC_01.
+     */
+    missionsSectionLabel?: string | null;
+    /**
+     * Mono label next to SEC_02.
+     */
+    cachesSectionLabel?: string | null;
+    /**
+     * Short paragraph under the SEC_02 header explaining the vendor and its location.
+     */
+    cachesBlurb?: string | null;
+    /**
+     * SEC_03 card pointing members at the Discord channel that mirrors the same daily intel. Toggle off to hide the section entirely.
+     */
+    discord?: {
+      /**
+       * Toggle the section without losing its copy.
+       */
+      enabled?: boolean | null;
+      /**
+       * Mono label next to SEC_03.
+       */
+      sectionLabel?: string | null;
+      /**
+       * Section display title.
+       */
+      heading?: string | null;
+      /**
+       * Body paragraph for the SEC_03 card.
+       */
+      body?: string | null;
+      /**
+       * Mono channel reference shown above the CTA.
+       */
+      channelLabel?: string | null;
+      /**
+       * CTA button label.
+       */
+      ctaLabel?: string | null;
+      /**
+       * Discord channel URL (the deep link is what desktop and mobile Discord both honour).
+       */
+      channelUrl?: string | null;
+    };
+    /**
+     * Document title + meta description.
+     */
+    seo?: {
+      title?: string | null;
+      description?: string | null;
+    };
+  };
+  clansPage?: {
+    /**
+     * First word of the two-line headline — rendered in white.
+     */
+    heroTitle?: string | null;
+    /**
+     * Second word of the headline — rendered in RGA green with extra glow.
+     */
+    heroAccent?: string | null;
+    /**
+     * Subtitle paragraph under the headline.
+     */
+    intro?: string | null;
+    /**
+     * Mono label above the three clan cards.
+     */
+    rosterSectionLabel?: string | null;
+    /**
+     * Shown when no clans are published yet. The rest of the page still renders.
+     */
+    emptyRoster?: string | null;
+    /**
+     * Enlistment protocol. Add as many steps as you like and reorder freely. Each step picks a variant: Command (slash-command chip), Instruction (plain text), or CTA (link button).
+     */
+    howTo?: {
+      /**
+       * Mono section kicker.
+       */
+      sectionKicker?: string | null;
+      /**
+       * Section display title.
+       */
+      sectionTitle?: string | null;
+      steps?: (CommandStepBlock | InstructionStepBlock | CtaStepBlock | OutcomeStepBlock)[] | null;
+    };
+    /**
+     * Friendly community message — the warm counterpoint to the procedural shell.
+     */
+    callout?: {
+      /**
+       * Mono section kicker.
+       */
+      kicker?: string | null;
+      /**
+       * Single declarative line.
+       */
+      headline?: string | null;
+      /**
+       * Body paragraph under the headline. Focused on "which clan doesn’t matter"; the parallel "joining is optional" angle lives in the openInvite interlude above.
+       */
+      body?: string | null;
+      /**
+       * Bullet points emphasizing the community-first stance.
+       */
+      bullets?:
+        | {
+            text?: string | null;
+            id?: string | null;
+          }[]
+        | null;
+      /**
+       * Quiet signature line under the bullets.
+       */
+      signature?: string | null;
+    };
+    /**
+     * The big primary CTA at the bottom of the page.
+     */
+    closingCta?: {
+      /**
+       * Headline above the CTA button.
+       */
+      headline?: string | null;
+      /**
+       * CTA button label.
+       */
+      ctaLabel?: string | null;
+      /**
+       * Where the CTA sends the user.
+       */
+      ctaUrl?: string | null;
+      /**
+       * Open the CTA link in a new browser tab (adds target="_blank" + safe rel). Turn on for off-site destinations like Discord deep links so visitors don't lose the clans page.
+       */
+      openInNewTab?: boolean | null;
+      /**
+       * Mono signature line under the button.
+       */
+      signature?: string | null;
+    };
+    /**
+     * Document title + meta description.
+     */
+    seo?: {
+      title?: string | null;
+      description?: string | null;
+    };
+  };
+  briefingsPage?: {
+    /**
+     * First word of the headline — rendered in white.
+     */
+    heroTitle?: string | null;
+    /**
+     * Second word of the headline — rendered in Division 2 orange with extra glow.
+     */
+    heroAccent?: string | null;
+    /**
+     * Paragraph under the headline.
+     */
+    intro?: string | null;
+    /**
+     * Mono label next to SEC_01 (weekly roll-up).
+     */
+    weeklySectionLabel?: string | null;
+    /**
+     * Mono label next to SEC_02 (daily cards or perks widget).
+     */
+    dailiesSectionLabel?: string | null;
+    /**
+     * Mono label next to SEC_03 on the briefing detail page.
+     */
+    refsSectionLabel?: string | null;
+    /**
+     * SEC_02 widget shown to non-boosters in place of the daily cards. Explains the booster perk and (optionally) links to a CTA.
+     */
+    perks?: {
+      /**
+       * Toggle the widget without losing its copy.
+       */
+      enabled?: boolean | null;
+      /**
+       * Mono kicker line above the headline.
+       */
+      kicker?: string | null;
+      /**
+       * Display-font headline. Frame the perk as a thank-you, not a paywall.
+       */
+      heading?: string | null;
+      /**
+       * Body paragraph explaining the non-profit framing.
+       */
+      body?: string | null;
+      /**
+       * Left column — what every server boost actually funds for the community.
+       */
+      fundBullets?:
+        | {
+            text?: string | null;
+            id?: string | null;
+          }[]
+        | null;
+      /**
+       * Right column — what boosters get back as a thank-you.
+       */
+      bullets?:
+        | {
+            text?: string | null;
+            id?: string | null;
+          }[]
+        | null;
+      /**
+       * Optional call-to-action button. Leave both blank to hide the button entirely.
+       */
+      cta?: {
+        /**
+         * CTA button label.
+         */
+        label?: string | null;
+        /**
+         * CTA destination — Discord boost link, Patreon, or an internal /boost page. Leave blank to hide.
+         */
+        url?: string | null;
+      };
+    };
+    /**
+     * Shown when the active week has no weekly briefing in the archive.
+     */
+    emptyWeek?: string | null;
+    /**
+     * Shown when Ashley has no briefings for the topic yet.
+     */
+    emptyAll?: string | null;
+    /**
+     * Document title + meta description.
+     */
+    seo?: {
+      title?: string | null;
+      description?: string | null;
+    };
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CommandStepBlock".
+ */
+export interface CommandStepBlock {
+  title: string;
+  body: string;
+  /**
+   * Slash-command rendered as a terminal-style code chip (e.g. /my account).
+   */
+  command: string;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'commandStep';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "InstructionStepBlock".
+ */
+export interface InstructionStepBlock {
+  title: string;
+  body: string;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'instructionStep';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CtaStepBlock".
+ */
+export interface CtaStepBlock {
+  title: string;
+  body: string;
+  /**
+   * CTA button label.
+   */
+  ctaLabel: string;
+  /**
+   * Where the CTA sends the user. Use the full URL for off-site (e.g. Discord deep link).
+   */
+  ctaUrl: string;
+  /**
+   * Open the CTA link in a new tab (adds target="_blank" + safe rel). Turn on for off-site destinations like Discord deep links.
+   */
+  openInNewTab?: boolean | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'ctaStep';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "OutcomeStepBlock".
+ */
+export interface OutcomeStepBlock {
+  title: string;
+  body: string;
+  /**
+   * Short mono badge shown top-right (e.g. ENLISTED, MEMBER, VERIFIED). Keep under 12 chars for layout.
+   */
+  statusLabel?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'outcomeStep';
+}
+/**
+ * Footer tagline copy and the member-count floor used when Ashley is unreachable.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-chrome".
+ */
+export interface SiteChrome {
+  id: string;
+  tagline?: {
+    /**
+     * Shown when Ashley is reachable. The literal token {members} is replaced with the live count plus "+" (e.g. 247+). If you omit the token, the sentence renders verbatim.
+     */
+    live?: string | null;
+    /**
+     * Shown verbatim when Ashley is unreachable. No token substitution.
+     */
+    fallback?: string | null;
+  };
+  /**
+   * StatsTicker fallback value when Ashley is unreachable. Rendered with a "+" suffix. Bump occasionally so the fallback stays honest.
+   */
+  memberCountFloor?: number | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "homepage_select".
  */
 export interface HomepageSelect<T extends boolean = true> {
   claim?: T;
   games?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "staff-page_select".
+ */
+export interface StaffPageSelect<T extends boolean = true> {
+  manifest?:
+    | T
+    | {
+        kicker?: T;
+        preLine?: T;
+        midLine?: T;
+        postLine?: T;
+        sublineLead?: T;
+        sublineMember?: T;
+      };
+  roster?:
+    | T
+    | {
+        sectionEyebrow?: T;
+        sectionTitle?: T;
+        kickerPublic?: T;
+        kickerMember?: T;
+        tailBanner?:
+          | T
+          | {
+              enabled?: T;
+              kicker?: T;
+              title?: T;
+              body?: T;
+              fragment?:
+                | T
+                | {
+                    label?: T;
+                    entries?:
+                      | T
+                      | {
+                          tone?: T;
+                          label?: T;
+                          note?: T;
+                          id?: T;
+                        };
+                    redactedLine?: T;
+                  };
+              ctaLabel?: T;
+              ctaHref?: T;
+            };
+      };
+  protocol?:
+    | T
+    | {
+        sectionEyebrow?: T;
+        sectionKicker?: T;
+        sectionTitle?: T;
+        intro?: T;
+        lanesEyebrow?: T;
+        lanes?:
+          | T
+          | {
+              tone?: T;
+              iconKey?: T;
+              toneLabel?: T;
+              title?: T;
+              hint?: T;
+              body?: T;
+              href?: T;
+              ctaLabel?: T;
+              id?: T;
+            };
+      };
+  faq?:
+    | T
+    | {
+        heading?: T;
+        entries?:
+          | T
+          | {
+              severity?: T;
+              question?: T;
+              answer?: T;
+              channel?: T;
+              channelHint?: T;
+              href?: T;
+              response?: T;
+              id?: T;
+            };
+        groundRulesLabel?: T;
+        groundRules?:
+          | T
+          | {
+              tone?: T;
+              label?: T;
+              id?: T;
+            };
+      };
+  endStrip?:
+    | T
+    | {
+        backLinkLabel?: T;
+        endLabel?: T;
+        compiledLabel?: T;
+      };
+  emptyState?:
+    | T
+    | {
+        pill?: T;
+        heading?: T;
+        body?: T;
+        hint?: T;
+      };
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -996,6 +2259,256 @@ export interface ManifestoSelect<T extends boolean = true> {
         content?: T;
         outlineDocumentId?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "division2_select".
+ */
+export interface Division2Select<T extends boolean = true> {
+  gate?:
+    | T
+    | {
+        role?: T;
+      };
+  landingPage?:
+    | T
+    | {
+        heroTitle?: T;
+        heroAccent?: T;
+        intro?: T;
+        raids?:
+          | T
+          | {
+              headlineTitle?: T;
+              headlineAccent?: T;
+              blurb?: T;
+              rotationLabel?: T;
+              schedule?:
+                | T
+                | {
+                    day?: T;
+                    title?: T;
+                    imagePrimary?: T;
+                    imageSecondary?: T;
+                    id?: T;
+                  };
+              ctaLabel?: T;
+              discordUrl?: T;
+            };
+        seo?:
+          | T
+          | {
+              title?: T;
+              description?: T;
+            };
+      };
+  contentPage?:
+    | T
+    | {
+        heroKicker?: T;
+        heroTitle?: T;
+        heroAccent?: T;
+        intro?: T;
+        feedSectionLabel?: T;
+        feedBlurb?: T;
+        emptyFiltered?: T;
+        emptyAll?: T;
+        endOfFeedLabel?: T;
+        seo?:
+          | T
+          | {
+              title?: T;
+              description?: T;
+            };
+      };
+  escalationPage?:
+    | T
+    | {
+        heroKicker?: T;
+        heroTitle?: T;
+        heroAccent?: T;
+        intro?: T;
+        missionsSectionLabel?: T;
+        cachesSectionLabel?: T;
+        cachesBlurb?: T;
+        discord?:
+          | T
+          | {
+              enabled?: T;
+              sectionLabel?: T;
+              heading?: T;
+              body?: T;
+              channelLabel?: T;
+              ctaLabel?: T;
+              channelUrl?: T;
+            };
+        seo?:
+          | T
+          | {
+              title?: T;
+              description?: T;
+            };
+      };
+  clansPage?:
+    | T
+    | {
+        heroTitle?: T;
+        heroAccent?: T;
+        intro?: T;
+        rosterSectionLabel?: T;
+        emptyRoster?: T;
+        howTo?:
+          | T
+          | {
+              sectionKicker?: T;
+              sectionTitle?: T;
+              steps?:
+                | T
+                | {
+                    commandStep?: T | CommandStepBlockSelect<T>;
+                    instructionStep?: T | InstructionStepBlockSelect<T>;
+                    ctaStep?: T | CtaStepBlockSelect<T>;
+                    outcomeStep?: T | OutcomeStepBlockSelect<T>;
+                  };
+            };
+        callout?:
+          | T
+          | {
+              kicker?: T;
+              headline?: T;
+              body?: T;
+              bullets?:
+                | T
+                | {
+                    text?: T;
+                    id?: T;
+                  };
+              signature?: T;
+            };
+        closingCta?:
+          | T
+          | {
+              headline?: T;
+              ctaLabel?: T;
+              ctaUrl?: T;
+              openInNewTab?: T;
+              signature?: T;
+            };
+        seo?:
+          | T
+          | {
+              title?: T;
+              description?: T;
+            };
+      };
+  briefingsPage?:
+    | T
+    | {
+        heroTitle?: T;
+        heroAccent?: T;
+        intro?: T;
+        weeklySectionLabel?: T;
+        dailiesSectionLabel?: T;
+        refsSectionLabel?: T;
+        perks?:
+          | T
+          | {
+              enabled?: T;
+              kicker?: T;
+              heading?: T;
+              body?: T;
+              fundBullets?:
+                | T
+                | {
+                    text?: T;
+                    id?: T;
+                  };
+              bullets?:
+                | T
+                | {
+                    text?: T;
+                    id?: T;
+                  };
+              cta?:
+                | T
+                | {
+                    label?: T;
+                    url?: T;
+                  };
+            };
+        emptyWeek?: T;
+        emptyAll?: T;
+        seo?:
+          | T
+          | {
+              title?: T;
+              description?: T;
+            };
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CommandStepBlock_select".
+ */
+export interface CommandStepBlockSelect<T extends boolean = true> {
+  title?: T;
+  body?: T;
+  command?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "InstructionStepBlock_select".
+ */
+export interface InstructionStepBlockSelect<T extends boolean = true> {
+  title?: T;
+  body?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CtaStepBlock_select".
+ */
+export interface CtaStepBlockSelect<T extends boolean = true> {
+  title?: T;
+  body?: T;
+  ctaLabel?: T;
+  ctaUrl?: T;
+  openInNewTab?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "OutcomeStepBlock_select".
+ */
+export interface OutcomeStepBlockSelect<T extends boolean = true> {
+  title?: T;
+  body?: T;
+  statusLabel?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-chrome_select".
+ */
+export interface SiteChromeSelect<T extends boolean = true> {
+  tagline?:
+    | T
+    | {
+        live?: T;
+        fallback?: T;
+      };
+  memberCountFloor?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

@@ -1,23 +1,7 @@
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { NextRequest, NextResponse } from 'next/server'
-
-const CATEGORIES = ['brands', 'gear_slots', 'weapon_types', 'talents', 'weapon_talents'] as const
-
-type Category = (typeof CATEGORIES)[number]
-
-interface StaticAssetMap {
-  version: number
-  built_at: string
-  source_built_at: string | null
-  sanitize: unknown
-  brands: Record<string, string>
-  gear_slots: Record<string, string>
-  weapon_types: Record<string, string>
-  talents: Record<string, string>
-  weapon_talents: Record<string, string>
-  missing: Partial<Record<Category, string[]>>
-}
+import type { AssetMapFile } from '@/lib/division2/assetMap.server'
 
 const MAP_PATH = join(process.cwd(), 'public', 'division2', 'data', 'asset_map.json')
 
@@ -51,7 +35,7 @@ function absolutize(entries: Record<string, string>, origin: string): Record<str
 export async function GET(request: NextRequest) {
   try {
     const raw = await readFile(MAP_PATH, 'utf8')
-    const map = JSON.parse(raw) as StaticAssetMap
+    const map = JSON.parse(raw) as AssetMapFile
     const origin = resolveOrigin(request)
 
     const body = {
@@ -59,11 +43,11 @@ export async function GET(request: NextRequest) {
       built_at: map.built_at,
       source_built_at: map.source_built_at,
       sanitize: map.sanitize,
-      brands: absolutize(map.brands, origin),
-      gear_slots: absolutize(map.gear_slots, origin),
-      weapon_types: absolutize(map.weapon_types, origin),
-      talents: absolutize(map.talents, origin),
-      weapon_talents: absolutize(map.weapon_talents, origin),
+      brands: absolutize(map.brands ?? {}, origin),
+      gear_slots: absolutize(map.gear_slots ?? {}, origin),
+      weapon_types: absolutize(map.weapon_types ?? {}, origin),
+      talents: absolutize(map.talents ?? {}, origin),
+      weapon_talents: absolutize(map.weapon_talents ?? {}, origin),
       missing: map.missing ?? {},
     }
 

@@ -49,6 +49,13 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 .playwright_mcp
+.playwright-mcp/
 
 # other
 temp/
+
+# Storybook
+storybook-static/
+
+# Other
+specs/

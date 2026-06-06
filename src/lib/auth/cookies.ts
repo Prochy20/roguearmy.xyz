@@ -1,4 +1,12 @@
 import { cookies } from 'next/headers'
+import {
+  ASHLEY_ACCESS_COOKIE,
+  ASHLEY_REFRESH_COOKIE,
+  ASHLEY_COOKIE_MAX_AGE,
+} from './constants'
+
+// Re-export so existing callers don't need to update import paths.
+export { ASHLEY_ACCESS_COOKIE, ASHLEY_REFRESH_COOKIE }
 
 export const MEMBER_SESSION_COOKIE = 'rga_member_session'
 export const OAUTH_STATE_COOKIE = 'rga_oauth_state'
@@ -45,6 +53,35 @@ export async function getOAuthStateCookie(): Promise<string | undefined> {
 export async function clearOAuthStateCookie(): Promise<void> {
   const cookieStore = await cookies()
   cookieStore.delete(OAUTH_STATE_COOKIE)
+}
+
+export async function setAshleyTokens(accessToken: string, refreshToken: string): Promise<void> {
+  const cookieStore = await cookies()
+  const opts = {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: 'lax' as const,
+    maxAge: ASHLEY_COOKIE_MAX_AGE,
+    path: '/',
+  }
+  cookieStore.set(ASHLEY_ACCESS_COOKIE, accessToken, opts)
+  cookieStore.set(ASHLEY_REFRESH_COOKIE, refreshToken, opts)
+}
+
+export async function getAshleyAccessCookie(): Promise<string | undefined> {
+  const cookieStore = await cookies()
+  return cookieStore.get(ASHLEY_ACCESS_COOKIE)?.value
+}
+
+export async function getAshleyRefreshCookie(): Promise<string | undefined> {
+  const cookieStore = await cookies()
+  return cookieStore.get(ASHLEY_REFRESH_COOKIE)?.value
+}
+
+export async function clearAshleyCookies(): Promise<void> {
+  const cookieStore = await cookies()
+  cookieStore.delete(ASHLEY_ACCESS_COOKIE)
+  cookieStore.delete(ASHLEY_REFRESH_COOKIE)
 }
 
 // Return URL cookie for post-login redirect

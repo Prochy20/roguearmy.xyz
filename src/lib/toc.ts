@@ -136,8 +136,12 @@ export function extractHeadingsFromLexical(content: unknown): TOCHeading[] {
 
 /**
  * Ensures ID uniqueness by appending a number if needed.
+ *
+ * Exported so renderers (e.g. the Lexical heading converter) can assign the
+ * same unique ids as the extraction pass — duplicate heading text must
+ * round-trip through both pipelines with identical ids or ToC anchors break.
  */
-function getUniqueId(baseId: string, seenIds: Set<string>): string {
+export function getUniqueId(baseId: string, seenIds: Set<string>): string {
   if (!seenIds.has(baseId)) {
     return baseId
   }

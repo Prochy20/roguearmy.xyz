@@ -1,17 +1,25 @@
 import type { CollectionConfig } from 'payload'
+import { publicRead } from '@/access'
 import { setPublishedAt } from '@/hooks/articles/setPublishedAt'
-import { calculateReadingTime } from '@/hooks/articles/calculateReadingTime'
+import {
+  calculateReadingTime,
+  calculateReadingTimeBeforeChange,
+} from '@/hooks/articles/calculateReadingTime'
+import {
+  revalidateArticlesAfterChange,
+  revalidateArticlesAfterDelete,
+} from '@/hooks/articles/revalidateArticles'
 
 export const Articles: CollectionConfig = {
   slug: 'articles',
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'categorization.topic', 'articleContent.contentSource', 'categorization.games', '_status'],
-    group: 'Content',
+    group: 'Editorial',
     listSearchableFields: ['title', 'slug', 'perex'],
   },
   access: {
-    read: () => true,
+    read: publicRead,
   },
   versions: {
     drafts: true,
@@ -33,7 +41,9 @@ export const Articles: CollectionConfig = {
         return data
       },
     ],
-    beforeChange: [setPublishedAt],
+    beforeChange: [setPublishedAt, calculateReadingTimeBeforeChange],
+    afterChange: [revalidateArticlesAfterChange],
+    afterDelete: [revalidateArticlesAfterDelete],
     afterRead: [calculateReadingTime],
   },
   fields: [
@@ -83,6 +93,24 @@ export const Articles: CollectionConfig = {
               admin: {
                 description: 'Short excerpt/description shown in article listings',
               },
+            },
+            {
+              name: 'highlights',
+              type: 'array',
+              label: 'Key Takeaways (TL;DR)',
+              maxRows: 6,
+              admin: {
+                description:
+                  'Optional bullet list rendered above the article body. Leave empty to hide the TL;DR card.',
+              },
+              fields: [
+                {
+                  name: 'text',
+                  type: 'text',
+                  required: true,
+                  maxLength: 160,
+                },
+              ],
             },
             // Named group to preserve articleContent.* data paths
             {

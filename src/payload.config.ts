@@ -9,6 +9,8 @@ import sharp from 'sharp'
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
 import { Games } from './collections/Games'
+import { GameRoles } from './collections/GameRoles'
+import { DiscordRoles } from './collections/DiscordRoles'
 import { Members } from './collections/Members'
 import { Topics } from './collections/Topics'
 import { ContentTypes } from './collections/ContentTypes'
@@ -16,8 +18,13 @@ import { Series } from './collections/Series'
 import { Articles } from './collections/Articles'
 import { ReadProgress } from './collections/ReadProgress'
 import { Bookmarks } from './collections/Bookmarks'
+import { StaffProfiles } from './collections/StaffProfiles'
+import { Division2Clans } from './collections/Division2Clans'
+import { Division2 } from './globals/Division2'
 import { Homepage } from './globals/Homepage'
 import { Manifesto } from './globals/Manifesto'
+import { SiteChrome } from './globals/SiteChrome'
+import { StaffPage } from './globals/StaffPage'
 import { CalloutBlock, CodeBlock, MermaidBlock, SocialEmbedBlock, TrelloCardBlock, VideoEmbedBlock } from './blocks'
 
 const filename = fileURLToPath(import.meta.url)
@@ -59,11 +66,24 @@ export default buildConfig({
   },
 
   // CORS configuration - add your production domains here
-  cors: [process.env.NEXT_PUBLIC_SERVER_URL || ''].filter(Boolean),
+  cors: [process.env.NEXT_PUBLIC_SERVER_URL || '', 'https://rga.local'].filter(Boolean),
 
-  // Order determines admin menu group ordering: Content, Taxonomies, Assets, Users
-  collections: [Articles, Series, Games, Topics, ContentTypes, Media, Users, Members, ReadProgress, Bookmarks],
-  globals: [Homepage, Manifesto],
+  // Sidebar group order is driven by first-appearance across collections then
+  // globals — so the first collection in each group seeds its position in the
+  // nav. Order below produces: Editorial, Identity, Division 2, Taxonomies,
+  // Community, Assets, System. Within a group Payload lists collections first
+  // then globals, so the globals array order only matters between siblings in
+  // the same group (e.g. StaffPage before Manifesto under Identity).
+  collections: [
+    Articles, Series,                                // Editorial
+    StaffProfiles,                                   // Identity
+    Division2Clans,                                  // Division 2
+    Games, GameRoles, DiscordRoles, Topics, ContentTypes, // Taxonomies
+    Members, Bookmarks, ReadProgress,                // Community
+    Media,                                           // Assets
+    Users,                                           // System
+  ],
+  globals: [Homepage, StaffPage, Manifesto, Division2, SiteChrome],
   editor: lexicalEditor({
     features: ({ defaultFeatures }) => [
       ...defaultFeatures,

@@ -3,14 +3,6 @@
 import { useEffect, useState, useRef } from "react"
 import { motion } from "motion/react"
 
-const STATS = [
-  { label: "MEMBERS", value: 200, suffix: "+" },
-  { label: "YEARS ACTIVE", value: 5, suffix: "" },
-  { label: "RAIDS COMPLETED", value: 1000, suffix: "+" },
-  { label: "GAMES SUPPORTED", value: 8, suffix: "" },
-  { label: "COUNTRIES", value: 15, suffix: "+" },
-]
-
 function AnimatedCounter({
   value,
   suffix,
@@ -73,7 +65,15 @@ function AnimatedCounter({
  * Stats Ticker Section
  * Corrupted data stream aesthetic with scrolling numbers
  */
-export function StatsTicker() {
+export function StatsTicker({ memberCount }: { memberCount: number }) {
+  const STATS = [
+    { label: "MEMBERS", value: memberCount, suffix: "+" },
+    { label: "YEARS ACTIVE", value: 5, suffix: "" },
+    { label: "RAIDS COMPLETED", value: 1000, suffix: "+" },
+    { label: "GAMES SUPPORTED", value: 8, suffix: "" },
+    { label: "COUNTRIES", value: 15, suffix: "+" },
+  ]
+
   return (
     <section className="relative py-12 overflow-hidden bg-bg-elevated border-y border-border">
       {/* Corrupted data background effect */}

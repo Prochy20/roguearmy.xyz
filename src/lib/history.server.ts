@@ -9,10 +9,6 @@ import config from '@payload-config'
 import type { Article as PayloadArticle } from '@/payload-types'
 import { type Article, transformPayloadArticle } from './articles'
 
-// ============================================================================
-// TYPES
-// ============================================================================
-
 export type HistoryStatusFilter = 'all' | 'completed' | 'in_progress'
 
 export interface HistoryEntry {
@@ -28,10 +24,6 @@ export interface ReadingHistoryResult {
   hasMore: boolean
   total: number
 }
-
-// ============================================================================
-// DATA FETCHING
-// ============================================================================
 
 /**
  * Get reading history for a member
@@ -150,6 +142,7 @@ export async function getReadingHistoryMap(
     where: {
       and: [
         { member: { equals: memberId } },
+        { targetType: { equals: 'article' } },
         { completed: { equals: true } },
       ],
     },
@@ -159,8 +152,7 @@ export async function getReadingHistoryMap(
 
   const map = new Map<string, Date>()
   for (const doc of result.docs) {
-    const articleId = typeof doc.article === 'string' ? doc.article : doc.article.id
-    map.set(articleId, new Date(doc.lastVisitedAt))
+    map.set(doc.targetId, new Date(doc.lastVisitedAt))
   }
 
   return map

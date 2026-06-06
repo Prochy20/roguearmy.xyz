@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { publicRead } from '@/access'
 
 export const Topics: CollectionConfig = {
   slug: 'topics',
@@ -7,7 +8,7 @@ export const Topics: CollectionConfig = {
     group: 'Taxonomies',
   },
   access: {
-    read: () => true,
+    read: publicRead,
   },
   fields: [
     {

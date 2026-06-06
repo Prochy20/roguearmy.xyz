@@ -1,22 +1,29 @@
 import type { CollectionConfig } from 'payload'
+import { adminOnly } from '@/access'
 
 export const Members: CollectionConfig = {
   slug: 'members',
   labels: {
-    singular: 'Community Member',
-    plural: 'Community Members',
+    singular: 'Member',
+    plural: 'Members',
   },
   admin: {
     useAsTitle: 'username',
-    group: 'Users',
+    group: 'Community',
     description: 'Discord members who have authenticated via OAuth',
     defaultColumns: ['avatar', 'username', 'status', 'lastLogin'],
   },
+  // Member rows hold PII (Discord email, symbolic-role snapshot) and the
+  // status field that drives quarantine. The OAuth callback and roleSync
+  // both use Local API via `getPayload()` without a `user`, which bypasses
+  // access control by default — so locking these down to admin-only does
+  // not break the auth flow. Without these locks, the Payload REST mount
+  // at /api/payload/members would let anyone read PII or flip status.
   access: {
-    read: () => true,
-    create: () => true,
-    update: () => true,
-    delete: ({ req: { user } }) => Boolean(user), // Only admins can delete
+    read: adminOnly,
+    create: adminOnly,
+    update: adminOnly,
+    delete: adminOnly,
   },
   fields: [
     // Discord Identity
@@ -93,7 +100,33 @@ export const Members: CollectionConfig = {
           type: 'json',
           admin: {
             readOnly: true,
-            description: 'Array of Discord role IDs',
+            description: 'Array of raw Discord role snowflake IDs',
+          },
+        },
+        {
+          name: 'symbolicRoles',
+          type: 'json',
+          admin: {
+            readOnly: true,
+            description:
+              'Ashley-resolved symbolic role list (DISCORD_ROLE_*). Drives badges and quarantine. Refreshed on a TTL via getMemberAuth.',
+          },
+        },
+        {
+          name: 'rolesSyncedAt',
+          type: 'date',
+          admin: {
+            readOnly: true,
+            description: 'Last successful symbolic-role sync from Ashley.',
+          },
+        },
+        {
+          name: 'rolesSyncFailedAt',
+          type: 'date',
+          admin: {
+            readOnly: true,
+            description:
+              'Last failed sync attempt — drives short retry backoff after Ashley outages.',
           },
         },
         {
@@ -127,7 +160,8 @@ export const Members: CollectionConfig = {
       },
     },
 
-    // Status (for banning)
+    // Status (effective, read-only). Computed by role sync from
+    // DISCORD_ROLE_QUARANTINE OR the `adminBanned` flag below.
     {
       name: 'status',
       type: 'select',
@@ -135,11 +169,26 @@ export const Members: CollectionConfig = {
       defaultValue: 'active',
       options: [
         { label: 'Active', value: 'active' },
-        { label: 'Banned', value: 'banned' },
+        { label: 'Banned (auto-managed)', value: 'banned' },
         { label: 'Left Server', value: 'left_server' },
       ],
       admin: {
-        description: 'Set to Banned to revoke access',
+        readOnly: true,
+        description:
+          'Auto-managed read-only field. Reflects DISCORD_ROLE_QUARANTINE state OR the `adminBanned` flag below. Do not edit directly — set `adminBanned` to ban a member from the admin panel.',
+      },
+    },
+    {
+      name: 'adminBanned',
+      type: 'checkbox',
+      defaultValue: false,
+      access: {
+        // Only authenticated admins flip this; reads gated by collection-level access.
+        update: ({ req: { user } }) => Boolean(user),
+      },
+      admin: {
+        description:
+          'Hard ban applied by an admin. When true, the member is banned regardless of Discord role state. Use this to ban a member who has not yet been quarantined on Discord, or to keep someone banned even if their Discord role is removed.',
       },
     },
   ],

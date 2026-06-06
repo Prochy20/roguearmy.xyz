@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { adminOnly } from '@/access'
 
 export const ReadProgress: CollectionConfig = {
   slug: 'read-progress',
@@ -7,27 +8,23 @@ export const ReadProgress: CollectionConfig = {
     plural: 'Read Progress',
   },
   admin: {
-    group: 'Users',
-    description: 'Tracks article reading progress for members',
-    defaultColumns: ['member', 'article', 'progress', 'completed', 'lastVisitedAt'],
+    group: 'Community',
+    description: 'Tracks reading progress for members across articles and briefings',
+    defaultColumns: ['member', 'targetType', 'targetId', 'progress', 'completed', 'lastVisitedAt'],
   },
   access: {
-    // Members can only read their own records
-    read: ({ req }) => {
-      // Allow admin full access
-      if (req.user) return true
-      return false
-    },
+    // Admin-only read (members access their own records only via the BFF
+    // routes under /api/member/read-progress, which scope the query manually).
+    read: adminOnly,
     // Only create/update via API (not admin)
     create: () => false,
     update: () => false,
-    delete: ({ req }) => Boolean(req.user), // Only admins can delete
+    delete: adminOnly,
   },
-  // Compound unique index on (member, article) - enforced at DB adapter level
   dbName: 'readProgress',
   indexes: [
     {
-      fields: ['member', 'article'],
+      fields: ['member', 'targetType', 'targetId'],
       unique: true,
     },
   ],
@@ -43,13 +40,41 @@ export const ReadProgress: CollectionConfig = {
       },
     },
     {
-      name: 'article',
-      type: 'relationship',
-      relationTo: 'articles',
+      name: 'targetType',
+      type: 'select',
+      required: true,
+      defaultValue: 'article',
+      options: [
+        { label: 'Article', value: 'article' },
+        { label: 'Briefing', value: 'briefing' },
+      ],
+      index: true,
+      admin: {
+        readOnly: true,
+        description: 'Which content type this progress record points at',
+      },
+    },
+    {
+      name: 'targetId',
+      type: 'text',
       required: true,
       index: true,
       admin: {
         readOnly: true,
+        description: 'ID of the article (Payload ID) or briefing (Ashley UUID)',
+      },
+    },
+    {
+      // Kept as a relationship for admin UX — when targetType='article',
+      // this resolves to a clickable linked row in the admin panel.
+      // For briefing rows, this stays null and `targetId` is the source of truth.
+      name: 'article',
+      type: 'relationship',
+      relationTo: 'articles',
+      required: false,
+      admin: {
+        readOnly: true,
+        description: 'Linked article (article-type rows only)',
       },
     },
     {
@@ -69,7 +94,7 @@ export const ReadProgress: CollectionConfig = {
       required: true,
       admin: {
         readOnly: true,
-        description: 'When the member first visited this article',
+        description: 'When the member first visited this target',
       },
     },
     {
@@ -77,7 +102,7 @@ export const ReadProgress: CollectionConfig = {
       type: 'date',
       required: true,
       admin: {
-        description: 'When the member last visited this article',
+        description: 'When the member last visited this target',
       },
     },
     {

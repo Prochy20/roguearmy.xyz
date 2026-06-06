@@ -5,10 +5,10 @@ import Link from 'next/link'
 import { motion } from 'motion/react'
 import { History, ArrowRight, CheckCircle2, Clock, ListFilter } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { BlogArticleCard } from './BlogArticleCard'
-import { BlogArticleCardCompact } from './BlogArticleCardCompact'
-import { BlogArticleCardList } from './BlogArticleCardList'
-import { ViewModeToggle } from '@/components/members/ViewModeToggle'
+import { ArticleCard } from '@/components/article/ArticleCard'
+import { ArticleCardCompact } from '@/components/article/ArticleCardCompact'
+import { ArticleCardList } from '@/components/article/ArticleCardList'
+import { ViewModeToggle } from '@/components/article/ViewModeToggle'
 import { HeroGlitch } from '@/components/effects/HeroGlitch'
 import { useViewMode } from '@/hooks/useViewMode'
 import type { Article } from '@/lib/articles'
@@ -58,7 +58,7 @@ export function BlogHistoryPage({ articles, progress, statusFilter }: BlogHistor
     switch (viewMode) {
       case 'grid':
         return (
-          <BlogArticleCardCompact
+          <ArticleCardCompact
             key={article.id}
             article={article}
             index={index}
@@ -68,7 +68,7 @@ export function BlogHistoryPage({ articles, progress, statusFilter }: BlogHistor
         )
       case 'list':
         return (
-          <BlogArticleCardList
+          <ArticleCardList
             key={article.id}
             article={article}
             index={index}
@@ -79,7 +79,7 @@ export function BlogHistoryPage({ articles, progress, statusFilter }: BlogHistor
       case 'featured':
       default:
         return (
-          <BlogArticleCard
+          <ArticleCard
             key={article.id}
             article={article}
             index={index}
@@ -120,7 +120,7 @@ export function BlogHistoryPage({ articles, progress, statusFilter }: BlogHistor
                   READING HISTORY
                 </HeroGlitch>
               </h1>
-              <p className="text-rga-gray max-w-2xl">
+              <p className="text-text-secondary max-w-2xl">
                 {getDescription()}
               </p>
             </div>
@@ -144,7 +144,7 @@ export function BlogHistoryPage({ articles, progress, statusFilter }: BlogHistor
                     'flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-all',
                     isActive
                       ? 'bg-rga-green/20 text-rga-green border border-rga-green/40'
-                      : 'bg-bg-elevated text-rga-gray border border-rga-green/10 hover:border-rga-green/30 hover:text-white'
+                      : 'bg-bg-elevated text-text-secondary border border-rga-green/10 hover:border-rga-green/30 hover:text-white'
                   )}
                 >
                   <Icon className="w-4 h-4" />
@@ -201,11 +201,11 @@ function HistoryEmptyState({ statusFilter }: { statusFilter: HistoryStatusFilter
       className="flex flex-col items-center justify-center py-16 text-center"
     >
       <div className="relative mb-6">
-        <History className="w-16 h-16 text-rga-gray/20" />
+        <History className="w-16 h-16 text-text-secondary/20" />
         <div className="absolute inset-0 bg-rga-green/5 blur-xl rounded-full" />
       </div>
       <h2 className="text-xl font-display text-white mb-2">{title}</h2>
-      <p className="text-rga-gray/60 max-w-md mb-6">{description}</p>
+      <p className="text-text-secondary/60 max-w-md mb-6">{description}</p>
       <Link
         href="/blog"
         className="inline-flex items-center gap-2 px-4 py-2 bg-rga-green/10 text-rga-green border border-rga-green/30 rounded-lg hover:bg-rga-green/20 transition-colors"

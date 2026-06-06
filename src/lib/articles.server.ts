@@ -20,15 +20,60 @@ import {
   transformPayloadArticle,
   mapPayloadColorToTint,
 } from './articles'
+import { getDocumentContent } from './outline'
+import { resolveSeriesForArticle } from './series.resolver'
 
-// ============================================================================
-// DATA FETCHING
-// ============================================================================
+/** Wiki body fetched + cached for the reader pipeline. */
+export interface WikiBody {
+  markdown: string
+  updatedAt: string
+}
 
 /**
- * Get all published articles from Payload
+ * Cached server-side fetcher for wiki article bodies. Mirrors the briefing's
+ * fetchBriefingById shape — discriminated `ok` flag, 24-hour TTL, per-document
+ * cache key, document-scoped tag for surgical revalidation.
+ *
+ * Replaces the old client-side `<WikiContent>` component's in-browser fetch.
+ * Returns a discriminated union so the caller can branch on success/error
+ * without throwing — matches how briefing fetchers communicate failure.
  */
-export async function getPublishedArticles(): Promise<Article[]> {
+const WIKI_BODY_TTL = 24 * 60 * 60 // 24 hours
+
+export async function fetchWikiBody(
+  documentId: string,
+): Promise<{ ok: true; data: WikiBody } | { ok: false; error: string }> {
+  const cached = unstable_cache(
+    async () => {
+      const doc = await getDocumentContent(documentId)
+      return { markdown: doc.text ?? '', updatedAt: doc.updatedAt }
+    },
+    ['outline', 'doc', documentId],
+    {
+      revalidate: WIKI_BODY_TTL,
+      tags: ['outline', `outline:${documentId}`],
+    },
+  )
+  try {
+    const data = await cached()
+    return { ok: true, data }
+  } catch (err) {
+    return {
+      ok: false,
+      error: err instanceof Error ? err.message : 'Unknown wiki fetch error',
+    }
+  }
+}
+
+/**
+ * Get all published articles from Payload.
+ *
+ * Cached cross-request with the `articles` tag; busted by Article afterChange
+ * / afterDelete hooks so editors see fresh data immediately on save. The
+ * 5-min TTL is the upper bound for stale reads when the bust hook is
+ * skipped (e.g., direct Mongo edits).
+ */
+async function getPublishedArticlesImpl(): Promise<Article[]> {
   const payload = await getPayload({ config })
 
   // First get all series to build article -> series mapping
@@ -67,6 +112,12 @@ export async function getPublishedArticles(): Promise<Article[]> {
   )
 }
 
+export const getPublishedArticles = unstable_cache(
+  getPublishedArticlesImpl,
+  ['articles', 'published'],
+  { revalidate: 300, tags: ['articles'] },
+)
+
 /**
  * Get a single article by slug
  */
@@ -89,40 +140,21 @@ export async function getArticleBySlug(slug: string): Promise<Article | null> {
 
   const article = result.docs[0]
 
-  // Check if article is in any series
-  const seriesResult = await payload.find({
-    collection: 'series',
-    where: {
-      articles: { contains: article.id },
-    },
-    depth: 0,
-    limit: 1,
-  })
-
-  let seriesInfo: { name: string; slug: string; order: number } | undefined
-
-  if (seriesResult.docs.length > 0) {
-    const series = seriesResult.docs[0]
-    const articleIds = (series.articles || []).map((a) =>
-      typeof a === 'string' ? a : a.id
-    )
-    const orderIndex = articleIds.indexOf(article.id)
-    if (orderIndex !== -1) {
-      seriesInfo = {
-        name: series.name,
-        slug: series.slug,
-        order: orderIndex + 1,
-      }
-    }
-  }
+  const seriesInfo =
+    (await resolveSeriesForArticle(payload, article.id)) ?? undefined
 
   return transformPayloadArticle(article, seriesInfo)
 }
 
 /**
- * Get filter options (games, topics, content types, series) from Payload
+ * Get filter options (games, topics, content types, series) from Payload.
+ *
+ * Cached cross-request with the `articles` tag so series article-counts stay
+ * coherent with the published article list when articles are added/removed.
+ * Taxonomy edits (games/topics/content-types) are admin-only and rare; the
+ * 5-min TTL is acceptable for those.
  */
-export async function getFilterOptions(): Promise<FilterOptions> {
+async function getFilterOptionsImpl(): Promise<FilterOptions> {
   const payload = await getPayload({ config })
 
   const [gamesResult, topicsResult, contentTypesResult, seriesResult] = await Promise.all([
@@ -157,6 +189,12 @@ export async function getFilterOptions(): Promise<FilterOptions> {
     })),
   }
 }
+
+export const getFilterOptions = unstable_cache(
+  getFilterOptionsImpl,
+  ['articles', 'filter-options'],
+  { revalidate: 300, tags: ['articles'] },
+)
 
 /**
  * Get series navigation for an article
@@ -249,32 +287,8 @@ export async function getArticleBySlugWithDraft(
 
   const rawArticle = result.docs[0]
 
-  // Check if article is in any series
-  const seriesResult = await payload.find({
-    collection: 'series',
-    where: {
-      articles: { contains: rawArticle.id },
-    },
-    depth: 0,
-    limit: 1,
-  })
-
-  let seriesInfo: { name: string; slug: string; order: number } | undefined
-
-  if (seriesResult.docs.length > 0) {
-    const series = seriesResult.docs[0]
-    const articleIds = (series.articles || []).map((a) =>
-      typeof a === 'string' ? a : a.id
-    )
-    const orderIndex = articleIds.indexOf(rawArticle.id)
-    if (orderIndex !== -1) {
-      seriesInfo = {
-        name: series.name,
-        slug: series.slug,
-        order: orderIndex + 1,
-      }
-    }
-  }
+  const seriesInfo =
+    (await resolveSeriesForArticle(payload, rawArticle.id)) ?? undefined
 
   return {
     article: transformPayloadArticle(rawArticle, seriesInfo),
@@ -367,32 +381,8 @@ export async function getArticleByTopicAndSlug(
 
   const article = result.docs[0]
 
-  // Check if article is in any series
-  const seriesResult = await payload.find({
-    collection: 'series',
-    where: {
-      articles: { contains: article.id },
-    },
-    depth: 0,
-    limit: 1,
-  })
-
-  let seriesInfo: { name: string; slug: string; order: number } | undefined
-
-  if (seriesResult.docs.length > 0) {
-    const series = seriesResult.docs[0]
-    const articleIds = (series.articles || []).map((a) =>
-      typeof a === 'string' ? a : a.id
-    )
-    const orderIndex = articleIds.indexOf(article.id)
-    if (orderIndex !== -1) {
-      seriesInfo = {
-        name: series.name,
-        slug: series.slug,
-        order: orderIndex + 1,
-      }
-    }
-  }
+  const seriesInfo =
+    (await resolveSeriesForArticle(payload, article.id)) ?? undefined
 
   return transformPayloadArticle(article, seriesInfo)
 }
@@ -462,32 +452,8 @@ export async function getArticleByTopicAndSlugWithDraft(
 
   const rawArticle = result.docs[0]
 
-  // Check if article is in any series
-  const seriesResult = await payload.find({
-    collection: 'series',
-    where: {
-      articles: { contains: rawArticle.id },
-    },
-    depth: 0,
-    limit: 1,
-  })
-
-  let seriesInfo: { name: string; slug: string; order: number } | undefined
-
-  if (seriesResult.docs.length > 0) {
-    const series = seriesResult.docs[0]
-    const articleIds = (series.articles || []).map((a) =>
-      typeof a === 'string' ? a : a.id
-    )
-    const orderIndex = articleIds.indexOf(rawArticle.id)
-    if (orderIndex !== -1) {
-      seriesInfo = {
-        name: series.name,
-        slug: series.slug,
-        order: orderIndex + 1,
-      }
-    }
-  }
+  const seriesInfo =
+    (await resolveSeriesForArticle(payload, rawArticle.id)) ?? undefined
 
   return {
     article: transformPayloadArticle(rawArticle, seriesInfo),

@@ -16,10 +16,8 @@ import {
   type HeroBgKey,
   type HeroLogoLayer,
   type HeroOverlayConfig,
-  type HeroParagraphAlign,
   type HeroParagraphLayer,
   type HeroTextAnchor,
-  type HeroTextColor,
   type HeroTextLayer,
 } from '@/lib/overlay-hero-config'
 import { OverlayHero } from '@/components/overlays/OverlayHero'
