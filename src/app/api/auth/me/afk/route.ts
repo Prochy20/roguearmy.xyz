@@ -17,12 +17,14 @@ type RawAfk = components['schemas']['AfkRecordResponseDto']
  * when AFK. On Ashley outages we fall back to the symbolic-role snapshot
  * (mirrors `/me` page's `afkFallbackBoolean` logic).
  */
+const NO_STORE_HEADERS = { 'Cache-Control': 'private, no-store' }
+
 export async function GET() {
   const auth = await getMemberAuth()
   if (!auth.authenticated || !auth.member) {
     return NextResponse.json(
       { afkRecord: null, fallback: false },
-      { status: 401 },
+      { status: 401, headers: NO_STORE_HEADERS },
     )
   }
 
@@ -30,7 +32,7 @@ export async function GET() {
   if (!accessToken) {
     return NextResponse.json(
       { afkRecord: null, fallback: isAfk(auth.symbolicRoles) },
-      { status: 401 },
+      { status: 401, headers: NO_STORE_HEADERS },
     )
   }
 
@@ -41,17 +43,20 @@ export async function GET() {
 
     if (status >= 200 && status < 300) {
       const afkRecord = data ? normalizeAfkRecord(data as RawAfk) : null
-      return NextResponse.json({ afkRecord, fallback: false })
+      return NextResponse.json(
+        { afkRecord, fallback: false },
+        { headers: NO_STORE_HEADERS },
+      )
     }
 
     return NextResponse.json(
       { afkRecord: null, fallback: isAfk(auth.symbolicRoles) },
-      { status: 503 },
+      { status: 503, headers: NO_STORE_HEADERS },
     )
   } catch {
     return NextResponse.json(
       { afkRecord: null, fallback: isAfk(auth.symbolicRoles) },
-      { status: 503 },
+      { status: 503, headers: NO_STORE_HEADERS },
     )
   }
 }

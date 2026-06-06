@@ -6,11 +6,16 @@ import type { RoleGateMap } from '@/lib/auth/roleGate.types'
 // Keep in sync with the layout — same keys, same client expectations.
 const NAV_ROLE_GATE_KEYS: RoleGateKey[] = ['division2Role']
 
+const NO_STORE_HEADERS = { 'Cache-Control': 'private, no-store' }
+
 export async function GET() {
   const auth = await getMemberAuth()
 
   if (!auth.authenticated || !auth.member) {
-    return NextResponse.json({ authenticated: false, member: null, roleGates: {} })
+    return NextResponse.json(
+      { authenticated: false, member: null, roleGates: {} },
+      { headers: NO_STORE_HEADERS },
+    )
   }
 
   const roleGates: RoleGateMap = {}
@@ -19,17 +24,20 @@ export async function GET() {
   )
   for (const [key, gate] of results) roleGates[key] = gate.state
 
-  return NextResponse.json({
-    authenticated: true,
-    member: {
-      id: auth.memberId,
-      discordId: auth.member.discordId,
-      username: auth.member.username,
-      globalName: auth.member.globalName,
-      avatar: auth.member.avatar,
-      primaryBadge: auth.primaryBadge,
-      isBooster: auth.isBooster,
+  return NextResponse.json(
+    {
+      authenticated: true,
+      member: {
+        id: auth.memberId,
+        discordId: auth.member.discordId,
+        username: auth.member.username,
+        globalName: auth.member.globalName,
+        avatar: auth.member.avatar,
+        primaryBadge: auth.primaryBadge,
+        isBooster: auth.isBooster,
+      },
+      roleGates,
     },
-    roleGates,
-  })
+    { headers: NO_STORE_HEADERS },
+  )
 }
