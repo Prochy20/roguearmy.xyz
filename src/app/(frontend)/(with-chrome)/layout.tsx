@@ -1,8 +1,12 @@
 import React from 'react'
 import { Footer } from '@/components/chrome/Footer'
 import { Header } from '@/components/chrome/header/Header'
+import { BookmarksProvider } from '@/contexts/BookmarksContext'
 import { getMemberCount } from '@/lib/community.server'
 import { cachedFindGlobal } from '@/lib/payload/cached'
+import { getMemberAuth } from '@/lib/auth/session.server'
+import { getMemberBookmarks } from '@/lib/bookmarks.server'
+import type { BookmarkWithTarget } from '@/lib/bookmarks'
 import type { SiteChrome } from '@/payload-types'
 
 const LIVE_DEFAULT =
@@ -27,21 +31,35 @@ function composeTagline(chrome: SiteChrome, count: number | null): string {
  * Adding a new normal page? Put it inside (with-chrome)/.
  */
 export default async function WithChromeLayout({ children }: { children: React.ReactNode }) {
-  // Both calls are per-request deduped via React.cache — even though
-  // getMemberCount() internally also calls cachedFindGlobal('site-chrome'),
-  // we still issue only one Mongo query per request.
-  const [{ count }, chrome] = await Promise.all([
+  const auth = await getMemberAuth()
+
+  // Both Payload calls dedup via React.cache; bookmarks hydration sits in the
+  // same Promise.all so the provider lands populated on first paint.
+  const [{ count }, chrome, initialBookmarks] = await Promise.all([
     getMemberCount(),
     cachedFindGlobal('site-chrome'),
+    hydrateBookmarks(auth),
   ])
 
   const tagline = composeTagline(chrome, count)
 
   return (
-    <>
+    <BookmarksProvider initialBookmarks={initialBookmarks}>
       <Header />
       <main>{children}</main>
       <Footer tagline={tagline} />
-    </>
+    </BookmarksProvider>
   )
+}
+
+async function hydrateBookmarks(
+  auth: Awaited<ReturnType<typeof getMemberAuth>>,
+): Promise<BookmarkWithTarget[] | null> {
+  if (!auth.authenticated || !auth.memberId || auth.status === 'banned') {
+    return null
+  }
+  return getMemberBookmarks({
+    memberId: auth.memberId,
+    symbolicRoles: auth.symbolicRoles,
+  })
 }

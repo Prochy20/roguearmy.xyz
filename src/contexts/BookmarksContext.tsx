@@ -2,48 +2,56 @@
 
 import {
   createContext,
-  useContext,
-  useState,
-  useEffect,
   useCallback,
+  useContext,
+  useEffect,
   useMemo,
-  useRef,
+  useState,
   type ReactNode,
 } from 'react'
-import type { BookmarkWithArticle } from '@/lib/bookmarks'
+import {
+  bookmarkKey,
+  type BookmarkTargetType,
+  type BookmarkWithTarget,
+} from '@/lib/bookmarks'
 
 interface BookmarksContextValue {
-  bookmarkedIds: Set<string>
-  bookmarks: BookmarkWithArticle[]
+  bookmarks: BookmarkWithTarget[]
+  bookmarkedKeys: Set<string>
   isLoading: boolean
-  toggleBookmark: (articleId: string) => Promise<void>
-  isBookmarked: (articleId: string) => boolean
+  toggleBookmark: (targetType: BookmarkTargetType, targetId: string) => Promise<void>
+  isBookmarked: (targetType: BookmarkTargetType, targetId: string) => boolean
 }
 
 const BookmarksContext = createContext<BookmarksContextValue | null>(null)
 
 interface BookmarksProviderProps {
   children: ReactNode
+  // Server-hydrated initial state. `null` = anonymous user → no client fetch.
+  // `undefined` = no hydration provided → fall back to mount-time fetch.
+  initialBookmarks?: BookmarkWithTarget[] | null
 }
 
-export function BookmarksProvider({ children }: BookmarksProviderProps) {
-  const [bookmarks, setBookmarks] = useState<BookmarkWithArticle[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+export function BookmarksProvider({
+  children,
+  initialBookmarks,
+}: BookmarksProviderProps) {
+  const [bookmarks, setBookmarks] = useState<BookmarkWithTarget[]>(
+    initialBookmarks ?? [],
+  )
+  const [isLoading, setIsLoading] = useState(initialBookmarks === undefined)
 
-  // Derive bookmarkedIds from bookmarks for quick lookup
-  const bookmarkedIds = useMemo(
-    () => new Set(bookmarks.map((b) => b.article.id)),
-    [bookmarks]
+  const bookmarkedKeys = useMemo(
+    () => new Set(bookmarks.map((b) => bookmarkKey(b.targetType, b.target.id))),
+    [bookmarks],
   )
 
-  // Use ref to avoid recreating callbacks when bookmarks change
-  const bookmarkedIdsRef = useRef(bookmarkedIds)
   useEffect(() => {
-    bookmarkedIdsRef.current = bookmarkedIds
-  }, [bookmarkedIds])
+    if (initialBookmarks !== undefined) {
+      setIsLoading(false)
+      return
+    }
 
-  // Fetch all bookmarks on mount
-  useEffect(() => {
     async function fetchBookmarks() {
       try {
         const response = await fetch('/api/member/bookmarks')
@@ -59,98 +67,66 @@ export function BookmarksProvider({ children }: BookmarksProviderProps) {
     }
 
     fetchBookmarks()
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- mount only
   }, [])
 
-  // Stable callback using ref - doesn't change when bookmarks change
   const isBookmarked = useCallback(
-    (articleId: string) => bookmarkedIdsRef.current.has(articleId),
-    [] // Empty deps - uses ref for current value
+    (targetType: BookmarkTargetType, targetId: string) =>
+      bookmarkedKeys.has(bookmarkKey(targetType, targetId)),
+    [bookmarkedKeys],
   )
 
-  const toggleBookmark = useCallback(async (articleId: string) => {
-    const isCurrentlyBookmarked = bookmarkedIdsRef.current.has(articleId)
-
-    // Optimistic update
-    if (isCurrentlyBookmarked) {
-      setBookmarks((prev) => prev.filter((b) => b.article.id !== articleId))
-    } else {
-      // Add placeholder bookmark (will be replaced on next fetch if needed)
-      setBookmarks((prev) => [
-        {
-          id: `temp-${articleId}`,
-          article: {
-            id: articleId,
-            slug: '',
-            title: 'Loading...',
-            perex: '',
-            heroImage: null,
-            topic: null,
-            games: [],
-            contentType: null,
-            readingTime: 0,
-            publishedAt: new Date().toISOString(),
-          },
-          createdAt: new Date().toISOString(),
-        },
-        ...prev,
-      ])
+  const refetch = useCallback(async () => {
+    const response = await fetch('/api/member/bookmarks')
+    if (response.ok) {
+      const data = await response.json()
+      setBookmarks(data.bookmarks || [])
     }
+  }, [])
 
-    try {
-      if (isCurrentlyBookmarked) {
-        const response = await fetch('/api/member/bookmarks', {
-          method: 'DELETE',
+  const toggleBookmark = useCallback(
+    async (targetType: BookmarkTargetType, targetId: string) => {
+      const key = bookmarkKey(targetType, targetId)
+      // Functional setState reads the latest bookmarks without needing them
+      // in the dep array, so toggleBookmark stays stable across renders
+      // (no ref mirror required).
+      let wasBookmarked = false
+      setBookmarks((prev) => {
+        wasBookmarked = prev.some(
+          (b) => bookmarkKey(b.targetType, b.target.id) === key,
+        )
+        return wasBookmarked
+          ? prev.filter((b) => bookmarkKey(b.targetType, b.target.id) !== key)
+          : prev
+      })
+
+      const method = wasBookmarked ? 'DELETE' : 'POST'
+      try {
+        await fetch('/api/member/bookmarks', {
+          method,
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ articleId }),
+          body: JSON.stringify({ targetType, targetId }),
         })
-
-        if (!response.ok) {
-          // Revert on error
-          const data = await fetch('/api/member/bookmarks')
-          if (data.ok) {
-            const result = await data.json()
-            setBookmarks(result.bookmarks || [])
-          }
-        }
-      } else {
-        const response = await fetch('/api/member/bookmarks', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ articleId }),
-        })
-
-        if (response.ok) {
-          // Refetch to get full article data
-          const data = await fetch('/api/member/bookmarks')
-          if (data.ok) {
-            const result = await data.json()
-            setBookmarks(result.bookmarks || [])
-          }
-        } else {
-          // Revert on error
-          setBookmarks((prev) => prev.filter((b) => b.article.id !== articleId))
-        }
+      } catch (error) {
+        console.error(`Failed to ${method.toLowerCase()} bookmark:`, error)
       }
-    } catch (error) {
-      console.error('Failed to toggle bookmark:', error)
-      // Refetch to restore correct state
-      const data = await fetch('/api/member/bookmarks')
-      if (data.ok) {
-        const result = await data.json()
-        setBookmarks(result.bookmarks || [])
-      }
-    }
-  }, []) // Empty deps - uses ref for current value
+      // Always refetch — success, 409 (race / duplicate), 403 (lost role),
+      // 503 (Ashley down) all reconcile to authoritative server state and
+      // roll back the optimistic remove if needed.
+      await refetch()
+    },
+    [refetch],
+  )
 
   const value = useMemo(
     () => ({
-      bookmarkedIds,
       bookmarks,
+      bookmarkedKeys,
       isLoading,
       toggleBookmark,
       isBookmarked,
     }),
-    [bookmarkedIds, bookmarks, isLoading, toggleBookmark, isBookmarked]
+    [bookmarks, bookmarkedKeys, isLoading, toggleBookmark, isBookmarked],
   )
 
   return (
@@ -168,10 +144,8 @@ export function useBookmarks() {
   return context
 }
 
-/**
- * Optional version of useBookmarks that returns null when outside provider.
- * Useful for components that may render in preview mode without the provider.
- */
+// Returns null when used outside the provider — for components that render
+// in preview surfaces (storybook, draft mode) without a mounted provider.
 export function useBookmarksOptional() {
   return useContext(BookmarksContext)
 }
