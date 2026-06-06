@@ -3,26 +3,32 @@ import { adminOnly } from '@/access'
 
 export const Bookmarks: CollectionConfig = {
   slug: 'bookmarks',
+  dbName: 'bookmarks',
   labels: {
     singular: 'Bookmark',
     plural: 'Bookmarks',
   },
   admin: {
     group: 'Community',
-    description: 'Member bookmarked articles',
-    defaultColumns: ['member', 'article', 'createdAt'],
+    description: 'Member bookmarks across articles and briefings',
+    defaultColumns: ['member', 'targetType', 'article', 'targetId', 'createdAt'],
   },
   access: {
-    // Only admins via admin panel
+    // Mutations go through the BFF route handler at /api/member/bookmarks,
+    // which scopes by the authenticated member. Admin-only read keeps PII
+    // (which member bookmarked what) off the public REST mount.
     read: adminOnly,
-    create: () => false, // API only
-    update: () => false, // No updates needed (toggle = delete + create)
-    delete: adminOnly, // Only admins can delete
+    create: () => false,
+    update: () => false, // Toggle semantics = delete + create
+    delete: adminOnly,
   },
   indexes: [
     {
-      fields: ['member', 'article'],
-      unique: true, // One bookmark per member per article
+      // Compound covers leftmost-prefix queries on `member` and
+      // `[member, targetType]` for free; pair index on `targetId` covers
+      // standalone target lookups.
+      fields: ['member', 'targetType', 'targetId'],
+      unique: true,
     },
   ],
   fields: [
@@ -31,21 +37,40 @@ export const Bookmarks: CollectionConfig = {
       type: 'relationship',
       relationTo: 'members',
       required: true,
-      index: true,
-      admin: {
-        readOnly: true,
-      },
+      admin: { readOnly: true },
     },
     {
-      name: 'article',
-      type: 'relationship',
-      relationTo: 'articles',
+      name: 'targetType',
+      type: 'select',
+      required: true,
+      options: [
+        { label: 'Article', value: 'article' },
+        { label: 'Briefing', value: 'briefing' },
+      ],
+      admin: { readOnly: true },
+    },
+    {
+      name: 'targetId',
+      type: 'text',
       required: true,
       index: true,
       admin: {
         readOnly: true,
+        description: 'Payload article ID or Ashley briefing UUID',
       },
     },
-    // createdAt is auto-added by timestamps: true (default)
+    {
+      // Kept as a relationship for admin UX — when targetType='article',
+      // this resolves to a clickable linked row in the admin panel.
+      // For briefing rows, this stays null; `targetId` is the source of truth.
+      name: 'article',
+      type: 'relationship',
+      relationTo: 'articles',
+      required: false,
+      admin: {
+        readOnly: true,
+        description: 'Linked article (article-type rows only)',
+      },
+    },
   ],
 }

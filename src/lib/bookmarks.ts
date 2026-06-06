@@ -1,19 +1,30 @@
 /**
- * Bookmark types for the members section.
- * This file is client-safe - no Payload runtime imports.
+ * Bookmark types — discriminated union over articles and briefings.
+ * Client-safe (no Payload runtime imports). Server hydration lives in
+ * src/lib/bookmarks.server.ts.
  */
 
 import {
+  mapPayloadColorToTint,
   type Article,
   type ArticleVisibility,
   type TintColor,
-  mapPayloadColorToTint,
 } from './articles'
 
 /** Payload CMS color type (matches Topic/Game color field) */
-export type PayloadColor = 'orange' | 'blue' | 'yellow' | 'teal' | 'green' | 'purple' | 'red' | 'pink'
+export type PayloadColor =
+  | 'orange'
+  | 'blue'
+  | 'yellow'
+  | 'teal'
+  | 'green'
+  | 'purple'
+  | 'red'
+  | 'pink'
 
-export interface BookmarkArticle {
+export type BookmarkTargetType = 'article' | 'briefing'
+
+export interface BookmarkArticleTarget {
   id: string
   slug: string
   title: string
@@ -27,56 +38,74 @@ export interface BookmarkArticle {
   visibility?: ArticleVisibility
 }
 
-export interface BookmarkWithArticle {
+export interface BookmarkBriefingTarget {
   id: string
-  article: BookmarkArticle
-  createdAt: string
+  slug: string
+  canonicalPath: string
+  frequency: 'daily' | 'weekly'
+  periodStart: string
+  periodEnd: string
+  title: string
+  perex: string
+  thumbnailUrl: string | null
+  // BriefingCard footer reads this — projection needs it so the rendered
+  // "N SRC" stamp matches the real source count instead of always 0.
+  articleCount: number
 }
 
-/**
- * Transform a BookmarkArticle to the Article type used by ArticleCard
- */
-export function transformBookmarkToArticle(bookmark: BookmarkWithArticle): Article | null {
-  const { article } = bookmark
+export type BookmarkWithTarget =
+  | {
+      id: string
+      targetType: 'article'
+      target: BookmarkArticleTarget
+      createdAt: string
+    }
+  | {
+      id: string
+      targetType: 'briefing'
+      target: BookmarkBriefingTarget
+      // True when target is daily and the viewing member no longer has
+      // booster access. Drives the locked card variant.
+      locked: boolean
+      createdAt: string
+    }
 
-  // Skip if article data is incomplete
-  if (!article.id || !article.slug || !article.title) {
-    return null
-  }
+export function bookmarkKey(targetType: BookmarkTargetType, targetId: string): string {
+  return `${targetType}:${targetId}`
+}
 
-  // Map topic color to tint
-  const topicTint: TintColor = article.topic?.color
-    ? mapPayloadColorToTint(article.topic.color)
+export function bookmarkTargetToArticle(target: BookmarkArticleTarget): Article | null {
+  if (!target.id || !target.slug || !target.title) return null
+
+  const topicTint: TintColor = target.topic?.color
+    ? mapPayloadColorToTint(target.topic.color)
     : 'green'
 
-  // Map games with tint colors
-  const games = article.games.map((game) => ({
-    id: game.id,
-    name: game.name,
-    tint: mapPayloadColorToTint(game.color),
-  }))
-
   return {
-    id: article.id,
-    slug: article.slug,
-    title: article.title,
-    perex: article.perex || '',
-    heroImage: article.heroImage || { url: '/placeholder-article.svg', alt: article.title },
+    id: target.id,
+    slug: target.slug,
+    title: target.title,
+    perex: target.perex || '',
+    heroImage: target.heroImage || { url: '/placeholder-article.svg', alt: target.title },
     topic: {
-      id: article.topic?.id || '',
-      slug: article.topic?.slug || '',
-      name: article.topic?.name || 'Uncategorized',
+      id: target.topic?.id || '',
+      slug: target.topic?.slug || '',
+      name: target.topic?.name || 'Uncategorized',
       tint: topicTint,
     },
-    games,
+    games: target.games.map((game) => ({
+      id: game.id,
+      name: game.name,
+      tint: mapPayloadColorToTint(game.color),
+    })),
     contentType: {
-      id: article.contentType?.id || '',
-      slug: article.contentType?.slug || '',
-      name: article.contentType?.name || 'Article',
+      id: target.contentType?.id || '',
+      slug: target.contentType?.slug || '',
+      name: target.contentType?.name || 'Article',
     },
-    publishedAt: new Date(article.publishedAt),
-    readingTime: article.readingTime,
-    visibility: article.visibility || 'members_only',
-    contentSource: { type: 'payload' }, // Not used for cards
+    publishedAt: new Date(target.publishedAt),
+    readingTime: target.readingTime,
+    visibility: target.visibility || 'members_only',
+    contentSource: { type: 'payload' },
   }
 }

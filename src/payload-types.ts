@@ -86,7 +86,11 @@ export interface Config {
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
-  collectionsJoins: {};
+  collectionsJoins: {
+    members: {
+      bookmarks: 'bookmarks';
+    };
+  };
   collectionsSelect: {
     articles: ArticlesSelect<false> | ArticlesSelect<true>;
     series: SeriesSelect<false> | SeriesSelect<true>;
@@ -641,11 +645,16 @@ export interface Member {
    * Hard ban applied by an admin. When true, the member is banned regardless of Discord role state. Use this to ban a member who has not yet been quarantined on Discord, or to keep someone banned even if their Discord role is removed.
    */
   adminBanned?: boolean | null;
+  bookmarks?: {
+    docs?: (string | Bookmark)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
   updatedAt: string;
   createdAt: string;
 }
 /**
- * Member bookmarked articles
+ * Member bookmarks across articles and briefings
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "bookmarks".
@@ -653,7 +662,15 @@ export interface Member {
 export interface Bookmark {
   id: string;
   member: string | Member;
-  article: string | Article;
+  targetType: 'article' | 'briefing';
+  /**
+   * Payload article ID or Ashley briefing UUID
+   */
+  targetId: string;
+  /**
+   * Linked article (article-type rows only)
+   */
+  article?: (string | null) | Article;
   updatedAt: string;
   createdAt: string;
 }
@@ -1025,6 +1042,7 @@ export interface MembersSelect<T extends boolean = true> {
   lastLogin?: T;
   status?: T;
   adminBanned?: T;
+  bookmarks?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1034,6 +1052,8 @@ export interface MembersSelect<T extends boolean = true> {
  */
 export interface BookmarksSelect<T extends boolean = true> {
   member?: T;
+  targetType?: T;
+  targetId?: T;
   article?: T;
   updatedAt?: T;
   createdAt?: T;

@@ -191,5 +191,18 @@ export const Members: CollectionConfig = {
           'Hard ban applied by an admin. When true, the member is banned regardless of Discord role state. Use this to ban a member who has not yet been quarantined on Discord, or to keep someone banned even if their Discord role is removed.',
       },
     },
+
+    // Reverse relationship — surfaces member's bookmarks in the admin
+    // member detail page. Read-only; mutations happen via the BFF route.
+    {
+      name: 'bookmarks',
+      type: 'join',
+      collection: 'bookmarks',
+      on: 'member',
+      admin: {
+        allowCreate: false,
+        defaultColumns: ['targetType', 'article', 'targetId', 'createdAt'],
+      },
+    },
   ],
 }

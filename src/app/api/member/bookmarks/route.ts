@@ -2,13 +2,22 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { getMemberAuth } from '@/lib/auth/session.server'
-import type { Article, Topic, Media, Game, ContentType } from '@/payload-types'
+import { hasBriefingsAccess, type SymbolicRole } from '@/lib/auth/badges'
+import { fetchBriefingById } from '@/lib/division2/briefing.server'
+import { getMemberBookmarks } from '@/lib/bookmarks.server'
+import type { BookmarkTargetType } from '@/lib/bookmarks'
+import type { Bookmark } from '@/payload-types'
+
+interface ResolvedCaller {
+  memberId: string
+  symbolicRoles: SymbolicRole[]
+}
 
 // Canonical auth resolution: getMemberAuth runs the role-sync side effect so
 // quarantined members hit 403 even on this route (which previously trusted
 // the JWT and never re-checked status with Ashley).
 async function resolveCaller(): Promise<
-  { ok: true; memberId: string } | { ok: false; response: NextResponse }
+  { ok: true; caller: ResolvedCaller } | { ok: false; response: NextResponse }
 > {
   const auth = await getMemberAuth()
 
@@ -29,91 +38,55 @@ async function resolveCaller(): Promise<
     }
   }
 
-  return { ok: true, memberId: auth.memberId }
+  return {
+    ok: true,
+    caller: { memberId: auth.memberId, symbolicRoles: auth.symbolicRoles },
+  }
+}
+
+interface TargetParams {
+  targetType: BookmarkTargetType
+  targetId: string
+}
+
+function parseTargetParams(body: unknown): TargetParams | NextResponse {
+  if (!body || typeof body !== 'object') {
+    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
+  }
+  const { targetType, targetId } = body as Record<string, unknown>
+  if (targetType !== 'article' && targetType !== 'briefing') {
+    return NextResponse.json(
+      { error: 'targetType must be "article" or "briefing"' },
+      { status: 400 },
+    )
+  }
+  if (typeof targetId !== 'string' || targetId.length === 0) {
+    return NextResponse.json(
+      { error: 'targetId is required and must be a non-empty string' },
+      { status: 400 },
+    )
+  }
+  return { targetType, targetId }
 }
 
 /**
  * GET /api/member/bookmarks
- * Fetch bookmarks for the authenticated member
- * Optional query param: ?articleId=X to check if specific article is bookmarked
+ * Returns the discriminated union shape consumed by BookmarksProvider and
+ * /me/bookmarks. Optional ?targetType= narrows the query.
  */
 export async function GET(request: NextRequest) {
-  const caller = await resolveCaller()
-  if (!caller.ok) return caller.response
-  const { memberId } = caller
+  const auth = await resolveCaller()
+  if (!auth.ok) return auth.response
+  const { memberId, symbolicRoles } = auth.caller
 
-  const payload = await getPayload({ config })
+  const requestedType = request.nextUrl.searchParams.get('targetType')
+  const targetTypeFilter =
+    requestedType === 'article' || requestedType === 'briefing' ? requestedType : null
 
-  // Check for specific article ID
-  const articleId = request.nextUrl.searchParams.get('articleId')
-
-  if (articleId) {
-    // Check if specific article is bookmarked
-    const result = await payload.find({
-      collection: 'bookmarks',
-      where: {
-        and: [
-          { member: { equals: memberId } },
-          { article: { equals: articleId } },
-        ],
-      },
-      limit: 1,
-      depth: 0,
-    })
-
-    return NextResponse.json({
-      bookmarked: result.docs.length > 0,
-      bookmarkId: result.docs[0]?.id || null,
-    })
-  }
-
-  // Return all bookmarks with populated article data
-  const result = await payload.find({
-    collection: 'bookmarks',
-    where: { member: { equals: memberId } },
-    limit: 1000,
-    depth: 2, // Populate article and its relationships
-    sort: '-createdAt', // Most recent first
-  })
-
-  // Transform bookmarks to include essential article data
-  const bookmarks = result.docs.map((bookmark) => {
-    const article = bookmark.article as Article
-    const topic = article?.categorization?.topic as Topic | undefined
-    const heroImage = article?.heroImage as Media | undefined
-    const contentType = article?.categorization?.contentType as ContentType | undefined
-
-    // Get games array from categorization
-    const games = (article?.categorization?.games || [])
-      .filter((g): g is Game => typeof g !== 'string' && g !== null)
-      .map((game) => ({
-        id: game.id,
-        name: game.name,
-        color: game.color,
-      }))
-
-    return {
-      id: bookmark.id,
-      article: {
-        id: article?.id || '',
-        slug: article?.slug || '',
-        title: article?.title || '',
-        perex: article?.perex || '',
-        heroImage: heroImage
-          ? { url: heroImage.url || '', alt: heroImage.alt || article?.title || '' }
-          : null,
-        topic: topic
-          ? { id: topic.id, name: topic.name, slug: topic.slug, color: topic.color }
-          : null,
-        games,
-        contentType: contentType
-          ? { id: contentType.id, slug: contentType.slug, name: contentType.name }
-          : null,
-        readingTime: article?.readingTime || 5,
-        publishedAt: article?.publishedAt || article?.createdAt || '',
-      },
-      createdAt: bookmark.createdAt,
-    }
+  const bookmarks = await getMemberBookmarks({
+    memberId,
+    symbolicRoles,
+    targetTypeFilter,
   })
 
   return NextResponse.json({ bookmarks })
@@ -121,117 +94,151 @@ export async function GET(request: NextRequest) {
 
 /**
  * POST /api/member/bookmarks
- * Create a bookmark
- * Body: { articleId: string }
+ * Body: { targetType, targetId }. Verifies the target exists (Payload for
+ * articles, Ashley for briefings) and gates daily briefings on booster role.
  */
 export async function POST(request: NextRequest) {
-  const caller = await resolveCaller()
-  if (!caller.ok) return caller.response
-  const { memberId } = caller
+  const auth = await resolveCaller()
+  if (!auth.ok) return auth.response
+  const { memberId, symbolicRoles } = auth.caller
 
-  const payload = await getPayload({ config })
-
-  // Parse request body
-  let body: { articleId?: string }
+  let rawBody: unknown
   try {
-    body = await request.json()
+    rawBody = await request.json()
   } catch {
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
   }
+  const parsed = parseTargetParams(rawBody)
+  if (parsed instanceof NextResponse) return parsed
+  const { targetType, targetId } = parsed
 
-  const { articleId } = body
+  const payload = await getPayload({ config })
 
-  if (!articleId) {
-    return NextResponse.json({ error: 'articleId is required' }, { status: 400 })
+  if (targetType === 'article') {
+    try {
+      await payload.findByID({ collection: 'articles', id: targetId })
+    } catch {
+      return NextResponse.json({ error: 'Article not found' }, { status: 404 })
+    }
+  } else {
+    const result = await fetchBriefingById(targetId)
+    if (!result.ok) {
+      return NextResponse.json(
+        { error: 'Briefing service unavailable', code: result.error.code },
+        { status: 503 },
+      )
+    }
+    if (!result.data) {
+      return NextResponse.json({ error: 'Briefing not found' }, { status: 404 })
+    }
+    if (result.data.frequency === 'daily' && !hasBriefingsAccess(symbolicRoles)) {
+      return NextResponse.json(
+        { error: 'Booster access required' },
+        { status: 403 },
+      )
+    }
   }
 
-  // Verify article exists
-  try {
-    await payload.findByID({
-      collection: 'articles',
-      id: articleId,
-    })
-  } catch {
-    return NextResponse.json({ error: 'Article not found' }, { status: 404 })
-  }
-
-  // Check if already bookmarked
   const existing = await payload.find({
     collection: 'bookmarks',
     where: {
       and: [
         { member: { equals: memberId } },
-        { article: { equals: articleId } },
+        { targetType: { equals: targetType } },
+        { targetId: { equals: targetId } },
       ],
     },
     limit: 1,
+    depth: 0,
   })
 
   if (existing.docs.length > 0) {
     return NextResponse.json(
-      { error: 'Article already bookmarked', bookmarkId: existing.docs[0].id },
-      { status: 409 }
+      { error: 'Already bookmarked', bookmarkId: existing.docs[0].id },
+      { status: 409 },
     )
   }
 
-  // Create bookmark
-  const bookmark = await payload.create({
-    collection: 'bookmarks',
-    data: {
-      member: memberId,
-      article: articleId,
-    },
-  })
+  const data: Partial<Bookmark> = {
+    member: memberId,
+    targetType,
+    targetId,
+    ...(targetType === 'article' ? { article: targetId } : {}),
+  }
 
-  return NextResponse.json({ bookmark: { id: bookmark.id, article: articleId, createdAt: bookmark.createdAt } }, { status: 201 })
+  let bookmark
+  try {
+    bookmark = await payload.create({ collection: 'bookmarks', data: data as Bookmark })
+  } catch (error) {
+    // Concurrent POSTs can both pass the existence check above and race into
+    // create — the second one violates the unique [member, targetType,
+    // targetId] index. Surface that as 409 instead of leaking the raw error.
+    if (isDuplicateKeyError(error)) {
+      return NextResponse.json({ error: 'Already bookmarked' }, { status: 409 })
+    }
+    throw error
+  }
+
+  return NextResponse.json(
+    {
+      bookmark: {
+        id: bookmark.id,
+        targetType: bookmark.targetType,
+        targetId: bookmark.targetId,
+        createdAt: bookmark.createdAt,
+      },
+    },
+    { status: 201 },
+  )
+}
+
+function isDuplicateKeyError(error: unknown): boolean {
+  if (!error || typeof error !== 'object') return false
+  const e = error as { code?: number; name?: string; message?: string }
+  if (e.code === 11000) return true
+  if (e.name === 'MongoServerError' && e.message?.includes('E11000')) return true
+  return false
 }
 
 /**
  * DELETE /api/member/bookmarks
- * Remove a bookmark
- * Body: { articleId: string }
+ * Body: { targetType, targetId }.
  */
 export async function DELETE(request: NextRequest) {
-  const caller = await resolveCaller()
-  if (!caller.ok) return caller.response
-  const { memberId } = caller
+  const auth = await resolveCaller()
+  if (!auth.ok) return auth.response
+  const { memberId } = auth.caller
 
-  const payload = await getPayload({ config })
-
-  // Parse request body
-  let body: { articleId?: string }
+  let rawBody: unknown
   try {
-    body = await request.json()
+    rawBody = await request.json()
   } catch {
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
   }
+  const parsed = parseTargetParams(rawBody)
+  if (parsed instanceof NextResponse) return parsed
+  const { targetType, targetId } = parsed
 
-  const { articleId } = body
+  const payload = await getPayload({ config })
 
-  if (!articleId) {
-    return NextResponse.json({ error: 'articleId is required' }, { status: 400 })
-  }
-
-  // Find and delete bookmark
   const existing = await payload.find({
     collection: 'bookmarks',
     where: {
       and: [
         { member: { equals: memberId } },
-        { article: { equals: articleId } },
+        { targetType: { equals: targetType } },
+        { targetId: { equals: targetId } },
       ],
     },
     limit: 1,
+    depth: 0,
   })
 
   if (existing.docs.length === 0) {
     return NextResponse.json({ error: 'Bookmark not found' }, { status: 404 })
   }
 
-  await payload.delete({
-    collection: 'bookmarks',
-    id: existing.docs[0].id,
-  })
+  await payload.delete({ collection: 'bookmarks', id: existing.docs[0].id })
 
   return NextResponse.json({ success: true })
 }
