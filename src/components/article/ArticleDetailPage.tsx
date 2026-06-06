@@ -13,7 +13,7 @@ import {
   ReaderDetailFooter,
   type ReaderFooterNeighbor,
 } from '@/components/content/reader/ReaderDetailFooter'
-import { BookmarkButton } from '@/components/article/BookmarkButton'
+import { BookmarkButton } from '@/components/bookmarks/BookmarkButton'
 import { ShareButton } from '@/components/article/ShareButton'
 import { FeaturedArticles } from '@/components/article/FeaturedArticles'
 import {
@@ -134,7 +134,7 @@ export function ArticleDetailPage({
             {isAuthenticated && (
               <>
                 <span aria-hidden className="h-3 w-px bg-text-muted/30" />
-                <BookmarkButton articleId={article.id} size="md" />
+                <BookmarkButton targetType="article" targetId={article.id} size="md" />
               </>
             )}
           </div>

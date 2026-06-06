@@ -1,4 +1,6 @@
 import Link from 'next/link'
+import { Lock } from 'lucide-react'
+import { BookmarkButton } from '@/components/bookmarks/BookmarkButton'
 import { BriefingThumbnail } from './BriefingThumbnail'
 import { formatDayShort, weekdayShort } from '@/lib/division2/format'
 import type { Briefing } from '@/lib/division2/briefing.server'
@@ -24,6 +26,9 @@ interface BriefingCardProps {
    * card looks identical to its zero-progress state.
    */
   progress?: BriefingCardProgress | null
+  // Renders a lock overlay + LOST BOOSTER ACCESS caption. Used on
+  // /me/bookmarks for daily briefings the member can no longer view.
+  locked?: boolean
 }
 
 const STRIPE_BG =
@@ -47,6 +52,7 @@ export function BriefingCard({
   briefing,
   tone = 'standard',
   progress,
+  locked = false,
 }: BriefingCardProps) {
   const isWeekly = briefing.frequency === 'weekly'
   const isLead = tone === 'lead'
@@ -99,6 +105,22 @@ export function BriefingCard({
           accent={isWeekly ? 'cyan' : 'mod'}
           fileNumber={fileNumber.replace(/^BRF_/, 'IMG_')}
         />
+        {/* z-20 keeps the toggle reachable above the locked overlay so a
+            member who lost booster can still remove the bookmark. */}
+        <div className="absolute top-3 right-3 z-20">
+          <BookmarkButton targetType="briefing" targetId={briefing.id} size="sm" />
+        </div>
+        {locked && (
+          <div
+            aria-label="Lost booster access"
+            className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-2 bg-[rgba(8,8,8,0.78)] backdrop-blur-[1px]"
+          >
+            <Lock className="h-7 w-7 text-text-secondary/80" aria-hidden />
+            <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-text-secondary">
+              Lost booster access
+            </span>
+          </div>
+        )}
       </div>
 
       <div className={bodyLayout}>

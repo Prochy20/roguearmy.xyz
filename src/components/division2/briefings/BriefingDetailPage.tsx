@@ -4,6 +4,7 @@ import { ReaderPageShell } from '@/components/content/reader/ReaderPageShell'
 import { ReaderHeroFrame } from '@/components/content/reader/ReaderHeroFrame'
 import { ReaderTitleBlock } from '@/components/content/reader/ReaderTitleBlock'
 import { ReaderActions } from '@/components/content/reader/ReaderActions'
+import { BookmarkButton } from '@/components/bookmarks/BookmarkButton'
 import { ReaderDocStrip } from '@/components/content/reader/ReaderDocStrip'
 import { ReaderTldrCard } from '@/components/content/reader/ReaderTldrCard'
 import { ReaderToc } from '@/components/content/reader/ReaderToc'
@@ -139,7 +140,13 @@ export function BriefingDetailPage({
         perex={briefing.perex}
         dateLabel={dateLabel}
         readMinutes={readMinutes}
-        actions={<ReaderActions accent={accent} />}
+        actions={
+          <div className="flex items-center gap-3">
+            <BookmarkButton targetType="briefing" targetId={briefing.id} size="md" />
+            <span aria-hidden className="h-3 w-px bg-text-muted/30" />
+            <ReaderActions accent={accent} />
+          </div>
+        }
       />
       <ReaderHeroFrame
         accent={accent}

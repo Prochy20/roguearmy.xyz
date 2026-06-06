@@ -3,11 +3,13 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
+import { Bookmark } from 'lucide-react'
 import { DiscordIcon } from '@/components/ui/DiscordIcon'
 import { CyberCorners } from '@/components/ui/CyberCorners'
 import { AfkTicker } from '@/components/afk/AfkTicker'
 import { normalizeAfkRecord, type AfkRecord } from '@/components/afk/types'
 import { getDiscordAvatarUrl } from '@/lib/auth/discord'
+import { useBookmarksOptional } from '@/contexts/BookmarksContext'
 import type { MemberSession } from '@/lib/auth/types'
 import type { PrimaryBadge } from '@/lib/auth/badges'
 import { BracketButton } from './BracketButton'
@@ -90,6 +92,7 @@ function ActionsZone({
     <div className="flex flex-col items-end gap-2.5">
       <PresenceIndicator override={presenceOverride} />
       <div className="flex items-center gap-2">
+        <BookmarksMenuLink />
         <Link
           href="/me"
           className="inline-flex h-9 items-center justify-center gap-2 border border-rga-green/30 bg-rga-green/[0.05] px-3 font-mono text-[10px] uppercase tracking-[0.3em] text-rga-green/80 transition-colors hover:border-rga-green/60 hover:bg-rga-green/10 hover:text-rga-green"
@@ -128,6 +131,26 @@ function ActionsZone({
         </button>
       </div>
     </div>
+  )
+}
+
+function BookmarksMenuLink() {
+  const ctx = useBookmarksOptional()
+  const count = ctx?.bookmarkedKeys.size ?? 0
+
+  return (
+    <Link
+      href="/me/bookmarks"
+      aria-label={count > 0 ? `Bookmarks (${count} saved)` : 'Bookmarks'}
+      className="relative inline-flex h-9 w-9 items-center justify-center border border-rga-green/30 bg-rga-green/[0.05] text-rga-green/80 transition-colors hover:border-rga-green/60 hover:bg-rga-green/10 hover:text-rga-green"
+    >
+      <Bookmark className="h-4 w-4" aria-hidden />
+      {count > 0 && (
+        <span className="absolute -right-1.5 -top-1.5 inline-flex h-4 min-w-[16px] items-center justify-center border border-rga-green/40 bg-void px-1 font-mono text-[9px] tabular-nums text-rga-green">
+          {count > 99 ? '99+' : count}
+        </span>
+      )}
+    </Link>
   )
 }
 

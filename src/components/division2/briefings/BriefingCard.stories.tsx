@@ -101,3 +101,19 @@ export const WithCompletedProgress: Story = {
 export const LeadWithProgress: Story = {
   args: { tone: 'lead', progress: { progress: 45, completed: false } },
 }
+
+/**
+ * Locked variant — daily briefing bookmarked while the member was a booster,
+ * later viewed after the role was lost. Renders on /me/bookmarks. Preview is
+ * covered by a Lock + `LOST BOOSTER ACCESS` overlay; the Link still navigates
+ * to the gated detail route (which shows BOOSTER_REQUIRED dossier). No CTA.
+ */
+export const Locked: Story = {
+  args: { briefing: MOCK_BRIEFING_DAILY, locked: true },
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement)
+    await step('Lock overlay surfaces the lost-access caption', async () => {
+      await expect(canvas.getByText(/lost booster access/i)).toBeInTheDocument()
+    })
+  },
+}

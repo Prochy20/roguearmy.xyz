@@ -11,44 +11,49 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
+import type { BookmarkTargetType } from '@/lib/bookmarks'
 
 interface BookmarkButtonProps {
-  articleId: string
+  targetType: BookmarkTargetType
+  targetId: string
   size?: 'sm' | 'md'
   className?: string
 }
 
-export function BookmarkButton({ articleId, size = 'sm', className }: BookmarkButtonProps) {
+// Returns null outside BookmarksProvider so preview surfaces don't ship a
+// half-broken toggle. stopPropagation + preventDefault keep clicks from
+// firing the wrapping Link on card variants.
+export function BookmarkButton({
+  targetType,
+  targetId,
+  size = 'sm',
+  className,
+}: BookmarkButtonProps) {
   const bookmarksContext = useBookmarksOptional()
   const [isAnimating, setIsAnimating] = useState(false)
+  const [inFlight, setInFlight] = useState(false)
 
-  // Don't render if outside BookmarksProvider (e.g., in preview mode)
-  if (!bookmarksContext) {
-    return null
-  }
+  if (!bookmarksContext) return null
 
   const { isBookmarked, toggleBookmark } = bookmarksContext
-  const bookmarked = isBookmarked(articleId)
+  const bookmarked = isBookmarked(targetType, targetId)
 
   const handleClick = async (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-
+    if (inFlight) return
+    setInFlight(true)
     setIsAnimating(true)
-    await toggleBookmark(articleId)
-
-    setTimeout(() => setIsAnimating(false), 400)
+    try {
+      await toggleBookmark(targetType, targetId)
+    } finally {
+      setInFlight(false)
+      setTimeout(() => setIsAnimating(false), 400)
+    }
   }
 
-  const sizeClasses = {
-    sm: 'w-7 h-7',
-    md: 'w-9 h-9',
-  }
-
-  const iconSizes = {
-    sm: 'w-4 h-4',
-    md: 'w-5 h-5',
-  }
+  const sizeClasses = { sm: 'w-7 h-7', md: 'w-9 h-9' }
+  const iconSizes = { sm: 'w-4 h-4', md: 'w-5 h-5' }
 
   return (
     <TooltipProvider delayDuration={300}>
@@ -57,34 +62,34 @@ export function BookmarkButton({ articleId, size = 'sm', className }: BookmarkBu
           <motion.button
             type="button"
             onClick={handleClick}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
+            disabled={inFlight}
+            whileHover={inFlight ? undefined : { scale: 1.1 }}
+            whileTap={inFlight ? undefined : { scale: 0.95 }}
             aria-label={bookmarked ? 'Remove bookmark' : 'Add bookmark'}
+            aria-busy={inFlight}
             className={cn(
-              'relative flex items-center justify-center rounded-full transition-all duration-200',
+              'relative flex items-center justify-center border backdrop-blur-sm transition-all duration-200',
               sizeClasses[size],
               bookmarked
-                ? 'text-rga-cyan bg-rga-cyan/10 hover:bg-rga-cyan/20'
-                : 'text-text-secondary/60 hover:text-rga-cyan/80 hover:bg-rga-cyan/5',
-              className
+                ? 'border-rga-cyan/50 bg-rga-cyan/15 text-rga-cyan hover:bg-rga-cyan/25'
+                : 'border-white/15 bg-void/70 text-white/85 hover:border-rga-cyan/50 hover:text-rga-cyan',
+              inFlight && 'cursor-wait opacity-70',
+              className,
             )}
           >
-            {/* Glow effect when bookmarked */}
             {bookmarked && (
-              <div className="absolute inset-0 rounded-full bg-rga-cyan/20 blur-md" />
+              <div className="absolute inset-0 rounded-none bg-rga-cyan/20 blur-md" />
             )}
 
-            {/* Pulse animation on toggle */}
             {isAnimating && (
               <motion.div
                 initial={{ scale: 1, opacity: 0.5 }}
                 animate={{ scale: 2, opacity: 0 }}
                 transition={{ duration: 0.4 }}
-                className="absolute inset-0 rounded-full bg-rga-cyan"
+                className="absolute inset-0 rounded-none bg-rga-cyan"
               />
             )}
 
-            {/* Icon */}
             <motion.div
               initial={false}
               animate={isAnimating ? { scale: [1, 1.2, 1] } : { scale: 1 }}

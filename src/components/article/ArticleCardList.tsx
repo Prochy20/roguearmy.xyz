@@ -14,7 +14,7 @@ import {
   getArticleUrl,
 } from '@/lib/articles'
 import { ReadStatusIndicator, getReadStatus } from '@/components/article/ReadStatusIndicator'
-import { BookmarkButton } from '@/components/article/BookmarkButton'
+import { BookmarkButton } from '@/components/bookmarks/BookmarkButton'
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip'
 import { MembersOnlyOverlay } from './MembersOnlyOverlay'
 
@@ -147,7 +147,7 @@ export function ArticleCardList({ article, index = 0, progress, isAuthenticated 
             {/* Right side actions - only for authenticated users */}
             {isAuthenticated && (
               <div className="flex-shrink-0 flex items-center gap-2 self-center">
-                <BookmarkButton articleId={article.id} size="sm" />
+                <BookmarkButton targetType="article" targetId={article.id} size="sm" />
                 <ReadStatusIndicator
                   status={getReadStatus(progress?.progress, progress?.completed)}
                   progress={progress?.progress}

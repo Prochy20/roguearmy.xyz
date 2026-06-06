@@ -15,7 +15,7 @@ import {
   getArticleUrl,
 } from '@/lib/articles'
 import { ReadStatusIndicator, getReadStatus } from '@/components/article/ReadStatusIndicator'
-import { BookmarkButton } from '@/components/article/BookmarkButton'
+import { BookmarkButton } from '@/components/bookmarks/BookmarkButton'
 import { MembersOnlyOverlay } from './MembersOnlyOverlay'
 
 interface CardProgressData {
@@ -129,7 +129,7 @@ export function ArticleCard({ article, index = 0, progress, isAuthenticated = fa
 
                 {isAuthenticated && (
                   <div className="flex items-center gap-2">
-                    <BookmarkButton articleId={article.id} size="sm" />
+                    <BookmarkButton targetType="article" targetId={article.id} size="sm" />
                     {progress !== undefined && (
                       <ReadStatusIndicator
                         status={getReadStatus(progress?.progress, progress?.completed)}
