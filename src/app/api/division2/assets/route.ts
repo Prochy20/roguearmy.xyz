@@ -16,11 +16,6 @@ const CACHE_HEADER = {
 }
 
 function resolveOrigin(request: NextRequest): string {
-  const forwardedHost = request.headers.get('x-forwarded-host')
-  const forwardedProto = request.headers.get('x-forwarded-proto')
-  if (forwardedHost) {
-    return `${forwardedProto ?? 'https'}://${forwardedHost}`
-  }
   return new URL(request.url).origin
 }
 
