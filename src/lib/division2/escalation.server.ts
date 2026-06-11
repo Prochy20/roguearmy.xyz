@@ -3,7 +3,11 @@ import 'server-only'
 import { unstable_cache } from 'next/cache'
 import { fetchAshleyService, type AshleyResult } from '@/lib/api/server'
 import type { components } from '@/lib/api/schema'
-import { currentWeekStartUtc } from '@/lib/division2/format'
+import {
+  currentWeekStartUtc,
+  normalizeDayIso,
+  weekStartForDayUtc,
+} from '@/lib/division2/format'
 
 /**
  * Escalation read helpers.
@@ -82,8 +86,11 @@ export function fetchWeeksList(): Promise<AshleyResult<EscalationWeekList>> {
  * day-stepper navigation is bursty-write, hot-read.
  */
 export function fetchDailyByDay(day: string): Promise<AshleyResult<EscalationDailyDetail>> {
-  const todayIso = new Date().toISOString().slice(0, 10)
-  const ttl = day === todayIso ? DAILY_TTL : DAILY_HISTORIC_TTL
+  // Any day in the current week may still be mid-ingestion — not just today —
+  // so a 404 must keep the short TTL, or it sticks for 24h after upstream
+  // finally publishes. Only archived weeks are immutable.
+  const ttl =
+    weekStartForDayUtc(day) === currentWeekStartUtc() ? DAILY_TTL : DAILY_HISTORIC_TTL
   const cached = unstable_cache(
     () =>
       fetchAshleyService<EscalationDailyDetail>((c) =>
@@ -95,4 +102,27 @@ export function fetchDailyByDay(day: string): Promise<AshleyResult<EscalationDai
     { revalidate: ttl, tags: ['escalation', 'escalation-daily'] },
   )
   return cached()
+}
+
+/**
+ * The day-stepper's forward ceiling: the latest day in the current escalation
+ * week that has actually ingested. Returns `undefined` when `viewedDay` isn't
+ * in the current week (archived weeks are complete — they have no frontier).
+ *
+ * Keeps the "current week vs archived" rule in the data layer alongside the
+ * cache-TTL fetchers, rather than re-deriving it in the view. Takes the max of
+ * `week.dailies` (defensive against unordered / datetime-form day strings)
+ * instead of trusting the array tail.
+ */
+export function currentWeekFrontierDay(
+  week: EscalationWeekDetail,
+  viewedDay: string,
+): string | undefined {
+  if (weekStartForDayUtc(viewedDay) !== currentWeekStartUtc()) return undefined
+  let latest: string | undefined
+  for (const summary of week.dailies) {
+    const day = normalizeDayIso(summary.day)
+    if (!latest || day > latest) latest = day
+  }
+  return latest
 }

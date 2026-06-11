@@ -135,6 +135,13 @@ function pragueOffsetMs(epochMs: number): number {
 /** Stale chip threshold — anything past 24h gets the warning. */
 export const STALE_HOURS_THRESHOLD = 24
 
+/**
+ * Hour (UTC) Ashley is expected to publish each day's rotation. Single source
+ * for the "expected ≈" banner copy and the day-stepper's awaiting tooltip so
+ * they can't drift apart.
+ */
+export const EXPECTED_PUBLISH_HOUR_UTC = 9
+
 /** Format `YYYY-MM-DD` as "MAY 19" in en-US (uppercase, no year). */
 export function formatDayShort(iso: string): string {
   const d = new Date(`${iso}T00:00:00.000Z`)

@@ -5,6 +5,7 @@ import { GlitchOnChange } from '@/components/effects/GlitchOnChange'
 import { LootIcon } from './LootIcon'
 import { SpecimenFrame } from './SpecimenFrame'
 import {
+  EXPECTED_PUBLISH_HOUR_UTC,
   formatDayWithWeekday,
   nextDayUtc,
   previousDayUtc,
@@ -26,6 +27,11 @@ interface MissionRowProps {
    *  `// AWAITING` pill — clicking TODAY would just bounce back to the same
    *  fallback day, so we surface the state instead of the trap. */
   awaitingTodayIngest?: boolean
+  /** Latest day in the current week that has ingested data. Forward stepping
+   *  stops here, so the arrow greys out at the newest available day instead of
+   *  advancing onto — or bouncing off — a not-yet-published day. Undefined when
+   *  the viewed day isn't in the current week (archived weeks are complete). */
+  latestAvailableDay?: string
   /** Mono label rendered next to SEC_01. Sourced from the Division 2 global. */
   sectionLabel?: string
 }
@@ -45,12 +51,13 @@ export function MissionRow({
   dayLootByPosition,
   selectedDay,
   awaitingTodayIngest,
+  latestAvailableDay,
   sectionLabel,
 }: MissionRowProps) {
   if (missions.length === 0) return null
 
   const stepper = selectedDay
-    ? buildStepper(selectedDay, awaitingTodayIngest)
+    ? buildStepper(selectedDay, awaitingTodayIngest, latestAvailableDay)
     : null
   const label = sectionLabel?.trim() || '// ACTIVE MISSIONS'
 
@@ -147,25 +154,34 @@ interface StepperState {
   current: { label: string; isToday: boolean }
 }
 
-/** Single-route URL for any day: clean canonical for today, `?day=` otherwise. */
+/**
+ * Single-route URL for any day. Always `?day=` — even for today — so a forward
+ * step never collapses to the bare route, which re-runs the walk-back fallback
+ * and can bounce off a pending day back to the day you came from. The clean
+ * canonical URL is reached via the landing page and the `// TODAY` jump.
+ */
 function urlForDay(day: string): string {
-  return day === todayUtcIso() ? ESCALATION_BASE : `${ESCALATION_BASE}?day=${day}`
+  return `${ESCALATION_BASE}?day=${day}`
 }
 
 function buildStepper(
   selectedDay: string,
   awaitingTodayIngest = false,
+  latestAvailableDay?: string,
 ): StepperState {
   const today = todayUtcIso()
   const prevDay = previousDayUtc(selectedDay)
   const nextDay = nextDayUtc(selectedDay)
   const isToday = selectedDay === today
 
-  // When today hasn't ingested, the "next" days from the fallback point all
-  // the way up to today are part of the same ingest gap — stepping forward
-  // would just trigger the same walk-back. Suppress forward navigation
-  // entirely in that state.
-  const canStepForward = nextDay <= today && !awaitingTodayIngest
+  // Forward stops at `today`, and — while the current week is still ingesting —
+  // at the latest day that has data, so the arrow greys out instead of
+  // bouncing off a pending day (stepping onto today collapses to the no-`?day`
+  // route, which walks back to this same fallback day).
+  const canStepForward =
+    nextDay <= today &&
+    !awaitingTodayIngest &&
+    (latestAvailableDay === undefined || nextDay <= latestAvailableDay)
 
   return {
     prev: { href: urlForDay(prevDay), label: formatDayWithWeekday(prevDay) },
@@ -192,11 +208,13 @@ function buildStepper(
 export function EscalationDayStepper({
   selectedDay,
   awaitingTodayIngest,
+  latestAvailableDay,
 }: {
   selectedDay: string
   awaitingTodayIngest?: boolean
+  latestAvailableDay?: string
 }) {
-  const stepper = buildStepper(selectedDay, awaitingTodayIngest)
+  const stepper = buildStepper(selectedDay, awaitingTodayIngest, latestAvailableDay)
   return <DayStepperBar stepper={stepper} />
 }
 
@@ -230,7 +248,7 @@ function DayStepperBar({ stepper }: { stepper: StepperState }) {
       {stepper.awaitingToday && (
         <span
           aria-label="Today's rotation has not been published yet"
-          title="Today's rotation has not been published upstream — expected around 10:00 CEST (08:00 UTC)"
+          title={`Today's rotation has not been published upstream — expected around ${String(EXPECTED_PUBLISH_HOUR_UTC).padStart(2, '0')}:00 UTC`}
           className="inline-flex h-9 items-center justify-center gap-2 border border-rga-green/30 bg-rga-green/[0.05] px-3 font-mono text-[10px] tracking-[0.3em] text-rga-green/80"
         >
           <span

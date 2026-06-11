@@ -8,6 +8,7 @@ import { PrototypeCaches } from './PrototypeCaches'
 import { EscalationDiscordRow } from './EscalationDiscordRow'
 import {
   ashleyTimestampToUtcIso,
+  EXPECTED_PUBLISH_HOUR_UTC,
   formatDayShort,
   formatDayWithWeekday,
   hoursSince,
@@ -16,6 +17,7 @@ import {
 } from '@/lib/division2/format'
 import { UserLocalTime } from './UserLocalTime'
 import type { AshleyResult } from '@/lib/api/server'
+import { currentWeekFrontierDay } from '@/lib/division2/escalation.server'
 import type {
   EscalationDailyDetail,
   EscalationLootItem,
@@ -96,6 +98,20 @@ export function EscalationPage({
   //   - fetchedAt:  prefer daily.data.fetchedAt (most recent)
   const dailyData = daily.ok ? daily.data : null
   const weekData = week.ok ? week.data : null
+
+  // The day's drops genuinely haven't published yet (404) — distinct from a
+  // transient fetch error, which must not claim "not published". Only the
+  // not_found case drives the pending banner; a real error degrades to the
+  // week's mission rotation without a misleading message.
+  const dayDataMissing = !daily.ok && daily.error.code === 'not_found'
+
+  // Forward stepping's ceiling: the latest current-week day that has ingested.
+  // Lets the stepper grey out forward at the newest available day instead of
+  // bouncing off a pending "today". Undefined for archived weeks (complete) or
+  // when the week fetch failed — both fall back to stepping by `today`.
+  const latestAvailableDay = weekData
+    ? currentWeekFrontierDay(weekData, targetDay)
+    : undefined
 
   const missions: EscalationMission[] =
     dailyData?.week.missions ?? weekData?.missions ?? []
@@ -205,14 +221,17 @@ export function EscalationPage({
         </header>
 
         <div className="flex flex-col gap-6 sm:gap-8">
-          {awaitingTodayIngest && (
+          {awaitingTodayIngest ? (
             <AwaitingIngestBanner resolvedDay={resolvedDay} />
-          )}
+          ) : dayDataMissing ? (
+            <PendingDayBanner resolvedDay={resolvedDay} isToday={isToday} />
+          ) : null}
           <MissionRow
             missions={missions}
             dayLootByPosition={dayLootByPosition}
             selectedDay={resolvedDay}
             awaitingTodayIngest={awaitingTodayIngest}
+            latestAvailableDay={latestAvailableDay}
             sectionLabel={content?.missionsSectionLabel ?? undefined}
           />
           <PrototypeCaches
@@ -225,6 +244,7 @@ export function EscalationPage({
             <EscalationDayStepper
               selectedDay={resolvedDay}
               awaitingTodayIngest={awaitingTodayIngest}
+              latestAvailableDay={latestAvailableDay}
             />
           </div>
           <EscalationDiscordRow content={content?.discord} />
@@ -235,16 +255,23 @@ export function EscalationPage({
 }
 
 /**
- * Info banner shown when the page fell back from today to the last available
- * day. Expected publish time is anchored on upstream's UTC cadence; per-user
- * local-time rendering is handled by `UserLocalTime` on the client.
+ * Shared green "awaiting upstream" status banner. `expectedDay` (when set)
+ * renders the "// EXPECTED ≈ <local> · <utc>" hint anchored to that day's
+ * publish hour; omit it to drop the hint. Per-user local time is resolved by
+ * `UserLocalTime` on the client.
  */
-const EXPECTED_PUBLISH_HOUR_UTC = 9
-
-function AwaitingIngestBanner({ resolvedDay }: { resolvedDay: string }) {
+function EscalationAwaitBanner({
+  kicker,
+  message,
+  expectedDay,
+}: {
+  kicker: string
+  message: React.ReactNode
+  expectedDay?: string
+}) {
   const hh = String(EXPECTED_PUBLISH_HOUR_UTC).padStart(2, '0')
-  const expectedUtcIso = `${todayUtcIso()}T${hh}:00:00.000Z`
-  const expectedUtcLabel = formatUtcHourLabel(expectedUtcIso)
+  const expectedUtcIso = expectedDay ? `${expectedDay}T${hh}:00:00.000Z` : null
+  const expectedUtcLabel = expectedUtcIso ? formatUtcHourLabel(expectedUtcIso) : null
   return (
     <div
       role="status"
@@ -254,20 +281,64 @@ function AwaitingIngestBanner({ resolvedDay }: { resolvedDay: string }) {
         aria-hidden
         className="inline-block h-2 w-2 rounded-[1px] bg-rga-green shadow-[0_0_8px_#00FF41]"
       />
-      <span className="text-rga-green">// AWAITING TODAY&apos;S ROTATION</span>
+      <span className="text-rga-green">{kicker}</span>
       <span className="text-text-secondary normal-case tracking-[0.05em]">
-        Today&apos;s drops haven&apos;t published upstream yet — viewing the
-        last available day ({formatDayShort(resolvedDay)}).
+        {message}
       </span>
-      <span className="ml-auto text-rga-green/80">
-        // EXPECTED ≈{' '}
-        <UserLocalTime
-          utcIso={expectedUtcIso}
-          fallback={`${expectedUtcLabel} UTC`}
-        />{' '}
-        · {expectedUtcLabel} UTC
-      </span>
+      {expectedUtcIso && (
+        <span className="ml-auto text-rga-green/80">
+          // EXPECTED ≈{' '}
+          <UserLocalTime
+            utcIso={expectedUtcIso}
+            fallback={`${expectedUtcLabel} UTC`}
+          />{' '}
+          · {expectedUtcLabel} UTC
+        </span>
+      )}
     </div>
+  )
+}
+
+/** Page fell back from today to the last available day (no `?day` landing). */
+function AwaitingIngestBanner({ resolvedDay }: { resolvedDay: string }) {
+  return (
+    <EscalationAwaitBanner
+      kicker="// AWAITING TODAY'S ROTATION"
+      expectedDay={todayUtcIso()}
+      message={
+        <>
+          Today&apos;s drops haven&apos;t published upstream yet — viewing the
+          last available day ({formatDayShort(resolvedDay)}).
+        </>
+      }
+    />
+  )
+}
+
+/**
+ * User is *on* a day whose drops haven't published yet (rows all PENDING
+ * UPSTREAM) — reached by stepping or a direct `?day=` link, where the fallback
+ * `AwaitingIngestBanner` doesn't apply. The expected-publish hint only makes
+ * sense for today; past pending days just get the plain message.
+ */
+function PendingDayBanner({
+  resolvedDay,
+  isToday,
+}: {
+  resolvedDay: string
+  isToday: boolean
+}) {
+  return (
+    <EscalationAwaitBanner
+      kicker="// AWAITING ROTATION"
+      expectedDay={isToday ? resolvedDay : undefined}
+      message={
+        <>
+          Drops for {formatDayShort(resolvedDay)} haven&apos;t published upstream
+          yet — showing the mission rotation only.
+        </>
+      }
+    />
   )
 }
 
