@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import Link from 'next/link'
 import { ChevronDown, X } from 'lucide-react'
+import { BracketTooltip } from '@/components/ui/BracketTooltip'
 import type { ContentSource } from '@/lib/division2/content.server'
 
 /** Match the rga-overlay-out animation duration in globals.css. */
@@ -523,14 +524,23 @@ function FilterChip({
 }: FilterChipProps) {
   const [popoverArmed, setPopoverArmed] = useState(true)
   return (
-    <div className="group/chip relative" onPointerLeave={() => setPopoverArmed(true)}>
+    <BracketTooltip
+      armed={popoverArmed}
+      onPointerLeave={() => setPopoverArmed(true)}
+      title={helpTitle}
+      body={helpBody}
+      accentText={popoverAccent}
+      accentBorder={popoverBorder}
+      cornerTick={activeTick}
+      widthClass="w-[min(280px,calc(100vw-1.5rem))]"
+    >
       <Link
         href={href}
         scroll={false}
         onClick={(e) => {
           setPopoverArmed(false)
           onNavigate()
-          // Mouse-click focus on the <a> would leave `group-focus-within/chip`
+          // Mouse-click focus on the <a> would leave `group-focus-within/tip`
           // matching after popoverArmed re-arms, keeping the popover visible.
           ;(e.currentTarget as HTMLAnchorElement).blur()
         }}
@@ -582,66 +592,6 @@ function FilterChip({
         />
         <span>{label}</span>
       </Link>
-
-      {popoverArmed && (
-        <div
-          role="tooltip"
-          className="pointer-events-none invisible absolute left-1/2 top-full z-50 mt-2 w-[min(280px,calc(100vw-1.5rem))] -translate-x-1/2 opacity-0 transition-all delay-150 duration-150 group-hover/chip:visible group-hover/chip:opacity-100 group-focus-within/chip:visible group-focus-within/chip:opacity-100"
-        >
-          <div
-            className={[
-              'relative border bg-[rgba(0,0,0,0.92)] px-3 py-2.5 font-mono leading-snug shadow-[0_10px_28px_-8px_rgba(0,0,0,0.9)] backdrop-blur-md',
-              popoverBorder,
-            ].join(' ')}
-          >
-            <span
-              aria-hidden
-              className={[
-                'pointer-events-none absolute -top-px -left-px h-2 w-2 border-l border-t',
-                activeTick,
-              ].join(' ')}
-            />
-            <span
-              aria-hidden
-              className={[
-                'pointer-events-none absolute -top-px -right-px h-2 w-2 border-r border-t',
-                activeTick,
-              ].join(' ')}
-            />
-            <span
-              aria-hidden
-              className={[
-                'pointer-events-none absolute -bottom-px -left-px h-2 w-2 border-b border-l',
-                activeTick,
-              ].join(' ')}
-            />
-            <span
-              aria-hidden
-              className={[
-                'pointer-events-none absolute -bottom-px -right-px h-2 w-2 border-b border-r',
-                activeTick,
-              ].join(' ')}
-            />
-
-            <span
-              aria-hidden
-              className={[
-                'pointer-events-none absolute -top-1.5 left-1/2 h-2.5 w-2.5 -translate-x-1/2 rotate-45 border-l border-t bg-[rgba(0,0,0,0.92)]',
-                popoverBorder,
-              ].join(' ')}
-            />
-
-            <div
-              className={['mb-1 text-[10px] uppercase tracking-[0.3em]', popoverAccent].join(' ')}
-            >
-              // {helpTitle}
-            </div>
-            <p className="text-[11px] leading-relaxed tracking-[0.02em] text-text-secondary">
-              {helpBody}
-            </p>
-          </div>
-        </div>
-      )}
-    </div>
+    </BracketTooltip>
   )
 }
