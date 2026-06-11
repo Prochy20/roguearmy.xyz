@@ -3,9 +3,10 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import { Bookmark } from 'lucide-react'
+import { Bookmark, LogOut, User } from 'lucide-react'
 import { DiscordIcon } from '@/components/ui/DiscordIcon'
 import { CyberCorners } from '@/components/ui/CyberCorners'
+import { BracketTooltip } from '@/components/ui/BracketTooltip'
 import { AfkTicker } from '@/components/afk/AfkTicker'
 import { normalizeAfkRecord, type AfkRecord } from '@/components/afk/types'
 import { getDiscordAvatarUrl } from '@/lib/auth/discord'
@@ -93,40 +94,21 @@ function ActionsZone({
       <PresenceIndicator override={presenceOverride} />
       <div className="flex items-center gap-2">
         <BookmarksMenuLink />
-        <Link
-          href="/me"
-          className="inline-flex h-9 items-center justify-center gap-2 border border-rga-green/30 bg-rga-green/[0.05] px-3 font-mono text-[10px] uppercase tracking-[0.3em] text-rga-green/80 transition-colors hover:border-rga-green/60 hover:bg-rga-green/10 hover:text-rga-green"
-        >
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            aria-hidden
+        <BracketTooltip title="Profile" side="top">
+          <Link
+            href="/me"
+            aria-label="Profile"
+            className="inline-flex h-9 w-9 items-center justify-center border border-rga-green/30 bg-rga-green/[0.05] text-rga-green/80 transition-colors hover:border-rga-green/60 hover:bg-rga-green/10 hover:text-rga-green"
           >
-            <circle cx="12" cy="12" r="4" />
-            <path d="M12 2v2 M12 20v2 M2 12h2 M20 12h2 M5 5l1.5 1.5 M17.5 17.5L19 19 M5 19l1.5-1.5 M17.5 6.5L19 5" />
-          </svg>
-          Profile
-        </Link>
+            <User className="h-4 w-4" aria-hidden />
+          </Link>
+        </BracketTooltip>
         <button
           type="button"
           onClick={onLogout}
           className="inline-flex h-9 items-center justify-center gap-2 border border-white/20 bg-white/[0.03] px-3 font-mono text-[10px] uppercase tracking-[0.3em] text-white/60 transition-colors hover:border-white/40 hover:bg-white/[0.06] hover:text-white"
         >
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            aria-hidden
-          >
-            <path d="M12 3v9 M5.5 7.5a8 8 0 1 0 13 0" />
-          </svg>
+          <LogOut className="h-3.5 w-3.5" aria-hidden />
           Logout
         </button>
       </div>
@@ -139,18 +121,20 @@ function BookmarksMenuLink() {
   const count = ctx?.bookmarkedKeys.size ?? 0
 
   return (
-    <Link
-      href="/me/bookmarks"
-      aria-label={count > 0 ? `Bookmarks (${count} saved)` : 'Bookmarks'}
-      className="relative inline-flex h-9 w-9 items-center justify-center border border-rga-green/30 bg-rga-green/[0.05] text-rga-green/80 transition-colors hover:border-rga-green/60 hover:bg-rga-green/10 hover:text-rga-green"
-    >
-      <Bookmark className="h-4 w-4" aria-hidden />
-      {count > 0 && (
-        <span className="absolute -right-1.5 -top-1.5 inline-flex h-4 min-w-[16px] items-center justify-center border border-rga-green/40 bg-void px-1 font-mono text-[9px] tabular-nums text-rga-green">
-          {count > 99 ? '99+' : count}
-        </span>
-      )}
-    </Link>
+    <BracketTooltip title={count > 0 ? `Bookmarks · ${count}` : 'Bookmarks'} side="top">
+      <Link
+        href="/me/bookmarks"
+        aria-label={count > 0 ? `Bookmarks (${count} saved)` : 'Bookmarks'}
+        className="relative inline-flex h-9 w-9 items-center justify-center border border-rga-green/30 bg-rga-green/[0.05] text-rga-green/80 transition-colors hover:border-rga-green/60 hover:bg-rga-green/10 hover:text-rga-green"
+      >
+        <Bookmark className="h-4 w-4" aria-hidden />
+        {count > 0 && (
+          <span className="absolute -right-1.5 -top-1.5 inline-flex h-4 min-w-[16px] items-center justify-center border border-rga-green/40 bg-void px-1 font-mono text-[9px] tabular-nums text-rga-green">
+            {count > 99 ? '99+' : count}
+          </span>
+        )}
+      </Link>
+    </BracketTooltip>
   )
 }
 
