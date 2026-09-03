@@ -5,7 +5,11 @@
  *
  * Behavior:
  *  - Fetches the upstream asset_map.json and downloads every referenced image.
- *  - Mirrors the upstream layout under public/division2/img/<category>/<key>.png.
+ *  - Local paths are STABLE: every key keeps the path it had in the previous
+ *    public/division2/data/asset_map.json (the URLs production already serves),
+ *    no matter how upstream reorganizes its files. Keys that are new to us get
+ *    img/<category>/<key>.png. Keys upstream dropped stay in our map and keep
+ *    their local file so existing URLs never break.
  *  - Saves the raw upstream map at public/division2/data/source_asset_map.json.
  *  - Writes a rewritten map at public/division2/data/asset_map.json with our
  *    built_at and source_built_at metadata plus a `missing` report.
@@ -92,12 +96,27 @@ async function ensureDir(dir) {
   await mkdir(dir, { recursive: true })
 }
 
-async function processEntry({ category, key, relPath }, ctx) {
+async function processEntry({ category, key, upstreamRelPath, localRelPath }, ctx) {
   await jitter()
-  const url = `${UPSTREAM_BASE}/${relPath}`
-  const localPath = join(DIVISION2_DIR, relPath)
+  const localPath = join(DIVISION2_DIR, localRelPath)
   await ensureDir(dirname(localPath))
 
+  // Upstream no longer lists this key: keep whatever we serve today.
+  if (!upstreamRelPath) {
+    if (!existsSync(localPath)) {
+      await copyFile(PLACEHOLDER_DEST, localPath)
+      return { category, key, outcome: 'missing-placeholder' }
+    }
+    const localHash = await fileHash(localPath)
+    if (localHash === ctx.placeholderHash) return { category, key, outcome: 'missing-kept-local' }
+    if (ctx.staleHashes.has(localHash)) {
+      await copyFile(PLACEHOLDER_DEST, localPath)
+      return { category, key, outcome: 'missing-placeholder-refreshed' }
+    }
+    return { category, key, outcome: 'dropped-upstream' }
+  }
+
+  const url = `${UPSTREAM_BASE}/${upstreamRelPath}`
   const result = await fetchBuffer(url)
 
   if (result.status === 200) {
@@ -172,23 +191,56 @@ async function main() {
     JSON.stringify(upstream, null, 2) + '\n',
   )
 
+  // Previous local map = source of truth for paths. Keys keep their URL forever.
+  let previous = {}
+  try {
+    previous = JSON.parse(await readFile(join(DATA_DIR, 'asset_map.json'), 'utf8'))
+  } catch {
+    console.log('[sync] no previous asset_map.json, paths will follow img/<category>/<key>.png')
+  }
+
+  const localMap = {}
   const queue = []
+  const aliases = []
   for (const category of CATEGORIES) {
-    const entries = upstream[category]
-    if (!entries) continue
-    for (const [key, relPath] of Object.entries(entries)) {
-      queue.push({ category, key, relPath })
+    const prevEntries = previous[category] ?? {}
+    const upEntries = upstream[category] ?? {}
+    const keys = [...new Set([...Object.keys(prevEntries), ...Object.keys(upEntries)])].sort()
+    localMap[category] = {}
+
+    // Several keys may share one local file (e.g. perfectX -> X.png). Download
+    // that file once, from the key whose name matches the file basename.
+    const byLocalPath = new Map()
+    for (const key of keys) {
+      const localRelPath = prevEntries[key] ?? `img/${category}/${key}.png`
+      localMap[category][key] = localRelPath
+      const entry = { category, key, upstreamRelPath: upEntries[key], localRelPath }
+      const group = byLocalPath.get(localRelPath)
+      if (!group) byLocalPath.set(localRelPath, [entry])
+      else group.push(entry)
+    }
+    for (const [localRelPath, group] of byLocalPath) {
+      const base = localRelPath.split('/').pop().replace(/\.png$/, '')
+      const primary =
+        group.find((e) => e.key === base && e.upstreamRelPath) ??
+        group.find((e) => e.upstreamRelPath) ??
+        group[0]
+      queue.push(primary)
+      for (const e of group) if (e !== primary) aliases.push(e)
     }
   }
-  console.log(`[sync] queued ${queue.length} assets across ${CATEGORIES.length} categories`)
+  console.log(`[sync] queued ${queue.length} files (${aliases.length} alias keys) across ${CATEGORIES.length} categories`)
 
   const startedAt = Date.now()
   const results = await runPool(queue, processEntry, { staleHashes, placeholderHash })
   const elapsed = ((Date.now() - startedAt) / 1000).toFixed(1)
 
-  const tally = { downloaded: 0, unchanged: 0, 'missing-placeholder': 0, 'missing-placeholder-refreshed': 0, 'missing-kept-local': 0, invalid: 0, error: 0 }
+  const tally = { downloaded: 0, unchanged: 0, alias: 0, 'dropped-upstream': 0, 'missing-placeholder': 0, 'missing-placeholder-refreshed': 0, 'missing-kept-local': 0, invalid: 0, error: 0 }
   const missing = {}
   const errors = []
+  for (const a of aliases) {
+    results.push({ category: a.category, key: a.key, outcome: 'alias' })
+  }
   for (const r of results) {
     tally[r.outcome] = (tally[r.outcome] ?? 0) + 1
     if (r.outcome === 'missing-placeholder' || r.outcome === 'missing-placeholder-refreshed' || r.outcome === 'missing-kept-local') {
@@ -208,7 +260,7 @@ async function main() {
     sanitize: upstream.sanitize ?? null,
   }
   for (const category of CATEGORIES) {
-    rewritten[category] = upstream[category] ?? {}
+    rewritten[category] = localMap[category]
   }
   rewritten.missing = missing
 
