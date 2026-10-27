@@ -144,7 +144,8 @@ export const Articles: CollectionConfig = {
                     condition: (_, siblingData) => siblingData?.contentSource !== 'wiki',
                   },
                   validate: (value, { siblingData }) => {
-                    if (siblingData?.contentSource !== 'wiki' && !value) {
+                    const { contentSource } = (siblingData ?? {}) as { contentSource?: string }
+                    if (contentSource !== 'wiki' && !value) {
                       return 'Content is required for Payload articles'
                     }
                     return true

@@ -14,7 +14,7 @@ const INTERNAL_PATHS = ['/brand', '/twitch']
 // route handler runs.
 const REFRESH_BUFFER_SECONDS = 60
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const response = NextResponse.next()
 
   // Existing: noindex internal routes

@@ -34,9 +34,10 @@ import { SyncDiscordRolesButton as SyncDiscordRolesButton_e646e2d6acb2343f867637
 import { UsernameCell as UsernameCell_cacc0ac1d0190fc1e788131aa388c80c } from '@/components/admin/DiscordAvatarCell'
 import { DiscordAvatarCell as DiscordAvatarCell_cacc0ac1d0190fc1e788131aa388c80c } from '@/components/admin/DiscordAvatarCell'
 import { DiscordAvatarField as DiscordAvatarField_456f1805df0d0e9e8e88de026b4623c3 } from '@/components/admin/DiscordAvatarField'
+import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 import { VercelBlobClientUploadHandler as VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e } from '@payloadcms/storage-vercel-blob/client'
-import { CollectionCards as CollectionCards_ab83ff7e88da8d3530831f296ec4756a } from '@payloadcms/ui/rsc'
 
+/** @type import('payload').ImportMap */
 export const importMap = {
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalField": RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e,
@@ -74,6 +75,6 @@ export const importMap = {
   "@/components/admin/DiscordAvatarCell#UsernameCell": UsernameCell_cacc0ac1d0190fc1e788131aa388c80c,
   "@/components/admin/DiscordAvatarCell#DiscordAvatarCell": DiscordAvatarCell_cacc0ac1d0190fc1e788131aa388c80c,
   "@/components/admin/DiscordAvatarField#DiscordAvatarField": DiscordAvatarField_456f1805df0d0e9e8e88de026b4623c3,
-  "@payloadcms/storage-vercel-blob/client#VercelBlobClientUploadHandler": VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e,
-  "@payloadcms/ui/rsc#CollectionCards": CollectionCards_ab83ff7e88da8d3530831f296ec4756a
+  "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1,
+  "@payloadcms/storage-vercel-blob/client#VercelBlobClientUploadHandler": VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e
 }

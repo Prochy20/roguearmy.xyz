@@ -10,7 +10,7 @@ import type { CollectionAfterChangeHook, CollectionAfterDeleteHook } from 'paylo
  */
 async function bustArticlesTag(): Promise<void> {
   const { revalidateTag } = await import('next/cache')
-  revalidateTag('articles')
+  revalidateTag('articles', 'max')
 }
 
 /**

@@ -2,7 +2,7 @@
  * Cookie-name + lifetime constants.
  *
  * Lives in its own file with NO imports so it can be safely loaded from
- * both the edge runtime (middleware.ts) and the Node runtime (cookies.ts,
+ * both the proxy runtime (proxy.ts) and the Node runtime (cookies.ts,
  * route handlers, server components). Adding any import that pulls in
  * `next/headers` would break edge compatibility.
  */
